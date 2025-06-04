@@ -1,0 +1,752 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pymongo</title>
+    <style>
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #49483e }
+.highlight { background: #272822; color: #f8f8f2 }
+.highlight .c { color: #75715e } /* Comment */
+.highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+.highlight .esc { color: #f8f8f2 } /* Escape */
+.highlight .g { color: #f8f8f2 } /* Generic */
+.highlight .k { color: #66d9ef } /* Keyword */
+.highlight .l { color: #ae81ff } /* Literal */
+.highlight .n { color: #f8f8f2 } /* Name */
+.highlight .o { color: #f92672 } /* Operator */
+.highlight .x { color: #f8f8f2 } /* Other */
+.highlight .p { color: #f8f8f2 } /* Punctuation */
+.highlight .ch { color: #75715e } /* Comment.Hashbang */
+.highlight .cm { color: #75715e } /* Comment.Multiline */
+.highlight .cp { color: #75715e } /* Comment.Preproc */
+.highlight .cpf { color: #75715e } /* Comment.PreprocFile */
+.highlight .c1 { color: #75715e } /* Comment.Single */
+.highlight .cs { color: #75715e } /* Comment.Special */
+.highlight .gd { color: #f92672 } /* Generic.Deleted */
+.highlight .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #f8f8f2 } /* Generic.Error */
+.highlight .gh { color: #f8f8f2 } /* Generic.Heading */
+.highlight .gi { color: #a6e22e } /* Generic.Inserted */
+.highlight .go { color: #66d9ef } /* Generic.Output */
+.highlight .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #75715e } /* Generic.Subheading */
+.highlight .gt { color: #f8f8f2 } /* Generic.Traceback */
+.highlight .kc { color: #66d9ef } /* Keyword.Constant */
+.highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+.highlight .kn { color: #f92672 } /* Keyword.Namespace */
+.highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+.highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+.highlight .kt { color: #66d9ef } /* Keyword.Type */
+.highlight .ld { color: #e6db74 } /* Literal.Date */
+.highlight .m { color: #ae81ff } /* Literal.Number */
+.highlight .s { color: #e6db74 } /* Literal.String */
+.highlight .na { color: #a6e22e } /* Name.Attribute */
+.highlight .nb { color: #f8f8f2 } /* Name.Builtin */
+.highlight .nc { color: #a6e22e } /* Name.Class */
+.highlight .no { color: #66d9ef } /* Name.Constant */
+.highlight .nd { color: #a6e22e } /* Name.Decorator */
+.highlight .ni { color: #f8f8f2 } /* Name.Entity */
+.highlight .ne { color: #a6e22e } /* Name.Exception */
+.highlight .nf { color: #a6e22e } /* Name.Function */
+.highlight .nl { color: #f8f8f2 } /* Name.Label */
+.highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+.highlight .nx { color: #a6e22e } /* Name.Other */
+.highlight .py { color: #f8f8f2 } /* Name.Property */
+.highlight .nt { color: #f92672 } /* Name.Tag */
+.highlight .nv { color: #f8f8f2 } /* Name.Variable */
+.highlight .ow { color: #f92672 } /* Operator.Word */
+.highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+.highlight .mb { color: #ae81ff } /* Literal.Number.Bin */
+.highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+.highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+.highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+.highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+.highlight .sa { color: #e6db74 } /* Literal.String.Affix */
+.highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+.highlight .sc { color: #e6db74 } /* Literal.String.Char */
+.highlight .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+.highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+.highlight .se { color: #ae81ff } /* Literal.String.Escape */
+.highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+.highlight .sx { color: #e6db74 } /* Literal.String.Other */
+.highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+.highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+.highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+.highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #a6e22e } /* Name.Function.Magic */
+.highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.highlight .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+    </style>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px; }
+        pre { background-color: #1a1a35; color: #f8f8f2; padding: 5px; border-radius: 5px; overflow-x: auto; }
+        code { font-family: "Courier New", Courier, monospace; }
+        img { max-width: 100%; height: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .highlight { padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important; }
+        .empty-code-block { background-color: #1a1a35; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; font-family: monospace; }
+        .highlight-error { background-color: #1a1a35; color: #f08080; padding: 5px; border-radius: 5px; margin: 5px 0; font-family: monospace; }
+    </style>
+    <style>
+        /* CSS from style.css */
+body {
+    font-family: Century Gothic, Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+    color: #333;
+    max-width: none;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    display: block;
+    background-color: #333;
+    color: #f78e25;
+    font-size: 3em;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: none;
+    border-radius: 20px;
+}
+
+h1 small {
+    display: block;
+    font-size: 0.8em;
+    color: #ccc;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+h2 {
+    color: #448;
+    font-size: 1.8em;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #bbf;
+    padding-bottom: 5px;
+}
+
+h3 {
+    color: #2020f0;
+    font-size: 1.5em;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+h4 {
+    color: #333;
+    font-size: 1.1em;
+}
+
+pre {
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    background-color: #101030;
+    color: #d0d0d0;
+    padding: 2px 4px;
+    font-size: 0.9em;
+    margin: 10px;
+    padding: 10px;
+}
+
+#table-of-contents {
+    background-color: #e0e0ff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 30px 0;
+    border: 1px solid #e9ecef;
+}
+
+#contents-header {
+    color: #d66767;
+    margin-top: 0;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.toc ul,
+.toc li {
+    list-style: none;
+    padding-left: 0;
+}
+
+.toc li {
+    padding-left: 15px;
+    border-left: 3px solid #f78e25;
+}
+
+.toc a {
+    display: block;
+    transition: color 0.2s ease;
+    text-decoration: none;
+}
+
+.toc a:hover {
+    color: #f78e25;
+    background-color: #e4f8f7;
+    text-decoration: none;
+}
+
+.example {
+    margin: 20px 0;
+    padding: 0;
+}
+
+.example h4 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+/* Estilos para títolos de sección similares a la imagen */
+.section-title {
+    background-color: #333;
+    color: #f78e25;
+    /* Naranja como en la imagen */
+    padding: 10px 15px;
+    font-size: 1.3em;
+    margin: 30px 0 20px 0;
+    text-align: center;
+}
+
+.section-subtitle {
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+/* Párrafos explicativos */
+.explanation {
+    margin-bottom: 15px;
+}
+
+/* Estilos para el glosario */
+dl {
+    margin: 20px 0;
+}
+
+dt {
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+dd {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+    </style>
+</head>
+<body>
+<h1 id="guia-completa-de-pymongo">Guía Completa de PyMongo</h1><div id="table-of-contents" class="toc"><h2 id="contents-header">Tabla de contenidos</h2><ul class="toc" style="list-style-type: none; padding-left: 0px;"><li class="toc"><a href="#introduccion-a-pymongo" class="toc">Introducción a PyMongo</a></li><li class="toc"><a href="#instalacion" class="toc">Instalación</a></li><li class="toc"><a href="#conexion-a-mongodb" class="toc">Conexión a MongoDB</a></li><li class="toc"><a href="#conexion-basica-a-una-instancia-local" class="toc">Conexión básica a una instancia local</a></li><li class="toc"><a href="#conexion-a-mongodb-atlas-en-la-nube" class="toc">Conexión a MongoDB Atlas (en la nube)</a></li><li class="toc"><a href="#acceso-a-bases-de-datos-y-colecciones" class="toc">Acceso a bases de datos y colecciones</a></li><li class="toc"><a href="#operaciones-crud-basicas" class="toc">Operaciones CRUD Básicas</a></li><li class="toc"><a href="#create-crear" class="toc">Create (Crear)</a></li><li class="toc"><a href="#insertar-un-solo-documento" class="toc">Insertar un solo documento</a></li><li class="toc"><a href="#insertar-multiples-documentos" class="toc">Insertar múltiples documentos</a></li><li class="toc"><a href="#read-leer" class="toc">Read (Leer)</a></li><li class="toc"><a href="#encontrar-un-solo-documento" class="toc">Encontrar un solo documento</a></li><li class="toc"><a href="#encontrar-multiples-documentos" class="toc">Encontrar múltiples documentos</a></li><li class="toc"><a href="#ordenacion-limites-y-saltos" class="toc">Ordenación, límites y saltos</a></li><li class="toc"><a href="#update-actualizar" class="toc">Update (Actualizar)</a></li><li class="toc"><a href="#actualizar-un-solo-documento" class="toc">Actualizar un solo documento</a></li><li class="toc"><a href="#actualizar-multiples-documentos" class="toc">Actualizar múltiples documentos</a></li><li class="toc"><a href="#reemplazar-un-documento-completo" class="toc">Reemplazar un documento completo</a></li><li class="toc"><a href="#delete-eliminar" class="toc">Delete (Eliminar)</a></li><li class="toc"><a href="#eliminar-un-solo-documento" class="toc">Eliminar un solo documento</a></li><li class="toc"><a href="#eliminar-multiples-documentos" class="toc">Eliminar múltiples documentos</a></li><li class="toc"><a href="#consultas-avanzadas" class="toc">Consultas Avanzadas</a></li><li class="toc"><a href="#operadores-de-comparacion" class="toc">Operadores de comparación</a></li><li class="toc"><a href="#operadores-logicos" class="toc">Operadores lógicos</a></li><li class="toc"><a href="#expresiones-regulares" class="toc">Expresiones regulares</a></li><li class="toc"><a href="#operaciones-con-indices" class="toc">Operaciones con Índices</a></li><li class="toc"><a href="#crear-indices" class="toc">Crear índices</a></li><li class="toc"><a href="#listar-y-eliminar-indices" class="toc">Listar y eliminar índices</a></li><li class="toc"><a href="#agregaciones" class="toc">Agregaciones</a></li><li class="toc"><a href="#pipeline-de-agregacion-basico" class="toc">Pipeline de agregación básico</a></li><li class="toc"><a href="#ejemplo-de-pipeline-mas-complejo" class="toc">Ejemplo de pipeline más complejo</a></li><li class="toc"><a href="#transacciones" class="toc">Transacciones</a></li><li class="toc"><a href="#manejo-de-errores" class="toc">Manejo de Errores</a></li><li class="toc"><a href="#buenas-practicas" class="toc">Buenas Prácticas</a></li><li class="toc"><a href="#ejemplo-completo-sistema-de-blog-simple" class="toc">Ejemplo Completo: Sistema de Blog Simple</a></li></ul></div>
+<h2 id="introduccion-a-pymongo">Introducción a PyMongo</h2>
+<p>PyMongo es la biblioteca oficial de Python para trabajar con MongoDB, una base de datos NoSQL orientada a documentos. PyMongo permite interactuar con MongoDB desde aplicaciones Python de manera sencilla y eficiente.</p>
+<p>MongoDB almacena datos en documentos tipo JSON (llamados BSON) organizados en colecciones, en lugar de tablas con filas y columnas como las bases de datos relacionales.</p>
+<h2 id="instalacion">Instalación</h2>
+<p>Para instalar PyMongo, utiliza pip:</p>
+<div class="highlight language-bash"><pre><span></span>$ pip install pymongo
+</pre></div>
+
+<p>Si necesitas soporte para características específicas como autenticación GSSAPI o conectividad TLS/SSL:</p>
+<div class="highlight language-bash"><pre><span></span>$ pip install pymongo<span class="o">[</span>snappy,gssapi,srv,tls<span class="o">]</span>
+</pre></div>
+
+<h2 id="conexion-a-mongodb">Conexión a MongoDB</h2>
+<h3 id="conexion-basica-a-una-instancia-local">Conexión básica a una instancia local</h3>
+<div class="highlight language-python"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+
+<span class="c1"># Conexión a instancia local por defecto</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">()</span>  <span class="c1"># Se conecta a 'localhost', puerto 27017</span>
+
+<span class="c1"># Alternativamente, especificar host y puerto</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'localhost'</span><span class="p">,</span> <span class="mi">27017</span><span class="p">)</span>
+
+<span class="c1"># O usando formato URI</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'mongodb://localhost:27017/'</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="conexion-a-mongodb-atlas-en-la-nube">Conexión a MongoDB Atlas (en la nube)</h3>
+<div class="highlight language-python"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+
+<span class="c1"># Conexión a MongoDB Atlas</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'mongodb+srv://usuario:contraseña@cluster0.ejemplo.mongodb.net/myFirstDatabase?retryWrites=true&amp;w=majority'</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="acceso-a-bases-de-datos-y-colecciones">Acceso a bases de datos y colecciones</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Acceder a una base de datos</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">mi_base_datos</span>  <span class="c1"># Sintaxis de atributo</span>
+<span class="c1"># O alternativamente:</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s1">'mi_base_datos'</span><span class="p">]</span>  <span class="c1"># Sintaxis de diccionario</span>
+
+<span class="c1"># Acceder a una colección</span>
+<span class="n">coleccion</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">usuarios</span>  <span class="c1"># Sintaxis de atributo</span>
+<span class="c1"># O alternativamente:</span>
+<span class="n">coleccion</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s1">'usuarios'</span><span class="p">]</span>  <span class="c1"># Sintaxis de diccionario</span>
+</pre></div>
+
+<h2 id="operaciones-crud-basicas">Operaciones CRUD Básicas</h2>
+<h3 id="create-crear">Create (Crear)</h3>
+<h4 id="insertar-un-solo-documento">Insertar un solo documento</h4>
+<div class="highlight language-python"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'mongodb://localhost:27017/'</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">mi_base_datos</span>
+<span class="n">usuarios</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">usuarios</span>
+
+<span class="n">usuario</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Juan"</span><span class="p">,</span>
+    <span class="s2">"apellido"</span><span class="p">:</span> <span class="s2">"Pérez"</span><span class="p">,</span>
+    <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"juan.perez@ejemplo.com"</span><span class="p">,</span>
+    <span class="s2">"fecha_registro"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1"># Insertar un documento</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ID del documento insertado: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">inserted_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="insertar-multiples-documentos">Insertar múltiples documentos</h4>
+<div class="highlight language-python"><pre><span></span><span class="n">nuevos_usuarios</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"María"</span><span class="p">,</span>
+        <span class="s2">"apellido"</span><span class="p">:</span> <span class="s2">"González"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"maria.gonzalez@ejemplo.com"</span><span class="p">,</span>
+        <span class="s2">"fecha_registro"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Carlos"</span><span class="p">,</span>
+        <span class="s2">"apellido"</span><span class="p">:</span> <span class="s2">"Rodríguez"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"carlos.rodriguez@ejemplo.com"</span><span class="p">,</span>
+        <span class="s2">"fecha_registro"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="c1"># Insertar múltiples documentos</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">insert_many</span><span class="p">(</span><span class="n">nuevos_usuarios</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"IDs de documentos insertados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">inserted_ids</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="read-leer">Read (Leer)</h3>
+<h4 id="encontrar-un-solo-documento">Encontrar un solo documento</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Encontrar un documento</span>
+<span class="n">usuario</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Juan"</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>
+
+<span class="c1"># Encontrar por ID</span>
+<span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="n">usuario_por_id</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="s2">"5f50a15d0b3..."</span><span class="p">)})</span>
+</pre></div>
+
+<h4 id="encontrar-multiples-documentos">Encontrar múltiples documentos</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Encontrar todos los documentos de la colección</span>
+<span class="n">todos_usuarios</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">todos_usuarios</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>
+
+<span class="c1"># Encontrar con filtro</span>
+<span class="n">usuarios_filtrados</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"apellido"</span><span class="p">:</span> <span class="s2">"González"</span><span class="p">})</span>
+<span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">usuarios_filtrados</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>
+
+<span class="c1"># Limitar campos devueltos (1 incluye, 0 excluye)</span>
+<span class="n">usuarios_proyeccion</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({},</span> <span class="p">{</span><span class="s2">"nombre"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"_id"</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+<span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">usuarios_proyeccion</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>  <span class="c1"># Solo muestra nombre y email</span>
+</pre></div>
+
+<h4 id="ordenacion-limites-y-saltos">Ordenación, límites y saltos</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Ordenar resultados</span>
+<span class="n">usuarios_ordenados</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"apellido"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># 1 ascendente, -1 descendente</span>
+
+<span class="c1"># Limitar resultados</span>
+<span class="n">usuarios_limitados</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Solo 5 documentos</span>
+
+<span class="c1"># Saltar resultados</span>
+<span class="n">usuarios_con_skip</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Saltar 10, mostrar 5 (para paginación)</span>
+</pre></div>
+
+<h3 id="update-actualizar">Update (Actualizar)</h3>
+<h4 id="actualizar-un-solo-documento">Actualizar un solo documento</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Actualizar un documento</span>
+<span class="n">filtro</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Juan"</span><span class="p">}</span>
+<span class="n">nueva_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"email"</span><span class="p">:</span> <span class="s2">"juan.nuevo@ejemplo.com"</span><span class="p">}}</span>
+
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filtro</span><span class="p">,</span> <span class="n">nueva_info</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Documentos modificados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="actualizar-multiples-documentos">Actualizar múltiples documentos</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Actualizar múltiples documentos</span>
+<span class="n">filtro</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"apellido"</span><span class="p">:</span> <span class="s2">"González"</span><span class="p">}</span>
+<span class="n">nueva_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"$set"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"activo"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span>
+
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span><span class="n">filtro</span><span class="p">,</span> <span class="n">nueva_info</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Documentos modificados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="reemplazar-un-documento-completo">Reemplazar un documento completo</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Reemplazar un documento entero</span>
+<span class="n">filtro</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Carlos"</span><span class="p">}</span>
+<span class="n">nuevo_documento</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Carlos"</span><span class="p">,</span>
+    <span class="s2">"apellido"</span><span class="p">:</span> <span class="s2">"Rodríguez Gómez"</span><span class="p">,</span>  <span class="c1"># Apellido actualizado</span>
+    <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"carlos.rodriguez@ejemplo.com"</span><span class="p">,</span>
+    <span class="s2">"activo"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">"ultima_actualizacion"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">replace_one</span><span class="p">(</span><span class="n">filtro</span><span class="p">,</span> <span class="n">nuevo_documento</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Documentos modificados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="delete-eliminar">Delete (Eliminar)</h3>
+<h4 id="eliminar-un-solo-documento">Eliminar un solo documento</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Eliminar un documento</span>
+<span class="n">filtro</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Juan"</span><span class="p">}</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">delete_one</span><span class="p">(</span><span class="n">filtro</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Documentos eliminados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="eliminar-multiples-documentos">Eliminar múltiples documentos</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Eliminar múltiples documentos</span>
+<span class="n">filtro</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"activo"</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">delete_many</span><span class="p">(</span><span class="n">filtro</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Documentos eliminados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h2 id="consultas-avanzadas">Consultas Avanzadas</h2>
+<h3 id="operadores-de-comparacion">Operadores de comparación</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Usuarios mayores de cierta edad</span>
+<span class="n">mayores</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"edad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="mi">30</span><span class="p">}})</span>  <span class="c1"># mayor que 30</span>
+<span class="c1"># Usuarios en un rango de edad</span>
+<span class="n">rango_edad</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"edad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gte"</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s2">"$lte"</span><span class="p">:</span> <span class="mi">65</span><span class="p">}})</span>  <span class="c1"># entre 18 y 65</span>
+<span class="c1"># Usuarios con ciertos apellidos</span>
+<span class="n">apellidos</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"apellido"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$in"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"González"</span><span class="p">,</span> <span class="s2">"Rodríguez"</span><span class="p">,</span> <span class="s2">"López"</span><span class="p">]}})</span>
+</pre></div>
+
+<h3 id="operadores-logicos">Operadores lógicos</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># AND implícito (todos los criterios deben cumplirse)</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"edad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span> <span class="s2">"activo"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+
+<span class="c1"># OR explícito</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
+
+<span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span>
+    <span class="s2">"$or"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">"edad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="mi">18</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">"edad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="mi">65</span><span class="p">}}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="c1"># AND y OR combinados</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span>
+    <span class="s2">"genero"</span><span class="p">:</span> <span class="s2">"F"</span><span class="p">,</span>
+    <span class="s2">"$or"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">"edad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="mi">18</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">"edad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$gt"</span><span class="p">:</span> <span class="mi">65</span><span class="p">}}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+</pre></div>
+
+<h3 id="expresiones-regulares">Expresiones regulares</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Búsqueda por coincidencia parcial usando regex</span>
+<span class="n">regex_usuarios</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"nombre"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$regex"</span><span class="p">:</span> <span class="s2">"^Mar"</span><span class="p">}})</span>  <span class="c1"># Nombres que empiezan con "Mar"</span>
+</pre></div>
+
+<h2 id="operaciones-con-indices">Operaciones con Índices</h2>
+<h3 id="crear-indices">Crear índices</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Crear un índice simple</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s2">"email"</span><span class="p">)</span>
+
+<span class="c1"># Crear un índice único</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s2">"email"</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Crear un índice compuesto</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s2">"apellido"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">),</span> <span class="p">(</span><span class="s2">"nombre"</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">ASCENDING</span><span class="p">)])</span>
+
+<span class="c1"># Crear un índice TTL (Time-To-Live)</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s2">"fecha_ultimo_acceso"</span><span class="p">,</span> <span class="n">expireAfterSeconds</span><span class="o">=</span><span class="mi">2592000</span><span class="p">)</span>  <span class="c1"># 30 días</span>
+</pre></div>
+
+<h3 id="listar-y-eliminar-indices">Listar y eliminar índices</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Listar todos los índices</span>
+<span class="k">for</span> <span class="n">indice</span> <span class="ow">in</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">list_indexes</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">indice</span><span class="p">)</span>
+
+<span class="c1"># Eliminar un índice específico</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">drop_index</span><span class="p">(</span><span class="s2">"email_1"</span><span class="p">)</span>
+
+<span class="c1"># Eliminar todos los índices excepto _id</span>
+<span class="n">usuarios</span><span class="o">.</span><span class="n">drop_indexes</span><span class="p">()</span>
+</pre></div>
+
+<h2 id="agregaciones">Agregaciones</h2>
+<p>El framework de agregación de MongoDB permite realizar operaciones de transformación y análisis de datos complejas.</p>
+<h3 id="pipeline-de-agregacion-basico">Pipeline de agregación básico</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Ejemplo: Contar usuarios por apellido</span>
+<span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="s2">"$apellido"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$sum"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}},</span>
+    <span class="p">{</span><span class="s2">"$sort"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"count"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}}</span>
+<span class="p">]</span>
+
+<span class="n">resultados</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">resultado</span> <span class="ow">in</span> <span class="n">resultados</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Apellido: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">, Cantidad: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="ejemplo-de-pipeline-mas-complejo">Ejemplo de pipeline más complejo</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Estadísticas de usuarios por grupo de edad</span>
+<span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># Etapa 1: Agregar un campo calculado</span>
+    <span class="p">{</span><span class="s2">"$addFields"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"grupo_edad"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">"$switch"</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"branches"</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">"case"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"$edad"</span><span class="p">,</span> <span class="mi">18</span><span class="p">]},</span> <span class="s2">"then"</span><span class="p">:</span> <span class="s2">"Menor"</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">"case"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"$edad"</span><span class="p">,</span> <span class="mi">30</span><span class="p">]},</span> <span class="s2">"then"</span><span class="p">:</span> <span class="s2">"Joven"</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">"case"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$lt"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"$edad"</span><span class="p">,</span> <span class="mi">60</span><span class="p">]},</span> <span class="s2">"then"</span><span class="p">:</span> <span class="s2">"Adulto"</span><span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">"default"</span><span class="p">:</span> <span class="s2">"Senior"</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}},</span>
+    <span class="c1"># Etapa 2: Agrupar por el nuevo campo</span>
+    <span class="p">{</span><span class="s2">"$group"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"_id"</span><span class="p">:</span> <span class="s2">"$grupo_edad"</span><span class="p">,</span>
+        <span class="s2">"cantidad"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$sum"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="s2">"edad_promedio"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$avg"</span><span class="p">:</span> <span class="s2">"$edad"</span><span class="p">},</span>
+        <span class="s2">"usuarios"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$push"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"$nombre"</span><span class="p">,</span> <span class="s2">"edad"</span><span class="p">:</span> <span class="s2">"$edad"</span><span class="p">}}</span>
+    <span class="p">}},</span>
+    <span class="c1"># Etapa 3: Ordenar resultados</span>
+    <span class="p">{</span><span class="s2">"$sort"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}</span>
+<span class="p">]</span>
+
+<span class="n">resultados</span> <span class="o">=</span> <span class="n">usuarios</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">resultado</span> <span class="ow">in</span> <span class="n">resultados</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Grupo: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Cantidad: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">'cantidad'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Edad promedio: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">'edad_promedio'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"----------------"</span><span class="p">)</span>
+</pre></div>
+
+<h2 id="transacciones">Transacciones</h2>
+<p>MongoDB 4.0+ soporta transacciones multi-documento en implementaciones replicadas. PyMongo 3.7+ tiene soporte para estas transacciones.</p>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Ejemplo de transacción</span>
+<span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+
+<span class="c1"># Asegúrate de usar MongoDB 4.0+ y un replica set</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'mongodb://localhost:27017/?replicaSet=rs0'</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">mi_base_datos</span>
+
+<span class="c1"># Iniciar una sesión</span>
+<span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">start_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="c1"># Iniciar transacción</span>
+    <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">start_transaction</span><span class="p">():</span>
+        <span class="c1"># Operaciones dentro de la transacción</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">cuentas</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">cuenta_origen_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$inc"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"saldo"</span><span class="p">:</span> <span class="o">-</span><span class="n">monto</span><span class="p">}},</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+        <span class="p">)</span>
+
+        <span class="n">db</span><span class="o">.</span><span class="n">cuentas</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">cuenta_destino_id</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">"$inc"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"saldo"</span><span class="p">:</span> <span class="n">monto</span><span class="p">}},</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+        <span class="p">)</span>
+
+        <span class="n">db</span><span class="o">.</span><span class="n">transacciones</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">"origen"</span><span class="p">:</span> <span class="n">cuenta_origen_id</span><span class="p">,</span>
+                <span class="s2">"destino"</span><span class="p">:</span> <span class="n">cuenta_destino_id</span><span class="p">,</span>
+                <span class="s2">"monto"</span><span class="p">:</span> <span class="n">monto</span><span class="p">,</span>
+                <span class="s2">"fecha"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="p">},</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+        <span class="p">)</span>
+        <span class="c1"># La transacción se confirma automáticamente al salir del bloque</span>
+        <span class="c1"># Si ocurre una excepción, se revierte automáticamente</span>
+</pre></div>
+
+<h2 id="manejo-de-errores">Manejo de Errores</h2>
+<div class="highlight language-python"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo.errors</span> <span class="kn">import</span> <span class="n">ConnectionFailure</span><span class="p">,</span> <span class="n">OperationFailure</span><span class="p">,</span> <span class="n">DuplicateKeyError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Intentar conectar</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'mongodb://localhost:27017/'</span><span class="p">)</span>
+    <span class="c1"># Verificar conexión</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">admin</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">'ismaster'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Conexión exitosa a MongoDB"</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Intentar operación con posible error de clave duplicada</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">usuarios</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s2">"email"</span><span class="p">:</span> <span class="s2">"usuario@ejemplo.com"</span><span class="p">})</span>
+    <span class="k">except</span> <span class="n">DuplicateKeyError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Error: El email ya existe en la base de datos"</span><span class="p">)</span>
+
+<span class="k">except</span> <span class="n">ConnectionFailure</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Error: No se pudo conectar al servidor MongoDB"</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">OperationFailure</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error de operación: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+
+<h2 id="buenas-practicas">Buenas Prácticas</h2>
+<ol>
+<li>
+<p><strong>Manejo de conexiones</strong>:
+   - Reutiliza objetos <code>MongoClient</code> en tu aplicación.
+   - MongoDB maneja internamente un pool de conexiones.
+   - Cierra las conexiones explícitamente al terminar tu programa con <code>client.close()</code>.</p>
+</li>
+<li>
+<p><strong>Seguridad</strong>:
+   - Nunca incluyas credenciales directamente en el código fuente.
+   - Usa variables de entorno o archivos de configuración seguros.
+   - Implementa autenticación y SSL/TLS para conexiones.</p>
+</li>
+<li>
+<p><strong>Rendimiento</strong>:
+   - Crea índices para consultas frecuentes.
+   - Usa proyecciones para devolver solo campos necesarios.
+   - Evita documentos demasiado grandes (&gt;16MB).
+   - Utiliza el operador <code>$exists</code> con precaución, ya que no aprovecha índices.</p>
+</li>
+<li>
+<p><strong>Diseño de esquemas</strong>:
+   - Prefiere la desnormalización cuando sea apropiado.
+   - Almacena datos que se acceden juntos en el mismo documento.
+   - Considera las limitaciones de tamaño de documento (16MB).
+   - Implementa referencias cuando sea necesario para documentos grandes.</p>
+</li>
+<li>
+<p><strong>Monitoreo</strong>:
+   - Usa <code>explain()</code> para analizar el rendimiento de consultas.
+   - Configura el registro y monitoreo para operaciones lentas.</p>
+</li>
+</ol>
+<h2 id="ejemplo-completo-sistema-de-blog-simple">Ejemplo Completo: Sistema de Blog Simple</h2>
+<p>A continuación, un ejemplo que integra varios conceptos para un sistema de blog simple:</p>
+<div class="highlight language-python"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="c1"># Configurar cliente de MongoDB</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">'mongodb://localhost:27017/'</span><span class="p">)</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">blog_db</span>
+
+<span class="c1"># Función para crear un nuevo post</span>
+<span class="k">def</span> <span class="nf">crear_post</span><span class="p">(</span><span class="n">titulo</span><span class="p">,</span> <span class="n">contenido</span><span class="p">,</span> <span class="n">autor_id</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"titulo"</span><span class="p">:</span> <span class="n">titulo</span><span class="p">,</span>
+        <span class="s2">"contenido"</span><span class="p">:</span> <span class="n">contenido</span><span class="p">,</span>
+        <span class="s2">"autor_id"</span><span class="p">:</span> <span class="n">autor_id</span><span class="p">,</span>
+        <span class="s2">"fecha_creacion"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="s2">"comentarios"</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">"tags"</span><span class="p">:</span> <span class="n">tags</span> <span class="ow">or</span> <span class="p">[],</span>
+        <span class="s2">"visitas"</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}</span>
+
+    <span class="n">resultado</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resultado</span><span class="o">.</span><span class="n">inserted_id</span>
+
+<span class="c1"># Función para añadir un comentario</span>
+<span class="k">def</span> <span class="nf">añadir_comentario</span><span class="p">(</span><span class="n">post_id</span><span class="p">,</span> <span class="n">autor</span><span class="p">,</span> <span class="n">texto</span><span class="p">):</span>
+    <span class="n">comentario</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"autor"</span><span class="p">:</span> <span class="n">autor</span><span class="p">,</span>
+        <span class="s2">"texto"</span><span class="p">:</span> <span class="n">texto</span><span class="p">,</span>
+        <span class="s2">"fecha"</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="n">db</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">post_id</span><span class="p">)},</span>
+        <span class="p">{</span><span class="s2">"$push"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"comentarios"</span><span class="p">:</span> <span class="n">comentario</span><span class="p">}}</span>
+    <span class="p">)</span>
+
+<span class="c1"># Función para buscar posts por tag</span>
+<span class="k">def</span> <span class="nf">buscar_por_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s2">"tags"</span><span class="p">:</span> <span class="n">tag</span><span class="p">})</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s2">"fecha_creacion"</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Función para mostrar estadísticas</span>
+<span class="k">def</span> <span class="nf">estadisticas_tags</span><span class="p">():</span>
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">"$unwind"</span><span class="p">:</span> <span class="s2">"$tags"</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">"$group"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"_id"</span><span class="p">:</span> <span class="s2">"$tags"</span><span class="p">,</span> <span class="s2">"count"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"$sum"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}},</span>
+        <span class="p">{</span><span class="s2">"$sort"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"count"</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}},</span>
+        <span class="p">{</span><span class="s2">"$limit"</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">))</span>
+
+<span class="c1"># Ejecutar ejemplo</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="c1"># Crear un autor</span>
+    <span class="n">autor_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">autores</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+        <span class="s2">"nombre"</span><span class="p">:</span> <span class="s2">"Ana García"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="p">:</span> <span class="s2">"ana@ejemplo.com"</span><span class="p">,</span>
+        <span class="s2">"bio"</span><span class="p">:</span> <span class="s2">"Escritora y programadora"</span>
+    <span class="p">})</span><span class="o">.</span><span class="n">inserted_id</span>
+
+    <span class="c1"># Crear posts</span>
+    <span class="n">post_id1</span> <span class="o">=</span> <span class="n">crear_post</span><span class="p">(</span>
+        <span class="s2">"Introducción a MongoDB"</span><span class="p">,</span> 
+        <span class="s2">"MongoDB es una base de datos NoSQL..."</span><span class="p">,</span>
+        <span class="n">autor_id</span><span class="p">,</span>
+        <span class="p">[</span><span class="s2">"mongodb"</span><span class="p">,</span> <span class="s2">"nosql"</span><span class="p">,</span> <span class="s2">"bases de datos"</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">post_id2</span> <span class="o">=</span> <span class="n">crear_post</span><span class="p">(</span>
+        <span class="s2">"Python y MongoDB con PyMongo"</span><span class="p">,</span> 
+        <span class="s2">"PyMongo es la biblioteca oficial..."</span><span class="p">,</span>
+        <span class="n">autor_id</span><span class="p">,</span>
+        <span class="p">[</span><span class="s2">"python"</span><span class="p">,</span> <span class="s2">"mongodb"</span><span class="p">,</span> <span class="s2">"pymongo"</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Añadir comentarios</span>
+    <span class="n">añadir_comentario</span><span class="p">(</span><span class="n">post_id1</span><span class="p">,</span> <span class="s2">"Carlos López"</span><span class="p">,</span> <span class="s2">"¡Gran artículo!"</span><span class="p">)</span>
+    <span class="n">añadir_comentario</span><span class="p">(</span><span class="n">post_id1</span><span class="p">,</span> <span class="s2">"María Rodríguez"</span><span class="p">,</span> <span class="s2">"Muy útil, gracias"</span><span class="p">)</span>
+
+    <span class="c1"># Incrementar visitas</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">post_id1</span><span class="p">)},</span> <span class="p">{</span><span class="s2">"$inc"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"visitas"</span><span class="p">:</span> <span class="mi">5</span><span class="p">}})</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">post_id2</span><span class="p">)},</span> <span class="p">{</span><span class="s2">"$inc"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"visitas"</span><span class="p">:</span> <span class="mi">3</span><span class="p">}})</span>
+
+    <span class="c1"># Mostrar un post completo</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">"_id"</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">post_id1</span><span class="p">)})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">----- POST -----"</span><span class="p">)</span>
+    <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">post</span><span class="p">)</span>
+
+    <span class="c1"># Mostrar posts con el tag "mongodb"</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">----- POSTS CON TAG 'mongodb' -----"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">buscar_por_tag</span><span class="p">(</span><span class="s2">"mongodb"</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">post</span><span class="p">[</span><span class="s1">'titulo'</span><span class="p">]</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">post</span><span class="p">[</span><span class="s1">'fecha_creacion'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="c1"># Mostrar estadísticas de tags</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">----- ESTADÍSTICAS DE TAGS -----"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">estadisticas_tags</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">stat</span><span class="p">[</span><span class="s1">'_id'</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">stat</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span><span class="si">}</span><span class="s2"> posts"</span><span class="p">)</span>
+
+    <span class="c1"># Cerrar conexión</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+<p>Este apunte cubre las operaciones fundamentales y avanzadas que puedes realizar con PyMongo para interactuar con MongoDB desde Python, proporcionando ejemplos prácticos para cada sección.</p>
+
+</body></html>

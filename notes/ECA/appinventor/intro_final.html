@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>intro</title>
+
+
+
+<style>.toc a:hover { color: #f78e25; background-color: #e4f8f7; text-decoration: none; }</style></head>
+<body style="font-family: Century Gothic, Arial, Helvetica, sans-serif; line-height: 1.5; margin: 0 auto; padding: 20px; color: #333; max-width: none">
+<h1 id="introduccion-a-app-inventor" style="display: block; background-color: #333; color: #f78e25; font-size: 3em; padding: 20px; margin-top: 20px; margin-bottom: 25px; text-align: center; font-weight: bold; border-bottom: none; border-radius: 20px">INTRODUCCIÓN A APP INVENTOR</h1>
+<div id="table-of-contents" style="background-color: #e0e0ff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin: 30px 0; border: 1px solid #e9ecef">
+<h2 id="contents-header" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px; text-align: center">Tabla de contenidos</h2>
+<ul style="list-style: none; padding-left: 0">
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#que-es-app-inventor" style="display: block; transition: color 0.2s ease; text-decoration: none">¿Qué es App Inventor?</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#historia-y-evolucion" style="display: block; transition: color 0.2s ease; text-decoration: none">Historia y evolución</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#ventajas-de-app-inventor" style="display: block; transition: color 0.2s ease; text-decoration: none">Ventajas de App Inventor</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#entorno-de-desarrollo" style="display: block; transition: color 0.2s ease; text-decoration: none">Entorno de desarrollo</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#ejemplos-completos-de-aplicaciones" style="display: block; transition: color 0.2s ease; text-decoration: none">Ejemplos completos de aplicaciones</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#interaccion-con-sensores-y-caracteristicas-del-dispositivo" style="display: block; transition: color 0.2s ease; text-decoration: none">Interacción con sensores y características del dispositivo</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#publicacion-de-aplicaciones" style="display: block; transition: color 0.2s ease; text-decoration: none">Publicación de aplicaciones</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#extensiones-de-app-inventor" style="display: block; transition: color 0.2s ease; text-decoration: none">Extensiones de App Inventor</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#recursos-avanzados-para-educadores" style="display: block; transition: color 0.2s ease; text-decoration: none">Recursos avanzados para educadores</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#solucion-de-problemas-comunes" style="display: block; transition: color 0.2s ease; text-decoration: none">Solución de problemas comunes</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#conclusion-y-siguientes-pasos" style="display: block; transition: color 0.2s ease; text-decoration: none">Conclusión y siguientes pasos</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#apendice-glosario-de-terminos-de-app-inventor" style="display: block; transition: color 0.2s ease; text-decoration: none">Apéndice: Glosario de términos de App Inventor</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#fundamentos-de-programacion-con-bloques" style="display: block; transition: color 0.2s ease; text-decoration: none">Fundamentos de programación con bloques</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#manejo-de-multiples-pantallas" style="display: block; transition: color 0.2s ease; text-decoration: none">Manejo de múltiples pantallas</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#almacenamiento-de-datos" style="display: block; transition: color 0.2s ease; text-decoration: none">Almacenamiento de datos</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#ejemplos-practicos-con-estructuras-de-control" style="display: block; transition: color 0.2s ease; text-decoration: none">Ejemplos prácticos con estructuras de control</a></li>
+<li style="list-style: none; padding-left: 0; border-left: 3px solid #f78e25"><a href="#buenas-practicas-de-programacion-en-app-inventor" style="display: block; transition: color 0.2s ease; text-decoration: none">Buenas prácticas de programación en App Inventor</a></li>
+</ul>
+</div>
+<h2 id="que-es-app-inventor" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">¿Qué es App Inventor?</h2>
+<p>App Inventor es una plataforma de desarrollo creada inicialmente por Google y actualmente mantenida por el MIT (Instituto Tecnológico de Massachusetts) que permite a cualquier persona, incluso sin experiencia previa en programación, crear aplicaciones para dispositivos Android utilizando un sistema de programación visual basado en bloques.</p>
+<p>La filosofía detrás de App Inventor es democratizar el desarrollo de aplicaciones, convirtiendo el proceso de creación en una actividad accesible y educativa que fomenta el pensamiento computacional y la resolución de problemas.</p>
+<h2 id="historia-y-evolucion" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Historia y evolución</h2>
+<ul>
+<li><strong>2009</strong>: Google lanza App Inventor como parte de Google Labs.</li>
+<li><strong>2011</strong>: Google anuncia el cierre de Google Labs y transfiere App Inventor al MIT.</li>
+<li><strong>2012</strong>: El MIT relanza la plataforma como "MIT App Inventor".</li>
+<li><strong>Actualidad</strong>: Continúa evolucionando con actualizaciones regulares y una comunidad global de usuarios.</li>
+</ul>
+<h2 id="ventajas-de-app-inventor" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Ventajas de App Inventor</h2>
+<ul>
+<li><strong>Accesibilidad</strong>: No requiere conocimientos previos de programación, lo que democratiza la creación de aplicaciones.</li>
+<li><strong>Enfoque visual</strong>: Su interfaz intuitiva permite arrastrar y soltar bloques para crear aplicaciones.</li>
+<li><strong>Aprendizaje rápido</strong>: La curva de aprendizaje es menos pronunciada que en la programación tradicional.</li>
+<li><strong>Gratuito y de código abierto</strong>: Accesible para todos sin costo alguno.</li>
+<li><strong>Multiplataforma</strong>: Funciona en navegadores web modernos sin necesidad de software especializado.</li>
+<li><strong>Desarrollo basado en la nube</strong>: Los proyectos se guardan automáticamente en línea.</li>
+<li><strong>Comunidad activa</strong>: Abundante documentación, tutoriales y ejemplos disponibles.</li>
+<li><strong>Enfoque educativo</strong>: Ideal para enseñar conceptos de programación de manera práctica.</li>
+<li><strong>Posibilidad de publicación</strong>: Las aplicaciones creadas pueden publicarse en Google Play Store.</li>
+</ul>
+<h2 id="entorno-de-desarrollo" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Entorno de desarrollo</h2>
+<p>App Inventor consta de dos partes fundamentales que trabajan de manera integrada para facilitar el desarrollo de aplicaciones:</p>
+<h3 id="3-depuracion" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Depuración</h3>
+<ul>
+<li><strong>Usar etiquetas para mostrar valores</strong>: Mostrar valores de variables en etiquetas para seguir su evolución.</li>
+<li><strong>Dividir problemas complejos</strong>: Resolver y probar partes pequeñas antes de integrarlas.</li>
+<li><strong>Probar condiciones límite</strong>: Verificar cómo se comporta la app con valores extremos o inesperados.</li>
+<li><strong>Buscar errores comunes</strong>: Comprobar fuentes típicas de error como divisiones por cero o índices fuera de rango.</li>
+<li><strong>Usar el depurador</strong>: App Inventor permite ver los valores de las variables durante la ejecución.</li>
+</ul>
+<h2 id="ejemplos-completos-de-aplicaciones" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Ejemplos completos de aplicaciones</h2>
+<h3 id="ejemplo-1-lista-de-tareas-to-do-list" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Ejemplo 1: Lista de tareas (To-Do List)</h3>
+<p>Esta aplicación permite añadir, eliminar y marcar como completadas tareas en una lista.</p>
+<h4 id="componentes-necesarios" style="color: #333; font-size: 1.1em">Componentes necesarios:</h4>
+<ul>
+<li>TextBox (para introducir nuevas tareas)</li>
+<li>Button (para añadir tareas)</li>
+<li>ListView (para mostrar las tareas)</li>
+<li>CheckBox (para marcar tareas como completadas)</li>
+<li>TinyDB (para guardar las tareas de forma persistente)</li>
+</ul>
+<h4 id="bloques-principales" style="color: #333; font-size: 1.1em">Bloques principales:</h4>
+<ol>
+<li><strong>Inicialización de la pantalla</strong>:</li>
+</ol>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Screen1.Initialize
+    initialize global lista_tareas to call TinyDB1.GetValue with tag "tareas" valueIfTagNotThere make a list
+    call actualizarListView
+</pre></div>
+<ol start="2">
+<li><strong>Procedimiento para actualizar la lista visual</strong>:</li>
+</ol>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>to procedure actualizarListView
+    set ListView1.Elements to global lista_tareas
+</pre></div>
+<ol start="3">
+<li><strong>Añadir una nueva tarea</strong>:</li>
+</ol>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when ButtonAñadir.Click
+    if TextBoxTarea.Text ≠ "" then
+        add items to list global lista_tareas item TextBoxTarea.Text
+        call TinyDB1.StoreValue with tag "tareas" value global lista_tareas
+        call actualizarListView
+        set TextBoxTarea.Text to ""
+    else
+        call Notifier1.ShowAlert with message "Por favor, introduce una tarea"
+</pre></div>
+<ol start="4">
+<li><strong>Eliminar una tarea</strong>:</li>
+</ol>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when ListView1.LongClick position
+    initialize local tarea_seleccionada to select list item position from global lista_tareas
+    call Notifier1.ShowChooseDialog with message join("¿Qué deseas hacer con la tarea: ", tarea_seleccionada, "?") title "Opciones" button1Text "Eliminar" button2Text "Cancelar"
+
+when Notifier1.AfterChoosing choice
+    if choice = "Eliminar" then
+        initialize local indice to ListView1.Selection
+        remove list item index indice from global lista_tareas
+        call TinyDB1.StoreValue with tag "tareas" value global lista_tareas
+        call actualizarListView
+</pre></div>
+<ol start="5">
+<li><strong>Marcar tarea como completada</strong>:</li>
+</ol>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when ListView1.AfterPicking
+    initialize local tarea_seleccionada to ListView1.Selection
+
+    if starts with tarea_seleccionada "✓ " then
+        replace all "✓ " at 1 in text tarea_seleccionada with ""
+    else
+        set tarea_seleccionada to join("✓ ", tarea_seleccionada)
+
+    replace list item ListView1.SelectionIndex at global lista_tareas with tarea_seleccionada
+    call TinyDB1.StoreValue with tag "tareas" value global lista_tareas
+    call actualizarListView
+</pre></div>
+<h3 id="ejemplo-2-aplicacion-de-quiz-con-multiples-pantallas" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Ejemplo 2: Aplicación de quiz con múltiples pantallas</h3>
+<p>Esta aplicación presenta un quiz con preguntas de opción múltiple que se muestran en pantallas separadas.</p>
+<h4 id="pantalla-1-inicio" style="color: #333; font-size: 1.1em">Pantalla 1 (Inicio):</h4>
+<ul>
+<li><strong>Componentes</strong>: Label (título), Button (iniciar quiz), Button (ver puntuaciones)</li>
+</ul>
+<h4 id="bloques-para-la-pantalla-1" style="color: #333; font-size: 1.1em">Bloques para la Pantalla 1:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when ButtonIniciar.Click
+    initialize global puntuacion to 0
+    initialize global pregunta_actual to 1
+    open another screen screenName "PantallaPregunta"
+
+when ButtonPuntuaciones.Click
+    open another screen screenName "PantallaPuntuaciones"
+</pre></div>
+<h4 id="pantalla-2-pantallapregunta" style="color: #333; font-size: 1.1em">Pantalla 2 (PantallaPregunta):</h4>
+<ul>
+<li><strong>Componentes</strong>: Label (pregunta), 4 Buttons (opciones), TinyDB (para almacenar preguntas)</li>
+</ul>
+<h4 id="bloques-para-cargar-preguntas" style="color: #333; font-size: 1.1em">Bloques para cargar preguntas:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>initialize global preguntas to make a list
+initialize global respuestas_correctas to make a list
+
+when PantallaPregunta.Initialize
+    if length of global preguntas = 0 then
+        call cargarPreguntas
+
+    call mostrarPreguntaActual
+
+to procedure cargarPreguntas
+    add items to list global preguntas item "¿Cuál es la capital de Francia?"
+    add items to list global preguntas item "¿En qué año se fundó Google?"
+    add items to list global preguntas item "¿Cuál es el planeta más grande del sistema solar?"
+
+    add items to list global respuestas_correctas item "París"
+    add items to list global respuestas_correctas item "1998"
+    add items to list global respuestas_correctas item "Júpiter"
+
+    initialize global opciones_pregunta1 to make a list with items "Madrid" "París" "Roma" "Berlín"
+    initialize global opciones_pregunta2 to make a list with items "1995" "1998" "2000" "2004"
+    initialize global opciones_pregunta3 to make a list with items "Tierra" "Marte" "Júpiter" "Saturno"
+</pre></div>
+<h4 id="bloques-para-mostrar-pregunta-actual" style="color: #333; font-size: 1.1em">Bloques para mostrar pregunta actual:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>to procedure mostrarPreguntaActual
+    set LabelPregunta.Text to select list item global pregunta_actual from global preguntas
+
+    if global pregunta_actual = 1 then
+        set global opciones_actuales to global opciones_pregunta1
+    else if global pregunta_actual = 2 then
+        set global opciones_actuales to global opciones_pregunta2
+    else
+        set global opciones_actuales to global opciones_pregunta3
+
+    set Boton1.Text to select list item 1 from global opciones_actuales
+    set Boton2.Text to select list item 2 from global opciones_actuales
+    set Boton3.Text to select list item 3 from global opciones_actuales
+    set Boton4.Text to select list item 4 from global opciones_actuales
+</pre></div>
+<h4 id="bloques-para-verificar-respuesta" style="color: #333; font-size: 1.1em">Bloques para verificar respuesta:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Boton1.Click
+    call verificarRespuesta with opcion_seleccionada Boton1.Text
+
+when Boton2.Click
+    call verificarRespuesta with opcion_seleccionada Boton2.Text
+
+when Boton3.Click
+    call verificarRespuesta with opcion_seleccionada Boton3.Text
+
+when Boton4.Click
+    call verificarRespuesta with opcion_seleccionada Boton4.Text
+
+to procedure verificarRespuesta opcion_seleccionada
+    initialize local respuesta_correcta to select list item global pregunta_actual from global respuestas_correctas
+
+    if opcion_seleccionada = respuesta_correcta then
+        set global puntuacion to global puntuacion + 1
+
+    set global pregunta_actual to global pregunta_actual + 1
+
+    if global pregunta_actual &gt; length of global preguntas then
+        open another screen with start value screenName "PantallaResultado" value global puntuacion
+    else
+        call mostrarPreguntaActual
+</pre></div>
+<h4 id="pantalla-3-pantallaresultado" style="color: #333; font-size: 1.1em">Pantalla 3 (PantallaResultado):</h4>
+<ul>
+<li><strong>Componentes</strong>: Label (puntuación), Button (reiniciar), Button (volver a inicio), TinyDB (para guardar puntuaciones)</li>
+</ul>
+<h4 id="bloques-para-la-pantalla-de-resultados" style="color: #333; font-size: 1.1em">Bloques para la Pantalla de Resultados:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when PantallaResultado.Initialize with start value value
+    set LabelResultado.Text to join("Has acertado ", value, " de ", length of global preguntas, " preguntas!")
+
+    initialize local puntuaciones to call TinyDB1.GetValue with tag "puntuaciones" valueIfTagNotThere make a list
+    add items to list puntuaciones item value
+    call TinyDB1.StoreValue with tag "puntuaciones" value puntuaciones
+
+when BotonReiniciar.Click
+    initialize global puntuacion to 0
+    initialize global pregunta_actual to 1
+    open another screen screenName "PantallaPregunta"
+
+when BotonInicio.Click
+    open another screen screenName "Screen1"
+</pre></div>
+<h4 id="pantalla-4-pantallapuntuaciones" style="color: #333; font-size: 1.1em">Pantalla 4 (PantallaPuntuaciones):</h4>
+<ul>
+<li><strong>Componentes</strong>: ListView (puntuaciones), Button (volver), TinyDB (para leer puntuaciones)</li>
+</ul>
+<h4 id="bloques-para-la-pantalla-de-puntuaciones" style="color: #333; font-size: 1.1em">Bloques para la Pantalla de Puntuaciones:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when PantallaPuntuaciones.Initialize
+    initialize local puntuaciones to call TinyDB1.GetValue with tag "puntuaciones" valueIfTagNotThere make a list
+    initialize local lista_formateada to make a list
+
+    foreach score in puntuaciones
+        add items to list lista_formateada item join("Puntuación: ", score, " de ", length of global preguntas)
+
+    set ListView1.Elements to lista_formateada
+
+when BotonVolver.Click
+    open another screen screenName "Screen1"
+</pre></div>
+<h2 id="interaccion-con-sensores-y-caracteristicas-del-dispositivo" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Interacción con sensores y características del dispositivo</h2>
+<p>App Inventor permite acceder a varios sensores y características del dispositivo para crear aplicaciones más interactivas y funcionales.</p>
+<h3 id="1-sensor-de-ubicacion-locationsensor" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Sensor de ubicación (LocationSensor)</h3>
+<p>Permite acceder al GPS del dispositivo para obtener la ubicación actual.</p>
+<h4 id="ejemplo-de-uso-del-sensor-de-ubicacion" style="color: #333; font-size: 1.1em">Ejemplo de uso del sensor de ubicación:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when LocationSensor1.LocationChanged latitude longitude altitude
+    set LabelLatitud.Text to latitude
+    set LabelLongitud.Text to longitude
+    set LabelAltitud.Text to altitude
+</pre></div>
+<h4 id="ejemplo-de-aplicacion-para-calcular-distancia-recorrida" style="color: #333; font-size: 1.1em">Ejemplo de aplicación para calcular distancia recorrida:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>initialize global distancia_total to 0
+initialize global ultima_lat to 0
+initialize global ultima_lon to 0
+initialize global registrando to false
+
+when BotonIniciar.Click
+    set global registrando to true
+    set global distancia_total to 0
+    call LocationSensor1.StartListening
+
+when BotonDetener.Click
+    set global registrando to false
+    call LocationSensor1.StopListening
+
+when LocationSensor1.LocationChanged latitude longitude altitude
+    if global registrando then
+        if global ultima_lat ≠ 0 and global ultima_lon ≠ 0 then
+            initialize local distancia_actual to call LocationSensor1.DistanceInMeters with latitude1 global ultima_lat longitude1 global ultima_lon latitude2 latitude longitude2 longitude
+            set global distancia_total to global distancia_total + distancia_actual
+            set LabelDistancia.Text to join(global distancia_total / 1000, " km")
+
+        set global ultima_lat to latitude
+        set global ultima_lon to longitude
+</pre></div>
+<h3 id="2-sensor-de-acelerometro-accelerometersensor" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Sensor de acelerómetro (AccelerometerSensor)</h3>
+<p>Detecta el movimiento y la orientación del dispositivo.</p>
+<h4 id="ejemplo-de-uso-del-acelerometro" style="color: #333; font-size: 1.1em">Ejemplo de uso del acelerómetro:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when AccelerometerSensor1.AccelerationChanged xAccel yAccel zAccel
+    set LabelX.Text to xAccel
+    set LabelY.Text to yAccel
+    set LabelZ.Text to zAccel
+
+    if xAccel &gt; 5 then
+        set LabelEstado.Text to "¡Movimiento brusco detectado!"
+        set LabelEstado.TextColor to "red"
+</pre></div>
+<h4 id="ejemplo-de-aplicacion-de-nivel-de-burbuja" style="color: #333; font-size: 1.1em">Ejemplo de aplicación de nivel de burbuja:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when AccelerometerSensor1.AccelerationChanged xAccel yAccel zAccel
+    set global rotacion to call atan2d with y yAccel x xAccel
+    set ImageBurbuja.Rotation to global rotacion
+
+    if yAccel &gt; -0.1 and yAccel &lt; 0.1 and xAccel &gt; -0.1 and xAccel &lt; 0.1 then
+        set LabelEstado.Text to "¡NIVEL!"
+        set LabelEstado.TextColor to "green"
+    else
+        set LabelEstado.Text to "No nivelado"
+        set LabelEstado.TextColor to "red"
+</pre></div>
+<h3 id="3-camara-camera" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Cámara (Camera)</h3>
+<p>Permite tomar fotos y acceder a la cámara del dispositivo.</p>
+<h4 id="ejemplo-de-uso-de-la-camara" style="color: #333; font-size: 1.1em">Ejemplo de uso de la cámara:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonTomarFoto.Click
+    call Camera1.TakePicture
+
+when Camera1.AfterPicture image
+    set Image1.Picture to image
+
+    if CheckBoxGuardar.Checked then
+        call guardarFoto with foto image
+</pre></div>
+<h4 id="ejemplo-para-guardar-fotos-con-fecha-y-hora" style="color: #333; font-size: 1.1em">Ejemplo para guardar fotos con fecha y hora:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>to procedure guardarFoto foto
+    initialize local nombre_archivo to join("foto_", call Clock1.FormatDateTime with format "yyyyMMdd_HHmmss"), ".jpg")
+    call File1.SaveFile with text foto fileName nombre_archivo
+
+when File1.FileSaved fileName
+    call Notifier1.ShowAlert with message join("Foto guardada como: ", fileName)
+</pre></div>
+<h3 id="4-bluetooth" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">4. Bluetooth</h3>
+<p>Permite la comunicación con otros dispositivos Bluetooth, como Arduino o sistemas IoT.</p>
+<h4 id="ejemplo-de-configuracion-bluetooth" style="color: #333; font-size: 1.1em">Ejemplo de configuración Bluetooth:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonConectar.Click
+    call BluetoothClient1.Connect with address ListPickerDispositivos.Selection
+
+when BluetoothClient1.Connected
+    set LabelEstado.Text to "Conectado"
+    set LabelEstado.TextColor to "green"
+
+when BluetoothClient1.ConnectionFailed
+    set LabelEstado.Text to "Conexión fallida"
+    set LabelEstado.TextColor to "red"
+</pre></div>
+<h4 id="ejemplo-de-envio-y-recepcion-de-datos" style="color: #333; font-size: 1.1em">Ejemplo de envío y recepción de datos:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonEncender.Click
+    call BluetoothClient1.SendText with text "1"
+
+when BotonApagar.Click
+    call BluetoothClient1.SendText with text "0"
+
+when BluetoothClient1.BytesReceived number available
+    set global datos_recibidos to call BluetoothClient1.ReceiveText with numberOfBytes number
+    set LabelDatos.Text to global datos_recibidos
+
+    if global datos_recibidos contains "TEMPERATURA" then
+        initialize local temp to select list item 2 from split at ":" global datos_recibidos
+        set LabelTemperatura.Text to join(temp, "°C")
+</pre></div>
+<h2 id="publicacion-de-aplicaciones" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Publicación de aplicaciones</h2>
+<h3 id="1-preparacion-para-la-publicacion" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Preparación para la publicación</h3>
+<p>Antes de publicar tu aplicación, asegúrate de:</p>
+<ul>
+<li><strong>Probar exhaustivamente</strong>: En diferentes dispositivos y condiciones.</li>
+<li><strong>Optimizar recursos</strong>: Reducir el tamaño de imágenes y archivos multimedia.</li>
+<li><strong>Crear iconos y gráficos</strong>: Diseñar un icono atractivo para la app.</li>
+<li><strong>Escribir una descripción clara</strong>: Explicar las funciones y beneficios de la app.</li>
+<li><strong>Verificar permisos</strong>: Asegurarte de que solo solicitas los permisos necesarios.</li>
+</ul>
+<h3 id="2-exportacion-del-apk" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Exportación del APK</h3>
+<p>Para crear el archivo de instalación (APK):</p>
+<ol>
+<li>En el menú, selecciona "Build" &gt; "App (provide QR code for .apk)"</li>
+<li>Escanea el código QR con tu dispositivo para instalar la app, o</li>
+<li>Selecciona "Build" &gt; "App (save .apk to my computer)" para guardar el APK</li>
+</ol>
+<h3 id="3-opciones-de-distribucion" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Opciones de distribución</h3>
+<ul>
+<li><strong>Google Play Store</strong>: La opción más común, requiere registro como desarrollador ($25 una sola vez).</li>
+<li><strong>Distribución directa</strong>: Compartir el APK directamente o a través de un sitio web.</li>
+<li><strong>Tiendas alternativas</strong>: F-Droid, Amazon Appstore, entre otras.</li>
+</ul>
+<h3 id="4-requisitos-para-publicar-en-google-play" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">4. Requisitos para publicar en Google Play</h3>
+<ul>
+<li>Crear una cuenta de desarrollador de Google.</li>
+<li>Proporcionar gráficos promocionales (capturas de pantalla, banner, etc.).</li>
+<li>Completar el cuestionario de clasificación de contenido.</li>
+<li>Proporcionar información de privacidad y cumplimiento.</li>
+<li>Pagar la tarifa única de registro ($25).</li>
+</ul>
+<h2 id="extensiones-de-app-inventor" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Extensiones de App Inventor</h2>
+<p>App Inventor puede ampliarse con extensiones creadas por la comunidad que añaden funcionalidades no disponibles de forma nativa.</p>
+<h3 id="1-ejemplos-de-extensiones-populares" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Ejemplos de extensiones populares</h3>
+<ul>
+<li><strong>TextToSpeech</strong>: Convierte texto en voz.</li>
+<li><strong>WebViewer</strong>: Visualizador web mejorado.</li>
+<li><strong>FusionTables</strong>: Para trabajar con Google Fusion Tables.</li>
+<li><strong>AndroidViewFlipper</strong>: Para crear efectos de transición entre vistas.</li>
+<li><strong>Notification</strong>: Crea notificaciones en la barra de estado.</li>
+<li><strong>PhoneCall</strong>: Realiza llamadas telefónicas.</li>
+<li><strong>SMS</strong>: Envía y recibe mensajes SMS.</li>
+</ul>
+<h3 id="2-como-usar-extensiones" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Cómo usar extensiones</h3>
+<ol>
+<li>Descargar el archivo de extensión (.aix).</li>
+<li>En App Inventor, ir a "Projects" &gt; "Import extension".</li>
+<li>Seleccionar el archivo descargado.</li>
+<li>La extensión aparecerá en la Paleta, en la sección "Extensions".</li>
+</ol>
+<h3 id="3-ejemplo-de-uso-de-la-extension-texttospeech" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Ejemplo de uso de la extensión TextToSpeech</h3>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when ButtonHablar.Click
+    call TextToSpeech1.Speak with message TextBoxTexto.Text
+
+when ButtonDetener.Click
+    call TextToSpeech1.Stop
+</pre></div>
+<h2 id="recursos-avanzados-para-educadores" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Recursos avanzados para educadores</h2>
+<h3 id="1-materiales-didacticos" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Materiales didácticos</h3>
+<ul>
+<li><strong>Planes de lección</strong>: Estructurados por niveles de dificultad.</li>
+<li><strong>Ejercicios prácticos</strong>: Con soluciones paso a paso.</li>
+<li><strong>Proyectos guiados</strong>: Con objetivos claros y evaluación.</li>
+<li><strong>Rúbricas de evaluación</strong>: Para calificar aplicaciones creadas por estudiantes.</li>
+</ul>
+<h3 id="2-estrategias-pedagogicas" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Estrategias pedagógicas</h3>
+<ul>
+<li><strong>Aprendizaje basado en proyectos</strong>: Los estudiantes crean aplicaciones que resuelven problemas reales.</li>
+<li><strong>Aprendizaje colaborativo</strong>: Trabajo en equipos para desarrollar aplicaciones más complejas.</li>
+<li><strong>Gamificación</strong>: Convertir el aprendizaje en un juego con desafíos y recompensas.</li>
+<li><strong>Desarrollo iterativo</strong>: Enseñar a los estudiantes a mejorar gradualmente sus aplicaciones.</li>
+</ul>
+<h3 id="3-progresion-de-aprendizaje-recomendada" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Progresión de aprendizaje recomendada</h3>
+<ol>
+<li>
+<p><strong>Nivel Básico</strong>:
+   - Interfaz de usuario simple.
+   - Eventos básicos (clicks, temporizadores).
+   - Variables y operaciones sencillas.
+   - Proyectos: calculadora, conversor, quiz simple.</p>
+</li>
+<li>
+<p><strong>Nivel Intermedio</strong>:
+   - Múltiples pantallas.
+   - Listas y persistencia de datos.
+   - Procedimientos y funciones.
+   - Proyectos: lista de tareas, juego de memoria, recetas.</p>
+</li>
+<li>
+<p><strong>Nivel Avanzado</strong>:
+   - Sensores y hardware del dispositivo.
+   - Comunicación con servicios web.
+   - Bases de datos y almacenamiento en la nube.
+   - Proyectos: rastreador de ejercicio, app de mapas, red social simple.</p>
+</li>
+</ol>
+<h2 id="solucion-de-problemas-comunes" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Solución de problemas comunes</h2>
+<h3 id="1-problemas-de-conexion-con-el-dispositivo" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Problemas de conexión con el dispositivo</h3>
+<ul>
+<li><strong>Verificar que el dispositivo y el ordenador estén en la misma red Wi-Fi</strong>.</li>
+<li><strong>Comprobar que el companion de App Inventor esté instalado y actualizado</strong>.</li>
+<li><strong>Reiniciar tanto el dispositivo como el navegador</strong>.</li>
+<li><strong>Verificar que no haya restricciones de firewall bloqueando la conexión</strong>.</li>
+</ul>
+<h3 id="2-errores-en-la-aplicacion" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Errores en la aplicación</h3>
+<ul>
+<li><strong>"App Inventor is not responding"</strong>: Reiniciar el navegador o borrar la caché.</li>
+<li><strong>"Communication error"</strong>: Verificar la conexión a internet y recargar la página.</li>
+<li><strong>La app se cierra inesperadamente</strong>: Comprobar posibles divisiones por cero o índices de lista fuera de rango.</li>
+<li><strong>Bloques desconectados</strong>: Buscar bloques que deberían estar conectados pero se han separado.</li>
+</ul>
+<h3 id="3-optimizacion-de-rendimiento" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Optimización de rendimiento</h3>
+<ul>
+<li><strong>Reducir el uso de temporizadores</strong>: Especialmente los que tienen intervalos muy cortos.</li>
+<li><strong>Optimizar imágenes</strong>: Reducir el tamaño y resolución de las imágenes utilizadas.</li>
+<li><strong>Limitar la cantidad de pantallas</strong>: Demasiadas pantallas pueden ralentizar la aplicación.</li>
+<li><strong>Limpiar variables y listas no utilizadas</strong>: Para reducir el consumo de memoria.</li>
+<li><strong>Evitar bucles infinitos</strong>: Asegurarse de que todas las estructuras repetitivas tengan condiciones de salida claras.</li>
+</ul>
+<h2 id="conclusion-y-siguientes-pasos" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Conclusión y siguientes pasos</h2>
+<p>App Inventor es una plataforma poderosa que permite a estudiantes y educadores adentrarse en el mundo del desarrollo de aplicaciones sin las barreras tradicionales de la programación. A través de su interfaz visual y su enfoque basado en bloques, facilita la comprensión de conceptos fundamentales de la programación y el pensamiento computacional.</p>
+<h3 id="siguientes-pasos-recomendados" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Siguientes pasos recomendados:</h3>
+<ol>
+<li><strong>Crear un proyecto personal</strong>: Aplica lo aprendido en un proyecto que resuelva un problema o necesidad real.</li>
+<li><strong>Explorar la comunidad</strong>: Únete a foros y grupos de App Inventor para compartir y aprender.</li>
+<li><strong>Participar en desafíos</strong>: Muchas organizaciones realizan competencias de desarrollo con App Inventor.</li>
+<li><strong>Avanzar a otras plataformas</strong>: Cuando te sientas cómodo, puedes explorar otros lenguajes como Java (para Android nativo) o Swift (para iOS).</li>
+<li><strong>Enseñar a otros</strong>: Comparte tu conocimiento y ayuda a otros a descubrir el mundo de la programación.</li>
+</ol>
+<hr/>
+<h2 id="apendice-glosario-de-terminos-de-app-inventor" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Apéndice: Glosario de términos de App Inventor</h2>
+<ul>
+<li><strong>APK</strong>: Android Package Kit, el formato de archivo para distribuir e instalar aplicaciones Android.</li>
+<li><strong>Bloques</strong>: Elementos visuales que representan instrucciones en App Inventor.</li>
+<li><strong>Companion</strong>: Aplicación para dispositivos Android que permite probar apps en desarrollo.</li>
+<li><strong>Componente</strong>: Elemento funcional que se añade a una aplicación (botón, etiqueta, sensor, etc.).</li>
+<li><strong>Diseñador</strong>: Parte de App Inventor donde se crea la interfaz de usuario.</li>
+<li><strong>Editor de Bloques</strong>: Parte de App Inventor donde se programa la lógica de la aplicación.</li>
+<li><strong>Evento</strong>: Acción que desencadena la ejecución de bloques (clic, temporizador, sensor, etc.).</li>
+<li><strong>Extensión</strong>: Complemento que añade funcionalidades adicionales a App Inventor.</li>
+<li><strong>Paleta</strong>: Conjunto de componentes disponibles organizados por categorías.</li>
+<li><strong>Procedimiento</strong>: Conjunto de bloques que realizan una tarea específica y pueden reutilizarse.</li>
+<li><strong>Propiedad</strong>: Característica configurable de un componente (color, tamaño, texto, etc.).</li>
+<li><strong>TinyDB</strong>: Componente para almacenar datos de forma persistente en el dispositivo.</li>
+<li><strong>Visor</strong>: Área que muestra cómo se verá la aplicación en el dispositivo.</li>
+</ul>
+<hr/>
+<p>¡Esperamos que esta guía completa te ayude a iniciar tu viaje en el desarrollo de aplicaciones con App Inventor! 1. Diseñador (Designer)</p>
+<p>Es el espacio donde se crea la interfaz gráfica de la aplicación, permitiendo definir cómo se verá la app y qué componentes incluirá:</p>
+<h4 id="11-secciones-principales-del-disenador" style="color: #333; font-size: 1.1em">1.1 Secciones principales del Diseñador:</h4>
+<ul>
+<li><strong>Palette (Paleta)</strong>: Contiene todos los componentes disponibles organizados por categorías.</li>
+<li><strong>Viewer (Visor)</strong>: Muestra cómo se verá la pantalla de la aplicación.</li>
+<li><strong>Components (Componentes)</strong>: Lista jerárquica de los componentes que has añadido a tu proyecto.</li>
+<li><strong>Properties (Propiedades)</strong>: Permite modificar las características de cada componente seleccionado.</li>
+<li><strong>Media (Medios)</strong>: Gestiona los archivos multimedia del proyecto (imágenes, sonidos, etc.).</li>
+</ul>
+<h4 id="12-categorias-de-componentes-en-la-paleta" style="color: #333; font-size: 1.1em">1.2 Categorías de componentes en la Paleta:</h4>
+<ul>
+<li><strong>User Interface (Interfaz de Usuario)</strong>:</li>
+<li>Button (Botón): Para acciones que requieren clic del usuario.</li>
+<li>Label (Etiqueta): Muestra texto no editable por el usuario.</li>
+<li>TextBox (Caja de Texto): Permite al usuario introducir texto.</li>
+<li>CheckBox (Casilla de Verificación): Para selecciones binarias (sí/no).</li>
+<li>Image (Imagen): Muestra imágenes estáticas.</li>
+<li>ListPicker (Selector de Lista): Despliega una lista de opciones.</li>
+<li>Slider (Deslizador): Para seleccionar valores en un rango.</li>
+<li>Notifier (Notificador): Muestra alertas y mensajes.</li>
+<li>PasswordTextBox (Caja de Contraseña): Para entrada de texto oculto.</li>
+<li>WebViewer (Visualizador Web): Muestra contenido de páginas web.</li>
+<li>Switch (Interruptor): Alternativa visual al CheckBox.</li>
+<li>DatePicker (Selector de Fecha): Para seleccionar fechas.</li>
+<li>
+<p>TimePicker (Selector de Hora): Para seleccionar horas.</p>
+</li>
+<li>
+<p><strong>Layout (Disposición)</strong>:</p>
+</li>
+<li>HorizontalArrangement (Disposición Horizontal): Organiza componentes en fila.</li>
+<li>VerticalArrangement (Disposición Vertical): Organiza componentes en columna.</li>
+<li>TableArrangement (Disposición en Tabla): Organiza en filas y columnas.</li>
+<li>
+<p>ScrollArrangement (Disposición con Desplazamiento): Permite desplazarse cuando el contenido excede el tamaño de la pantalla.</p>
+</li>
+<li>
+<p><strong>Media (Multimedia)</strong>:</p>
+</li>
+<li>Sound (Sonido): Reproduce archivos de audio.</li>
+<li>Player (Reproductor): Reproduce archivos de video.</li>
+<li>Camera (Cámara): Accede a la cámara del dispositivo.</li>
+<li>ImagePicker (Selector de Imágenes): Permite elegir imágenes de la galería.</li>
+<li>VideoPlayer (Reproductor de Video): Reproduce videos en la aplicación.</li>
+<li>
+<p>SoundRecorder (Grabadora de Sonido): Graba audio usando el micrófono.</p>
+</li>
+<li>
+<p><strong>Drawing and Animation (Dibujo y Animación)</strong>:</p>
+</li>
+<li>Canvas (Lienzo): Área para dibujar y colocar elementos animados.</li>
+<li>Ball (Pelota): Objeto circular que puede moverse y rebotar.</li>
+<li>
+<p>ImageSprite (Sprite de Imagen): Imagen que puede moverse en un Canvas.</p>
+</li>
+<li>
+<p><strong>Sensors (Sensores)</strong>:</p>
+</li>
+<li>AccelerometerSensor (Sensor de Acelerómetro): Detecta movimiento del dispositivo.</li>
+<li>LocationSensor (Sensor de Ubicación): Obtiene la ubicación geográfica.</li>
+<li>OrientationSensor (Sensor de Orientación): Detecta la orientación del dispositivo.</li>
+<li>ProximitySensor (Sensor de Proximidad): Detecta objetos cercanos.</li>
+<li>LightSensor (Sensor de Luz): Mide el nivel de iluminación.</li>
+<li>
+<p>BarcodeSensor (Sensor de Código de Barras): Lee códigos QR y de barras.</p>
+</li>
+<li>
+<p><strong>Social (Social)</strong>:</p>
+</li>
+<li>ContactPicker (Selector de Contactos): Accede a los contactos del dispositivo.</li>
+<li>EmailPicker (Selector de Email): Facilita la selección de direcciones de correo.</li>
+<li>PhoneCall (Llamada Telefónica): Realiza llamadas telefónicas.</li>
+<li>Texting (Mensajería): Envía y recibe mensajes SMS.</li>
+<li>
+<p>PhoneNumberPicker (Selector de Número de Teléfono): Selecciona números de teléfono.</p>
+</li>
+<li>
+<p><strong>Storage (Almacenamiento)</strong>:</p>
+</li>
+<li>TinyDB (Base de Datos Pequeña): Almacena datos persistentes en el dispositivo.</li>
+<li>File (Archivo): Accede al sistema de archivos del dispositivo.</li>
+<li>CloudDB (Base de Datos en la Nube): Almacena datos en la nube.</li>
+<li>
+<p>Firebase (Firebase): Conecta con la base de datos Firebase de Google.</p>
+</li>
+<li>
+<p><strong>Connectivity (Conectividad)</strong>:</p>
+</li>
+<li>Web (Web): Realiza solicitudes HTTP a servidores web.</li>
+<li>ActivityStarter (Iniciador de Actividad): Inicia otras aplicaciones Android.</li>
+<li>BluetoothClient (Cliente Bluetooth): Conecta con dispositivos Bluetooth.</li>
+<li>BluetoothServer (Servidor Bluetooth): Actúa como servidor Bluetooth.</li>
+<li>
+<p>NFC (NFC): Interactúa con etiquetas NFC.</p>
+</li>
+<li>
+<p><strong>LEGO® MINDSTORMS®</strong>: Componentes para interactuar con robots LEGO.</p>
+</li>
+<li>
+<p><strong>Experimental (Experimental)</strong>: Componentes en fase de prueba y desarrollo.</p>
+</li>
+</ul>
+<h3 id="2-editor-de-bloques-blocks-editor" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Editor de Bloques (Blocks Editor)</h3>
+<p>Es donde se programa el comportamiento de la aplicación, definiendo la lógica y las acciones que realizará la app:</p>
+<h4 id="21-caracteristicas-principales" style="color: #333; font-size: 1.1em">2.1 Características principales:</h4>
+<ul>
+<li><strong>Interfaz de arrastrar y soltar</strong>: Los bloques se conectan como piezas de rompecabezas.</li>
+<li><strong>Bloques codificados por colores</strong>: Cada tipo de bloque tiene un color distintivo para su fácil identificación.</li>
+<li><strong>Área de trabajo expandible</strong>: Espacio ilimitado para organizar los bloques.</li>
+<li><strong>Papelera</strong>: Para eliminar bloques no deseados.</li>
+<li><strong>Menú de bloques disponibles</strong>: Organizados por categorías y componentes específicos.</li>
+<li><strong>Backpack (Mochila)</strong>: Permite copiar bloques entre proyectos.</li>
+</ul>
+<h2 id="fundamentos-de-programacion-con-bloques" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Fundamentos de programación con bloques</h2>
+<h3 id="1-tipos-de-bloques-principales" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Tipos de bloques principales</h3>
+<h4 id="11-bloques-de-evento-color-amarillo" style="color: #333; font-size: 1.1em">1.1 Bloques de evento (color amarillo)</h4>
+<p>Son los que inician una acción cuando algo sucede:</p>
+<ul>
+<li><strong>when Button.Click</strong>: Se ejecuta cuando el usuario hace clic en un botón.</li>
+<li><strong>when Screen.Initialize</strong>: Se ejecuta cuando la pantalla se carga por primera vez.</li>
+<li><strong>when Clock.Timer</strong>: Se ejecuta periódicamente según el intervalo configurado.</li>
+<li><strong>when Slider.PositionChanged</strong>: Se ejecuta cuando el usuario mueve un deslizador.</li>
+<li><strong>when LocationSensor.LocationChanged</strong>: Se ejecuta cuando cambia la ubicación del dispositivo.</li>
+<li><strong>when TextBox.GotFocus/LostFocus</strong>: Se ejecuta cuando un campo de texto recibe o pierde el foco.</li>
+</ul>
+<p>Ejemplo de bloque de evento:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Button1.Click
+    do &lt;acciones&gt;
+</pre></div>
+<h4 id="12-bloques-de-control-color-marroncafe" style="color: #333; font-size: 1.1em">1.2 Bloques de control (color marrón/café)</h4>
+<p>Permiten controlar el flujo de ejecución del programa:</p>
+<h5 id="121-estructuras-condicionales">1.2.1 Estructuras condicionales:</h5>
+<ul>
+<li><strong>if ... then</strong>: Ejecuta código solo si se cumple una condición.</li>
+<li><strong>if ... then ... else</strong>: Ejecuta un código si se cumple la condición y otro diferente si no se cumple.</li>
+<li><strong>if ... then ... else if ... then ... else</strong>: Para múltiples condiciones secuenciales.</li>
+</ul>
+<p>Ejemplo de condicional simple:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>if TextBox1.Text = "" then
+    set Label1.Text to "Por favor, introduce un valor"
+</pre></div>
+<p>Ejemplo de condicional con else:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>if TextBox1.Number &gt; 10 then
+    set Label1.Text to "El número es mayor que 10"
+else
+    set Label1.Text to "El número es menor o igual a 10"
+</pre></div>
+<p>Ejemplo de condicional múltiple:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>if TextBox1.Number &lt; 0 then
+    set Label1.Text to "El número es negativo"
+else if TextBox1.Number = 0 then
+    set Label1.Text to "El número es cero"
+else
+    set Label1.Text to "El número es positivo"
+</pre></div>
+<h5 id="122-bucles-estructuras-repetitivas">1.2.2 Bucles (estructuras repetitivas):</h5>
+<ul>
+<li><strong>foreach ... in list</strong>: Repite acciones para cada elemento de una lista.</li>
+<li><strong>for range</strong>: Repite acciones un número específico de veces.</li>
+<li><strong>while</strong>: Repite acciones mientras se cumpla una condición.</li>
+</ul>
+<p>Ejemplo de bucle foreach:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>foreach item in list
+    do &lt;acciones con item&gt;
+</pre></div>
+<p>Ejemplo de bucle for:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>for number from 1 to 10 by 1
+    set Label1.Text to Label1.Text &amp; number &amp; " "
+</pre></div>
+<p>Ejemplo de bucle while:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>initialize local contador to 1
+while contador &lt;= 10
+    set Label1.Text to Label1.Text &amp; contador &amp; " "
+    set contador to contador + 1
+</pre></div>
+<h4 id="13-bloques-logicos-color-verde" style="color: #333; font-size: 1.1em">1.3 Bloques lógicos (color verde)</h4>
+<p>Evalúan condiciones y devuelven verdadero o falso:</p>
+<ul>
+<li><strong>equals (=)</strong>: Comprueba si dos valores son iguales.</li>
+<li><strong>not equals (≠)</strong>: Comprueba si dos valores son diferentes.</li>
+<li><strong>greater than (&gt;)</strong>: Comprueba si un valor es mayor que otro.</li>
+<li><strong>less than (&lt;)</strong>: Comprueba si un valor es menor que otro.</li>
+<li><strong>greater than or equal (≥)</strong>: Comprueba si un valor es mayor o igual que otro.</li>
+<li><strong>less than or equal (≤)</strong>: Comprueba si un valor es menor o igual que otro.</li>
+<li><strong>and</strong>: Devuelve verdadero si ambas condiciones son verdaderas.</li>
+<li><strong>or</strong>: Devuelve verdadero si al menos una condición es verdadera.</li>
+<li><strong>not</strong>: Invierte un valor booleano (verdadero → falso, falso → verdadero).</li>
+</ul>
+<p>Ejemplo de operación lógica compuesta:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>if (TextBox1.Number &gt; 0 and TextBox1.Number &lt; 100) then
+    set Label1.Text to "El número está entre 1 y 99"
+</pre></div>
+<h4 id="14-bloques-matematicos-color-azul" style="color: #333; font-size: 1.1em">1.4 Bloques matemáticos (color azul)</h4>
+<p>Realizan operaciones matemáticas:</p>
+<ul>
+<li><strong>Operaciones básicas</strong>: suma (+), resta (-), multiplicación (×), división (÷).</li>
+<li><strong>Funciones matemáticas</strong>: random, raíz cuadrada, potencia, seno, coseno, etc.</li>
+<li><strong>Constantes</strong>: pi, e (base del logaritmo natural).</li>
+<li><strong>Comparaciones numéricas</strong>: mayor, menor, igual, etc.</li>
+</ul>
+<p>Ejemplo de operación matemática:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>set Label1.Text to TextBox1.Number + TextBox2.Number
+</pre></div>
+<h4 id="15-bloques-de-texto-color-rojopurpura" style="color: #333; font-size: 1.1em">1.5 Bloques de texto (color rojo/púrpura)</h4>
+<p>Manipulan cadenas de texto:</p>
+<ul>
+<li><strong>text (cadena literal)</strong>: Crea una cadena de texto.</li>
+<li><strong>join</strong>: Concatena (une) textos.</li>
+<li><strong>length</strong>: Obtiene la longitud de un texto.</li>
+<li><strong>is empty</strong>: Comprueba si un texto está vacío.</li>
+<li><strong>contains</strong>: Verifica si un texto contiene otro.</li>
+<li><strong>split at</strong>: Divide un texto en partes según un separador.</li>
+<li><strong>segment</strong>: Extrae una parte de un texto.</li>
+<li><strong>replace all</strong>: Reemplaza ocurrencias de un texto por otro.</li>
+<li><strong>trim</strong>: Elimina espacios al principio y final.</li>
+<li><strong>upcase/downcase</strong>: Convierte a mayúsculas/minúsculas.</li>
+</ul>
+<p>Ejemplo de manipulación de texto:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>set Label1.Text to join("Hola ", TextBox1.Text, "!")
+</pre></div>
+<h4 id="16-bloques-de-listas-color-naranja" style="color: #333; font-size: 1.1em">1.6 Bloques de listas (color naranja)</h4>
+<p>Trabajan con listas (arrays) de elementos:</p>
+<ul>
+<li><strong>make a list</strong>: Crea una nueva lista con los elementos especificados.</li>
+<li><strong>add items to list</strong>: Añade elementos al final de una lista.</li>
+<li><strong>insert item into list</strong>: Inserta un elemento en una posición específica.</li>
+<li><strong>select item from list</strong>: Obtiene un elemento según su posición.</li>
+<li><strong>remove item from list</strong>: Elimina un elemento de la lista.</li>
+<li><strong>length of list</strong>: Obtiene el número de elementos de la lista.</li>
+<li><strong>is list empty</strong>: Comprueba si la lista no tiene elementos.</li>
+<li><strong>is in list</strong>: Verifica si un elemento está en la lista.</li>
+<li><strong>position in list</strong>: Encuentra la posición de un elemento en la lista.</li>
+</ul>
+<p>Ejemplo de uso de listas:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>initialize global lista_nombres to make a list
+add items to list lista_nombres item TextBox1.Text
+set ListView1.Elements to lista_nombres
+</pre></div>
+<h4 id="17-bloques-de-variables-color-naranjamelocoton" style="color: #333; font-size: 1.1em">1.7 Bloques de variables (color naranja/melocotón)</h4>
+<p>Permiten almacenar y manipular datos:</p>
+<ul>
+<li><strong>initialize global/local name</strong>: Crea y asigna una variable global (accesible desde cualquier parte) o local (solo dentro del bloque donde se define).</li>
+<li><strong>get</strong>: Obtiene el valor de una variable.</li>
+<li><strong>set to</strong>: Asigna un nuevo valor a una variable existente.</li>
+</ul>
+<p>Ejemplo de uso de variables:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>initialize global contador to 0
+set contador to contador + 1
+set Label1.Text to contador
+</pre></div>
+<h4 id="18-bloques-de-procedimientos-color-morado" style="color: #333; font-size: 1.1em">1.8 Bloques de procedimientos (color morado)</h4>
+<p>Crean funciones reutilizables:</p>
+<ul>
+<li><strong>to procedure</strong>: Define un procedimiento que no devuelve valor.</li>
+<li><strong>to procedure result</strong>: Define una función que devuelve un valor.</li>
+<li><strong>call procedure</strong>: Invoca un procedimiento o función.</li>
+</ul>
+<p>Ejemplo de definición y uso de procedimiento:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>to procedure saludarUsuario
+    set Label1.Text to join("Hola ", TextBox1.Text, "!")
+
+when Button1.Click
+    call saludarUsuario
+</pre></div>
+<p>Ejemplo de función que devuelve un valor:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>to sumarNumeros number1 number2 returns
+    return number1 + number2
+
+when Button1.Click
+    set Label1.Text to call sumarNumeros with TextBox1.Number TextBox2.Number
+</pre></div>
+<h4 id="19-bloques-de-componentes-varios-colores-segun-el-tipo" style="color: #333; font-size: 1.1em">1.9 Bloques de componentes (varios colores según el tipo)</h4>
+<p>Son específicos para cada componente y permiten acceder a sus propiedades y métodos.</p>
+<h2 id="manejo-de-multiples-pantallas" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Manejo de múltiples pantallas</h2>
+<p>App Inventor permite crear aplicaciones con varias pantallas, lo que facilita la organización de interfaces complejas y mejora la experiencia del usuario.</p>
+<h3 id="1-creacion-de-nuevas-pantallas" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Creación de nuevas pantallas</h3>
+<p>Para añadir una nueva pantalla a tu proyecto:</p>
+<ol>
+<li>En el menú principal, selecciona "Add Screen..."</li>
+<li>Nombra la nueva pantalla (ejemplo: "Screen2" o "PantallaDetalles")</li>
+<li>Selecciona si deseas una pantalla en blanco o utilizar una plantilla</li>
+<li>Haz clic en "OK" para crear la pantalla</li>
+</ol>
+<h3 id="2-navegacion-entre-pantallas" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Navegación entre pantallas</h3>
+<p>Hay varias formas de navegar entre pantallas:</p>
+<h4 id="21-usando-open-another-screen" style="color: #333; font-size: 1.1em">2.1 Usando open another screen:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Button1.Click
+    open another screen screenName "Screen2"
+</pre></div>
+<h4 id="22-pasando-valores-a-otra-pantalla" style="color: #333; font-size: 1.1em">2.2 Pasando valores a otra pantalla:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Button1.Click
+    open another screen with start value screenName "Screen2" value TextBox1.Text
+</pre></div>
+<h4 id="23-para-recibir-el-valor-en-la-pantalla-destino" style="color: #333; font-size: 1.1em">2.3 Para recibir el valor en la pantalla destino:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Screen2.Initialize with start value value
+    set Label1.Text to value
+</pre></div>
+<h4 id="24-para-volver-a-la-pantalla-anterior" style="color: #333; font-size: 1.1em">2.4 Para volver a la pantalla anterior:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonVolver.Click
+    close screen
+</pre></div>
+<h4 id="25-para-volver-a-la-pantalla-anterior-devolviendo-un-valor" style="color: #333; font-size: 1.1em">2.5 Para volver a la pantalla anterior devolviendo un valor:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonGuardar.Click
+    close screen with value TextBox1.Text
+</pre></div>
+<h4 id="26-para-recibir-el-valor-devuelto" style="color: #333; font-size: 1.1em">2.6 Para recibir el valor devuelto:</h4>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Screen1.OtherScreenClosed screenName result
+    if screenName = "Screen2" then
+        set Label1.Text to result
+</pre></div>
+<h3 id="3-organizacion-de-proyectos-con-multiples-pantallas" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Organización de proyectos con múltiples pantallas</h3>
+<p>Recomendaciones para proyectos con varias pantallas:</p>
+<ul>
+<li><strong>Nombres descriptivos</strong>: Usa nombres que indiquen claramente la función de cada pantalla.</li>
+<li><strong>Consistencia visual</strong>: Mantén un estilo coherente entre pantallas (colores, fuentes, disposición).</li>
+<li><strong>Navegación intuitiva</strong>: Incluye botones claros para navegar entre pantallas.</li>
+<li><strong>Independencia lógica</strong>: Cada pantalla debe tener una función específica y bien definida.</li>
+<li><strong>Comunicación eficiente</strong>: Planifica qué datos necesitas pasar entre pantallas.</li>
+</ul>
+<h2 id="almacenamiento-de-datos" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Almacenamiento de datos</h2>
+<p>App Inventor ofrece varias opciones para almacenar datos:</p>
+<h3 id="1-tinydb" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. TinyDB</h3>
+<p>Almacena datos de forma persistente en el dispositivo usando un sistema de clave-valor.</p>
+<p>Ejemplo de guardado en TinyDB:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonGuardar.Click
+    call TinyDB1.StoreValue with tag "nombre_usuario" value TextBox1.Text
+</pre></div>
+<p>Ejemplo de recuperación desde TinyDB:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Screen1.Initialize
+    set TextBox1.Text to call TinyDB1.GetValue with tag "nombre_usuario" valueIfTagNotThere ""
+</pre></div>
+<h3 id="2-firebase-db" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Firebase DB</h3>
+<p>Permite almacenar datos en la nube y sincronizarlos entre dispositivos.</p>
+<p>Ejemplo de configuración:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when Screen1.Initialize
+    call FirebaseDB1.FirebaseURL to "https://tu-proyecto.firebaseio.com/"
+    call FirebaseDB1.ProjectBucket to "bucket"
+</pre></div>
+<p>Ejemplo de guardado en Firebase:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonGuardar.Click
+    call FirebaseDB1.StoreValue with tag "usuarios/" &amp; TextBoxUsuario.Text value TextBoxDatos.Text
+</pre></div>
+<h3 id="3-archivos" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">3. Archivos</h3>
+<p>Permite leer y escribir archivos en el almacenamiento del dispositivo.</p>
+<p>Ejemplo de escritura en archivo:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonGuardar.Click
+    call File1.SaveFile with text TextBox1.Text fileName "datos.txt"
+</pre></div>
+<p>Ejemplo de lectura de archivo:</p>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonCargar.Click
+    call File1.ReadFrom with fileName "datos.txt"
+
+when File1.GotText text
+    set TextBox1.Text to text
+</pre></div>
+<h2 id="ejemplos-practicos-con-estructuras-de-control" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Ejemplos prácticos con estructuras de control</h2>
+<h3 id="ejemplo-1-validacion-de-formulario-con-if" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Ejemplo 1: Validación de formulario con IF</h3>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonEnviar.Click
+    if TextBoxNombre.Text = "" then
+        call Notifier1.ShowAlert with message "Por favor, introduce tu nombre"
+    else if TextBoxEdad.Number &lt;= 0 then
+        call Notifier1.ShowAlert with message "La edad debe ser un número positivo"
+    else if not CheckBoxTerminos.Checked then
+        call Notifier1.ShowAlert with message "Debes aceptar los términos y condiciones"
+    else
+        call EnviarFormulario
+        set LabelEstado.Text to "¡Formulario enviado correctamente!"
+        set LabelEstado.TextColor to "green"
+</pre></div>
+<h3 id="ejemplo-2-calculadora-con-estructura-switch-simulada-con-if-else" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Ejemplo 2: Calculadora con estructura SWITCH (simulada con IF-ELSE)</h3>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonCalcular.Click
+    if ListPickerOperacion.Selection = "Suma" then
+        set LabelResultado.Text to TextBoxNum1.Number + TextBoxNum2.Number
+    else if ListPickerOperacion.Selection = "Resta" then
+        set LabelResultado.Text to TextBoxNum1.Number - TextBoxNum2.Number
+    else if ListPickerOperacion.Selection = "Multiplicación" then
+        set LabelResultado.Text to TextBoxNum1.Number * TextBoxNum2.Number
+    else if ListPickerOperacion.Selection = "División" then
+        if TextBoxNum2.Number = 0 then
+            set LabelResultado.Text to "Error: División por cero"
+        else
+            set LabelResultado.Text to TextBoxNum1.Number / TextBoxNum2.Number
+</pre></div>
+<h3 id="ejemplo-3-contador-con-bucle-while" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Ejemplo 3: Contador con bucle WHILE</h3>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>to procedure contarHasta limite
+    initialize local contador to 1
+    initialize local resultado to ""
+
+    while contador &lt;= limite
+        set resultado to join(resultado, contador, " ")
+        set contador to contador + 1
+
+    return resultado
+
+when BotonContar.Click
+    set LabelSecuencia.Text to call contarHasta with TextBoxLimite.Number
+</pre></div>
+<h3 id="ejemplo-4-procesamiento-de-lista-con-bucle-foreach" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Ejemplo 4: Procesamiento de lista con bucle FOREACH</h3>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>when BotonProcesar.Click
+    initialize local listaNumeros to call convertirTextoALista with TextBoxNumeros.Text
+    initialize local suma to 0
+    initialize local cantidad to length of list listaNumeros
+
+    foreach numero in listaNumeros
+        set suma to suma + numero
+
+    if cantidad = 0 then
+        set LabelPromedio.Text to "No hay números para promediar"
+    else
+        set LabelPromedio.Text to suma / cantidad
+
+to convertirTextoALista texto returns
+    initialize local lista to make a list
+    initialize local numeros to split at spaces texto
+
+    foreach texto_numero in numeros
+        add items to list lista item call text_to_number with texto_numero
+
+    return lista
+
+to text_to_number texto returns
+    initialize local result to 0
+
+    if is number texto then
+        set result to number texto
+
+    return result
+</pre></div>
+<h3 id="ejemplo-5-juego-de-adivinar-un-numero-con-for" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">Ejemplo 5: Juego de adivinar un número con FOR</h3>
+<div style="background: #282a36; color: #f8f8f2; padding: 5px; border-radius: 5px; margin: 5px 0; background-color: #1a1a35 !important"><pre style='line-height: 125%; background-color: #101030; color: #d0d0d0; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: Consolas, Monaco, "Andale Mono", monospace; font-size: 0.9em; margin: 10px'><span></span>initialize global numero_secreto to 0
+
+when Screen1.Initialize
+    call generarNumeroSecreto
+
+to procedure generarNumeroSecreto
+    set global numero_secreto to random integer from 1 to 100
+    set LabelIntentos.Text to "Tienes 7 intentos"
+    set global intentos_restantes to 7
+
+when BotonAdivinar.Click
+    if global intentos_restantes &gt; 0 then
+        set global intentos_restantes to global intentos_restantes - 1
+        set LabelIntentos.Text to join("Te quedan ", global intentos_restantes, " intentos")
+
+        if TextBoxNumero.Number = global numero_secreto then
+            set LabelResultado.Text to "¡Felicidades! ¡Has adivinado el número!"
+            set LabelResultado.TextColor to "green"
+        else if TextBoxNumero.Number &lt; global numero_secreto then
+            set LabelResultado.Text to "El número es mayor"
+            set LabelResultado.TextColor to "blue"
+        else
+            set LabelResultado.Text to "El número es menor"
+            set LabelResultado.TextColor to "blue"
+
+        if global intentos_restantes = 0 and TextBoxNumero.Number ≠ global numero_secreto then
+            set LabelResultado.Text to join("¡Game Over! El número era ", global numero_secreto)
+            set LabelResultado.TextColor to "red"
+
+when BotonReiniciar.Click
+    call generarNumeroSecreto
+    set TextBoxNumero.Text to ""
+    set LabelResultado.Text to "Adivina un número entre 1 y 100"
+    set LabelResultado.TextColor to "black"
+</pre></div>
+<h2 id="buenas-practicas-de-programacion-en-app-inventor" style="color: #448; font-size: 1.8em; margin-top: 30px; margin-bottom: 10px; border-bottom: 2px solid #bbf; padding-bottom: 5px">Buenas prácticas de programación en App Inventor</h2>
+<h3 id="1-organizacion-de-bloques" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">1. Organización de bloques</h3>
+<ul>
+<li><strong>Agrupar bloques relacionados</strong>: Mantener juntos los bloques que realizan funciones relacionadas.</li>
+<li><strong>Usar procedimientos</strong>: Encapsular funcionalidades repetidas en procedimientos reutilizables.</li>
+<li><strong>Comentar el código</strong>: Usar bloques de comentario para explicar secciones complejas.</li>
+<li><strong>Nombrar variables descriptivamente</strong>: Usar nombres que indiquen el propósito de cada variable.</li>
+<li><strong>Indentación visual</strong>: Organizar los bloques con sangría para mostrar la estructura lógica.</li>
+</ul>
+<h3 id="2-optimizacion" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold">2. Optimización</h3>
+<ul>
+<li><strong>Evitar la duplicación de código</strong>: Usar procedimientos para código repetitivo.</li>
+<li><strong>Minimizar variables globales</strong>: Preferir variables locales cuando sea posible.</li>
+<li><strong>Limitar el uso de timers</strong>: Los temporizadores consumen batería.</li>
+<li><strong>Liberar recursos</strong>: Cerrar conexiones de base de datos, Bluetooth, etc. cuando no se usen.</li>
+<li><strong>Controlar el tamaño de las imágenes</strong>: Usar imágenes optimizadas para móviles.</li>
+</ul>
+<h3 id="_1" style="color: #2020f0; font-size: 1.5em; margin-top: 10px; font-weight: bold"></h3>
+</body>
+</html>

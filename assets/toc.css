@@ -1,0 +1,76 @@
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {
+  background-color: #f0f0ff;
+  border-radius: 8px;
+  padding: 20px 30px;
+  margin: 20px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-family: Arial, sans-serif;
+  border: 1px solid #d0d0ff;
+}
+
+/* Título de la tabla de contenidos */
+#contents-header {
+  text-align: center;
+  color: #585b9e;
+  font-size: 24px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  padding-bottom: 15px;
+}
+
+/* Listas */
+ul.toc {
+  list-style-type: none;
+  padding-left: 20px;
+  margin: 0;
+}
+
+/* Elementos de la lista */
+li.toc {
+  margin: 10px 0;
+  line-height: 1.5;
+  color: #585b9e;
+}
+
+/* Enlaces */
+a.toc {
+  text-decoration: none;
+  color: #585b9e;
+  transition: color 0.2s, padding-left 0.2s;
+  display: inline-block;
+}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {
+  color: #3333cc;
+  padding-left: 3px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {
+  margin-left: 15px;
+}
+
+li.toc li.toc li.toc {
+  margin-left: 25px;
+}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc > li.toc > a.toc {
+  font-weight: 500;
+}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {
+  content: "";
+  display: block;
+  height: 0px;
+  background-color: #d0d0ff;
+  margin-bottom: 15px;
+}
