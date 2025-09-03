@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crud_operations</title>
+    <style>
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #49483e }
+.highlight { background: #272822; color: #f8f8f2 }
+.highlight .c { color: #75715e } /* Comment */
+.highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+.highlight .esc { color: #f8f8f2 } /* Escape */
+.highlight .g { color: #f8f8f2 } /* Generic */
+.highlight .k { color: #66d9ef } /* Keyword */
+.highlight .l { color: #ae81ff } /* Literal */
+.highlight .n { color: #f8f8f2 } /* Name */
+.highlight .o { color: #f92672 } /* Operator */
+.highlight .x { color: #f8f8f2 } /* Other */
+.highlight .p { color: #f8f8f2 } /* Punctuation */
+.highlight .ch { color: #75715e } /* Comment.Hashbang */
+.highlight .cm { color: #75715e } /* Comment.Multiline */
+.highlight .cp { color: #75715e } /* Comment.Preproc */
+.highlight .cpf { color: #75715e } /* Comment.PreprocFile */
+.highlight .c1 { color: #75715e } /* Comment.Single */
+.highlight .cs { color: #75715e } /* Comment.Special */
+.highlight .gd { color: #f92672 } /* Generic.Deleted */
+.highlight .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #f8f8f2 } /* Generic.Error */
+.highlight .gh { color: #f8f8f2 } /* Generic.Heading */
+.highlight .gi { color: #a6e22e } /* Generic.Inserted */
+.highlight .go { color: #66d9ef } /* Generic.Output */
+.highlight .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #75715e } /* Generic.Subheading */
+.highlight .gt { color: #f8f8f2 } /* Generic.Traceback */
+.highlight .kc { color: #66d9ef } /* Keyword.Constant */
+.highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+.highlight .kn { color: #f92672 } /* Keyword.Namespace */
+.highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+.highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+.highlight .kt { color: #66d9ef } /* Keyword.Type */
+.highlight .ld { color: #e6db74 } /* Literal.Date */
+.highlight .m { color: #ae81ff } /* Literal.Number */
+.highlight .s { color: #e6db74 } /* Literal.String */
+.highlight .na { color: #a6e22e } /* Name.Attribute */
+.highlight .nb { color: #f8f8f2 } /* Name.Builtin */
+.highlight .nc { color: #a6e22e } /* Name.Class */
+.highlight .no { color: #66d9ef } /* Name.Constant */
+.highlight .nd { color: #a6e22e } /* Name.Decorator */
+.highlight .ni { color: #f8f8f2 } /* Name.Entity */
+.highlight .ne { color: #a6e22e } /* Name.Exception */
+.highlight .nf { color: #a6e22e } /* Name.Function */
+.highlight .nl { color: #f8f8f2 } /* Name.Label */
+.highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+.highlight .nx { color: #a6e22e } /* Name.Other */
+.highlight .py { color: #f8f8f2 } /* Name.Property */
+.highlight .nt { color: #f92672 } /* Name.Tag */
+.highlight .nv { color: #f8f8f2 } /* Name.Variable */
+.highlight .ow { color: #f92672 } /* Operator.Word */
+.highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+.highlight .mb { color: #ae81ff } /* Literal.Number.Bin */
+.highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+.highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+.highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+.highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+.highlight .sa { color: #e6db74 } /* Literal.String.Affix */
+.highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+.highlight .sc { color: #e6db74 } /* Literal.String.Char */
+.highlight .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+.highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+.highlight .se { color: #ae81ff } /* Literal.String.Escape */
+.highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+.highlight .sx { color: #e6db74 } /* Literal.String.Other */
+.highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+.highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+.highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+.highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #a6e22e } /* Name.Function.Magic */
+.highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.highlight .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+    </style>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        pre { background-color: transparent; padding: 0; border-radius: 5px; overflow-x: auto; }
+        code { font-family: "Courier New", Courier, monospace; }
+        img { max-width: 100%; height: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .highlight { padding: 1em; border-radius: 5px; margin: 1em 0; }
+    </style>
+    <style>
+        /* CSS from style.css */
+ body {
+     font-family: Century Gothic, Arial, Helvetica, sans-serif;
+     line-height: 1.5;
+     color: #333;
+     max-width: 900px;
+     margin: 0 auto;
+     padding: 20px;
+ }
+
+ h1 {
+     display: block;
+     background-color: #333;
+     color: #f78e25;
+     font-size: 3em;
+     padding: 20px;
+     margin-top: 20px;
+     margin-bottom: 25px;
+     text-align: center;
+     font-weight: bold;
+     border-bottom: none;
+     border-radius: 20px;
+ }
+
+ h1 small {
+     display: block;
+     font-size: 0.8em;
+     color: #ccc;
+     margin-top: 5px;
+     font-weight: normal;
+ }
+
+ h2 {
+     color: #448;
+     font-size: 1.8em;
+     margin-top: 30px;
+     margin-bottom: 10px;
+     border-bottom: 1px solid #ccc;
+     padding-bottom: 5px;
+ }
+
+ h3 {
+     color: #2020f0;
+     font-size: 1.5em;
+     margin-top: 10px;
+     font-weight: bold;
+ }
+
+ h4 {
+     color: #333;
+     font-size: 1.1em;
+ }
+
+ code {
+     font-family: Consolas, Monaco, 'Andale Mono', monospace;
+     background-color: #f5f5f5;
+     padding: 2px 4px;
+     font-size: 0.9em;
+ }
+
+ #indice-de-contenidos {
+     margin-top: 20px;
+     margin-bottom: 30px;
+ }
+
+ .toc {
+     border-bottom: 1px solid #ccc;
+     padding-bottom: 20px;
+     margin-bottom: 20px;
+ }
+
+ .toc ol {
+     counter-reset: item;
+     list-style: none;
+     padding-left: 25px;
+     margin-top: 10px;
+ }
+
+ .toc li {
+     counter-increment: item;
+     margin: 3px 0;
+ }
+
+ .toc li::before {
+     content: counters(item, ".") ". ";
+     margin-right: 5px;
+     color: #333;
+ }
+
+ .toc ol li ol {
+     counter-reset: item;
+     padding-left: 25px;
+ }
+
+ .toc a {
+     text-decoration: none;
+     color: #00b;
+ }
+
+ .toc a:hover {
+     background-color: #0ff;
+ }
+
+ .example {
+     margin: 20px 0;
+     padding: 0;
+ }
+
+ .example h4 {
+     margin-top: 15px;
+     margin-bottom: 10px;
+ }
+
+ /* Estilos para títolos de sección similares a la imagen */
+ .section-title {
+     background-color: #333;
+     color: #f78e25;
+     /* Naranja como en la imagen */
+     padding: 10px 15px;
+     font-size: 1.3em;
+     margin: 30px 0 20px 0;
+     text-align: center;
+ }
+
+ .section-subtitle {
+     font-size: 1.1em;
+     color: #333;
+     margin-top: 20px;
+     font-weight: bold;
+ }
+
+ /* Párrafos explicativos */
+ .explanation {
+     margin-bottom: 15px;
+ }
+
+ /* Listas de items */
+ ol {
+     padding-left: 20px;
+ }
+
+ ol li {
+     margin-bottom: 5px;
+ }
+
+ ol.functions li {
+     color: #666;
+     list-style-type: none;
+     padding-left: 20px;
+     position: relative;
+ }
+
+ ol.functions li::before {
+     content: "→";
+     position: absolute;
+     left: 0;
+     color: #f78e25;
+ }
+
+ /* Estilos para el glosario */
+ dl {
+     margin: 20px 0;
+ }
+
+ dt {
+     font-weight: bold;
+     margin-top: 15px;
+ }
+
+ dd {
+     margin-left: 20px;
+      margin-bottom: 10px;
+ }
+    </style>
+</head>
+<body>
+<h1 id="ejemplos-completos-de-crud-en-mongodb-con-pymongo">Ejemplos Completos de CRUD en MongoDB con PyMongo</h1>
+<p>Este documento complementa las notas sobre operaciones de actualización, proporcionando ejemplos completos para las operaciones CRUD (Create, Read, Update, Delete) en MongoDB utilizando PyMongo.</p>
+<h2 id="configuracion-inicial-de-pymongo">Configuración Inicial de PyMongo</h2>
+<div class="highlight language-python"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="c1"># Conectar al servidor MongoDB</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">&#39;mongodb://localhost:27017/&#39;</span><span class="p">)</span>
+<span class="c1"># Seleccionar la base de datos</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s1">&#39;mi_restaurante&#39;</span><span class="p">]</span>
+<span class="c1"># Seleccionar la colección</span>
+<span class="n">restaurante</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">restaurante</span>
+
+<span class="c1"># Para imprimir documentos de forma legible</span>
+<span class="n">pp</span> <span class="o">=</span> <span class="n">pprint</span><span class="o">.</span><span class="n">PrettyPrinter</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<h2 id="ejemplo-de-crud-para-un-sistema-de-gestion-de-restaurante">Ejemplo de CRUD para un Sistema de Gestión de Restaurante</h2>
+<p>Trabajaremos con una colección llamada <code>restaurante</code> que gestiona información sobre platos del menú.</p>
+<h3 id="1-create-crear">1. Create (Crear)</h3>
+<p>PyMongo ofrece dos métodos principales para insertar documentos:</p>
+<h4 id="insert_one">insert_one()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Insertar un plato al menú</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+    <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Paella Valenciana&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Platos principales&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">15.50</span><span class="p">,</span>
+    <span class="s1">&#39;ingredientes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;arroz&#39;</span><span class="p">,</span> <span class="s1">&#39;azafrán&#39;</span><span class="p">,</span> <span class="s1">&#39;pollo&#39;</span><span class="p">,</span> <span class="s1">&#39;conejo&#39;</span><span class="p">,</span> <span class="s1">&#39;judías verdes&#39;</span><span class="p">,</span> <span class="s1">&#39;garrofón&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;alergenos&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;gluten&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s1">&#39;calorias&#39;</span><span class="p">:</span> <span class="mi">450</span><span class="p">,</span>
+    <span class="s1">&#39;valoraciones&#39;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s1">&#39;fecha_creacion&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="p">})</span>
+
+<span class="c1"># Obtener el ID del documento insertado</span>
+<span class="n">id_paella</span> <span class="o">=</span> <span class="n">resultado</span><span class="o">.</span><span class="n">inserted_id</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plato insertado con ID: </span><span class="si">{</span><span class="n">id_paella</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="insert_many">insert_many()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Insertar varios platos al menú</span>
+<span class="n">resultados</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">insert_many</span><span class="p">([</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Gazpacho&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Entrantes&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">6.75</span><span class="p">,</span>
+        <span class="s1">&#39;ingredientes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;tomate&#39;</span><span class="p">,</span> <span class="s1">&#39;pimiento&#39;</span><span class="p">,</span> <span class="s1">&#39;pepino&#39;</span><span class="p">,</span> <span class="s1">&#39;ajo&#39;</span><span class="p">,</span> <span class="s1">&#39;aceite&#39;</span><span class="p">,</span> <span class="s1">&#39;vinagre&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;alergenos&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;calorias&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
+        <span class="s1">&#39;valoraciones&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;usuario&#39;</span><span class="p">:</span> <span class="s1">&#39;cliente1&#39;</span><span class="p">,</span> <span class="s1">&#39;puntuacion&#39;</span><span class="p">:</span> <span class="mf">4.5</span><span class="p">,</span> <span class="s1">&#39;comentario&#39;</span><span class="p">:</span> <span class="s1">&#39;Muy refrescante&#39;</span><span class="p">}],</span>
+        <span class="s1">&#39;fecha_creacion&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Flan de vainilla&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Postres&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">4.25</span><span class="p">,</span>
+        <span class="s1">&#39;ingredientes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;huevo&#39;</span><span class="p">,</span> <span class="s1">&#39;leche&#39;</span><span class="p">,</span> <span class="s1">&#39;azúcar&#39;</span><span class="p">,</span> <span class="s1">&#39;vainilla&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;alergenos&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;huevo&#39;</span><span class="p">,</span> <span class="s1">&#39;lactosa&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;calorias&#39;</span><span class="p">:</span> <span class="mi">280</span><span class="p">,</span>
+        <span class="s1">&#39;valoraciones&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;fecha_creacion&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">])</span>
+
+<span class="c1"># Obtener los IDs de los documentos insertados</span>
+<span class="n">ids_platos</span> <span class="o">=</span> <span class="n">resultados</span><span class="o">.</span><span class="n">inserted_ids</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Se insertaron </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ids_platos</span><span class="p">)</span><span class="si">}</span><span class="s2"> platos con IDs: </span><span class="si">{</span><span class="n">ids_platos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="2-read-leer">2. Read (Leer)</h3>
+<p>PyMongo proporciona varios métodos para consultar documentos:</p>
+<h4 id="find_one">find_one()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Buscar un plato específico</span>
+<span class="n">paella</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Paella Valenciana&#39;</span><span class="p">})</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">paella</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="find">find()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Obtener todos los entrantes</span>
+<span class="n">entrantes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">restaurante</span><span class="o">.</span><span class="n">find</span><span class="p">({</span><span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Entrantes&#39;</span><span class="p">}))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Se encontraron </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">entrantes</span><span class="p">)</span><span class="si">}</span><span class="s2"> entrantes:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">entrante</span> <span class="ow">in</span> <span class="n">entrantes</span><span class="p">:</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">entrante</span><span class="p">)</span>
+
+<span class="c1"># Buscar platos sin gluten y con precio menor a 10€</span>
+<span class="n">opciones_economicas_sin_gluten</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">restaurante</span><span class="o">.</span><span class="n">find</span><span class="p">({</span>
+    <span class="s1">&#39;alergenos&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$nin&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;gluten&#39;</span><span class="p">]},</span>
+    <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$lt&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+<span class="p">}))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Opciones económicas sin gluten: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">opciones_economicas_sin_gluten</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">plato</span> <span class="ow">in</span> <span class="n">opciones_economicas_sin_gluten</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">plato</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">plato</span><span class="p">[</span><span class="s1">&#39;precio&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">€&quot;</span><span class="p">)</span>
+
+<span class="c1"># Buscar platos con ciertos ingredientes, ordenados por calorías</span>
+<span class="n">platos_con_tomate</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">restaurante</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;ingredientes&#39;</span><span class="p">:</span> <span class="s1">&#39;tomate&#39;</span><span class="p">}</span>
+<span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s1">&#39;calorias&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># 1 para ascendente, -1 para descendente</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Platos con tomate ordenados por calorías:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">plato</span> <span class="ow">in</span> <span class="n">platos_con_tomate</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">plato</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">plato</span><span class="p">[</span><span class="s1">&#39;calorias&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> calorías&quot;</span><span class="p">)</span>
+
+<span class="c1"># Proyección: obtener solo nombre y precio</span>
+<span class="n">menu_simplificado</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">restaurante</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Menú simplificado:&quot;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">menu_simplificado</span><span class="p">)</span>
+
+<span class="c1"># Paginación: obtener 5 platos, saltando los primeros 5</span>
+<span class="n">segunda_pagina</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">restaurante</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Segunda página del menú:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">plato</span> <span class="ow">in</span> <span class="n">segunda_pagina</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">plato</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="3-update-actualizar">3. Update (Actualizar)</h3>
+<p>Como ya has detallado en tus notas, aquí te muestro algunos ejemplos prácticos adicionales:</p>
+<h4 id="update_one">update_one()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Actualizar el precio de un plato</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Paella Valenciana&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">16.75</span><span class="p">}}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Documentos encontrados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">matched_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Documentos modificados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Añadir una valoración a un plato</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Paella Valenciana&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;$push&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;valoraciones&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;usuario&#39;</span><span class="p">:</span> <span class="s1">&#39;cliente2&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;puntuacion&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s1">&#39;comentario&#39;</span><span class="p">:</span> <span class="s1">&#39;Auténtica y deliciosa&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valoración añadida: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Actualizar documentos anidados con notación de punto</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;valoraciones.usuario&#39;</span><span class="p">:</span> <span class="s1">&#39;cliente1&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;valoraciones.$.puntuacion&#39;</span><span class="p">:</span> <span class="mf">4.7</span><span class="p">}}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valoración actualizada: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="update_many">update_many()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Incrementar el precio de todos los postres en un 5%</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Postres&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;$mul&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">1.05</span><span class="p">}}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Postres actualizados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Marcar como no disponibles todos los platos con alérgenos específicos</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;alergenos&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$in&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;frutos secos&#39;</span><span class="p">,</span> <span class="s1">&#39;mariscos&#39;</span><span class="p">]}},</span>
+    <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Platos marcados como no disponibles: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="replace_one">replace_one()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Reemplazar completamente un plato</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">replace_one</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Flan de vainilla&#39;</span><span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Flan casero&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Postres&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">4.50</span><span class="p">,</span>
+        <span class="s1">&#39;ingredientes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;huevo&#39;</span><span class="p">,</span> <span class="s1">&#39;leche&#39;</span><span class="p">,</span> <span class="s1">&#39;azúcar&#39;</span><span class="p">,</span> <span class="s1">&#39;canela&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;alergenos&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;huevo&#39;</span><span class="p">,</span> <span class="s1">&#39;lactosa&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;calorias&#39;</span><span class="p">:</span> <span class="mi">295</span><span class="p">,</span>
+        <span class="s1">&#39;valoraciones&#39;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s1">&#39;fecha_creacion&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="s1">&#39;receta_actualizada&#39;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plato reemplazado: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="find_one_and_update">find_one_and_update()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Actualizar y devolver el documento actualizado</span>
+<span class="n">plato_actualizado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">find_one_and_update</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Gazpacho&#39;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;$inc&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">}},</span>
+    <span class="n">return_document</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Devuelve el documento después de la actualización</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plato actualizado:&quot;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">plato_actualizado</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="4-delete-eliminar">4. Delete (Eliminar)</h3>
+<p>PyMongo ofrece métodos para eliminar documentos:</p>
+<h4 id="delete_one">delete_one()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Eliminar un plato del menú</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Gazpacho&#39;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Documentos eliminados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="delete_many">delete_many()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Eliminar todos los platos no disponibles</span>
+<span class="n">resultado_multiple</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({</span><span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Documentos eliminados: </span><span class="si">{</span><span class="n">resultado_multiple</span><span class="o">.</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Eliminar platos con 0 valoraciones y alta cantidad de calorías</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">delete_many</span><span class="p">({</span>
+    <span class="s1">&#39;valoraciones&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$size&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="s1">&#39;calorias&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$gt&#39;</span><span class="p">:</span> <span class="mi">500</span><span class="p">}</span>
+<span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Platos eliminados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h4 id="find_one_and_delete">find_one_and_delete()</h4>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Eliminar y devolver el plato eliminado</span>
+<span class="n">plato_eliminado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">find_one_and_delete</span><span class="p">(</span>
+    <span class="p">{</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Flan casero&#39;</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plato eliminado:&quot;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">plato_eliminado</span><span class="p">)</span>
+</pre></div>
+
+<h2 id="operaciones-crud-avanzadas">Operaciones CRUD Avanzadas</h2>
+<h3 id="uso-de-transacciones-para-operaciones-multiples">Uso de transacciones para operaciones múltiples</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Iniciar una sesión</span>
+<span class="k">with</span> <span class="n">client</span><span class="o">.</span><span class="n">start_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="c1"># Iniciar una transacción</span>
+    <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">start_transaction</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Crear un nuevo plato</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">restaurante</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span>
+                <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Arroz negro&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Platos principales&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">14.50</span><span class="p">,</span>
+                <span class="s1">&#39;ingredientes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;arroz&#39;</span><span class="p">,</span> <span class="s1">&#39;sepia&#39;</span><span class="p">,</span> <span class="s1">&#39;tinta de calamar&#39;</span><span class="p">,</span> <span class="s1">&#39;pimientos&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="p">},</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+
+            <span class="c1"># Actualizar precios en la misma transacción</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">restaurante</span><span class="o">.</span><span class="n">update_many</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Platos principales&#39;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">&#39;$inc&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+                <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Si todo va bien, la transacción se confirma automáticamente</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transacción completada con éxito&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Si hay algún error, la transacción se aborta automáticamente</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error en la transacción: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># La excepción se propagará y abortará la transacción</span>
+</pre></div>
+
+<h3 id="operaciones-con-bulk_write">Operaciones con bulk_write()</h3>
+<div class="highlight language-python"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">InsertOne</span><span class="p">,</span> <span class="n">UpdateOne</span><span class="p">,</span> <span class="n">DeleteMany</span>
+
+<span class="c1"># Preparar operaciones de bulk</span>
+<span class="n">operaciones</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># Insertar un nuevo plato</span>
+    <span class="n">InsertOne</span><span class="p">({</span>
+        <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Tortilla española&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Entrantes&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mf">5.50</span><span class="p">,</span>
+        <span class="s1">&#39;ingredientes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;huevo&#39;</span><span class="p">,</span> <span class="s1">&#39;patata&#39;</span><span class="p">,</span> <span class="s1">&#39;cebolla&#39;</span><span class="p">,</span> <span class="s1">&#39;aceite&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">}),</span>
+    <span class="c1"># Actualizar un plato existente</span>
+    <span class="n">UpdateOne</span><span class="p">(</span>
+        <span class="p">{</span><span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="s1">&#39;Paella Valenciana&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;destacado&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}</span>
+    <span class="p">),</span>
+    <span class="c1"># Eliminar platos</span>
+    <span class="n">DeleteMany</span><span class="p">({</span><span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="s1">&#39;Fuera de temporada&#39;</span><span class="p">})</span>
+<span class="p">]</span>
+
+<span class="c1"># Realizar múltiples operaciones en una sola llamada</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">restaurante</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">operaciones</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Resultado de operaciones bulk_write:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Documentos insertados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">inserted_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Documentos modificados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Documentos eliminados: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+<h3 id="consultas-con-agregacion">Consultas con agregación</h3>
+<div class="highlight language-python"><pre><span></span><span class="c1"># Obtener estadísticas de platos por categoría</span>
+<span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;$match&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;disponible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;$group&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="s1">&#39;$categoria&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;numeroPlatos&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$sum&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="s1">&#39;precioPromedio&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$avg&#39;</span><span class="p">:</span> <span class="s1">&#39;$precio&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;caloriasTotales&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$sum&#39;</span><span class="p">:</span> <span class="s1">&#39;$calorias&#39;</span><span class="p">}</span>
+    <span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;$sort&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;numeroPlatos&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}}</span>
+<span class="p">]</span>
+
+<span class="n">estadisticas</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">restaurante</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Estadísticas por categoría:&quot;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">estadisticas</span><span class="p">)</span>
+
+<span class="c1"># Obtener los platos mejor valorados</span>
+<span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">&#39;$match&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;valoraciones.0&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$exists&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}}},</span>  <span class="c1"># Platos con al menos una valoración</span>
+    <span class="p">{</span><span class="s1">&#39;$addFields&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;valoracionPromedio&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$avg&#39;</span><span class="p">:</span> <span class="s1">&#39;$valoraciones.puntuacion&#39;</span><span class="p">}</span>
+    <span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;$sort&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;valoracionPromedio&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}},</span>
+    <span class="p">{</span><span class="s1">&#39;$limit&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;$project&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;valoracionPromedio&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;numeroValoraciones&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$size&#39;</span><span class="p">:</span> <span class="s1">&#39;$valoraciones&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">}}</span>
+<span class="p">]</span>
+
+<span class="n">mejores_platos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">restaurante</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Top 5 platos mejor valorados:&quot;</span><span class="p">)</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">mejores_platos</span><span class="p">)</span>
+</pre></div>
+
+<h2 id="buenas-practicas-para-operaciones-crud-con-pymongo">Buenas Prácticas para Operaciones CRUD con PyMongo</h2>
+<ol>
+<li><strong>Atomicidad</strong>: Utilizar operadores atómicos como <code>$set</code>, <code>$inc</code>, etc., en lugar de leer-modificar-escribir.</li>
+<li>
+<p><strong>Indexación</strong>: Crear índices para campos frecuentemente consultados para mejorar el rendimiento.
+ <br />
+<div class="highlight language-python"><pre><span></span>   <span class="n">restaurante</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;nombre&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+   <span class="n">restaurante</span><span class="o">.</span><span class="n">create_index</span><span class="p">([(</span><span class="s1">&#39;categoria&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;precio&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+
+</pre></div>
+</p>
+</li>
+<li>
+<p><strong>Validación</strong>: Usar esquemas de validación para asegurar la integridad de los datos.
+ <br />
+<div class="highlight language-python"><pre><span></span>   <span class="n">db</span><span class="o">.</span><span class="n">create_collection</span><span class="p">(</span><span class="s1">&#39;restaurante&#39;</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="p">{</span>
+       <span class="s1">&#39;$jsonSchema&#39;</span><span class="p">:</span> <span class="p">{</span>
+           <span class="s1">&#39;bsonType&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">,</span> <span class="s1">&#39;categoria&#39;</span><span class="p">,</span> <span class="s1">&#39;precio&#39;</span><span class="p">],</span>
+           <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+               <span class="s1">&#39;nombre&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;bsonType&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span>
+               <span class="s1">&#39;categoria&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;bsonType&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span><span class="p">},</span>
+               <span class="s1">&#39;precio&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;bsonType&#39;</span><span class="p">:</span> <span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;minimum&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+           <span class="p">}</span>
+       <span class="p">}</span>
+   <span class="p">})</span>
+
+</pre></div>
+</p>
+</li>
+<li>
+<p><strong>Control de errores</strong>: Siempre verificar resultados de operaciones y manejar posibles errores.</p>
+</li>
+<li><strong>Paginación</strong>: Usar <code>skip()</code> y <code>limit()</code> para grandes conjuntos de datos.</li>
+<li><strong>Consistencia</strong>: Considerar transacciones para operaciones relacionadas.</li>
+<li><strong>Proyección</strong>: Solicitar solo los campos necesarios para reducir el uso de memoria y red.</li>
+</ol>
+</body>
+</html>

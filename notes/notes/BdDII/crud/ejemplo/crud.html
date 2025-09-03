@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crud</title>
+    <style>
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #49483e }
+.highlight { background: #272822; color: #f8f8f2 }
+.highlight .c { color: #75715e } /* Comment */
+.highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+.highlight .esc { color: #f8f8f2 } /* Escape */
+.highlight .g { color: #f8f8f2 } /* Generic */
+.highlight .k { color: #66d9ef } /* Keyword */
+.highlight .l { color: #ae81ff } /* Literal */
+.highlight .n { color: #f8f8f2 } /* Name */
+.highlight .o { color: #f92672 } /* Operator */
+.highlight .x { color: #f8f8f2 } /* Other */
+.highlight .p { color: #f8f8f2 } /* Punctuation */
+.highlight .ch { color: #75715e } /* Comment.Hashbang */
+.highlight .cm { color: #75715e } /* Comment.Multiline */
+.highlight .cp { color: #75715e } /* Comment.Preproc */
+.highlight .cpf { color: #75715e } /* Comment.PreprocFile */
+.highlight .c1 { color: #75715e } /* Comment.Single */
+.highlight .cs { color: #75715e } /* Comment.Special */
+.highlight .gd { color: #f92672 } /* Generic.Deleted */
+.highlight .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #f8f8f2 } /* Generic.Error */
+.highlight .gh { color: #f8f8f2 } /* Generic.Heading */
+.highlight .gi { color: #a6e22e } /* Generic.Inserted */
+.highlight .go { color: #66d9ef } /* Generic.Output */
+.highlight .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #75715e } /* Generic.Subheading */
+.highlight .gt { color: #f8f8f2 } /* Generic.Traceback */
+.highlight .kc { color: #66d9ef } /* Keyword.Constant */
+.highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+.highlight .kn { color: #f92672 } /* Keyword.Namespace */
+.highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+.highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+.highlight .kt { color: #66d9ef } /* Keyword.Type */
+.highlight .ld { color: #e6db74 } /* Literal.Date */
+.highlight .m { color: #ae81ff } /* Literal.Number */
+.highlight .s { color: #e6db74 } /* Literal.String */
+.highlight .na { color: #a6e22e } /* Name.Attribute */
+.highlight .nb { color: #f8f8f2 } /* Name.Builtin */
+.highlight .nc { color: #a6e22e } /* Name.Class */
+.highlight .no { color: #66d9ef } /* Name.Constant */
+.highlight .nd { color: #a6e22e } /* Name.Decorator */
+.highlight .ni { color: #f8f8f2 } /* Name.Entity */
+.highlight .ne { color: #a6e22e } /* Name.Exception */
+.highlight .nf { color: #a6e22e } /* Name.Function */
+.highlight .nl { color: #f8f8f2 } /* Name.Label */
+.highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+.highlight .nx { color: #a6e22e } /* Name.Other */
+.highlight .py { color: #f8f8f2 } /* Name.Property */
+.highlight .nt { color: #f92672 } /* Name.Tag */
+.highlight .nv { color: #f8f8f2 } /* Name.Variable */
+.highlight .ow { color: #f92672 } /* Operator.Word */
+.highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+.highlight .mb { color: #ae81ff } /* Literal.Number.Bin */
+.highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+.highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+.highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+.highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+.highlight .sa { color: #e6db74 } /* Literal.String.Affix */
+.highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+.highlight .sc { color: #e6db74 } /* Literal.String.Char */
+.highlight .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+.highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+.highlight .se { color: #ae81ff } /* Literal.String.Escape */
+.highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+.highlight .sx { color: #e6db74 } /* Literal.String.Other */
+.highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+.highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+.highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+.highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #a6e22e } /* Name.Function.Magic */
+.highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.highlight .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+    </style>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        pre { background-color: transparent; padding: 0; border-radius: 5px; overflow-x: auto; }
+        code { font-family: "Courier New", Courier, monospace; }
+        img { max-width: 100%; height: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .highlight { padding: 1em; border-radius: 5px; margin: 1em 0; }
+        .empty-code-block { background-color: #f5f5f5; padding: 1em; border-radius: 5px; margin: 1em 0; font-family: monospace; }
+        .highlight-error { background-color: #fff0f0; padding: 1em; border-radius: 5px; margin: 1em 0; font-family: monospace; color: #c00; }
+    </style>
+    <style>
+        /* CSS from style.css */
+ body {
+     font-family: Century Gothic, Arial, Helvetica, sans-serif;
+     line-height: 1.5;
+     color: #333;
+     max-width: none;
+     margin: 0 auto;
+     padding: 20px;
+ }
+
+ h1 {
+     display: block;
+     background-color: #333;
+     color: #f78e25;
+     font-size: 3em;
+     padding: 20px;
+     margin-top: 20px;
+     margin-bottom: 25px;
+     text-align: center;
+     font-weight: bold;
+     border-bottom: none;
+     border-radius: 20px;
+ }
+
+ h1 small {
+     display: block;
+     font-size: 0.8em;
+     color: #ccc;
+     margin-top: 5px;
+     font-weight: normal;
+ }
+
+ h2 {
+     color: #448;
+     font-size: 1.8em;
+     margin-top: 30px;
+     margin-bottom: 10px;
+     border-bottom: 1px solid #ccc;
+     padding-bottom: 5px;
+ }
+
+ h3 {
+     color: #2020f0;
+     font-size: 1.5em;
+     margin-top: 10px;
+     font-weight: bold;
+ }
+
+ h4 {
+     color: #333;
+     font-size: 1.1em;
+ }
+
+ pre {
+     font-family: Consolas, Monaco, 'Andale Mono', monospace;
+     background-color: #101030;
+     color: #d0d0d0;
+     padding: 2px 4px;
+     font-size: 0.9em;
+     margin: 10px;
+     padding: 10px;
+ }
+
+ #table-of-contents {
+     margin-top: 20px;
+     margin-bottom: 30px;
+ }
+
+ .toc {
+     border-bottom: 1px solid #ccc;
+     padding-bottom: 20px;
+     margin-bottom: 20px;
+ }
+
+ .toc ol {
+     counter-reset: item;
+     list-style: none;
+     padding-left: 25px;
+     margin-top: 10px;
+ }
+
+ .toc li {
+     counter-increment: item;
+ }
+
+ .toc li::before {
+     content: counters(item, ".") ". ";
+     margin-right: 5px;
+     color: #333;
+ }
+
+ .toc ol li ol {
+     counter-reset: item;
+     padding-left: 25px;
+ }
+
+ .toc a {
+     text-decoration: none;
+     color: #00b;
+ }
+
+ .toc a:hover {
+     background-color: #0ff;
+ }
+
+ .example {
+     margin: 20px 0;
+     padding: 0;
+ }
+
+ .example h4 {
+     margin-top: 15px;
+     margin-bottom: 10px;
+ }
+
+ /* Estilos para títolos de sección similares a la imagen */
+ .section-title {
+     background-color: #333;
+     color: #f78e25;
+     /* Naranja como en la imagen */
+     padding: 10px 15px;
+     font-size: 1.3em;
+     margin: 30px 0 20px 0;
+     text-align: center;
+ }
+
+ .section-subtitle {
+     font-size: 1.1em;
+     color: #333;
+     margin-top: 20px;
+     font-weight: bold;
+ }
+
+ /* Párrafos explicativos */
+ .explanation {
+     margin-bottom: 15px;
+ }
+
+ /* Estilos para el glosario */
+ dl {
+     margin: 20px 0;
+ }
+
+ dt {
+     font-weight: bold;
+     margin-top: 15px;
+ }
+
+ dd {
+     margin-left: 20px;
+      margin-bottom: 10px;
+ }
+    </style>
+</head>
+<body>
+<div class="highlight language-python"><pre><span></span><span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
+
+<span class="c1"># Paso 1: Conectar a MongoDB</span>
+<span class="k">def</span> <span class="nf">get_database</span><span class="p">():</span>
+    <span class="c1"># Crear una conexión utilizando MongoClient</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">MongoClient</span><span class="p">(</span><span class="s1">&#39;mongodb://localhost:27017/&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Obtener/crear una base de datos llamada &#39;empresa&#39;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="s1">&#39;empresa&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">db</span>
+
+<span class="c1"># ------------------ CREATE ------------------</span>
+<span class="k">def</span> <span class="nf">crear_empleado</span><span class="p">(</span><span class="n">empleados_collection</span><span class="p">):</span>
+    <span class="c1"># Definir un nuevo documento (registro)</span>
+    <span class="n">nuevo_empleado</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;nombre&quot;</span><span class="p">:</span> <span class="s2">&quot;Ana García&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;ana.garcia@ejemplo.com&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;edad&quot;</span><span class="p">:</span> <span class="mi">28</span><span class="p">,</span>
+        <span class="s2">&quot;puesto&quot;</span><span class="p">:</span> <span class="s2">&quot;Desarrollador Python&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fecha_contratacion&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="s2">&quot;habilidades&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;MongoDB&quot;</span><span class="p">,</span> <span class="s2">&quot;Flask&quot;</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Insertar el documento en la colección</span>
+    <span class="n">resultado</span> <span class="o">=</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">nuevo_empleado</span><span class="p">)</span>
+
+    <span class="c1"># Devolver el ID del nuevo documento</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Empleado creado con ID: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">inserted_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resultado</span><span class="o">.</span><span class="n">inserted_id</span>
+
+<span class="c1"># ------------------ READ ------------------</span>
+<span class="k">def</span> <span class="nf">leer_empleados</span><span class="p">(</span><span class="n">empleados_collection</span><span class="p">):</span>
+    <span class="c1"># Obtener todos los empleados</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Todos los empleados:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">empleado</span> <span class="ow">in</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">find</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ID: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, Nombre: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, Puesto: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;puesto&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Buscar un empleado específico por nombre</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Buscar por nombre:&quot;</span><span class="p">)</span>
+    <span class="n">empleado</span> <span class="o">=</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;nombre&quot;</span><span class="p">:</span> <span class="s2">&quot;Ana García&quot;</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">empleado</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Encontrado: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, Email: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Empleado no encontrado&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Buscar empleados por criterio (ejemplo: mayores de 25 años)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Empleados mayores de 25 años:&quot;</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;edad&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">}}</span>
+    <span class="k">for</span> <span class="n">empleado</span> <span class="ow">in</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, Edad: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;edad&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># ------------------ UPDATE ------------------</span>
+<span class="k">def</span> <span class="nf">actualizar_empleado</span><span class="p">(</span><span class="n">empleado_id</span><span class="p">,</span> <span class="n">empleados_collection</span><span class="p">):</span>
+    <span class="c1"># Actualizar un solo campo</span>
+    <span class="n">filtro</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">empleado_id</span><span class="p">,</span> <span class="p">)}</span>
+    <span class="n">nueva_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;edad&quot;</span><span class="p">:</span> <span class="mi">29</span><span class="p">}}</span>
+
+    <span class="n">resultado</span> <span class="o">=</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filtro</span><span class="p">,</span> <span class="n">nueva_info</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Empleado actualizado: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2"> documento(s) modificado(s)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Actualizar múltiples campos</span>
+    <span class="n">nueva_info_multiple</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;$set&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;puesto&quot;</span><span class="p">:</span> <span class="s2">&quot;Desarrollador Senior Python&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;habilidades&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Python&quot;</span><span class="p">,</span> <span class="s2">&quot;MongoDB&quot;</span><span class="p">,</span> <span class="s2">&quot;Flask&quot;</span><span class="p">,</span> <span class="s2">&quot;FastAPI&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">resultado</span> <span class="o">=</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filtro</span><span class="p">,</span> <span class="n">nueva_info_multiple</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Información actualizada: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">modified_count</span><span class="si">}</span><span class="s2"> documento(s) modificado(s)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Verificar la actualización</span>
+    <span class="n">empleado_actualizado</span> <span class="o">=</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">filtro</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Empleado actualizado: </span><span class="si">{</span><span class="n">empleado_actualizado</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, Puesto: </span><span class="si">{</span><span class="n">empleado_actualizado</span><span class="p">[</span><span class="s1">&#39;puesto&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># ------------------ DELETE ------------------</span>
+<span class="k">def</span> <span class="nf">eliminar_empleado</span><span class="p">(</span><span class="n">empleado_id</span><span class="p">,</span> <span class="n">empleados_collection</span><span class="p">):</span>
+    <span class="c1"># Eliminar un solo documento</span>
+    <span class="n">filtro</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">empleado_id</span><span class="p">)}</span>
+    <span class="n">resultado</span> <span class="o">=</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">delete_one</span><span class="p">(</span><span class="n">filtro</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Empleado eliminado: </span><span class="si">{</span><span class="n">resultado</span><span class="o">.</span><span class="n">deleted_count</span><span class="si">}</span><span class="s2"> documento(s) eliminado(s)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Podríamos también eliminar múltiples documentos</span>
+    <span class="c1"># Por ejemplo, eliminar todos los empleados con edad &gt; 60</span>
+    <span class="c1"># resultado = empleados_collection.delete_many({&quot;edad&quot;: {&quot;$gt&quot;: 60}})</span>
+
+<span class="c1"># ------------------ EJECUTAR OPERACIONES ------------------</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Obtener la base de datos</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_database</span><span class="p">()</span>
+
+    <span class="c1"># Obtener una colección (equivalente a una tabla en BD relacionales)</span>
+    <span class="n">empleados_collection</span> <span class="o">=</span> <span class="n">db</span><span class="p">[</span><span class="s1">&#39;empleados&#39;</span><span class="p">]</span>
+    <span class="c1"># Crear un nuevo empleado y obtener su ID</span>
+    <span class="n">empleado_id</span> <span class="o">=</span> <span class="n">crear_empleado</span><span class="p">(</span><span class="n">empleados_collection</span><span class="p">)</span>
+
+    <span class="c1"># Leer empleados</span>
+    <span class="n">leer_empleados</span><span class="p">(</span><span class="n">empleados_collection</span><span class="p">)</span>
+
+    <span class="c1"># Actualizar el empleado recién creado</span>
+    <span class="n">actualizar_empleado</span><span class="p">(</span><span class="n">empleado_id</span><span class="p">,</span> <span class="n">empleados_collection</span><span class="p">)</span>
+
+    <span class="c1"># Eliminar el empleado</span>
+    <span class="n">eliminar_empleado</span><span class="p">(</span><span class="n">empleado_id</span><span class="p">,</span> <span class="n">empleados_collection</span><span class="p">)</span>
+
+    <span class="c1"># Verificar que se haya eliminado</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Verificar después de eliminar:&quot;</span><span class="p">)</span>
+    <span class="n">empleado</span> <span class="o">=</span> <span class="n">empleados_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s2">&quot;_id&quot;</span><span class="p">:</span> <span class="n">ObjectId</span><span class="p">(</span><span class="n">empleado_id</span><span class="p">)})</span>
+    <span class="k">if</span> <span class="n">empleado</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;El empleado aún existe: </span><span class="si">{</span><span class="n">empleado</span><span class="p">[</span><span class="s1">&#39;nombre&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;El empleado ha sido eliminado correctamente&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</body>
+</html>
