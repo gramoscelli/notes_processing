@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   objetos
+  </title>
+ </head>
+ <body>
+  <h1 id="programacion-orientada-por-objetos">
+   Programación Orientada por Objetos
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#objetos-y-clases">
+      Objetos y Clases
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#agregacion-y-composicion-de-clases-en-uml">
+      Agregación y Composición de clases en UML
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#herencia">
+      Herencia
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#resumen-de-relaciones">
+      RESUMEN DE RELACIONES
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="objetos-y-clases">
+    Objetos y Clases
+   </h2>
+   <h3 id="que-veremos">
+    ¿Qué veremos?
+   </h3>
+   <ol>
+    <li>
+     <p>
+      Aprenderemos el paradigma de Programación Orientado a Objetos: qué son clases, objetos, abstracción, encapsulamiento, herencia, polimorfismo y otras cosillas &amp; a little bit of UML
+     </p>
+    </li>
+    <li>
+     <p>
+      Vamos a implementar lo visto en “ teoría ” utilizando Typescript con algunos condimentos como el uso de Collections (p.ej. Listas)
+     </p>
+    </li>
+    <li>
+     <p>
+      Vamos a implementar un proyecto que contendrá todo lo aprendido
+     </p>
+    </li>
+    <li>
+     <p>
+      Un poco de buenas prácticas: SOLID y también un poco de Unit testing.
+     </p>
+    </li>
+   </ol>
+   <h3 id="que-es-un-objeto">
+    ¿QUÉ ES UN OBJETO?
+   </h3>
+   <p>
+    "Es una entidad (algo) que tiene un estado, un comportamiento y una identidad”.
+   </p>
+   <p>
+    Supongamos una fábrica que tiene máquinas.. y que el estado de la máquina puede estar conformado por:
+    <strong>
+     encendida/apagada
+    </strong>
+    (
+    <em>
+     on/off
+    </em>
+    ) su
+    <strong>
+     potencia
+    </strong>
+    ,
+    <strong>
+     velocidad
+    </strong>
+    actual,
+    <strong>
+     temperatura
+    </strong>
+    , etc.; su comportamiento puede incluir diversas acciones para
+    <strong>
+     encenderla
+    </strong>
+    y
+    <strong>
+     apagarla
+    </strong>
+    ,
+    <strong>
+     obtener su temperatura
+    </strong>
+    , activar o desactivar otras máquinas, condiciones de señal de error o
+    <strong>
+     *cambiar de velocidad
+    </strong>
+    …
+   </p>
+   <ul>
+    <li>
+     En el diseño de un programa orientado a objetos , se crea una abstracción o
+     <strong>
+      modelo simplificado de la máquina basado en las propiedades y comportamiento
+     </strong>
+     .
+    </li>
+    <li>
+     Al momento de diseñar un programa orientado a objetos, podríamos decir que un objeto es: “cualquier cosa , real o abstracta, en la que se almacenan datos y aquellos métodos (operaciones) que manipulan los datos”
+    </li>
+   </ul>
+   <p>
+    Como veremos más abajo, en UML los objetos se definen como una caja rectangular, donde se especifican “atributos ” en la parte de arriba, y métodos en la parte de abajo.
+   </p>
+   <p>
+    Los
+    <strong>
+     atributos
+    </strong>
+    serían el “estado ” del objeto, es decir los valores que tiene. Y los
+    <strong>
+     métodos
+    </strong>
+    serían las 
+“cosas que le podemos pedir ”.
+   </p>
+   <p>
+    Volviendo al caso de la fábrica y la máquina, en un diseño de POO podríamos pensar en un objeto “ máquina” , cuyo estado es 
+si está prendida o apagada, su velocidad actual, y su temperatura. Y entre las 
+acciones que puede hacer es : acelerar, frenar, refrigerarse, prenderse y apagarse, etc.
+   </p>
+   <p>
+    De ahora en más, para representar gráficamente objetos, clases y relaciones 
+entre ellos , utilizaremos un lenguaje visual llamado UML que iremos 
+aprendiendo poco a poco.
+   </p>
+   <div class="mermaid">
+    #10#10classDiagram#10direction LR#10#10class Maquina {#10    &lt;&lt; Objeto &gt;&gt;#10    Encendida : si#10    Velocidad Máxima : 100 rpm#10    Temperatura : 40C#10    ...#10#10    encender()#10    apagar()#10    acelerar(int cantidad)#10    frenar(int cantidad)#10#10}#10#10#10
+   </div>
+   <p>
+    En la figura estamos modelando un objeto de la vida real en un concepto de POO. 
+Lo interesante, es que en
+    <em>
+     POO TODO son clases y objetos
+    </em>
+    (casi todo en realidad 
+pero no nos pondremos tan exquisitos ahora).
+   </p>
+   <p>
+    Por ejemplo, podríamos pensar en un objeto, un poco más abstracto que una máquina de una fábrica, que nos ayude a conectarnos a una API Rest. Este objeto podría tener como estado la URL a la que apunta, y como 
+“comportamiento” le podamos pedir que haga un GET o un POST a esa URL.
+   </p>
+   <p>
+    En POO estes objeto tendría el siguiente diseño:
+   </p>
+   <div class="mermaid">
+    #10#10classDiagram#10direction LR#10#10class LlamadorAPIRest {#10    url:www .munibahia.com#10    get(String params) String#10    post(String params) String#10}#10#10#10
+   </div>
+   <h3 id="que-es-una-clase">
+    ¿Qué es una Clase ?
+   </h3>
+   <p>
+    Una clase es lo que contiene toda la descripción necesaria (métodos y atributos) para poder crear un objeto.
+   </p>
+   <p>
+    Es decir:
+    <strong>
+     para poder crear un objeto, necesitamos sí o sí la clase que describe 
+cómo construir ese objeto
+    </strong>
+    .
+   </p>
+   <p>
+    La clase nos dice para cada atributo del objeto, si es un int, un String, o si es del tipo de otro objeto.
+   </p>
+   <p>
+    Para cada método nos dice si tiene parámetros de entrada, de salida y de qué tipos.
+(..y también nos dice cuáles son los
+    <em>
+     “constructores”
+    </em>
+    que aparecen más abajo)
+   </p>
+   <h3 id="introduccion-a-uml">
+    Introducción a UML
+   </h3>
+   <p>
+    En UML una Clase se representa con un
+    <strong>
+     RECTÁNGULO
+    </strong>
+    dividido en 3 secciones:
+   </p>
+   <ul>
+    <li>
+     La sección superior tiene el
+     <strong>
+      nombre de la clase
+     </strong>
+     que representa
+    </li>
+    <li>
+     Luego siguen los
+     <strong>
+      atributos
+     </strong>
+     de la clase con el sig. formato:
+    </li>
+    <li>
+     <p>
+      <em>
+       nombreParametro :tipoDeDato
+      </em>
+      , ejemplo de atributo:
+     </p>
+     <ul>
+      <li>
+       <em>
+        nombre:String
+       </em>
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      Finalmente los métodos , con el siguiente Formato:
+     </p>
+    </li>
+    <li>
+     <em>
+      nombreMétodo (tipodatoEntrada nombreDatoEntrada):tipoDatoSalida
+     </em>
+     , ejemplos de 
+métodos:
+     <ul>
+      <li>
+       <em>
+        sumarValores(Integer valor 1, Integer valor 2):Integer;
+       </em>
+      </li>
+      <li>
+       caminar(Integer velocidad); ← notar que no tiene datos de salida
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <div class="mermaid">
+    #10#10classDiagram#10direction LR#10#10class Persona {#10    &lt;&lt; Clase &gt;&gt;#10    nombre : String#10    edad : Integer#10    --#10    caminar()#10    comer()#10    dormir()#10}#10#10class Juan {#10    &lt;&lt; Objeto &gt;&gt;#10    nombre : "Juan Gonzalez"#10    edad : 19#10    --#10    caminar()#10    comer()#10    dormir()#10}#10#10class Julia {#10    &lt;&lt; Objeto &gt;&gt;#10    nombre : "Julia Sequeira"#10    edad : 45#10    --#10    caminar()#10    comer()#10    dormir()#10}#10#10Persona &lt;|.. Juan : instancia#10Persona &lt;|.. Julia : instancia#10#10#10
+   </div>
+   <h3 id="las-clases-son-tipos-de-datos">
+    ¡Las clases son tipos de datos!
+   </h3>
+   <p>
+    <strong>
+     Una Clase es al fin y al cabo un tipo de dato
+    </strong>
+    ( que tiene un estado y también se le pueden pedir cosas).
+   </p>
+   <p>
+    Por lo tanto, es lo más normal ver
+    <strong>
+     clases que están compuestas por otras clases, que referencian a otras clases y qué aceptan y devuelven datos del tipo de otra clase
+    </strong>
+    .
+   </p>
+   <p>
+    Por ejemplo, supongamos la clase
+    <em>
+     "Persona"
+    </em>
+    definida anteriormente, que tiene un nombre, una edad... y ahora queremos agregarle su
+    <strong>
+     posición
+    </strong>
+    en el planeta (coordenadas). Podríamos decir que
+    <strong>
+     el nombre es un String
+    </strong>
+    y
+    <strong>
+     la edad un Integer
+    </strong>
+    ... pero la
+    <strong>
+     “Posición”
+    </strong>
+    ¿qué sería?. Ya estamos en problemas si queremos utilizar un tipo de datos simple o básico (int, float, string, etc).
+   </p>
+   <p>
+    Entonces podríamos pensar en crear una
+    <strong>
+     clase “Posición”
+    </strong>
+    que tiene los valores de latitud y longitud.
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Posicion {#10    latitud : decimal#10    longitud : decimal#10    --#10    ...#10}#10#10class Persona {#10    nombre : String#10    edad : Integer#10    DNI : String#10    posicion : Posicion#10    --#10    caminar()#10    comer()#10    dormir()#10}#10#10Persona --&gt; Posicion : usa#10#10#10
+   </div>
+   <h3 id="como-se-crea-una-clase">
+    ¿Cómo se crea una clase?
+   </h3>
+   <p>
+    Hasta ahora vimos que una clase tiene:
+- Un nombre
+- Un conjunto de Atributos
+- Un conjunto de Métodos.
+   </p>
+   <p>
+    Nos está faltando algo que nos permita
+    <em>
+     construir
+    </em>
+    objetos de esa Clase... y eso es lo que llamaremos
+    <em>
+     “Constructores”
+    </em>
+    .
+   </p>
+   <p>
+    Los constructores son
+    <strong>
+     métodos especiales
+    </strong>
+    , que pueden tener parámetros de entrada (o no) y cuando se invoquen devolverán un objeto del mismo tipo que la clase.
+   </p>
+   <p>
+    Distinguimos constructores de métodos en UML, porque el constructor se llama igual que la clase y no se indica :&lt;_tipodedato&gt; indicando tipo de dato de salida.
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Posicion {#10    latitud : decimal#10    longitud : decimal#10    --#10    ...#10}#10#10class Persona {#10    nombre : String#10    edad : Integer#10    posicion : Posicion#10    Persona()#10    Persona(String nombre, Integer edad, Posicion posicion)#10    caminar()#10    comer()#10    dormir()#10}#10#10Persona --&gt; Posicion : usa#10#10
+   </div>
+   <p>
+    (Observar que hay dos constructores que se llaman igual)
+   </p>
+   <h3 id="tipo-de-dato-de-una-consulta">
+    Tipo de dato de una consulta
+   </h3>
+   <p>
+    Es común encontrar mientras uno desarrolla, que una clase ya declarada hace falta gregarle uno o más métodos nuevos. En este caso supongamos que queremos agregar un método llamado
+    <em>
+     "viajarA"
+    </em>
+    que tiene como dato de entrada una
+    <strong>
+     posición
+    </strong>
+    en el mundo, y
+    <strong>
+     nos devuelve
+    </strong>
+    como dato de salida un boolean que indica si se pudo viajar a esa persona o no a esa posición.
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10#10class Persona {#10    nombre : String#10    edad : Integer#10    posicion : Posicion#10#10    Persona()#10    Persona(String nombre, Integer edad, Posicion posicion)#10#10    caminar()#10    comer()#10    dormir()#10    viajarA(Posicion posicion)  boolean#10}#10#10#10#10
+   </div>
+   <h3 id="como-se-declara-una-clase-en-typescript">
+    ¿Cómo se declara una clase en Typescript?
+   </h3>
+   <p>
+    Este código debe estar en un archivo que se llame IGUAL a la clase, sería persona.ts
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: posicion.ts</span>
+
+<span class="c1">// Clase Posicion (en lugar de interface)</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Posicion</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">y</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: persona.ts</span>
+
+<span class="c1">// Clase Persona</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">posicion</span><span class="o">:</span><span class="w"> </span><span class="kt">Posicion</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Constructores del UML (sobrecarga)</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">();</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">posicion</span><span class="o">:</span><span class="w"> </span><span class="kt">Posicion</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">nombre?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">edad?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">posicion?</span><span class="o">:</span><span class="w"> </span><span class="kt">Posicion</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nombre</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s2">""</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">edad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">edad</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">posicion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">posicion</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">caminar</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// implementar comportamiento</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">comer</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// implementar comportamiento</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">dormir</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// implementar comportamiento</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">viajarA</span><span class="p">(</span><span class="nx">posicion</span><span class="o">:</span><span class="w"> </span><span class="kt">Posicion</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">posicion</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">posicion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">posicion</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: main.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./persona"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Posicion</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./posicion"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">posicionInicial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Posicion</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">20</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">juan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Persona</span><span class="p">(</span><span class="s2">"Juan"</span><span class="p">,</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span><span class="w"> </span><span class="nx">posicionInicial</span><span class="p">);</span>
+
+<span class="nx">juan</span><span class="p">.</span><span class="nx">caminar</span><span class="p">();</span>
+<span class="nx">juan</span><span class="p">.</span><span class="nx">comer</span><span class="p">();</span>
+<span class="nx">juan</span><span class="p">.</span><span class="nx">dormir</span><span class="p">();</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">nuevaPosicion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Posicion</span><span class="p">(</span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="mf">200</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">resultado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">juan</span><span class="p">.</span><span class="nx">viajarA</span><span class="p">(</span><span class="nx">nuevaPosicion</span><span class="p">);</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`¿Viaje exitoso? </span><span class="si">${</span><span class="nx">resultado</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Nueva posición de Juan: (</span><span class="si">${</span><span class="nx">juan</span><span class="p">.</span><span class="nx">posicion</span><span class="p">.</span><span class="nx">x</span><span class="si">}</span><span class="sb">, </span><span class="si">${</span><span class="nx">juan</span><span class="p">.</span><span class="nx">posicion</span><span class="p">.</span><span class="nx">y</span><span class="si">}</span><span class="sb">)`</span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="instanciar-una-clase">
+    Instanciar una clase
+   </h3>
+   <p>
+    Suponiendo que ya tenemos creado el archivo Persona.Typescript con el código de la clase dentro, ahora queremos
+    <strong>
+     crear un objeto
+    </strong>
+    de tipo Persona. Para crear objetos se utiliza
+    <strong>
+     new
+    </strong>
+    y el nombre del constructor que elijamos.
+   </p>
+   <p>
+    Entonces, supongamos queremos crear 2 objetos personas:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">Persona</span><span class="w"> </span><span class="nx">juan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Persona</span><span class="p">();</span>
+<span class="c1">// es lo mismo que : </span>
+<span class="nx">Persona</span><span class="w"> </span><span class="nx">juan</span><span class="p">;</span>
+<span class="nx">juan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Persona</span><span class="p">();</span>
+</pre>
+   </div>
+   <p>
+    ¿Qué pasa cuando hacemos:
+    <code>
+     Persona juan = new Persona();
+    </code>
+    ?
+   </p>
+   <ol>
+    <li>
+     Se declara una variable llamada juan del tipo
+     <em>
+      Persona
+     </em>
+     .
+    </li>
+    <li>
+     Se crea un objeto en la memoria del tipo
+     <em>
+      Persona
+     </em>
+     .
+    </li>
+    <li>
+     Se llama al constructor
+     <em>
+      Persona()
+     </em>
+     .
+    </li>
+    <li>
+     La variable juan queda apuntando al objeto creado.
+    </li>
+   </ol>
+   <div class="mermaid">
+    #10flowchart LR#10#10#10Juan[Juan] --&gt; Persona["**Persona**#10nombre : null#10edad : null#10posicion : null#10#10caminar()#10comer()#10dormir()"]#10#10#10
+   </div>
+   <p>
+    ¿Qué pasa cuando hacemos:
+    <code>
+     Persona juan = new Persona( “Juan Gonzalez” , "23", null);
+    </code>
+    ?
+   </p>
+   <p>
+    Estamos usando otro contructor, que tiene más parámetros de entrada (o tal vez, el mismo contructor pero sin los parámetros por omisión)
+   </p>
+   <div class="mermaid">
+    #10flowchart LR#10#10#10Juan[Juan] --&gt; Persona["**Persona**#10nombre : Juan González#10edad : 23#10posicion : null#10#10caminar()#10comer()#10dormir()"]#10#10#10
+   </div>
+   <h3 id="acceder-a-una-clase">
+    Acceder a una clase
+   </h3>
+   <p>
+    ¿Cómo hago para acceder a los atributos y/o métodos de una clase?
+   </p>
+   <p>
+    En Typescript se escribe así:
+    <em>
+     &lt;nombre de la variable&gt;.&lt;nombre -método/nombre -atributo&gt;
+    </em>
+   </p>
+   <p>
+    Por ejemplo si al objeto que apunta la variable “juan ” queremos asignarle una nueva edad:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">juan</span><span class="p">.</span><span class="nx">edad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">37</span><span class="p">;</span>
+</pre>
+   </div>
+   <p>
+    Ejemplos de instancias:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">Persona</span><span class="w"> </span><span class="nx">juan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Persona</span><span class="p">(</span><span class="w"> </span><span class="err">“</span><span class="nx">Juan</span><span class="w"> </span><span class="err">”</span><span class="p">,</span><span class="kc">null</span><span class="p">,</span><span class="kc">null</span><span class="p">);</span>
+<span class="nx">Persona</span><span class="w"> </span><span class="nx">pepe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Persona</span><span class="p">(</span><span class="w"> </span><span class="err">“</span><span class="nx">Pepe</span><span class="err">”</span><span class="p">,</span><span class="kc">null</span><span class="p">,</span><span class="kc">null</span><span class="p">);</span>
+</pre>
+   </div>
+   <div class="mermaid">
+    #10flowchart LR#10#10#10juan[juan] --&gt; Persona["**Persona**#10nombre = ''Juan''#10edad = null#10posiciónActual = null"]#10#10pepe[pepe] --&gt; Persona.["**Persona**#10nombre = ''Pepe''#10edad = null#10posiciónActual = null"]#10#10#10
+   </div>
+   <h3 id="reasignando-objetos">
+    Reasignando objetos
+   </h3>
+   <p>
+    ¿Qué pasa si asignamos el objeto Juan a Pepe con la esta instrucción?:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">juan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">pepe</span><span class="p">;</span><span class="w"> </span>
+</pre>
+   </div>
+   <p>
+    ¿Cuál sería el valor de
+    <code>
+     juan.nombre
+    </code>
+    ? ¿Juan o Pepe?
+   </p>
+   <p>
+    ¿Cuál sería el valor de
+    <code>
+     pepe.nombre
+    </code>
+    ? ¿Juan o Pepe?
+   </p>
+   <div class="mermaid">
+    #10flowchart LR#10#10#10juan[juan] --&gt; Persona["**Persona**#10nombre = ''Pepe''#10edad = null#10posiciónActual = null"]#10#10pepe[pepe] --&gt; Persona["**Persona**#10nombre = ''Pepe''#10edad = null#10posiciónActual = null"]#10#10#10
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="agregacion-y-composicion-de-clases-en-uml">
+    Agregación y Composición de clases en UML
+   </h2>
+   <h3 id="asociacion-entre-objetos-o-clases">
+    Asociación entre objetos (o clases)
+   </h3>
+   <div class="mermaid">
+    #10flowchart LR#10    Cliente["Cliente"] ---|vive en| Direccion["Dirección"]#10#10#10
+   </div>
+   <p>
+    Una asociación es una relación que indica que un objeto utiliza o está vinculado con otro objeto, permitiendo la comunicación o colaboración entre ellos.
+   </p>
+   <p>
+    Supongamos que tenemos las clases Profesor y Curso. Una asociación podría representar que:
+- Un Profesor dicta uno o varios Cursos.
+- Un Curso es dictado por un Profesor.
+   </p>
+   <p>
+    En UML, los diagramas de asociación entre objetos se representan como:
+- Si las asociaciones se pueden recorrer en ambos sentidos, se usa una línea plana. 
+- Si queremos que se recorra sólo en un sentido se utiliza una flecha.
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Cuenta {#10    +ingresar()#10    +retirar()#10}#10#10class Dinero#10#10Cuenta " * " --&gt; " 1 " Dinero : balance#10#10#10
+   </div>
+   <p>
+    <strong>
+     Asociación unidireccional
+    </strong>
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Cuenta {#10  -balance#10  -límite#10  -fecha_apertura#10    +ingresar()#10    +retirar()#10}#10#10class Cliente {#10  -nombre#10  -apellidos#10  -dni#10  -dirección#10#10}#10#10Cuenta " * " --&gt; " 1 " Cliente : titular#10#10#10
+   </div>
+   <p>
+    <strong>
+     Asociación bidireccional
+    </strong>
+   </p>
+   <hr/>
+   <h4 id="ejemplo">
+    Ejemplo:
+   </h4>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Cuenta {#10    +ingresar()#10    +retirar()#10}#10#10class Dinero#10#10Cuenta " * " --&gt; " 1 " Dinero : balance#10#10#10
+   </div>
+   <p>
+    Equivale a:
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Cuenta {#10    -balance:Dinero#10    +ingresar()#10    +retirar()#10}#10#10#10
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: dinero.ts</span>
+
+<span class="c1">// Clase auxiliar Dinero (puedes ajustarla según necesidades reales)</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Dinero</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">valor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">valor</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getValor</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">valor</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">sumar</span><span class="p">(</span><span class="nx">cantidad</span><span class="o">:</span><span class="w"> </span><span class="kt">Dinero</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">valor</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">cantidad</span><span class="p">.</span><span class="nx">getValor</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">restar</span><span class="p">(</span><span class="nx">cantidad</span><span class="o">:</span><span class="w"> </span><span class="kt">Dinero</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">valor</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="nx">cantidad</span><span class="p">.</span><span class="nx">getValor</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: cuenta.ts</span>
+
+<span class="c1">// Clase Cuenta</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Dinero</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./dinero"</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Cuenta</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">balance</span><span class="o">:</span><span class="w"> </span><span class="kt">Dinero</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Dinero</span><span class="p">(</span><span class="mf">0</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">ingresar</span><span class="p">(</span><span class="nx">cantidad</span><span class="o">:</span><span class="w"> </span><span class="kt">Dinero</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">.</span><span class="nx">sumar</span><span class="p">(</span><span class="nx">cantidad</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">retirar</span><span class="p">(</span><span class="nx">cantidad</span><span class="o">:</span><span class="w"> </span><span class="kt">Dinero</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">.</span><span class="nx">restar</span><span class="p">(</span><span class="nx">cantidad</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getSaldo</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nx">Dinero</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: main.ts</span>
+
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Dinero</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./dinero"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Cuenta</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./cuenta"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">cuenta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Cuenta</span><span class="p">();</span>
+<span class="nx">cuenta</span><span class="p">.</span><span class="nx">ingresar</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Dinero</span><span class="p">(</span><span class="mf">100</span><span class="p">));</span>
+<span class="nx">cuenta</span><span class="p">.</span><span class="nx">retirar</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Dinero</span><span class="p">(</span><span class="mf">30</span><span class="p">));</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Saldo actual:"</span><span class="p">,</span><span class="w"> </span><span class="nx">cuenta</span><span class="p">.</span><span class="nx">getSaldo</span><span class="p">().</span><span class="nx">getValor</span><span class="p">());</span><span class="w"> </span><span class="c1">// Saldo actual: 70</span>
+</pre>
+    </div>
+   </div>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Cuenta {#10    -balance#10    -límite#10    -fecha_apertura#10#10    +ingresar()#10    +retirar()#10}#10#10class Cliente {#10    -nombre#10    -apellidos#10    -nif#10    -dirección#10}#10#10Cuenta " * " --&gt; " 1 " Cliente : titular#10#10
+   </div>
+   <p>
+    viene a ser lo mismo que:
+   </p>
+   <div class="mermaid">
+    #10#10classDiagram#10direction TB#10#10class Cuenta {#10    -balance#10    -límite#10    -fecha_apertura#10    -titular : Cliente#10    --#10    +ingresar()#10    +retirar()#10}#10#10class Cliente {#10    -nombre#10    -apellidos#10    -nif#10    -dirección#10    -cuenta[*] : Cuenta#10}#10#10
+   </div>
+   <h3 id="multiplicidad-de-las-asociaciones">
+    Multiplicidad de las asociaciones
+   </h3>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Profesor#10class Departamento#10#10Profesor "1" -- "0..1" Departamento : dirige#10#10#10
+   </div>
+   <p>
+    Todo departamento tiene un director.
+Un profesor puede dirigir un departamento.
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Profesor#10class Departamento#10#10Profesor "*" -- "1" Departamento : pertenece a#10#10#10
+   </div>
+   <p>
+    Todo profesor pertenece a un departamento. 
+A un departamento pueden pertenecer varios profesores.
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10direction LR#10#10class Cuenta#10class Cliente#10#10Cuenta "0..*" -- "1..*" Cliente : es titular de#10#10#10
+   </div>
+   <p>
+    <strong>
+     Relación opcional
+    </strong>
+    : Un cliente puede o no ser titular de una cuenta.
+    <strong>
+     Relación obligatoria
+    </strong>
+    : Una cuenta ha de tener
+    <em>
+     como mínimo
+    </em>
+    un titular.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Multiplicidad
+      </th>
+      <th>
+       Significado
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       1
+      </td>
+      <td>
+       Uno y sólo uno
+      </td>
+     </tr>
+     <tr>
+      <td>
+       0..1
+      </td>
+      <td>
+       Cero o uno
+      </td>
+     </tr>
+     <tr>
+      <td>
+       N..M
+      </td>
+      <td>
+       Desde N hasta M
+      </td>
+     </tr>
+     <tr>
+      <td>
+       *
+      </td>
+      <td>
+       Cero o varios
+      </td>
+     </tr>
+     <tr>
+      <td>
+       0..*
+      </td>
+      <td>
+       Cero o varios
+      </td>
+     </tr>
+     <tr>
+      <td>
+       1..*
+      </td>
+      <td>
+       Uno o varios (al menos uno)
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <ul>
+    <li>
+     <p>
+      Cuando la multiplicidad es 0, la relación es
+      <em>
+       opcional
+      </em>
+      .
+     </p>
+    </li>
+    <li>
+     <p>
+      Una multiplicidad mayor o igual que 1 establece una
+      <em>
+       relación obligada
+      </em>
+      .
+     </p>
+    </li>
+    <li>
+     <p>
+      Si no se especifica la multiplicidad, se supone que es *.
+     </p>
+    </li>
+   </ul>
+   <p>
+    Hasta ahora vimos el caso de relaciones entre objetos más general: Asociación ,  que representa un “ tal  clase tiene relaci ón con tal otra clase.
+   </p>
+   <p>
+    Ahora vamos a ver
+    <em>
+     dos tipos de asociación
+    </em>
+    que son más específicos y que responden a la relación
+    <em>
+     “contiene”
+    </em>
+    :
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Agregación
+     </strong>
+     : una clase
+     <em>
+      “contiene”
+     </em>
+     otras clases (instanciadas).
+    </li>
+    <li>
+     <strong>
+      Composición
+     </strong>
+     :  una clase A  contiene otra clase B , pero es
+     <strong>
+      más 
+estricta
+     </strong>
+     , al punto  que  la  clase  B no  puede  existir si no  existe  la  clase A. (en este caso, se dice que la clase B  “pertenece”  a la clase A, o que, la clase B  es "parte necesaria"  de  la clase A. Si  la clase A  se destruye, también se destruye la clase B).
+    </li>
+   </ul>
+   <div class="svg-container">
+    <svg height="400" viewbox="0 0 784 557" width="400" xmlns="http://www.w3.org/2000/svg">
+     <defs>
+      <style type="text/css">
+       <![CDATA[
+      .label { font-family: Arial, Helvetica, sans-serif; font-weight: 700; fill: #000000; }
+    ]]>
+      </style>
+     </defs>
+     <!-- Background -->
+     <rect fill="#ffffff" height="557" width="784" x="0" y="0">
+     </rect>
+     <!-- Outer ellipse: ASOCIACIÓN -->
+     <ellipse cx="392" cy="280" fill="#98e6a4" fill-opacity="0.95" rx="350" ry="240" stroke="#f0a08a" stroke-width="2.5">
+     </ellipse>
+     <text class="label" font-size="44" x="250" y="95">
+      ASOCIACIÓN
+     </text>
+     <!-- Middle ellipse: AGREGACIÓN -->
+     <ellipse cx="392" cy="298" fill="#dff0df" fill-opacity="0.9" rx="285" ry="200" stroke="#f0a08a" stroke-width="2.2">
+     </ellipse>
+     <text class="label" font-size="38" x="250" y="195">
+      AGREGACIÓN
+     </text>
+     <!-- Inner ellipse: COMPOSICIÓN -->
+     <ellipse cx="392" cy="355" fill="#d7d1f3" fill-opacity="0.95" rx="205" ry="150" stroke="#f0a08a" stroke-width="2.0">
+     </ellipse>
+     <text class="label" font-size="36" x="250" y="340">
+      COMPOSICIÓN
+     </text>
+    </svg>
+   </div>
+   <h4 id="ejemplos">
+    Ejemplos
+   </h4>
+   <p>
+    <strong>
+     Agregación
+    </strong>
+    Las partes pueden formar parte de distintos agregados.
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10  direction LR#10    class Polígono#10    class Punto#10#10    Polígono "0..1" o-- "3..*" Punto : contiene#10#10
+   </div>
+   <p>
+    Observar que los puntos pueden existir aunque no exista el polígono.
+    <strong>
+     Composición
+    </strong>
+    Agregación disjunta y estricta: Las partes solo existen asociadas al compuesto (solo se accede a ellas a través del compuesto).
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10    direction TB#10#10    class Ventana #10    class Cabecera#10    class Panel#10    class ScrollBar#10#10    Ventana "1" *-- "0..1" Cabecera : título#10    Ventana "1" *-- "1" Panel : cuerpo#10    Ventana "1" *-- "0..2" ScrollBar : barra#10#10
+   </div>
+   <div class="mermaid">
+    #10classDiagram#10    direction TB#10#10    class Ventana {#10      -titulo : Cabecera#10      -cuerpo: Panel#10      -barra[2]: ScrollBar#10    }#10#10
+   </div>
+   <p>
+    Si destruyo el objeto ventana, también se destruyen la cabecera, el panel  y el  ScrollBar.
+   </p>
+   <p>
+    La palabra
+    <em>
+     disjunta
+    </em>
+    significa que la clase ventana no tiene elementos en común con nadie.
+   </p>
+   <h3 id="agregacion-vs-composicion">
+    Agregación vs. composición
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       AGREGACIÓN
+      </th>
+      <th>
+       COMPOSICIÓN
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Relación débil entre las clases
+      </td>
+      <td>
+       Relación fuerte
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Las clases pueden existir independientemente
+      </td>
+      <td>
+       No pueden existir independientemente
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Una clase tiene una relación de “tiene” a otra clase
+      </td>
+      <td>
+       Una clase tiene la relación de “pertenece” con la otra
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Ejercicios opcionales:
+   </p>
+   <ol>
+    <li>
+     <p>
+      Escribir el diagrama de clases e implementar en Typescript o pseudocódigo.
+En un mundo alternativo, las personas sólo tienen un nombre (alfanumérico) y 
+un apellido que consta de 5 cifras (por ejemplo 45312), a su vez pueden nacer 
+con desde 1 hasta 4 ojos.
+Las personas saludan diciendo: "hola, mi nombre es: " acompañado de su 
+nombre y su apellido. Por ejemplo :  "hola, mi nombre es Juan 45673"
+El estado les asigna una mascota a todas las personas al nacer, las mascotas 
+tienen un nombre, una raza y un identificador alfanumérico.
+     </p>
+    </li>
+    <li>
+     <p>
+      Se desea modelar una fábrica de autos. La fábrica tiene un nombre y un CUIT. 
+Además contiene en su interior los autos ya fabricados y también los que están en proceso de fabricación.
+Los autos tienen un nombre de modeo, un color, 4 ruedas, una chapa patente que 
+consta de un color y 6 caracteres y un motor que tiene una marca y una cilindrada. 
+Se desea poder listar por pantalla todos los autos que están en fabricación y también todos 
+los terminados. En el caso de los terminados además mostrar la marca y cilindrada del motor que tienen.
+     </p>
+    </li>
+    <li>
+     <p>
+      Escriba el diagrama de clases de estos objetos:
+     </p>
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Se desea representar el sistema de ventanas de la UI de un sistema operativo 
+nuevo.
+    </li>
+    <li>
+     Según el diseñador, las ventanas tienen un alto, un ancho, la sección de 
+contenido(que siempre será un texto)  y una cabecera.
+    </li>
+    <li>
+     La cabecera tiene el título de la ventana y un botón con una cruz para cerrar la ventana.
+    </li>
+    <li>
+     Al presionar la cruz se elimina completamente del sistema la ventana.
+    </li>
+   </ul>
+   <h3 id="encapsulamiento">
+    Encapsulamiento
+   </h3>
+   <p>
+    Es una práctica recomendable de programación
+    <em>
+     encapsular
+    </em>
+    (ocultar) los  atributos
+    <br/>
+    de la clase y los métodos que no queremos exponer a terceros utilizando el calificado
+    <code>
+     private
+    </code>
+    .
+   </p>
+   <p>
+    NOTA: Exisite otros calificadores para modificar el acceso a un atributo:
+    <code>
+     public
+    </code>
+    y
+    <code>
+     protected
+    </code>
+    , pero por ahora solo usaremos private.
+   </p>
+   <p>
+    Para usar encapsulamiento de atributos se debemos:
+   </p>
+   <ul>
+    <li>
+     Declarar
+     <strong>
+      todos
+     </strong>
+     los atributos como private
+    </li>
+    <li>
+     Para cada atributo, en caso de que se necesite, debemos crear un método
+     <em>
+      get&lt;nombreAtributo&gt;
+     </em>
+     y un método
+     <em>
+      set&lt;nombreAtributo&gt;
+     </em>
+     .
+    </li>
+   </ul>
+   <p>
+    <strong>
+     get
+    </strong>
+    se usa  para  obtener el valor del atributo, mientras que
+    <strong>
+     set
+    </strong>
+    se  utiliza  para  modificar el valor del atributo.
+   </p>
+   <h4 id="ejemplo_1">
+    Ejemplo:
+   </h4>
+   <p>
+    Supongamos que tenemos que escribir la clase Persona en Typescript utilizando el encapsulamiento de los atributos. Para esto,  declaramos los atributos como
+    <code>
+     private
+    </code>
+    , y luego escribimos los
+    <em>
+     setters
+    </em>
+    y
+    <em>
+     getters
+    </em>
+    para cada atributo:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nombre</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getNombre</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">nombre</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">setNombre</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nombre</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    En UML también podemos especificar la visibilidad de cada atributo:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Calificador
+      </th>
+      <th>
+       Visibilidad
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       -
+      </td>
+      <td>
+       privado
+      </td>
+     </tr>
+     <tr>
+      <td>
+       +
+      </td>
+      <td>
+       público
+      </td>
+     </tr>
+     <tr>
+      <td>
+       #
+      </td>
+      <td>
+       protegido
+      </td>
+     </tr>
+     <tr>
+      <td>
+       ~
+      </td>
+      <td>
+       paquete
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="ejercicios">
+    Ejercicios
+   </h4>
+   <ol>
+    <li>
+     Tenemos un local de almacenamiento de líquidos, ellos tienen un nombre y un ph. Si el ph es 7 se considera “neutro”, si  es menor que 7 se considera “ ácido”  y si  es mayor que 7 se considera  “alcalino”. Necesitamos  un sistema  que  nos  diga  cuántos  líquidos  de  cada  tipo  tiene  el local.
+    </li>
+   </ol>
+   <div class="mermaid">
+    #10classDiagram#10    direction LR#10#10    class LocalAlmacenamiento {#10        - nombre : string#10        + imprimirReporteLiquidos()#10        + LocalAlmacenamiento(nombre : String)#10        + agregarLiquido(liquido : Liquido)#10        + getNombre() : string#10    }#10#10    class Líquido {#10        - nombre : String#10        - ph : Integer#10        + Liquido(nombre : string, ph : string)#10        + getPh() : int#10        + getNombre() : string#10    }#10#10    LocalAlmacenamiento "1" o--&gt; "*" Líquido#10#10
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="herencia">
+    Herencia
+   </h2>
+   <p>
+    La herencia es un concepto de la POO que nos permite modelar la relación
+    <strong>
+     es un
+    </strong>
+    (o
+    <em>
+     es un caso más específico de
+    </em>
+    ) entre las clases, permitiéndonos extender y reutilizar el código.
+   </p>
+   <p>
+    Supongamos tenemos que queremos modelar un sistema para llevar registro de
+    <em>
+     Estudiantes
+    </em>
+    y de
+    <em>
+     Empleados
+    </em>
+    .
+   </p>
+   <p>
+    Todos los estudiantes y empleados tienen una fecha de nacimiento y un nombre, se solicita poder calcularles la edad.
+   </p>
+   <p>
+    Por otro lado, tenemos a los empleados, que tendrán un número de empleado y una cierta cantidad de dinero que ganan por hora.. Quisiéramos saber el salario mensual de cada empleado, sabiendo que se calcula como
+    <em>
+     "precio por hora * 160"
+    </em>
+    , de los estudiantes por el momento sólo nos interesa el nombre del colegio al que asisten.
+   </p>
+   <p>
+    En primera instancia se nos puede ocurrir algo así…
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10    direction TB#10#10    class Empleado {#10        - Nombre : String#10        - FechaNacimiento : Date#10        - NroEmpleado : int#10        - ValorHora : Decimal#10        + getEdad() : int#10    }#10#10    class Estudiante {#10        - Nombre : String#10        - FechaNacimiento : Date#10        - Colegio : String#10        + getEdad() : int#10        + getColegio()#10    }#10#10
+   </div>
+   <p>
+    Pero vemos rápidamente que hay montones de cosas que se repiten. Violamos el principio DRY: Don't Repeat Yourself !!
+   </p>
+   <p>
+    Deberíamos replicar el código de
+    <code>
+     getEdad()
+    </code>
+    en cada clase... Algo que suena mal!
+   </p>
+   <p>
+    La POO nos brinda un concepto llamado Herencia, donde las clases pueden "Heredar" atributos y comportamiento de clases padres más genéricas. Si repensamos el ejemplo anterior, podríamos pensar en un clase más genérica a
+    <em>
+     Empleado
+    </em>
+    y
+    <em>
+     Estudiante
+    </em>
+    : por ejemplo la clase PERSONA, que aunaría todo lo que es común a sus clases hijos (nombre, fecha de nacimiento, y el método de cálculo de edad).
+   </p>
+   <p>
+    De esta forma los atributos se declararon en
+    <strong>
+     un solo lugar
+    </strong>
+    , el método se escribe
+    <strong>
+     una sola vez
+    </strong>
+    y todos los que hereden de Persona pueden utilizarlos.
+   </p>
+   <p>
+    En UML la herencia de indica con un triángulo:
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10  direction TB#10  class Padre#10  Class Hijo#10  Padre &lt;|-- Hijo#10#10
+   </div>
+   <p>
+    Ejemplo:
+   </p>
+   <div class="mermaid">
+    #10classDiagram#10    direction TB#10#10    class Persona {#10        - Nombre : String#10        - FechaNacimiento : Date#10        + getEdad() : int#10    }#10#10    class Empleado {#10        - NroEmpleado : int#10        - ValorHora : Decimal#10        + getSalario() : decimal#10    }#10#10    class Estudiante {#10        - Colegio : String#10    }#10#10    Persona &lt;|-- Empleado#10    Persona &lt;|-- Estudiante#10#10
+   </div>
+   <p>
+    Podemos ver en el diagrama de arriba que las clases Hijas 
+Empleados y Estudiantes, tendrán los atributos:
+   </p>
+   <ul>
+    <li>
+     <code>
+      Nombre
+     </code>
+    </li>
+    <li>
+     <code>
+      FechaNacimiento
+     </code>
+    </li>
+   </ul>
+   <p>
+    Y el método:
+   </p>
+   <ul>
+    <li>
+     <code>
+      getEdad()
+     </code>
+    </li>
+   </ul>
+   <p>
+    Sin necesidad de tenerlos explícitamente declarados en su clase, ya que lo 
+heredan de la clase padre.
+    <strong>
+     Estaremos escribiendo el código solo una vez (en la clase Persona) y reutilizándolo 2 veces. :)
+    </strong>
+   </p>
+   <p>
+    La pregunta clave que nos tenemos que hacer para ver si estamos 
+ante un posible caso de herencia es:
+    <strong>
+     ¿la Clase X, es un caso más 
+específico de la Clase Y?
+    </strong>
+   </p>
+   <p>
+    Algunos ejemplos
+   </p>
+   <ul>
+    <li>
+     ¿La Clase
+     <em>
+      Automóvil
+     </em>
+     es un caso específico de Clase
+     <em>
+      Transporte
+     </em>
+     ? Como la respuesta es si, ahí podríamos tener un posible caso de 
+herencia.
+    </li>
+    <li>
+     ¿La clase "Jugador de Fútbol" es un caso específico de la Clase "Deportista"?
+    </li>
+    <li>
+     Etc., etc., etc.
+    </li>
+   </ul>
+   <p>
+    El ejemplo de más arriba escrito en código Typescript:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: persona.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">fechaNacimiento</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">fechaNacimiento</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nombre</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">fechaNacimiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">fechaNacimiento</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getEdad</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">hoy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="nx">edad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">hoy</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">fechaNacimiento</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">hoy</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">fechaNacimiento</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">hoy</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">fechaNacimiento</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">edad</span><span class="o">--</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">edad</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getNombre</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">nombre</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">setNombre</span><span class="p">(</span><span class="nx">n</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">n</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getFechaNacimiento</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Date</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">fechaNacimiento</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">setFechaNacimiento</span><span class="p">(</span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">fechaNacimiento</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">f</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: empleado.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./persona"</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Empleado</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">nroEmpleado</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">valorHora</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span>
+<span class="w">    </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fechaNacimiento</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">nroEmpleado</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">valorHora</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">super</span><span class="p">(</span><span class="nx">nombre</span><span class="p">,</span><span class="w"> </span><span class="nx">fechaNacimiento</span><span class="p">);</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">nroEmpleado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nroEmpleado</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">valorHora</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">valorHora</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getSalario</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">valorHora</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">160</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getNroEmpleado</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">nroEmpleado</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">setNroEmpleado</span><span class="p">(</span><span class="nx">n</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">nroEmpleado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">n</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getValorHora</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">valorHora</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">setValorHora</span><span class="p">(</span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">valorHora</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">v</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// archivo: estudiante.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./persona"</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Estudiante</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">colegio</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">fechaNacimiento</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">,</span><span class="w"> </span><span class="nx">colegio</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">super</span><span class="p">(</span><span class="nx">nombre</span><span class="p">,</span><span class="w"> </span><span class="nx">fechaNacimiento</span><span class="p">);</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">colegio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">colegio</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">getColegio</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">colegio</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">public</span><span class="w"> </span><span class="nx">setColegio</span><span class="p">(</span><span class="nx">c</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">colegio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">c</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// main.ts (ejemplo de uso)</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Empleado</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./empleado"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Estudiante</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./estudiante"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">emp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Empleado</span><span class="p">(</span><span class="s2">"Ana"</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(</span><span class="mf">1990</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">12</span><span class="p">),</span><span class="w"> </span><span class="mf">1234</span><span class="p">,</span><span class="w"> </span><span class="mf">10.5</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">emp</span><span class="p">.</span><span class="nx">getSalario</span><span class="p">(),</span><span class="w"> </span><span class="nx">emp</span><span class="p">.</span><span class="nx">getEdad</span><span class="p">());</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">est</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Estudiante</span><span class="p">(</span><span class="s2">"Luis"</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(</span><span class="mf">2008</span><span class="p">,</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">),</span><span class="w"> </span><span class="s2">"Colegio Central"</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">est</span><span class="p">.</span><span class="nx">getColegio</span><span class="p">(),</span><span class="w"> </span><span class="nx">est</span><span class="p">.</span><span class="nx">getEdad</span><span class="p">());</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="ejemplos_1">
+    Ejemplos
+   </h4>
+   <p>
+    Animales:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      Animal
+     </code>
+    </li>
+    <li>
+     Clases derivadas:
+     <code>
+      Perro
+     </code>
+     ,
+     <code>
+      Gato
+     </code>
+     ,
+     <code>
+      Pájaro
+     </code>
+     , etc.
+    </li>
+   </ul>
+   <p>
+    Figuras geométricas:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      Figura&lt;div class="highlight language-text"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;- Clases derivadas: 
+&lt;/pre&gt;&lt;/div&gt;
+Círculo
+     </code>
+     ,
+     <code>
+      Cuadrado
+     </code>
+     ,
+     <code>
+      Triángulo
+     </code>
+     , etc.
+    </li>
+   </ul>
+   <p>
+    Empleados:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      Empleado
+     </code>
+    </li>
+    <li>
+     Clases derivadas:
+     <code>
+      Gerente
+     </code>
+     ,
+     <code>
+      Desarrollador
+     </code>
+     ,
+     <code>
+      Diseñador
+     </code>
+     , etc.
+    </li>
+   </ul>
+   <p>
+    Vehículos:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      Vehículo
+     </code>
+    </li>
+    <li>
+     Clases derivadas:
+     <code>
+      Coche
+     </code>
+     ,
+     <code>
+      Camión
+     </code>
+     ,
+     <code>
+      Motocicleta
+     </code>
+     , etc.
+    </li>
+   </ul>
+   <p>
+    Dispositivos electrónicos:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      DispositivoElectrónico
+     </code>
+    </li>
+    <li>
+     Clases derivadas:
+     <code>
+      Teléfono
+     </code>
+     ,
+     <code>
+      Tablet
+     </code>
+     ,
+     <code>
+      Computadora
+     </code>
+     , etc.
+    </li>
+   </ul>
+   <p>
+    Productos de supermercado:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      Producto&lt;div class="highlight language-text"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;- Clases derivadas: 
+&lt;/pre&gt;&lt;/div&gt;
+Fruta
+     </code>
+     ,
+     <code>
+      Vegetal
+     </code>
+     ,
+     <code>
+      Lácteo
+     </code>
+     ,
+     <code>
+      Bebidas
+     </code>
+     , etc.
+    </li>
+   </ul>
+   <p>
+    Formas de pago:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      FormaDePago&lt;div class="highlight language-text"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;- Clases derivadas: 
+&lt;/pre&gt;&lt;/div&gt;
+TarjetaDeCrédito
+     </code>
+     ,
+     <code>
+      PayPal
+     </code>
+     ,
+     <code>
+      TransferenciaBancaria
+     </code>
+     , etc.
+    </li>
+   </ul>
+   <p>
+    Componentes de una computadora:
+   </p>
+   <ul>
+    <li>
+     Clase base:
+     <code>
+      Componente
+     </code>
+    </li>
+    <li>
+     Clases derivadas:
+     <code>
+      Procesador
+     </code>
+     ,
+     <code>
+      TarjetaGráfica
+     </code>
+     ,
+     <code>
+      MemoriaRAM
+     </code>
+     , etc.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="resumen-de-relaciones">
+    RESUMEN DE RELACIONES
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Si se cumple
+      </th>
+      <th>
+       Tipo de Relación entre clases
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Clase A está relacionada con B
+      </td>
+      <td>
+       Asociación
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Clase A tiene  (o contiene) clase B
+      </td>
+      <td>
+       Agregación
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Clase A tiene contiene clase B y clase B "pertenece" a la clase A (la clase B no tiene sentido de existencia si A no existe)
+      </td>
+      <td>
+       Composición
+      </td>
+     </tr>
+     <tr>
+      <td>
+       La clase B "es una" clase A (un Trabajador es una Persona, un Mamífero es un Animal, etc.)
+      </td>
+      <td>
+       Herencia
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Buscar todos los divs con clase 'mermaid'
+    var mermaidDivs = document.querySelectorAll('div.mermaid');
+    
+    mermaidDivs.forEach(function(div) {
+        // Obtener el contenido actual del div
+        var content = div.innerHTML;
+        
+        // Reemplazar #10 con saltos de línea reales
+        var restoredContent = content.replace(/#10/g, '\n');
+        
+        // Actualizar el contenido del div
+        div.innerHTML = restoredContent;
+    });
+});
+  </script>
+ </body>
+</html>

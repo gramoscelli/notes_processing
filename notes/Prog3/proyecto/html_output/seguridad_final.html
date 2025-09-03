@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   seguridad
+  </title>
+ </head>
+ <body>
+  <h1 id="seguridad-en-aplicaciones-web-jwt-cors-y-mecanismos-csrf">
+   Seguridad en Aplicaciones Web: JWT, CORS y Mecanismos CSRF
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#introduccion">
+      Introducción
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#json-web-tokens-jwt">
+      JSON Web Tokens (JWT)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#cross-origin-resource-sharing-cors">
+      Cross-Origin Resource Sharing (CORS)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#cross-site-request-forgery-csrf">
+      Cross-Site Request Forgery (CSRF)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#integracion-de-los-tres-mecanismos">
+      Integración de los Tres Mecanismos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#mejores-practicas">
+      Mejores Prácticas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#consideraciones-de-rendimiento">
+      Consideraciones de Rendimiento
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ejemplo-practico-implementacion-en-react">
+      Ejemplo Práctico: Implementación en React
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#conclusion">
+      Conclusión
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#referencias">
+      Referencias
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="introduccion">
+    Introducción
+   </h2>
+   <p>
+    En el desarrollo de aplicaciones web modernas, la implementación de mecanismos de seguridad robustos es fundamental para proteger tanto los datos de los usuarios como la integridad del sistema. Este documento analiza tres componentes esenciales de seguridad: JSON Web Tokens (JWT), Cross-Origin Resource Sharing (CORS) y protecciones contra Cross-Site Request Forgery (CSRF).
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="json-web-tokens-jwt">
+    JSON Web Tokens (JWT)
+   </h2>
+   <h3 id="que-es-jwt">
+    ¿Qué es JWT?
+   </h3>
+   <p>
+    JWT es un estándar abierto (RFC 7519) que define una forma compacta y autónoma de transmitir información de manera segura entre partes como un objeto JSON. Esta información puede ser verificada y confiable porque está firmada digitalmente.
+   </p>
+   <h3 id="estructura-de-un-jwt">
+    Estructura de un JWT
+   </h3>
+   <p>
+    Un JWT consta de tres partes separadas por puntos:
+-
+    <strong>
+     Header
+    </strong>
+    : Contiene el tipo de token y el algoritmo de firma
+-
+    <strong>
+     Payload
+    </strong>
+    : Contiene las declaraciones (claims) sobre el usuario
+-
+    <strong>
+     Signature
+    </strong>
+    : Verifica que el token no ha sido alterado
+   </p>
+   <h3 id="necesidad-de-jwt-en-aplicaciones-web">
+    Necesidad de JWT en Aplicaciones Web
+   </h3>
+   <h4 id="1-autenticacion-stateless">
+    1. Autenticación Stateless
+   </h4>
+   <p>
+    Las aplicaciones modernas requieren autenticación sin estado para mejorar la escalabilidad. JWT permite que cada token contenga toda la información necesaria para identificar al usuario, eliminando la necesidad de almacenar sesiones en el servidor.
+   </p>
+   <h4 id="2-escalabilidad-horizontal">
+    2. Escalabilidad Horizontal
+   </h4>
+   <p>
+    En arquitecturas distribuidas con múltiples servidores, JWT facilita la autenticación sin requerir un almacén de sesiones compartido. Cualquier servidor puede validar un token sin consultar una base de datos centralizada.
+   </p>
+   <h4 id="3-integracion-con-apis">
+    3. Integración con APIs
+   </h4>
+   <p>
+    Para aplicaciones que consumen múltiples APIs o servicios, JWT proporciona un mecanismo estándar de autenticación que puede ser utilizado consistentemente across diferentes servicios.
+   </p>
+   <h4 id="4-seguridad-en-spas">
+    4. Seguridad en SPAs
+   </h4>
+   <p>
+    Las Single Page Applications (SPA) se benefician de JWT porque permite mantener el estado de autenticación del lado del cliente de manera segura, sin depender de cookies de sesión tradicionales.
+   </p>
+   <h3 id="implementacion-recomendada">
+    Implementación Recomendada
+   </h3>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Ejemplo de generación de JWT en Node.js</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">jwt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'jsonwebtoken'</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">generateToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">jwt</span><span class="p">.</span><span class="nx">sign</span><span class="p">(</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span>
+<span class="w">      </span><span class="nx">userId</span><span class="o">:</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
+<span class="w">      </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">email</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">role</span><span class="w"> </span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">JWT_SECRET</span><span class="p">,</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span>
+<span class="w">      </span><span class="nx">expiresIn</span><span class="o">:</span><span class="w"> </span><span class="s1">'15m'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">issuer</span><span class="o">:</span><span class="w"> </span><span class="s1">'your-app-name'</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">};</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="cross-origin-resource-sharing-cors">
+    Cross-Origin Resource Sharing (CORS)
+   </h2>
+   <h3 id="que-es-cors">
+    ¿Qué es CORS?
+   </h3>
+   <p>
+    CORS es un mecanismo que utiliza cabeceras HTTP adicionales para permitir que un navegador web ejecute una aplicación web desde un origen (dominio) para acceder a recursos de otro origen diferente.
+   </p>
+   <h3 id="necesidad-de-cors">
+    Necesidad de CORS
+   </h3>
+   <h4 id="1-same-origin-policy">
+    1. Same-Origin Policy
+   </h4>
+   <p>
+    Los navegadores implementan la política del mismo origen como medida de seguridad, bloqueando solicitudes entre diferentes dominios. CORS proporciona una forma controlada de relajar esta restricción.
+   </p>
+   <h4 id="2-arquitecturas-modernas">
+    2. Arquitecturas Modernas
+   </h4>
+   <p>
+    Las aplicaciones modernas frecuentemente separan el frontend del backend en diferentes dominios o puertos. CORS es esencial para permitir esta comunicación.
+   </p>
+   <h4 id="3-apis-publicas">
+    3. APIs Públicas
+   </h4>
+   <p>
+    Para servicios que ofrecen APIs públicas, CORS permite controlar qué dominios pueden acceder a los recursos, manteniendo la seguridad.
+   </p>
+   <h4 id="4-desarrollo-y-produccion">
+    4. Desarrollo y Producción
+   </h4>
+   <p>
+    Durante el desarrollo, es común que el frontend y backend corran en puertos diferentes. CORS facilita esta configuración sin comprometer la seguridad.
+   </p>
+   <h3 id="configuracion-de-cors">
+    Configuración de CORS
+   </h3>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Ejemplo de configuración CORS en Express.js</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">cors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'cors'</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">corsOptions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s1">'https://yourdomain.com'</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">'https://www.yourdomain.com'</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nx">credentials</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">optionsSuccessStatus</span><span class="o">:</span><span class="w"> </span><span class="mf">200</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">methods</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'GET'</span><span class="p">,</span><span class="w"> </span><span class="s1">'POST'</span><span class="p">,</span><span class="w"> </span><span class="s1">'PUT'</span><span class="p">,</span><span class="w"> </span><span class="s1">'DELETE'</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">allowedHeaders</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'Content-Type'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Authorization'</span><span class="p">]</span>
+<span class="p">};</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cors</span><span class="p">(</span><span class="nx">corsOptions</span><span class="p">));</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="tipos-de-solicitudes-cors">
+    Tipos de Solicitudes CORS
+   </h3>
+   <h4 id="solicitudes-simples">
+    Solicitudes Simples
+   </h4>
+   <ul>
+    <li>
+     Métodos: GET, HEAD, POST
+    </li>
+    <li>
+     Headers permitidos: Accept, Accept-Language, Content-Language, Content-Type
+    </li>
+    <li>
+     Content-Type limitado a: application/x-www-form-urlencoded, multipart/form-data, text/plain
+    </li>
+   </ul>
+   <h4 id="solicitudes-preflight">
+    Solicitudes Preflight
+   </h4>
+   <p>
+    Para solicitudes que no califican como simples, el navegador envía una solicitud OPTIONS para verificar permisos antes de la solicitud real.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="cross-site-request-forgery-csrf">
+    Cross-Site Request Forgery (CSRF)
+   </h2>
+   <h3 id="que-es-csrf">
+    ¿Qué es CSRF?
+   </h3>
+   <p>
+    CSRF es un tipo de ataque que fuerza a un usuario autenticado a ejecutar acciones no deseadas en una aplicación web en la que está autenticado. El atacante engaña al navegador del usuario para que envíe solicitudes maliciosas utilizando las credenciales del usuario.
+   </p>
+   <h3 id="necesidad-de-proteccion-csrf">
+    Necesidad de Protección CSRF
+   </h3>
+   <h4 id="1-proteccion-de-acciones-sensibles">
+    1. Protección de Acciones Sensibles
+   </h4>
+   <p>
+    Las operaciones que modifican datos (transferencias bancarias, cambios de contraseña, eliminación de cuentas) requieren protección contra ejecución no autorizada.
+   </p>
+   <h4 id="2-validacion-de-intencion-del-usuario">
+    2. Validación de Intención del Usuario
+   </h4>
+   <p>
+    CSRF ayuda a garantizar que las acciones realizadas en la aplicación fueron iniciadas intencionalmente por el usuario autenticado.
+   </p>
+   <h4 id="3-cumplimiento-de-estandares">
+    3. Cumplimiento de Estándares
+   </h4>
+   <p>
+    Muchos estándares de seguridad y regulaciones requieren implementar protecciones contra CSRF para aplicaciones que manejan datos sensibles.
+   </p>
+   <h3 id="mecanismos-de-proteccion-csrf">
+    Mecanismos de Protección CSRF
+   </h3>
+   <h4 id="1-csrf-tokens">
+    1. CSRF Tokens
+   </h4>
+   <p>
+    Generar tokens únicos para cada sesión o formulario que deben ser incluidos en las solicitudes.
+   </p>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Ejemplo de implementación de CSRF token</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">csrf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'csurf'</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">csrfProtection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">csrf</span><span class="p">({</span><span class="w"> </span><span class="nx">cookie</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">csrfProtection</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/form'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="s1">'form'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">csrfToken</span><span class="o">:</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">csrfToken</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="2-samesite-cookies">
+    2. SameSite Cookies
+   </h4>
+   <p>
+    Configurar cookies con el atributo SameSite para limitar cuándo se envían en solicitudes cross-site.
+   </p>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">session</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">cookie</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">sameSite</span><span class="o">:</span><span class="w"> </span><span class="s1">'strict'</span><span class="p">,</span><span class="w"> </span><span class="c1">// o 'lax' según necesidades</span>
+<span class="w">    </span><span class="nx">secure</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="c1">// solo HTTPS</span>
+<span class="w">    </span><span class="nx">httpOnly</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}));</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="3-verificacion-de-refererorigin">
+    3. Verificación de Referer/Origin
+   </h4>
+   <p>
+    Validar que las solicitudes provienen del dominio esperado.
+   </p>
+   <h4 id="4-double-submit-cookie">
+    4. Double Submit Cookie
+   </h4>
+   <p>
+    Enviar el token CSRF tanto en una cookie como en un header personalizado.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="integracion-de-los-tres-mecanismos">
+    Integración de los Tres Mecanismos
+   </h2>
+   <h3 id="arquitectura-recomendada">
+    Arquitectura Recomendada
+   </h3>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Configuración integrada de seguridad</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'express'</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">jwt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'jsonwebtoken'</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">cors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'cors'</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">csrf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">'csurf'</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+
+<span class="c1">// Configuración CORS</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cors</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ALLOWED_ORIGINS</span><span class="o">?</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">'http://localhost:3000'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">credentials</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}));</span>
+
+<span class="c1">// Middleware de autenticación JWT</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">authenticateToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">next</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">authHeader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">'authorization'</span><span class="p">];</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">authHeader</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">authHeader</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">)[</span><span class="mf">1</span><span class="p">];</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">token</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">401</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">jwt</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="nx">token</span><span class="p">,</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">JWT_SECRET</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="w"> </span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">403</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">req</span><span class="p">.</span><span class="nx">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">user</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">next</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">};</span>
+
+<span class="c1">// Protección CSRF para rutas sensibles</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">csrfProtection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">csrf</span><span class="p">({</span><span class="w"> </span><span class="nx">cookie</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/api/sensitive'</span><span class="p">,</span><span class="w"> </span><span class="nx">csrfProtection</span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="flujo-de-seguridad-completo">
+    Flujo de Seguridad Completo
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Autenticación
+     </strong>
+     : El usuario se autentica y recibe un JWT
+    </li>
+    <li>
+     <strong>
+      CORS
+     </strong>
+     : El navegador verifica que el origen está permitido
+    </li>
+    <li>
+     <strong>
+      Autorización
+     </strong>
+     : El servidor valida el JWT en cada solicitud
+    </li>
+    <li>
+     <strong>
+      CSRF
+     </strong>
+     : Para operaciones sensibles, se verifica el token CSRF
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="mejores-practicas">
+    Mejores Prácticas
+   </h2>
+   <h3 id="para-jwt">
+    Para JWT
+   </h3>
+   <ul>
+    <li>
+     Utilizar tiempos de expiración cortos (15-30 minutos)
+    </li>
+    <li>
+     Implementar refresh tokens para renovación
+    </li>
+    <li>
+     Almacenar de forma segura (httpOnly cookies vs localStorage)
+    </li>
+    <li>
+     Validar siempre la firma y expiración
+    </li>
+   </ul>
+   <h3 id="para-cors">
+    Para CORS
+   </h3>
+   <ul>
+    <li>
+     Ser específico con los orígenes permitidos
+    </li>
+    <li>
+     No usar wildcards (*) en producción con credentials
+    </li>
+    <li>
+     Configurar headers apropiados para cada endpoint
+    </li>
+    <li>
+     Implementar whitelist de dominios
+    </li>
+   </ul>
+   <h3 id="para-csrf">
+    Para CSRF
+   </h3>
+   <ul>
+    <li>
+     Usar tokens únicos por sesión
+    </li>
+    <li>
+     Validar en todas las operaciones de escritura
+    </li>
+    <li>
+     Combinar con verificación de Referer/Origin
+    </li>
+    <li>
+     Implementar timeouts para tokens
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="consideraciones-de-rendimiento">
+    Consideraciones de Rendimiento
+   </h2>
+   <h3 id="jwt">
+    JWT
+   </h3>
+   <ul>
+    <li>
+     Los tokens grandes pueden impactar el rendimiento de la red
+    </li>
+    <li>
+     Considerar el overhead de verificación de firma
+    </li>
+    <li>
+     Balancear información incluida vs tamaño del token
+    </li>
+   </ul>
+   <h3 id="cors">
+    CORS
+   </h3>
+   <ul>
+    <li>
+     Las solicitudes preflight agregan latencia
+    </li>
+    <li>
+     Optimizar configuración para minimizar preflight requests
+    </li>
+    <li>
+     Considerar caché de respuestas preflight
+    </li>
+   </ul>
+   <h3 id="csrf">
+    CSRF
+   </h3>
+   <ul>
+    <li>
+     Los tokens agregan overhead mínimo
+    </li>
+    <li>
+     Considerar la generación y validación de tokens
+    </li>
+    <li>
+     Optimizar el almacenamiento de tokens
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ejemplo-practico-implementacion-en-react">
+    Ejemplo Práctico: Implementación en React
+   </h2>
+   <h3 id="configuracion-del-cliente-react">
+    Configuración del Cliente React
+   </h3>
+   <p>
+    A continuación se presenta un ejemplo completo de cómo implementar estos mecanismos de seguridad en una aplicación React moderna:
+   </p>
+   <h4 id="1-configuracion-del-servicio-de-autenticacion">
+    1. Configuración del Servicio de Autenticación
+   </h4>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// services/authService.js</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">axios</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'axios'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_BASE_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">REACT_APP_API_URL</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">'http://localhost:3001'</span><span class="p">;</span>
+
+<span class="c1">// Configuración de Axios con interceptores</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">apiClient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">axios</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="nx">API_BASE_URL</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">withCredentials</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="c1">// Importante para CORS con cookies</span>
+<span class="w">  </span><span class="nx">timeout</span><span class="o">:</span><span class="w"> </span><span class="mf">10000</span>
+<span class="p">});</span>
+
+<span class="c1">// Interceptor para agregar JWT token a las solicitudes</span>
+<span class="nx">apiClient</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">config</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">token</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">config</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">Authorization</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`Bearer </span><span class="si">${</span><span class="nx">token</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">config</span><span class="p">;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">// Interceptor para manejar tokens expirados</span>
+<span class="nx">apiClient</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">response</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">,</span>
+<span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="o">?</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">401</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">refreshToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'refreshToken'</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">refreshToken</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">axios</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">API_BASE_URL</span><span class="si">}</span><span class="sb">/auth/refresh`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">refreshToken</span>
+<span class="w">          </span><span class="p">});</span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">accessToken</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+<span class="w">          </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span><span class="w"> </span><span class="nx">accessToken</span><span class="p">);</span>
+<span class="w">          </span><span class="c1">// Reintentar la solicitud original</span>
+<span class="w">          </span><span class="nx">error</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">Authorization</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`Bearer </span><span class="si">${</span><span class="nx">accessToken</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">          </span><span class="k">return</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">config</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">refreshError</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="c1">// Refresh token inválido, logout</span>
+<span class="w">          </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">);</span>
+<span class="w">          </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'refreshToken'</span><span class="p">);</span>
+<span class="w">          </span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'/login'</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">);</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">authService</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">login</span><span class="o">:</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">credentials</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/auth/login'</span><span class="p">,</span><span class="w"> </span><span class="nx">credentials</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">accessToken</span><span class="p">,</span><span class="w"> </span><span class="nx">refreshToken</span><span class="p">,</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span><span class="w"> </span><span class="nx">accessToken</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">setItem</span><span class="p">(</span><span class="s1">'refreshToken'</span><span class="p">,</span><span class="w"> </span><span class="nx">refreshToken</span><span class="p">);</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">accessToken</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="nx">logout</span><span class="o">:</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/auth/logout'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'refreshToken'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="nx">getCurrentUser</span><span class="o">:</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/auth/me'</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">export</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">apiClient</span><span class="w"> </span><span class="p">};</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="2-hook-de-autenticacion">
+    2. Hook de Autenticación
+   </h4>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// hooks/useAuth.js</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">createContext</span><span class="p">,</span><span class="w"> </span><span class="nx">useContext</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="p">,</span><span class="w"> </span><span class="nx">useState</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">authService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../services/authService'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">AuthContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createContext</span><span class="p">();</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">AuthProvider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">children</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">setUser</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loading</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoading</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">isAuthenticated</span><span class="p">,</span><span class="w"> </span><span class="nx">setIsAuthenticated</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">initAuth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">token</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="nx">userData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">authService</span><span class="p">.</span><span class="nx">getCurrentUser</span><span class="p">();</span>
+<span class="w">          </span><span class="nx">setUser</span><span class="p">(</span><span class="nx">userData</span><span class="p">);</span>
+<span class="w">          </span><span class="nx">setIsAuthenticated</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'Error al verificar autenticación:'</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">);</span>
+<span class="w">          </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">);</span>
+<span class="w">          </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">removeItem</span><span class="p">(</span><span class="s1">'refreshToken'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">initAuth</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[]);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">login</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">credentials</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">accessToken</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">authService</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="nx">credentials</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">setUser</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">setIsAuthenticated</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">success</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">        </span><span class="nx">success</span><span class="o">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span>
+<span class="w">        </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="o">?</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">'Error de autenticación'</span><span class="w"> </span>
+<span class="w">      </span><span class="p">};</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">logout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">authService</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setUser</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">setIsAuthenticated</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">user</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">login</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">logout</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">isAuthenticated</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">loading</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">AuthContext</span><span class="p">.</span><span class="nx">Provider</span><span class="w"> </span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">value</span><span class="p">}</span><span class="o">&gt;</span>
+<span class="w">      </span><span class="p">{</span><span class="nx">children</span><span class="p">}</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="err">/AuthContext.Provider&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">useAuth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useContext</span><span class="p">(</span><span class="nx">AuthContext</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'useAuth debe ser usado dentro de AuthProvider'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">context</span><span class="p">;</span>
+<span class="p">};</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="3-componente-con-proteccion-csrf">
+    3. Componente con Protección CSRF
+   </h4>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// components/TransferForm.js</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">apiClient</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../services/authService'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">TransferForm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">formData</span><span class="p">,</span><span class="w"> </span><span class="nx">setFormData</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">accountTo</span><span class="o">:</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">amount</span><span class="o">:</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s1">''</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">csrfToken</span><span class="p">,</span><span class="w"> </span><span class="nx">setCsrfToken</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loading</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoading</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Obtener token CSRF al montar el componente</span>
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchCSRFToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/api/csrf-token'</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">setCsrfToken</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">csrfToken</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'Error al obtener token CSRF:'</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchCSRFToken</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[]);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSubmit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Incluir token CSRF en la solicitud</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/api/transfer'</span><span class="p">,</span><span class="w"> </span><span class="nx">formData</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="s1">'X-CSRF-Token'</span><span class="o">:</span><span class="w"> </span><span class="nx">csrfToken</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">});</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">alert</span><span class="p">(</span><span class="s1">'Transferencia realizada exitosamente'</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">setFormData</span><span class="p">({</span><span class="w"> </span><span class="nx">accountTo</span><span class="o">:</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="nx">amount</span><span class="o">:</span><span class="w"> </span><span class="s1">''</span><span class="p">,</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s1">''</span><span class="w"> </span><span class="p">});</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="c1">// Obtener nuevo token CSRF después de la operación</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">newTokenResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/api/csrf-token'</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">setCsrfToken</span><span class="p">(</span><span class="nx">newTokenResponse</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">csrfToken</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setError</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="o">?</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">'Error al procesar transferencia'</span><span class="p">);</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="c1">// Si el error es por token CSRF inválido, obtener uno nuevo</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="o">?</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">403</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">newTokenResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">apiClient</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/api/csrf-token'</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">setCsrfToken</span><span class="p">(</span><span class="nx">newTokenResponse</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">csrfToken</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">setFormData</span><span class="p">({</span>
+<span class="w">      </span><span class="p">...</span><span class="nx">formData</span><span class="p">,</span>
+<span class="w">      </span><span class="p">[</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">form</span><span class="w"> </span><span class="nx">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSubmit</span><span class="p">}</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">"transfer-form"</span><span class="o">&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">h2</span><span class="o">&gt;</span><span class="nx">Transferencia</span><span class="w"> </span><span class="nx">Bancaria</span><span class="o">&lt;</span><span class="err">/h2&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">"error-message"</span><span class="o">&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">error</span><span class="p">}</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">"form-group"</span><span class="o">&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">label</span><span class="w"> </span><span class="nx">htmlFor</span><span class="o">=</span><span class="s2">"accountTo"</span><span class="o">&gt;</span><span class="nx">Cuenta</span><span class="w"> </span><span class="nx">destino</span><span class="o">:&lt;</span><span class="err">/label&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">input</span>
+<span class="w">          </span><span class="nx">type</span><span class="o">=</span><span class="s2">"text"</span>
+<span class="w">          </span><span class="nx">id</span><span class="o">=</span><span class="s2">"accountTo"</span>
+<span class="w">          </span><span class="nx">name</span><span class="o">=</span><span class="s2">"accountTo"</span>
+<span class="w">          </span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">accountTo</span><span class="p">}</span>
+<span class="w">          </span><span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">handleChange</span><span class="p">}</span>
+<span class="w">          </span><span class="nx">required</span>
+<span class="w">        </span><span class="o">/&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">"form-group"</span><span class="o">&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">label</span><span class="w"> </span><span class="nx">htmlFor</span><span class="o">=</span><span class="s2">"amount"</span><span class="o">&gt;</span><span class="nx">Monto</span><span class="o">:&lt;</span><span class="err">/label&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">input</span>
+<span class="w">          </span><span class="nx">type</span><span class="o">=</span><span class="s2">"number"</span>
+<span class="w">          </span><span class="nx">id</span><span class="o">=</span><span class="s2">"amount"</span>
+<span class="w">          </span><span class="nx">name</span><span class="o">=</span><span class="s2">"amount"</span>
+<span class="w">          </span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">amount</span><span class="p">}</span>
+<span class="w">          </span><span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">handleChange</span><span class="p">}</span>
+<span class="w">          </span><span class="nx">min</span><span class="o">=</span><span class="s2">"0.01"</span>
+<span class="w">          </span><span class="nx">step</span><span class="o">=</span><span class="s2">"0.01"</span>
+<span class="w">          </span><span class="nx">required</span>
+<span class="w">        </span><span class="o">/&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">"form-group"</span><span class="o">&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">label</span><span class="w"> </span><span class="nx">htmlFor</span><span class="o">=</span><span class="s2">"description"</span><span class="o">&gt;</span><span class="nx">Descripción</span><span class="o">:&lt;</span><span class="err">/label&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">textarea</span>
+<span class="w">          </span><span class="nx">id</span><span class="o">=</span><span class="s2">"description"</span>
+<span class="w">          </span><span class="nx">name</span><span class="o">=</span><span class="s2">"description"</span>
+<span class="w">          </span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">formData</span><span class="p">.</span><span class="nx">description</span><span class="p">}</span>
+<span class="w">          </span><span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">handleChange</span><span class="p">}</span>
+<span class="w">          </span><span class="nx">rows</span><span class="o">=</span><span class="s2">"3"</span>
+<span class="w">        </span><span class="o">/&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="cm">/* Token CSRF oculto */</span><span class="p">}</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">input</span><span class="w"> </span><span class="nx">type</span><span class="o">=</span><span class="s2">"hidden"</span><span class="w"> </span><span class="nx">name</span><span class="o">=</span><span class="s2">"_csrf"</span><span class="w"> </span><span class="nx">value</span><span class="o">=</span><span class="p">{</span><span class="nx">csrfToken</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">button</span><span class="w"> </span><span class="nx">type</span><span class="o">=</span><span class="s2">"submit"</span><span class="w"> </span><span class="nx">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loading</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="nx">csrfToken</span><span class="p">}</span><span class="o">&gt;</span>
+<span class="w">        </span><span class="p">{</span><span class="nx">loading</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">'Procesando...'</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Realizar Transferencia'</span><span class="p">}</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="err">/button&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="err">/form&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">TransferForm</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="4-configuracion-de-rutas-protegidas">
+    4. Configuración de Rutas Protegidas
+   </h4>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// components/ProtectedRoute.js</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Navigate</span><span class="p">,</span><span class="w"> </span><span class="nx">useLocation</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-router-dom'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useAuth</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../hooks/useAuth'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">ProtectedRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">children</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">isAuthenticated</span><span class="p">,</span><span class="w"> </span><span class="nx">loading</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useAuth</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useLocation</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">loading</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">"loading"</span><span class="o">&gt;</span><span class="nx">Cargando</span><span class="p">...</span><span class="o">&lt;</span><span class="err">/div&gt;;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">isAuthenticated</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Redirigir a login preservando la URL de destino</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">Navigate</span><span class="w"> </span><span class="nx">to</span><span class="o">=</span><span class="s2">"/login"</span><span class="w"> </span><span class="nx">state</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="kr">from</span><span class="o">:</span><span class="w"> </span><span class="nx">location</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="nx">replace</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">children</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">ProtectedRoute</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="5-configuracion-principal-de-la-app">
+    5. Configuración Principal de la App
+   </h4>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// App.js</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BrowserRouter</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Router</span><span class="p">,</span><span class="w"> </span><span class="nx">Routes</span><span class="p">,</span><span class="w"> </span><span class="nx">Route</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-router-dom'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">AuthProvider</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./hooks/useAuth'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">ProtectedRoute</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./components/ProtectedRoute'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">LoginPage</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./pages/LoginPage'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">DashboardPage</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./pages/DashboardPage'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">TransferPage</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./pages/TransferPage'</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="nx">Router</span><span class="o">&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="nx">AuthProvider</span><span class="o">&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="nx">div</span><span class="w"> </span><span class="nx">className</span><span class="o">=</span><span class="s2">"App"</span><span class="o">&gt;</span>
+<span class="w">          </span><span class="o">&lt;</span><span class="nx">Routes</span><span class="o">&gt;</span>
+<span class="w">            </span><span class="o">&lt;</span><span class="nx">Route</span><span class="w"> </span><span class="nx">path</span><span class="o">=</span><span class="s2">"/login"</span><span class="w"> </span><span class="nx">element</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">LoginPage</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="w">            </span><span class="o">&lt;</span><span class="nx">Route</span><span class="w"> </span>
+<span class="w">              </span><span class="nx">path</span><span class="o">=</span><span class="s2">"/dashboard"</span><span class="w"> </span>
+<span class="w">              </span><span class="nx">element</span><span class="o">=</span><span class="p">{</span>
+<span class="w">                </span><span class="o">&lt;</span><span class="nx">ProtectedRoute</span><span class="o">&gt;</span>
+<span class="w">                  </span><span class="o">&lt;</span><span class="nx">DashboardPage</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="w">                </span><span class="o">&lt;</span><span class="err">/ProtectedRoute&gt;</span>
+<span class="w">              </span><span class="p">}</span><span class="w"> </span>
+<span class="w">            </span><span class="o">/&gt;</span>
+<span class="w">            </span><span class="o">&lt;</span><span class="nx">Route</span><span class="w"> </span>
+<span class="w">              </span><span class="nx">path</span><span class="o">=</span><span class="s2">"/transfer"</span><span class="w"> </span>
+<span class="w">              </span><span class="nx">element</span><span class="o">=</span><span class="p">{</span>
+<span class="w">                </span><span class="o">&lt;</span><span class="nx">ProtectedRoute</span><span class="o">&gt;</span>
+<span class="w">                  </span><span class="o">&lt;</span><span class="nx">TransferPage</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="w">                </span><span class="o">&lt;</span><span class="err">/ProtectedRoute&gt;</span>
+<span class="w">              </span><span class="p">}</span><span class="w"> </span>
+<span class="w">            </span><span class="o">/&gt;</span>
+<span class="w">            </span><span class="o">&lt;</span><span class="nx">Route</span><span class="w"> </span><span class="nx">path</span><span class="o">=</span><span class="s2">"/"</span><span class="w"> </span><span class="nx">element</span><span class="o">=</span><span class="p">{</span><span class="o">&lt;</span><span class="nx">Navigate</span><span class="w"> </span><span class="nx">to</span><span class="o">=</span><span class="s2">"/dashboard"</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
+<span class="w">          </span><span class="o">&lt;</span><span class="err">/Routes&gt;</span>
+<span class="w">        </span><span class="o">&lt;</span><span class="err">/div&gt;</span>
+<span class="w">      </span><span class="o">&lt;</span><span class="err">/AuthProvider&gt;</span>
+<span class="w">    </span><span class="o">&lt;</span><span class="err">/Router&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="6-manejo-de-errores-cors">
+    6. Manejo de Errores CORS
+   </h4>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// utils/corsErrorHandler.js</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleCORSError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">code</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'ERR_NETWORK'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">'CORS_ERROR'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="s1">'Error de conectividad. Verifica la configuración CORS del servidor.'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">details</span><span class="o">:</span><span class="w"> </span><span class="s1">'El servidor puede no estar permitiendo solicitudes desde este origen.'</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="o">?</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="s1">'CORS_ERROR'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="s1">'No se pudo conectar con el servidor.'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">details</span><span class="o">:</span><span class="w"> </span><span class="s1">'Verifica que el servidor esté ejecutándose y que CORS esté configurado correctamente.'</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Uso en componentes</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">handleAPIError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">corsError</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">handleCORSError</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">corsError</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="nx">corsError</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'Error CORS:'</span><span class="p">,</span><span class="w"> </span><span class="nx">corsError</span><span class="p">.</span><span class="nx">details</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// Manejar otros tipos de errores</span>
+<span class="w">  </span><span class="nx">setError</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="o">?</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">'Error desconocido'</span><span class="p">);</span>
+<span class="p">};</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="variables-de-entorno">
+    Variables de Entorno
+   </h3>
+   <div class="highlight language-env">
+    <pre><span></span># .env
+REACT_APP_API_URL=https://api.yourdomain.com
+REACT_APP_ENVIRONMENT=production
+</pre>
+   </div>
+   <div class="highlight language-env">
+    <pre><span></span># .env.development
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_ENVIRONMENT=development
+</pre>
+   </div>
+   <h3 id="beneficios-de-esta-implementacion">
+    Beneficios de esta Implementación
+   </h3>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       Manejo Automático de Tokens
+      </strong>
+      : Los interceptores de Axios manejan automáticamente la inclusión de JWT y la renovación de tokens expirados.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Protección CSRF Transparente
+      </strong>
+      : Los componentes que realizan operaciones sensibles obtienen y utilizan tokens CSRF automáticamente.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Gestión de Estado Centralizada
+      </strong>
+      : El contexto de autenticación proporciona un estado global accesible desde cualquier componente.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Manejo de Errores CORS
+      </strong>
+      : Se detectan y manejan específicamente los errores relacionados con CORS.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Rutas Protegidas
+      </strong>
+      : El sistema de rutas garantiza que solo usuarios autenticados accedan a recursos protegidos.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Renovación Automática
+      </strong>
+      : Los tokens se renuevan automáticamente cuando es necesario, proporcionando una experiencia de usuario fluida.
+     </p>
+    </li>
+   </ol>
+   <p>
+    Esta implementación demuestra cómo integrar efectivamente JWT, CORS y protecciones CSRF en una aplicación React moderna, proporcionando una base sólida de seguridad mientras mantiene una buena experiencia de usuario.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="conclusion">
+    Conclusión
+   </h2>
+   <p>
+    La implementación conjunta de JWT, CORS y protecciones CSRF proporciona una base sólida de seguridad para aplicaciones web modernas. Cada mecanismo aborda aspectos específicos de seguridad:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      JWT
+     </strong>
+     maneja la autenticación y autorización de manera escalable
+    </li>
+    <li>
+     <strong>
+      CORS
+     </strong>
+     controla el acceso cross-origin de manera segura
+    </li>
+    <li>
+     <strong>
+      CSRF
+     </strong>
+     protege contra ataques de falsificación de solicitudes
+    </li>
+   </ul>
+   <p>
+    La implementación correcta de estos tres mecanismos, siguiendo las mejores prácticas establecidas, es fundamental para desarrollar aplicaciones web seguras y confiables en el entorno actual de amenazas cibernéticas.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="referencias">
+    Referencias
+   </h2>
+   <ul>
+    <li>
+     RFC 7519: JSON Web Token (JWT)
+    </li>
+    <li>
+     W3C CORS Specification
+    </li>
+    <li>
+     OWASP CSRF Prevention Cheat Sheet
+    </li>
+    <li>
+     MDN Web Security Documentation
+    </li>
+   </ul>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   react_native
+  </title>
+ </head>
+ <body>
+  <h1 id="react-native-para-desarrolladores-react">
+   React Native para desarrolladores React
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#que-es-react-native">
+      ¿Qué es React Native?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#principales-diferencias-con-react-web">
+      Principales diferencias con React Web
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#configuracion-inicial">
+      Configuración inicial
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#como-ejecutar-tu-aplicacion">
+      Cómo ejecutar tu aplicación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ejemplo-basico-primera-app">
+      Ejemplo básico: Primera app
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#navegacion-entre-pantallas">
+      Navegación entre pantallas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#listas-optimizadas-con-flatlist">
+      Listas optimizadas con FlatList
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#apis-nativas-comunes">
+      APIs nativas comunes
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#consumo-de-apis">
+      Consumo de APIs
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#diferencias-de-desarrollo">
+      Diferencias de desarrollo
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#recursos-utiles">
+      Recursos útiles
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ejercicios-propuestos">
+      Ejercicios propuestos
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="que-es-react-native">
+    ¿Qué es React Native?
+   </h2>
+   <p>
+    React Native es un framework que permite desarrollar aplicaciones móviles nativas usando React y JavaScript. A diferencia de React para web, React Native compila a código nativo para iOS y Android.
+   </p>
+   <p>
+    <strong>
+     Filosofía clave
+    </strong>
+    : "Learn once, write anywhere" - Aprende React una vez, úsalo en múltiples plataformas.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="principales-diferencias-con-react-web">
+    Principales diferencias con React Web
+   </h2>
+   <h3 id="1-componentes-basicos">
+    1. Componentes básicos
+   </h3>
+   <p>
+    En lugar de elementos HTML, React Native usa componentes específicos para móvil:
+   </p>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// React Web</span>
+<span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Título</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Párrafo</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">texto</span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handlePress</span><span class="p">}&gt;</span><span class="nx">Botón</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="c1">// React Native</span>
+<span class="p">&lt;</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">title</span><span class="p">}&gt;</span><span class="nx">Título</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">Text</span><span class="p">&gt;</span><span class="nx">Párrafo</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">texto</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">TouchableOpacity</span><span class="w"> </span><span class="na">onPress</span><span class="o">=</span><span class="p">{</span><span class="nx">handlePress</span><span class="p">}&gt;</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">Text</span><span class="p">&gt;</span><span class="nx">Botón</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">TouchableOpacity</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="2-componentes-principales">
+    2. Componentes principales
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Componente
+      </th>
+      <th>
+       Propósito
+      </th>
+      <th>
+       Equivalente Web
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        View
+       </code>
+      </td>
+      <td>
+       Contenedor básico
+      </td>
+      <td>
+       <code>
+        &lt;div&gt;
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        Text
+       </code>
+      </td>
+      <td>
+       Mostrar texto
+      </td>
+      <td>
+       <code>
+        &lt;p&gt;
+       </code>
+       ,
+       <code>
+        &lt;span&gt;
+       </code>
+       ,
+       <code>
+        &lt;h1&gt;
+       </code>
+       , etc.
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        Image
+       </code>
+      </td>
+      <td>
+       Mostrar imágenes
+      </td>
+      <td>
+       <code>
+        &lt;img&gt;
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        ScrollView
+       </code>
+      </td>
+      <td>
+       Área con scroll
+      </td>
+      <td>
+       <code>
+        &lt;div&gt;
+       </code>
+       con overflow
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        TouchableOpacity
+       </code>
+      </td>
+      <td>
+       Elemento clickeable
+      </td>
+      <td>
+       <code>
+        &lt;button&gt;
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        TextInput
+       </code>
+      </td>
+      <td>
+       Campo de entrada
+      </td>
+      <td>
+       <code>
+        &lt;input&gt;
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        FlatList
+       </code>
+      </td>
+      <td>
+       Lista optimizada
+      </td>
+      <td>
+       <code>
+        &lt;ul&gt;
+       </code>
+       con virtualización
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="3-estilos-con-stylesheet">
+    3. Estilos con StyleSheet
+   </h3>
+   <p>
+    React Native usa un sistema de estilos similar a CSS pero con diferencias importantes:
+   </p>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-native'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">styles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">container</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flex</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#fff'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">alignItems</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">justifyContent</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">24</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">button</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#007AFF'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingHorizontal</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingVertical</span><span class="o">:</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">buttonText</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Diferencias clave en estilos
+    </strong>
+    :
+   </p>
+   <ul>
+    <li>
+     Se usa
+     <code>
+      flex
+     </code>
+     por defecto (no
+     <code>
+      display: flex
+     </code>
+     )
+    </li>
+    <li>
+     Propiedades en camelCase:
+     <code>
+      backgroundColor
+     </code>
+     en lugar de
+     <code>
+      background-color
+     </code>
+    </li>
+    <li>
+     No hay herencia de estilos (excepto en
+     <code>
+      Text
+     </code>
+     )
+    </li>
+    <li>
+     Dimensiones sin unidades (se asumen píxeles)
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="configuracion-inicial">
+    Configuración inicial
+   </h2>
+   <h3 id="opciones-para-crear-proyectos-react-native">
+    Opciones para crear proyectos React Native
+   </h3>
+   <p>
+    Existen dos formas principales de crear proyectos React Native:
+   </p>
+   <h4 id="1-expo-cli-recomendado-para-principiantes">
+    1. Expo CLI (Recomendado para principiantes)
+   </h4>
+   <p>
+    <strong>
+     Ventajas de Expo:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     ✅ Configuración cero - no necesitas Android Studio ni Xcode inicialmente
+    </li>
+    <li>
+     ✅ Desarrollo rápido con Expo Go en tu teléfono
+    </li>
+    <li>
+     ✅ Muchas APIs nativas pre-configuradas (cámara, ubicación, notificaciones)
+    </li>
+    <li>
+     ✅ Builds automáticos en la nube
+    </li>
+    <li>
+     ✅ Actualizaciones over-the-air (OTA)
+    </li>
+    <li>
+     ✅ Documentación excelente y comunidad activa
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Limitaciones de Expo:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     ❌ No puedes usar librerías nativas personalizadas
+    </li>
+    <li>
+     ❌ Tamaño de app más grande
+    </li>
+    <li>
+     ❌ Menos control sobre configuraciones nativas
+    </li>
+   </ul>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Instalar Expo CLI</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>@expo/cli
+
+<span class="c1"># Crear nuevo proyecto con JavaScript (JSX)</span>
+npx<span class="w"> </span>create-expo-app<span class="w"> </span>MiApp<span class="w"> </span>--template<span class="w"> </span>blank
+<span class="nb">cd</span><span class="w"> </span>MiApp
+
+<span class="c1"># Ejecutar en desarrollo</span>
+npx<span class="w"> </span>expo<span class="w"> </span>start
+</pre>
+    </div>
+   </div>
+   <h4 id="2-react-native-cli-para-desarrolladores-avanzados">
+    2. React Native CLI (Para desarrolladores avanzados)
+   </h4>
+   <p>
+    <strong>
+     Ventajas de React Native CLI:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     ✅ Control total sobre el proyecto
+    </li>
+    <li>
+     ✅ Acceso completo a APIs nativas
+    </li>
+    <li>
+     ✅ Puedes usar cualquier librería nativa
+    </li>
+    <li>
+     ✅ Tamaño de app más pequeño
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Desventajas:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     ❌ Configuración compleja (Android Studio + Xcode)
+    </li>
+    <li>
+     ❌ Más tiempo de setup inicial
+    </li>
+    <li>
+     ❌ Más propenso a errores de configuración
+    </li>
+   </ul>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Instalar React Native CLI</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>@react-native-community/cli
+
+<span class="c1"># Crear nuevo proyecto</span>
+npx<span class="w"> </span>react-native@latest<span class="w"> </span>init<span class="w"> </span>MiApp
+<span class="nb">cd</span><span class="w"> </span>MiApp
+
+<span class="c1"># Ejecutar en desarrollo (requiere emulador/dispositivo configurado)</span>
+npx<span class="w"> </span>react-native<span class="w"> </span>run-android
+npx<span class="w"> </span>react-native<span class="w"> </span>run-ios
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Recomendación
+    </strong>
+    : Para aprender React Native, usa
+    <strong>
+     Expo
+    </strong>
+    . Puedes migrar a React Native CLI más adelante si necesitas funcionalidades nativas específicas.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="como-ejecutar-tu-aplicacion">
+    Cómo ejecutar tu aplicación
+   </h2>
+   <h3 id="opcion-1-expo-go-mas-facil-recomendada-para-principiantes">
+    Opción 1: Expo Go (Más fácil - Recomendada para principiantes)
+   </h3>
+   <p>
+    Esta es la forma más simple sin necesidad de configurar Android SDK:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Instala Expo Go en tu teléfono
+     </strong>
+     :
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Android:
+     <a href="https://play.google.com/store/apps/details?id=host.exp.exponent">
+      Google Play Store
+     </a>
+    </li>
+    <li>
+     iOS:
+     <a href="https://apps.apple.com/app/expo-go/id982107779">
+      App Store
+     </a>
+    </li>
+   </ul>
+   <ol start="2">
+    <li>
+     <p>
+      <strong>
+       Ejecuta el proyecto
+      </strong>
+      :
+      <br/>
+      <div class="highlight language-bash">
+       <pre><span></span><span class="w">   </span>npx<span class="w"> </span>expo<span class="w"> </span>start
+<span class="w">   </span>
+</pre>
+      </div>
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Conecta tu dispositivo
+      </strong>
+      :
+     </p>
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Escanea el código QR que aparece en la terminal con la cámara (iOS) o con la app Expo Go (Android)
+    </li>
+    <li>
+     Asegúrate de que tu teléfono y computadora estén en la misma red WiFi
+    </li>
+   </ul>
+   <h3 id="opcion-2-modo-tunel-solucion-para-problemas-de-conectividad">
+    Opción 2: Modo túnel (Solución para problemas de conectividad)
+   </h3>
+   <p>
+    Si tienes problemas de conectividad entre tu computadora y teléfono (común en Linux con Node.js v17+):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npx<span class="w"> </span>expo<span class="w"> </span>start<span class="w"> </span>--tunnel
+</pre>
+   </div>
+   <p>
+    Esta opción:
+- Crea un túnel público usando ngrok
+- Funciona independientemente de configuraciones IPv4/IPv6
+- Es especialmente útil cuando el sistema usa IPv6 pero el teléfono necesita IPv4
+- Permite conectar desde cualquier red
+   </p>
+   <h3 id="opcion-3-desarrollo-en-navegador-web">
+    Opción 3: Desarrollo en navegador web
+   </h3>
+   <p>
+    Para desarrollo inicial, puedes probar tu app en el navegador:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npx<span class="w"> </span>expo<span class="w"> </span>start<span class="w"> </span>--web
+</pre>
+   </div>
+   <p>
+    <strong>
+     Recomendación
+    </strong>
+    : 
+- Para desarrollo normal: Empieza con
+    <strong>
+     Expo Go
+    </strong>
+    en tu teléfono
+- Para problemas de conectividad: Usa
+    <strong>
+     modo túnel
+    </strong>
+    (
+    <code>
+     --tunnel
+    </code>
+    )
+   </p>
+   <h3 id="estructura-basica-de-un-proyecto-expo">
+    Estructura básica de un proyecto Expo
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>MiApp/
+├── App.js              # Componente principal
+├── app.json           # Configuración de la app
+├── package.json       # Dependencias
+├── components/        # Componentes reutilizables
+├── screens/          # Pantallas de la app
+└── assets/           # Imágenes y recursos
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ejemplo-basico-primera-app">
+    Ejemplo básico: Primera app
+   </h2>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// App.js</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">View</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">Text</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">TextInput</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">TouchableOpacity</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">StyleSheet</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">Alert</span>
+<span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-native'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">nombre</span><span class="p">,</span><span class="w"> </span><span class="nx">setNombre</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">contador</span><span class="p">,</span><span class="w"> </span><span class="nx">setContador</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="mf">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">saludar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">nombre</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">Alert</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="s1">'Saludo'</span><span class="p">,</span><span class="w"> </span><span class="sb">`¡Hola </span><span class="si">${</span><span class="nx">nombre</span><span class="si">}</span><span class="sb">!`</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">Alert</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="s1">'Error'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Por favor ingresa tu nombre'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">title</span><span class="p">}&gt;</span><span class="nx">Mi</span><span class="w"> </span><span class="nx">Primera</span><span class="w"> </span><span class="nx">App</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">TextInput</span>
+<span class="w">        </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">input</span><span class="p">}</span>
+<span class="w">        </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Ingresa tu nombre"</span>
+<span class="w">        </span><span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">nombre</span><span class="p">}</span>
+<span class="w">        </span><span class="na">onChangeText</span><span class="o">=</span><span class="p">{</span><span class="nx">setNombre</span><span class="p">}</span>
+<span class="w">      </span><span class="p">/&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">TouchableOpacity</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">button</span><span class="p">}</span><span class="w"> </span><span class="na">onPress</span><span class="o">=</span><span class="p">{</span><span class="nx">saludar</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">buttonText</span><span class="p">}&gt;</span><span class="nx">Saludar</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">TouchableOpacity</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">counter</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">counterText</span><span class="p">}&gt;</span><span class="nx">Contador</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">contador</span><span class="p">}&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">TouchableOpacity</span><span class="w"> </span>
+<span class="w">          </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">smallButton</span><span class="p">}</span><span class="w"> </span>
+<span class="w">          </span><span class="na">onPress</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setContador</span><span class="p">(</span><span class="nx">contador</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">)}</span>
+<span class="w">        </span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">buttonText</span><span class="p">}&gt;</span><span class="o">+</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">TouchableOpacity</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">styles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">container</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flex</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#f5f5f5'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">alignItems</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">justifyContent</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">28</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#333'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">input</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="s1">'100%'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="mf">50</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderWidth</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#ddd'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingHorizontal</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">button</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#007AFF'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingHorizontal</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingVertical</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">buttonText</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">counter</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flexDirection</span><span class="o">:</span><span class="w"> </span><span class="s1">'row'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">alignItems</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">gap</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">counterText</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">18</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#333'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">smallButton</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#34C759'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="mf">40</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="mf">40</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">justifyContent</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">alignItems</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="navegacion-entre-pantallas">
+    Navegación entre pantallas
+   </h2>
+   <p>
+    Para navegar entre pantallas, se usa React Navigation:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>@react-navigation/native<span class="w"> </span>@react-navigation/stack
+npx<span class="w"> </span>expo<span class="w"> </span>install<span class="w"> </span>react-native-screens<span class="w"> </span>react-native-safe-area-context
+</pre>
+   </div>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// App.js</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">NavigationContainer</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@react-navigation/native'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">createStackNavigator</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@react-navigation/stack'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">HomeScreen</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./screens/HomeScreen'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">DetailScreen</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./screens/DetailScreen'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">Stack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createStackNavigator</span><span class="p">();</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">NavigationContainer</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Stack</span><span class="p">.</span><span class="na">Navigator</span><span class="w"> </span><span class="na">initialRouteName</span><span class="o">=</span><span class="s">"Home"</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">Stack</span><span class="p">.</span><span class="na">Screen</span><span class="w"> </span><span class="na">name</span><span class="o">=</span><span class="s">"Home"</span><span class="w"> </span><span class="na">component</span><span class="o">=</span><span class="p">{</span><span class="nx">HomeScreen</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">Stack</span><span class="p">.</span><span class="na">Screen</span><span class="w"> </span><span class="na">name</span><span class="o">=</span><span class="s">"Detail"</span><span class="w"> </span><span class="na">component</span><span class="o">=</span><span class="p">{</span><span class="nx">DetailScreen</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">Stack</span><span class="p">.</span><span class="na">Navigator</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">NavigationContainer</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// screens/HomeScreen.js</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">View</span><span class="p">,</span><span class="w"> </span><span class="nx">Text</span><span class="p">,</span><span class="w"> </span><span class="nx">TouchableOpacity</span><span class="p">,</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-native'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">HomeScreen</span><span class="p">({</span><span class="w"> </span><span class="nx">navigation</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">title</span><span class="p">}&gt;</span><span class="nx">Pantalla</span><span class="w"> </span><span class="nx">Principal</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">TouchableOpacity</span><span class="w"> </span>
+<span class="w">        </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">button</span><span class="p">}</span>
+<span class="w">        </span><span class="na">onPress</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">navigation</span><span class="p">.</span><span class="nx">navigate</span><span class="p">(</span><span class="s1">'Detail'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">mensaje</span><span class="o">:</span><span class="w"> </span><span class="s1">'Hola desde Home'</span><span class="w"> </span><span class="p">})}</span>
+<span class="w">      </span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">buttonText</span><span class="p">}&gt;</span><span class="nx">Ir</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="nx">Detalle</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">TouchableOpacity</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">styles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">container</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flex</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">justifyContent</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">alignItems</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#f5f5f5'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">24</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#333'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">button</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#007AFF'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingHorizontal</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingVertical</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">buttonText</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+
+<span class="c1">// screens/DetailScreen.js</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">View</span><span class="p">,</span><span class="w"> </span><span class="nx">Text</span><span class="p">,</span><span class="w"> </span><span class="nx">TouchableOpacity</span><span class="p">,</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-native'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">DetailScreen</span><span class="p">({</span><span class="w"> </span><span class="nx">route</span><span class="p">,</span><span class="w"> </span><span class="nx">navigation</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">mensaje</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">route</span><span class="p">.</span><span class="nx">params</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">title</span><span class="p">}&gt;</span><span class="nx">Pantalla</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Detalle</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">{</span><span class="nx">mensaje</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">messageContainer</span><span class="p">}&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">messageLabel</span><span class="p">}&gt;</span><span class="nx">Mensaje</span><span class="w"> </span><span class="nx">recibido</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">messageText</span><span class="p">}&gt;{</span><span class="nx">mensaje</span><span class="p">}&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">TouchableOpacity</span><span class="w"> </span>
+<span class="w">        </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">button</span><span class="p">}</span>
+<span class="w">        </span><span class="na">onPress</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">navigation</span><span class="p">.</span><span class="nx">goBack</span><span class="p">()}</span>
+<span class="w">      </span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">buttonText</span><span class="p">}&gt;</span><span class="nx">Volver</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">TouchableOpacity</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">styles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">container</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flex</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">justifyContent</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">alignItems</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#f8f9fa'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">24</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#333'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">messageContainer</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">shadowColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#000'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">shadowOffset</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">shadowOpacity</span><span class="o">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">shadowRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">elevation</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">messageLabel</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'600'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#666'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">messageText</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">18</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#333'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontStyle</span><span class="o">:</span><span class="w"> </span><span class="s1">'italic'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">button</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#007AFF'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingHorizontal</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">paddingVertical</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">buttonText</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">textAlign</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="listas-optimizadas-con-flatlist">
+    Listas optimizadas con FlatList
+   </h2>
+   <p>
+    Para listas grandes, siempre usa
+    <code>
+     FlatList
+    </code>
+    en lugar de
+    <code>
+     ScrollView
+    </code>
+    :
+   </p>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">View</span><span class="p">,</span><span class="w"> </span><span class="nx">Text</span><span class="p">,</span><span class="w"> </span><span class="nx">FlatList</span><span class="p">,</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-native'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">datos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s1">'1'</span><span class="p">,</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s1">'Juan'</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="mf">25</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s1">'2'</span><span class="p">,</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s1">'María'</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="mf">30</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s1">'3'</span><span class="p">,</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s1">'Pedro'</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="mf">28</span><span class="w"> </span><span class="p">},</span>
+<span class="p">];</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">ListaUsuarios</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">renderItem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">item</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">item</span><span class="p">}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">nombre</span><span class="p">}&gt;{</span><span class="nx">item</span><span class="p">.</span><span class="nx">nombre</span><span class="p">}&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">edad</span><span class="p">}&gt;{</span><span class="nx">item</span><span class="p">.</span><span class="nx">edad</span><span class="p">}</span><span class="w"> </span><span class="nx">años</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">FlatList</span>
+<span class="w">      </span><span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">datos</span><span class="p">}</span>
+<span class="w">      </span><span class="na">renderItem</span><span class="o">=</span><span class="p">{</span><span class="nx">renderItem</span><span class="p">}</span>
+<span class="w">      </span><span class="na">keyExtractor</span><span class="o">=</span><span class="p">{</span><span class="nx">item</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span>
+<span class="w">      </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">lista</span><span class="p">}</span>
+<span class="w">    </span><span class="p">/&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">styles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">lista</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flex</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">item</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">flexDirection</span><span class="o">:</span><span class="w"> </span><span class="s1">'row'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">justifyContent</span><span class="o">:</span><span class="w"> </span><span class="s1">'space-between'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">14</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#666'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="apis-nativas-comunes">
+    APIs nativas comunes
+   </h2>
+   <p>
+    React Native proporciona acceso a funcionalidades nativas:
+   </p>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Alert</span><span class="p">,</span><span class="w"> </span><span class="nx">Dimensions</span><span class="p">,</span><span class="w"> </span><span class="nx">Platform</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-native'</span><span class="p">;</span>
+
+<span class="c1">// Alertas nativas</span>
+<span class="nx">Alert</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="s1">'Título'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Mensaje'</span><span class="p">,</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="s1">'Cancelar'</span><span class="p">,</span><span class="w"> </span><span class="nx">style</span><span class="o">:</span><span class="w"> </span><span class="s1">'cancel'</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">text</span><span class="o">:</span><span class="w"> </span><span class="s1">'OK'</span><span class="p">,</span><span class="w"> </span><span class="nx">onPress</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'OK'</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]);</span>
+
+<span class="c1">// Dimensiones de la pantalla</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">width</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Dimensions</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'window'</span><span class="p">);</span>
+
+<span class="c1">// Detectar plataforma</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">Platform</span><span class="p">.</span><span class="nx">OS</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'ios'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Código específico para iOS</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Código específico para Android</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="consumo-de-apis">
+    Consumo de APIs
+   </h2>
+   <p>
+    React Native permite consumir APIs REST usando
+    <code>
+     fetch
+    </code>
+    igual que en React web:
+   </p>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// components/UserList.js</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">View</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">Text</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">FlatList</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">StyleSheet</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">ActivityIndicator</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">Alert</span>
+<span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-native'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">UserList</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">users</span><span class="p">,</span><span class="w"> </span><span class="nx">setUsers</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">([]);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loading</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoading</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fetchUsers</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[]);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchUsers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'https://jsonplaceholder.typicode.com/users'</span><span class="p">);</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">response</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Error en la respuesta del servidor'</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">      </span><span class="nx">setUsers</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">'Error fetching users:'</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">Alert</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="s1">'Error'</span><span class="p">,</span><span class="w"> </span><span class="s1">'No se pudieron cargar los usuarios'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">renderUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">item</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">userCard</span><span class="p">}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">userName</span><span class="p">}&gt;{</span><span class="nx">item</span><span class="p">.</span><span class="nx">name</span><span class="p">}&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">userEmail</span><span class="p">}&gt;{</span><span class="nx">item</span><span class="p">.</span><span class="nx">email</span><span class="p">}&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">userPhone</span><span class="p">}&gt;{</span><span class="nx">item</span><span class="p">.</span><span class="nx">phone</span><span class="p">}&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">loading</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">loadingContainer</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">ActivityIndicator</span><span class="w"> </span><span class="na">size</span><span class="o">=</span><span class="s">"large"</span><span class="w"> </span><span class="na">color</span><span class="o">=</span><span class="s">"#007AFF"</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">loadingText</span><span class="p">}&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">usuarios</span><span class="p">...&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">View</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Text</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">title</span><span class="p">}&gt;</span><span class="nx">Lista</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Usuarios</span><span class="p">&lt;/</span><span class="nt">Text</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">FlatList</span>
+<span class="w">        </span><span class="na">data</span><span class="o">=</span><span class="p">{</span><span class="nx">users</span><span class="p">}</span>
+<span class="w">        </span><span class="na">renderItem</span><span class="o">=</span><span class="p">{</span><span class="nx">renderUser</span><span class="p">}</span>
+<span class="w">        </span><span class="na">keyExtractor</span><span class="o">=</span><span class="p">{</span><span class="nx">item</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">.</span><span class="nx">toString</span><span class="p">()}</span>
+<span class="w">        </span><span class="na">showsVerticalScrollIndicator</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span>
+<span class="w">      </span><span class="p">/&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">View</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">styles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">StyleSheet</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">container</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flex</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#f5f5f5'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">24</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">textAlign</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#333'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">userCard</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="mf">15</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">shadowColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#000'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">shadowOffset</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">shadowOpacity</span><span class="o">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">shadowRadius</span><span class="o">:</span><span class="w"> </span><span class="mf">4</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">elevation</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">userName</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">18</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontWeight</span><span class="o">:</span><span class="w"> </span><span class="s1">'bold'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#333'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">5</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">userEmail</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">14</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#666'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">userPhone</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">14</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#666'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">loadingContainer</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">flex</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">justifyContent</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">alignItems</span><span class="o">:</span><span class="w"> </span><span class="s1">'center'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">loadingText</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">marginTop</span><span class="o">:</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="mf">16</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'#666'</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="conceptos-importantes-del-consumo-de-apis">
+    Conceptos importantes del consumo de APIs:
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      async/await
+     </strong>
+     : Manejo de operaciones asíncronas
+    </li>
+    <li>
+     <strong>
+      try/catch
+     </strong>
+     : Manejo de errores
+    </li>
+    <li>
+     <strong>
+      ActivityIndicator
+     </strong>
+     : Indicador de carga nativo
+    </li>
+    <li>
+     <strong>
+      FlatList
+     </strong>
+     : Lista optimizada para grandes cantidades de datos
+    </li>
+    <li>
+     <strong>
+      Alert
+     </strong>
+     : Alertas nativas del sistema
+    </li>
+   </ul>
+   <h3 id="apis-populares-para-practicar">
+    APIs populares para practicar:
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      JSONPlaceholder
+     </strong>
+     :
+     <code>
+      https://jsonplaceholder.typicode.com/
+     </code>
+     (usuarios, posts, comentarios)
+    </li>
+    <li>
+     <strong>
+      OpenWeatherMap
+     </strong>
+     : Datos meteorológicos
+    </li>
+    <li>
+     <strong>
+      The Cat API
+     </strong>
+     :
+     <code>
+      https://api.thecatapi.com/v1/images/search
+     </code>
+     (imágenes de gatos)
+    </li>
+    <li>
+     <strong>
+      REST Countries
+     </strong>
+     :
+     <code>
+      https://restcountries.com/v3.1/all
+     </code>
+     (información de países)
+    </li>
+   </ul>
+   <ol>
+    <li>
+     <strong>
+      Usa StyleSheet.create()
+     </strong>
+     para mejor rendimiento
+    </li>
+    <li>
+     <strong>
+      FlatList para listas grandes
+     </strong>
+     en lugar de ScrollView
+    </li>
+    <li>
+     <strong>
+      Optimiza imágenes
+     </strong>
+     usando formatos web (WebP) cuando sea posible
+    </li>
+    <li>
+     <strong>
+      Maneja el estado
+     </strong>
+     igual que en React web
+    </li>
+    <li>
+     <strong>
+      Usa hooks
+     </strong>
+     como
+     <code>
+      useState
+     </code>
+     ,
+     <code>
+      useEffect
+     </code>
+     , etc.
+    </li>
+    <li>
+     <strong>
+      Separa componentes
+     </strong>
+     en archivos diferentes
+    </li>
+    <li>
+     <strong>
+      Prueba en ambas plataformas
+     </strong>
+     (iOS y Android)
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="diferencias-de-desarrollo">
+    Diferencias de desarrollo
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Aspecto
+      </th>
+      <th>
+       React Web
+      </th>
+      <th>
+       React Native
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Depuración
+      </td>
+      <td>
+       DevTools del navegador
+      </td>
+      <td>
+       React Native Debugger
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Hot Reload
+      </td>
+      <td>
+       Sí
+      </td>
+      <td>
+       Fast Refresh
+      </td>
+     </tr>
+     <tr>
+      <td>
+       CSS
+      </td>
+      <td>
+       Archivos CSS/SCSS
+      </td>
+      <td>
+       StyleSheet API
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Routing
+      </td>
+      <td>
+       React Router
+      </td>
+      <td>
+       React Navigation
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Almacenamiento
+      </td>
+      <td>
+       localStorage
+      </td>
+      <td>
+       AsyncStorage
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="chapter-container">
+   <h2 id="recursos-utiles">
+    Recursos útiles
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Documentación oficial
+     </strong>
+     : https://reactnative.dev/
+    </li>
+    <li>
+     <strong>
+      Expo
+     </strong>
+     : https://expo.dev/
+    </li>
+    <li>
+     <strong>
+      React Navigation
+     </strong>
+     : https://reactnavigation.org/
+    </li>
+    <li>
+     <strong>
+      UI Libraries
+     </strong>
+     : NativeBase, Shoutem UI, React Native Elements
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ejercicios-propuestos">
+    Ejercicios propuestos
+   </h2>
+   <ol>
+    <li>
+     <strong>
+      App de tareas
+     </strong>
+     : Lista de tareas con agregar/eliminar
+    </li>
+    <li>
+     <strong>
+      Calculadora
+     </strong>
+     : Calculadora básica con operaciones
+    </li>
+    <li>
+     <strong>
+      App del clima
+     </strong>
+     : Consumir API meteorológica
+    </li>
+    <li>
+     <strong>
+      Lista de contactos
+     </strong>
+     : CRUD completo con navegación
+    </li>
+   </ol>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>
