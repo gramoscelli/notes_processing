@@ -43,7 +43,6 @@ if [ $? -ne 0 ]; then echo "Error en md2html.py"; exit 1; fi
 # Paso 2: Procesar colapsables (OPCIONAL)
 if [ "$SKIP_COLLAPSIBLE" = true ]; then
   echo "[2/5] Omitiendo procesamiento de colapsables..."
-  # Copiar el archivo para mantener la cadena de nombres
   cp "${OUTPUT_DIR}/$(basename "$BASENAME").html" "${OUTPUT_DIR}/$(basename "$BASENAME")_collapsible.html"
 else
   echo "[2/5] Ejecutando collapsible.py..."
@@ -54,7 +53,6 @@ fi
 # Paso 3: Agregar tabla de contenidos (OPCIONAL)
 if [ "$SKIP_TOC" = true ]; then
   echo "[3/5] Omitiendo adición de tabla de contenidos..."
-  # Copiar el archivo para mantener la cadena de nombres
   cp "${OUTPUT_DIR}/$(basename "$BASENAME")_collapsible.html" "${OUTPUT_DIR}/$(basename "$BASENAME")_withcontent.html"
 else
   echo "[3/5] Ejecutando add_content_table.js..."

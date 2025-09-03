@@ -22,7 +22,7 @@ from pygments.lexers.special import TextLexer
 
 class EnhancedSyntaxExtension(markdown.Extension):
     """
-    Markdown extension for syntax highlighting with focus on MongoDB, JavaScript, JSX, Python, and Bash
+    Markdown extension for syntax highlighting with focus on MongoDB, JavaScript, JSX, Python, Bash, Mermaid, and SVG
     """
     def extendMarkdown(self, md):
         md.registerExtension(self)
@@ -32,7 +32,7 @@ class EnhancedSyntaxExtension(markdown.Extension):
         
 class EnhancedSyntaxPreprocessor(markdown.preprocessors.Preprocessor):
     """
-    Preprocessor to handle code blocks with MongoDB, JavaScript, JSX, Python, and Bash syntax highlighting
+    Preprocessor to handle code blocks with MongoDB, JavaScript, JSX, Python, Bash syntax highlighting, Mermaid diagrams, and SVG content
     """
     FENCED_BLOCK_RE = r'```([\w+-]+)?\n([\s\S]*?)```'
     
@@ -56,6 +56,22 @@ class EnhancedSyntaxPreprocessor(markdown.preprocessors.Preprocessor):
                 # Replace with a simple pre tag to avoid errors
                 original_block = f'```{original_lang or ""}\n{code}```'
                 replacement = f'<pre class="empty-code-block">{code}</pre>'
+                text = text.replace(original_block, replacement, 1)
+                continue
+            
+            # Handle SVG content specially - render directly as SVG
+            if original_lang and original_lang.lower() == 'svg':
+                original_block = f'```{original_lang}\n{code}```'
+                # Create a div wrapper for the SVG with centering
+                replacement = f'<div class="svg-container">\n{code}\n</div>'
+                text = text.replace(original_block, replacement, 1)
+                continue
+            
+            # Handle Mermaid diagrams specially - don't wrap in <pre> tags
+            if original_lang and original_lang.lower() == 'mermaid':
+                original_block = f'```{original_lang}\n{code}```'
+                # Create a div with class "mermaid" for Mermaid.js to process
+                replacement = f'<div class="mermaid">\n{code}\n</div>'
                 text = text.replace(original_block, replacement, 1)
                 continue
                 
@@ -215,6 +231,22 @@ def convert_markdown_to_html(md_file, css_file=None, output_file=None, highlight
                     # Replace with a simple pre tag to avoid errors
                     original_block = f'```{original_lang or ""}\n{code}```'
                     replacement = f'<pre class="empty-code-block">{code}</pre>'
+                    text = text.replace(original_block, replacement, 1)
+                    continue
+                
+                # Handle SVG content specially - render directly as SVG
+                if original_lang and original_lang.lower() == 'svg':
+                    original_block = f'```{original_lang}\n{code}```'
+                    # Create a div wrapper for the SVG with centering
+                    replacement = f'<div class="svg-container">\n{code}\n</div>'
+                    text = text.replace(original_block, replacement, 1)
+                    continue
+                
+                # Handle Mermaid diagrams specially - don't wrap in <pre> tags
+                if original_lang and original_lang.lower() == 'mermaid':
+                    original_block = f'```{original_lang}\n{code}```'
+                    # Create a div with class "mermaid" for Mermaid.js to process
+                    replacement = f'<div class="mermaid">\n{code}\n</div>'
                     text = text.replace(original_block, replacement, 1)
                     continue
                     
@@ -399,38 +431,38 @@ def convert_markdown_to_html(md_file, css_file=None, output_file=None, highlight
     html_doc.append('        pre:not(.highlight pre) { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0; }')
     html_doc.append('        code { font-family: "Courier New", Courier, monospace; }')
     
-    # Configuración mejorada para los bloques de resaltado de sintaxis (contenedor externo)
+    # ConfiguraciÃ³n mejorada para los bloques de resaltado de sintaxis (contenedor externo)
     html_doc.append('        .highlight { padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }')
     
     # Quitar bordes y fondos duplicados del pre dentro de .highlight
     html_doc.append('        .highlight pre { background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0; }')
     
-    # Configuración para las líneas de comentarios en los bloques de código
+    # ConfiguraciÃ³n para las lÃ­neas de comentarios en los bloques de cÃ³digo
     html_doc.append('        .highlight .c, .highlight .c1, .highlight .cm { color: #9a8052 !important; font-style: italic; }') 
     
-    # Configuración para las palabras clave en los bloques de código
+    # ConfiguraciÃ³n para las palabras clave en los bloques de cÃ³digo
     html_doc.append('        .highlight .k, .highlight .kd, .highlight .kn { color: #8250df !important; font-weight: normal; }')
     
-    # Configuración para las cadenas de texto en los bloques de código
+    # ConfiguraciÃ³n para las cadenas de texto en los bloques de cÃ³digo
     html_doc.append('        .highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .si { color: #327d41 !important; }')
     
-    # Configuración para los números en los bloques de código
+    # ConfiguraciÃ³n para los nÃºmeros en los bloques de cÃ³digo
     html_doc.append('        .highlight .m, .highlight .mi, .highlight .mf { color: #606060 !important; }')
     
-    # Configuración para los operadores en los bloques de código
+    # ConfiguraciÃ³n para los operadores en los bloques de cÃ³digo
     html_doc.append('        .highlight .o, .highlight .ow { color: #666666 !important; font-weight: normal; }')
     
-    # Configuración para las constantes en los bloques de código
+    # ConfiguraciÃ³n para las constantes en los bloques de cÃ³digo
     html_doc.append('        .highlight .kc, .highlight .no { color: #9a5b13 !important; }')
     
-    # Configuración para las funciones y clases en los bloques de código
+    # ConfiguraciÃ³n para las funciones y clases en los bloques de cÃ³digo
     html_doc.append('        .highlight .nf, .highlight .nb, .highlight .nx { color: #606060 !important; font-weight: normal; }')
     
-    # Mejorar la visibilidad de paréntesis, corchetes, llaves, puntos y coma, etc.
+    # Mejorar la visibilidad de parÃ©ntesis, corchetes, llaves, puntos y coma, etc.
     html_doc.append('        .highlight .p { color: #666666 !important; font-weight: normal; }')
     
     # JSX/React specific styling - Colores basados en la imagen proporcionada
-    html_doc.append('        .language-jsx .highlight .k, .language-jsx .highlight .kd, .language-jsx .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }')  # Keywords (function, const, return) - púrpura
+    html_doc.append('        .language-jsx .highlight .k, .language-jsx .highlight .kd, .language-jsx .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }')  # Keywords (function, const, return) - pÃºrpura
     html_doc.append('        .language-jsx .highlight .nx, .language-jsx .highlight .nf { color: #0969da !important; background: none !important; border: none !important; }')  # Functions/variables - azul
     html_doc.append('        .language-jsx .highlight .nt { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }')  # Opening tags - verde
     html_doc.append('        .language-jsx .highlight .nc { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }')  # Component names - verde
@@ -441,7 +473,7 @@ def convert_markdown_to_html(md_file, css_file=None, output_file=None, highlight
     html_doc.append('        .language-jsx .highlight .c, .language-jsx .highlight .c1, .language-jsx .highlight .cm { color: #656d76 !important; font-style: italic; background: none !important; border: none !important; }')   # Comments - gris
     html_doc.append('        .language-jsx .highlight .m, .language-jsx .highlight .mi, .language-jsx .highlight .mf { color: #0969da !important; background: none !important; border: none !important; }')   # Numbers - azul
     
-    html_doc.append('        .language-react .highlight .k, .language-react .highlight .kd, .language-react .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }')  # Keywords - púrpura
+    html_doc.append('        .language-react .highlight .k, .language-react .highlight .kd, .language-react .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }')  # Keywords - pÃºrpura
     html_doc.append('        .language-react .highlight .nx, .language-react .highlight .nf { color: #0969da !important; background: none !important; border: none !important; }')  # Functions/variables - azul
     html_doc.append('        .language-react .highlight .nt { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }')  # Opening tags - verde
     html_doc.append('        .language-react .highlight .nc { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }')  # Component names - verde
@@ -452,8 +484,8 @@ def convert_markdown_to_html(md_file, css_file=None, output_file=None, highlight
     html_doc.append('        .language-react .highlight .c, .language-react .highlight .c1, .language-react .highlight .cm { color: #656d76 !important; font-style: italic; background: none !important; border: none !important; }')   # Comments - gris
     html_doc.append('        .language-react .highlight .m, .language-react .highlight .mi, .language-react .highlight .mf { color: #0969da !important; background: none !important; border: none !important; }')   # Numbers - azul
     
-    # TSX specific styling - mismos colores con adición de tipos TypeScript
-    html_doc.append('        .language-tsx .highlight .k, .language-tsx .highlight .kd, .language-tsx .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }')  # Keywords - púrpura
+    # TSX specific styling - mismos colores con adiciÃ³n de tipos TypeScript
+    html_doc.append('        .language-tsx .highlight .k, .language-tsx .highlight .kd, .language-tsx .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }')  # Keywords - pÃºrpura
     html_doc.append('        .language-tsx .highlight .nx, .language-tsx .highlight .nf { color: #0969da !important; background: none !important; border: none !important; }')  # Functions/variables - azul
     html_doc.append('        .language-tsx .highlight .nt { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }')  # Opening tags - verde
     html_doc.append('        .language-tsx .highlight .nc { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }')  # Component names - verde
@@ -469,8 +501,16 @@ def convert_markdown_to_html(md_file, css_file=None, output_file=None, highlight
     html_doc.append('        .language-javascript .highlight .err { color: #116329 !important; background: none !important; border: none !important; }')  # Error class (for JSX closing tags in JS) - verde
     html_doc.append('        .language-js .highlight .err { color: #116329 !important; background: none !important; border: none !important; }')  # Error class (for JSX closing tags in JS) - verde
     
-    # Remover cualquier decoración adicional
+    # Remover cualquier decoraciÃ³n adicional
     html_doc.append('        .highlight span { background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important; }')
+    
+    # SVG container styling
+    html_doc.append('        .svg-container { margin: 15px 0; text-align: center; padding: 10px; }')
+    html_doc.append('        .svg-container svg { max-width: 100%; height: auto; }')
+    
+    # Mermaid diagram styling
+    html_doc.append('        .mermaid { margin: 15px 0; text-align: center; }')
+    html_doc.append('        .mermaid svg { max-width: 100%; height: auto; }')
     
     # Otras configuraciones de estilo
     html_doc.append('        .empty-code-block { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }')
@@ -505,9 +545,24 @@ def convert_markdown_to_html(md_file, css_file=None, output_file=None, highlight
         else:
             print(f"Warning: CSS file not found: {css_file}")
     
+    # Add Mermaid.js script from CDN
+
+    
     html_doc.append('</head>')
     html_doc.append('<body>')
     html_doc.append(html_content)
+    html_doc.append('    <script type="module">')
+    html_doc.append('        import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";')
+    html_doc.append('        mermaid.initialize({')
+    html_doc.append('            startOnLoad: true,')
+    html_doc.append('            theme: "default",')
+    html_doc.append('            securityLevel: "loose",')
+    html_doc.append('            flowchart: {')
+    html_doc.append('                useMaxWidth: true,')
+    html_doc.append('                htmlLabels: true')
+    html_doc.append('            }')
+    html_doc.append('        });')
+    html_doc.append('    </script>')
     html_doc.append('</body>')
     html_doc.append('</html>')
     

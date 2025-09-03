@@ -8,21 +8,30 @@ import sys
 import argparse
 from bs4 import BeautifulSoup, Tag
 
-def find_mermaid_blocks(soup):
+def find_mermaid_blocks(soup, verbose=False):
     """Find all Mermaid code blocks in the HTML."""
     mermaid_blocks = []
     
-    # Method 1: Find pre tags with language-mermaid class
+    # Method 1: Find divs with class "mermaid" (new md2html.py format)
+    for div in soup.find_all('div', class_='mermaid'):
+        mermaid_blocks.append(div)
+        if verbose:
+            print(f"Found Mermaid div: {div.get_text()[:50]}...")
+    
+    # Method 2: Find pre tags with language-mermaid class (legacy support)
     for pre in soup.find_all('pre', class_=lambda c: c and 'language-mermaid' in c):
         mermaid_blocks.append(pre)
+        if verbose:
+            print(f"Found Mermaid pre: {pre.get_text()[:50]}...")
     
-    # Method 2: Find divs with language-mermaid class that contain pre tags
+    # Method 3: Find divs with language-mermaid class that contain pre tags
     for div in soup.find_all('div', class_=lambda c: c and 'language-mermaid' in c):
-        pre = div.find('pre')
-        if pre:
+        if div not in mermaid_blocks:  # Avoid duplicates
             mermaid_blocks.append(div)
+            if verbose:
+                print(f"Found Mermaid div with language class: {div.get_text()[:50]}...")
     
-    # Method 3: Find any pre tags that look like they contain Mermaid code
+    # Method 4: Find any pre tags that look like they contain Mermaid code
     for pre in soup.find_all('pre'):
         if pre in mermaid_blocks:
             continue  # Skip if already found
@@ -30,13 +39,18 @@ def find_mermaid_blocks(soup):
         code = pre.text.strip()
         if any(keyword in code for keyword in ['graph ', 'flowchart ', 'sequenceDiagram', 'classDiagram']):
             mermaid_blocks.append(pre)
+            if verbose:
+                print(f"Found Mermaid-like pre: {code[:50]}...")
     
     return mermaid_blocks
 
 def extract_mermaid_code(element):
     """Extract the Mermaid code from an element."""
+    # If it's a div with class "mermaid", get its text content directly
+    if element.name == 'div' and 'mermaid' in element.get('class', []):
+        code = element.get_text().strip()
     # If it's a div, find the pre tag inside it
-    if element.name == 'div':
+    elif element.name == 'div':
         pre = element.find('pre')
         if pre:
             code = pre.text.strip()
@@ -59,14 +73,9 @@ def create_mermaid_div(code):
     div['class'] = 'mermaid'
     div['style'] = 'text-align: center; max-width: 100%; overflow: visible; margin: 15px 0; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;'
     
-    # Crear etiqueta pre y añadirla al div
-    pre_tag = Tag(name='pre')
-    pre_tag['class'] = 'mermaid'
-    pre_tag.string = code
+    # Simplemente agregar el código Mermaid como texto, sin pre tags adicionales
+    div.string = code
     
-    # Añadir la etiqueta pre al div
-    div.append(pre_tag)
-
     return div
 
 def convert_to_inline_styles(soup):
@@ -131,13 +140,16 @@ def main():
     parser = argparse.ArgumentParser(description='Convert Mermaid code blocks in HTML to inline SVG graphs')
     parser.add_argument('input_file', help='Input HTML file')
     parser.add_argument('-o', '--output', help='Output HTML file (default: input_file_mermaid.html)')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
     
     # Show help if no arguments
     if len(sys.argv) == 1:
         parser.print_help()
         print("\nExample usage:")
-        print("  python mermaid-converter-final.py grafos_final.html")
-        print("  python mermaid-converter-final.py path/to/grafos_final.html -o path/to/converted.html")
+        print("  python add_graphs.py objetos.html")
+        print("  python add_graphs.py objetos.html -v")
+        print("  python add_graphs.py path/to/objetos.html -o path/to/converted.html")
+        print("  python add_graphs.py objetos.html --output converted.html --verbose")
         return
     
     args = parser.parse_args()
@@ -164,80 +176,129 @@ def main():
     soup = BeautifulSoup(html_content, 'html.parser')
     
     # Find Mermaid blocks
-    mermaid_blocks = find_mermaid_blocks(soup)
+    mermaid_blocks = find_mermaid_blocks(soup, args.verbose)
     
     if not mermaid_blocks:
-        print("No Mermaid code blocks found in the input file.")
+        if args.verbose:
+            print("No Mermaid code blocks found in the input file.")
+            print("Searched for:")
+            print("- <div class='mermaid'>")
+            print("- <pre class='language-mermaid'>") 
+            print("- <div class='language-mermaid'>")
+            print("- Pre tags containing 'graph', 'flowchart', 'sequenceDiagram', or 'classDiagram'")
+            print("Creating output file as a copy of the input file...")
+        else:
+            print("No Mermaid blocks found. Creating copy of input file...")
+        
+        # Write the original content to output file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        print(f"Output file saved to: {output_file}")
         return
     
     print(f"Found {len(mermaid_blocks)} Mermaid code block(s)")
     
     # Replace each Mermaid block with a renderable div
-    for block in mermaid_blocks:
+    for i, block in enumerate(mermaid_blocks):
         code = extract_mermaid_code(block)
+        if args.verbose:
+            print(f"Processing block {i+1}: {code[:100]}...")
+        
+        # If it's already a properly formatted Mermaid div, leave it as is
+        if (block.name == 'div' and 
+            'mermaid' in block.get('class', []) and 
+            not block.find('pre')):
+            if args.verbose:
+                print(f"Block {i+1} is already properly formatted, skipping...")
+            continue
+        
         mermaid_div = create_mermaid_div(code)
         block.replace_with(mermaid_div)
+        if args.verbose:
+            print(f"Replaced block {i+1} with Mermaid div")
     
     # Apply inline styles
+    if args.verbose:
+        print("Converting CSS to inline styles...")
     convert_to_inline_styles(soup)
     
     # Ensure we have a body tag
     if not soup.body:
         if soup.html:
-            soup.html.append(soup.new_tag('body'))
+            body = soup.new_tag('body')
+            # Move all content that should be in body
+            for element in soup.html.contents[:]:
+                if element.name not in ['head', 'body']:
+                    body.append(element)
+            soup.html.append(body)
         else:
             html = soup.new_tag('html')
-            html.append(soup.new_tag('body'))
+            body = soup.new_tag('body')
+            # Move all content to body
+            for element in soup.contents[:]:
+                body.append(element)
+            html.append(body)
             soup.append(html)
     
-    # Add Mermaid.js script at the end of the body
-    script = soup.new_tag('script')
-    script['src'] = 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js'
-    soup.body.append(script)
+    # Check if Mermaid script already exists
+    existing_script = soup.find('script', src=lambda x: x and 'mermaid' in x)
     
-    # Add initialization script
-    init_script = soup.new_tag('script')
-    init_script.string = """
-    document.addEventListener('DOMContentLoaded', function () {
-        // Función para reemplazar caracteres escapados
-        function unescapeHTML(html) {
-            return html
-                .replace(/<pre class="mermaid">/g, "")
-                .replace(/<\/pre>/g, "")
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&amp;/g, '&')
-                .replace(/&quot;/g, '"');
-        }
+    if not existing_script:
+        if args.verbose:
+            print("Adding Mermaid.js script...")
+        # Add Mermaid.js script at the end of the body
+        script = soup.new_tag('script')
+        script['src'] = 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js'
+        soup.body.append(script)
+        
+        # Add initialization script
+        init_script = soup.new_tag('script')
+        init_script.string = """
+        document.addEventListener('DOMContentLoaded', function () {
+            // Función para reemplazar caracteres escapados
+            function unescapeHTML(html) {
+                return html
+                    .replace(/<pre class="mermaid">/g, "")
+                    .replace(/<\/pre>/g, "")
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&quot;/g, '"');
+            }
 
-        // Buscar todos los divs con clase mermaid
-        const mermaidDivs = document.querySelectorAll('div.mermaid');
+            // Buscar todos los divs con clase mermaid
+            const mermaidDivs = document.querySelectorAll('div.mermaid');
+            console.log('Found', mermaidDivs.length, 'Mermaid divs');
 
-        // Procesar cada div
-        mermaidDivs.forEach(function (div) {
-            // Obtener el contenido actual y desescaparlo
-            const escapedContent = div.innerHTML;
-            const unescapedContent = unescapeHTML(escapedContent);
+            // Procesar cada div
+            mermaidDivs.forEach(function (div, index) {
+                // Obtener el contenido actual y desescaparlo
+                const escapedContent = div.innerHTML;
+                const unescapedContent = unescapeHTML(escapedContent);
 
-            // Reemplazar el contenido
-            div.innerHTML = unescapedContent;
-            console.log(unescapedContent);
-        });
+                // Reemplazar el contenido
+                div.innerHTML = unescapedContent;
+                console.log('Processed Mermaid div', index + 1, ':', unescapedContent.substring(0, 50));
+            });
 
-        // Si usas mermaid.js, inicialízalo después de hacer los reemplazos
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default',
-            fontFamily: 'Arial, sans-serif',
-            securityLevel: 'loose',
-            flowchart: {
-                htmlLabels: true,
+            // Inicializar Mermaid después de hacer los reemplazos
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'default',
+                fontFamily: 'Arial, sans-serif',
+                securityLevel: 'loose',
+                flowchart: {
+                    htmlLabels: true,
                     curve: 'basis'
                 }
             });
-    });
-    """
-    soup.body.append(init_script)
+        });
+        """
+        soup.body.append(init_script)
+    else:
+        if args.verbose:
+            print("Mermaid script already exists in the document.")
     
     # Write output file
     with open(output_file, 'w', encoding='utf-8') as f:

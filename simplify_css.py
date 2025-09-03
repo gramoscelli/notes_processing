@@ -76,18 +76,26 @@ def combine_styles(html_file_path, output_file_path=None):
         print("No style blocks found.")
         return
 
-    # recolecta y desagrupa todas las reglas CSS
     reglas = []
+    # Bloques que se deben simplificar (NO dentro de <defs>)
+    style_blocks_to_remove = []
     for block in style_blocks:
+        # si el bloque está dentro de un <defs>, se ignora
+        if block.find_parent("defs") is not None:
+            continue
         if block.string:
             css_limpio = block.string.strip()
             reglas += desagrupar_reglas(css_limpio)
+            style_blocks_to_remove.append(block)
 
-    # fusiona reglas por selector teniendo en cuenta !important y orden
+    if not reglas:
+        print("No simplifiable style blocks found (only defs styles?).")
+        return
+
     css_fusionado = fusionar_reglas(reglas)
 
-    # elimina los bloques <style> originales
-    for block in style_blocks:
+    # elimina solo los bloques <style> que fueron procesados
+    for block in style_blocks_to_remove:
         block.decompose()
 
     # inserta el nuevo bloque <style> al final del <head>
@@ -99,7 +107,6 @@ def combine_styles(html_file_path, output_file_path=None):
     else:
         soup.insert(0, new_style_tag)
 
-    # guarda salida
     if not output_file_path:
         file_name, file_ext = os.path.splitext(html_file_path)
         output_file_path = f"{file_name}_simplify{file_ext}"
