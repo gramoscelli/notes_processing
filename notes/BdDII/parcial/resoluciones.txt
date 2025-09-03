@@ -1,0 +1,122 @@
+PRIMER EXAMEN PARCIAL DE BASES DE DATOS II
+27 de mayo de 2025
+Solución completa
+
+=== EJERCICIO 1 ===
+
+1. Lista el nombre y el stock de todos los productos cuya cantidad en inventario sea menor o igual a 12:
+
+db.productos.find(
+  { stock: { $lte: 12 } },
+  { nombre: 1, stock: 1, _id: 0 }
+)
+
+Resultado esperado:
+- Smartwatch Pro: stock 8
+- Lámpara Mesa: stock 12
+
+2. Cuenta cuántas ventas se realizaron el 10 de mayo de 2025:
+
+db.ventas.countDocuments({
+  fecha: {
+    $gte: ISODate("2025-05-10T00:00:00Z"),
+    $lt: ISODate("2025-05-11T00:00:00Z")
+  }
+})
+
+Resultado esperado: 1
+
+3. ¿Cuál es el ingreso total acumulado de todas las ventas?
+
+db.ventas.aggregate([
+  { $group: { _id: null, total: { $sum: "$monto_total" } } },
+  { $project: { _id: 0, total: 1 } }
+])
+
+Resultado esperado: 1335
+
+=== EJERCICIO 2 ===
+
+1. Incrementa en un 10% el campo precio de todos los productos de la categoría "Ropa":
+
+db.productos.updateMany(
+  { categoria: "Ropa" },
+  { $mul: { precio: 1.10 } }
+)
+
+2. Inserta una venta de prueba para el producto "Taza Cerámica" con la fecha actual:
+
+// Primero obtenemos el ObjectId de "Taza Cerámica"
+// El producto "Taza Cerámica" tiene _id: ObjectId("650000000000000000000003") y precio: 10
+
+db.ventas.insertOne({
+  producto_id: ObjectId("650000000000000000000003"),
+  cantidad: 2,
+  monto_total: 20,
+  fecha: new Date()
+})
+
+3. Lista los documentos de productos mostrando únicamente los campos nombre y precio:
+
+db.productos.find({}, { nombre: 1, precio: 1, _id: 0 })
+
+Resultado esperado después del incremento del 10%:
+- Auriculares XYZ: precio 120
+- Camiseta Logo: precio 27.50 (25 * 1.10)
+- Taza Cerámica: precio 10
+- Smartwatch Pro: precio 200
+- Jeans Classic: precio 44 (40 * 1.10)
+- Lámpara Mesa: precio 35
+
+=== EJERCICIO 3 ===
+
+Obtén los 3 productos que hayan vendido más unidades desde el 10/05/2025 hasta hoy:
+
+db.ventas.aggregate([
+  {
+    $match: {
+      fecha: { $gte: ISODate("2025-05-10T00:00:00Z") }
+    }
+  },
+  {
+    $group: {
+      _id: "$producto_id",
+      total_unidades: { $sum: "$cantidad" }
+    }
+  },
+  {
+    $lookup: {
+      from: "productos",
+      localField: "_id",
+      foreignField: "_id",
+      as: "producto_info"
+    }
+  },
+  {
+    $unwind: "$producto_info"
+  },
+  {
+    $project: {
+      nombre: "$producto_info.nombre",
+      total_unidades: 1,
+      _id: 0
+    }
+  },
+  {
+    $sort: { total_unidades: -1 }
+  },
+  {
+    $limit: 3
+  }
+])
+
+Resultado esperado:
+1. Auriculares XYZ: 5 unidades (venta del 22/05/2025)
+2. Jeans Classic: 4 unidades (venta del 15/05/2025)
+3. Taza Cerámica: 4 unidades (3 del 10/05 + 1 del 20/05)
+
+NOTAS ADICIONALES:
+- Todas las consultas están probadas con los datos proporcionados
+- Los cálculos de fechas consideran el rango desde el 10/05/2025 hasta hoy
+- Los incrementos de precio se aplican correctamente usando $mul
+- Las agregaciones incluyen proyecciones para mostrar solo los campos solicitados

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Flujo MVC con Middleware ↔ Model</title>
+  <script src="https://unpkg.com/jsplumb@2.15.6/dist/js/jsplumb.min.js"></script>
+  <style>
+    body {
+      font-family: monospace;
+      background: #f9f9f9;
+      padding: 40px;
+    }
+    h2 {
+      text-align: center;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    #diagram-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .node {
+      padding: 10px 20px;
+      background-color: #fff;
+      border: 2px solid #3498db;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      min-width: 120px;
+      position: relative;
+    }
+    .middleware {
+      background-color: #fff3cd;
+      border-color: #f0ad4e;
+      position: absolute;
+      top: 140px;
+      /* Este valor se ajustará dinámicamente por JS para colocarse debajo del modelo */
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Flujo de Capas - Sequelize MVC</h2>
+
+<div id="diagram-container">
+  <div class="node" id="http">Cliente HTTP</div>
+  <div class="node" id="router">Router</div>
+  <div class="node" id="controller">Controller</div>
+  <div class="node" id="service">Service</div>
+  <div class="node" id="model">Model (Sequelize)</div>
+  <div class="node" id="db">Base de Datos</div>
+  <div class="node middleware" id="middleware">Middleware</div>
+</div>
+
+<script>
+  jsPlumb.ready(function () {
+    jsPlumb.setContainer("diagram-container");
+
+    const flow = ["http", "router", "controller", "service", "model", "db"];
+    for (let i = 0; i < flow.length - 1; i++) {
+      jsPlumb.connect({
+        source: flow[i],
+        target: flow[i + 1],
+        anchors: ["Right", "Left"],
+        connector: "Flowchart",
+        paintStyle: { stroke: "#3498db", strokeWidth: 2 },
+        overlays: [["Arrow", { width: 10, length: 10, location: 1 }]],
+        endpoint: "Blank"
+      });
+    }
+
+    // Posicionar el middleware exactamente debajo del modelo
+    const model = document.getElementById("model");
+    const middleware = document.getElementById("middleware");
+    const modelRect = model.getBoundingClientRect();
+    const containerRect = document.getElementById("diagram-container").getBoundingClientRect();
+
+    const offsetLeft = model.offsetLeft + model.offsetWidth / 2 - middleware.offsetWidth / 2;
+    middleware.style.left = offsetLeft + "px";
+
+    // Middleware → Model (hacia arriba)
+    jsPlumb.connect({
+      source: "middleware",
+      target: "model",
+      anchors: ["Top", "Bottom"],
+      connector: "Flowchart",
+      paintStyle: { stroke: "#f0ad4e", strokeWidth: 2 },
+      overlays: [["Arrow", { width: 10, length: 10, location: 1 }]],
+      endpoint: "Blank"
+    });
+
+    // Model → Middleware (hacia abajo)
+    jsPlumb.connect({
+      source: "model",
+      target: "middleware",
+      anchors: ["Bottom", "Top"],
+      connector: "Flowchart",
+      paintStyle: { stroke: "#f0ad4e", strokeWidth: 2 },
+      overlays: [["Arrow", { width: 10, length: 10, location: 1 }]],
+      endpoint: "Blank"
+    });
+  });
+</script>
+
+</body>
+</html>

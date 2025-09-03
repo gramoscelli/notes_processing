@@ -1,0 +1,3501 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   apuntes_typescript
+  </title>
+ </head>
+ <body>
+  <h1 id="introduccion-a-typescript">
+   Introducción a Typescript
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#setup-y-convenciones">
+      Setup y convenciones
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#fundamentos-y-entorno-de-trabajo">
+      Fundamentos y entorno de trabajo
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#construccion-de-tipos-type-vs-interface-narrowing-unionesintersecciones">
+      Construcción de tipos: type vs interface, narrowing, uniones/intersecciones
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#funciones-clases-y-genericos-intro">
+      Funciones, clases y genéricos (intro)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#genericos-avanzados-utility-types-y-conditionalmapped-types">
+      Genéricos avanzados, utility types y conditional/mapped types
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#modulos-dts-publicacion-local">
+      Módulos, .d.ts, publicación local
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#asincronia-validacion-y-mini-api-ruta-backend-opcional">
+      Asincronía, validación y mini API (ruta backend opcional)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#pruebas-en-typescript-vitest-y-pruebas-http">
+      Pruebas en TypeScript (Vitest) y pruebas HTTP
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#automatizacion-de-calidad-husky-lint-staged-tipo-estricto">
+      Automatización de calidad: Husky + lint-staged + tipo estricto
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ruta-frontend-opcional-react-ts-con-vite">
+      Ruta Frontend (opcional): React + TS con Vite
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ruta-backend-alternativa-api-tipada-y-documentacion">
+      Ruta Backend (alternativa): API tipada y documentación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#capstone-y-entrega-final">
+      Capstone y entrega final
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#rubrica-de-evaluacion">
+      Rúbrica de evaluación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#apendices">
+      Apéndices
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="setup-y-convenciones">
+    Setup y convenciones
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Requisitos
+     </strong>
+     : Node LTS (&gt;=18), npm (&gt;=9), editor con soporte TS (VS Code recomendado).
+    </li>
+    <li>
+     <strong>
+      Estructura base
+     </strong>
+     :
+    </li>
+   </ul>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">  </span>npm<span class="w"> </span>init<span class="w"> </span>-y
+<span class="w">  </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>typescript<span class="w"> </span>@types/node<span class="w"> </span>ts-node
+<span class="w">  </span>npx<span class="w"> </span>tsc<span class="w"> </span>--init<span class="w"> </span>--strict
+<span class="w">  </span>mkdir<span class="w"> </span>src<span class="w"> </span>tests
+<span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"console.log('Hello TS');"</span><span class="w"> </span>&gt;<span class="w"> </span>src/index.ts
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Scripts iniciales
+     </strong>
+     (
+     <code>
+      package.json
+     </code>
+     ):
+    </li>
+   </ul>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"module"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node src/index.ts"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"typecheck"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc --noEmit"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc -p tsconfig.json"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node dist/index.js"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"clean"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rimraf dist"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="fundamentos-y-entorno-de-trabajo">
+    Fundamentos y entorno de trabajo
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Entender TS → JS, configuración mínima de
+     <code>
+      tsconfig.json
+     </code>
+     , inferencia y anotaciones de tipos.
+    </li>
+   </ul>
+   <h3 id="1-teoria">
+    1) Teoría
+   </h3>
+   <h4 id="11-que-es-typescript">
+    1.1 ¿Qué es TypeScript?
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Superset de JavaScript
+     </strong>
+     con
+     <strong>
+      tipado estático opcional
+     </strong>
+     .
+    </li>
+    <li>
+     Se
+     <strong>
+      transpila
+     </strong>
+     (compila) a JavaScript estándar para ejecutarse en Node o el navegador.
+    </li>
+    <li>
+     Beneficios: detección temprana de errores, autocompletado y refactors más seguros, documentación viva mediante tipos.
+    </li>
+   </ul>
+   <h4 id="12-flujo-de-compilacion-ts-js">
+    1.2 Flujo de compilación TS → JS
+   </h4>
+   <ol>
+    <li>
+     Editas archivos
+     <code>
+      .ts
+     </code>
+     en
+     <code>
+      src/
+     </code>
+     .
+    </li>
+    <li>
+     El compilador
+     <code>
+      tsc
+     </code>
+     valida tipos y genera
+     <code>
+      .js
+     </code>
+     (por defecto en
+     <code>
+      dist/
+     </code>
+     ).
+    </li>
+    <li>
+     Ejecutas el JS generado con Node (o sirves en el navegador).
+    </li>
+   </ol>
+   <blockquote>
+    <p>
+     NOTA: En desarrollo podemos ejecutar TS directamente con utilidades como
+     <code>
+      ts-node
+     </code>
+     o
+     <code>
+      tsx
+     </code>
+     para iterar rápido.
+    </p>
+   </blockquote>
+   <h4 id="13-tsconfigjson-minimos-clave">
+    1.3
+    <code>
+     tsconfig.json
+    </code>
+    (mínimos clave)
+   </h4>
+   <ul>
+    <li>
+     <code>
+      target
+     </code>
+     : versión de JS a generar (p. ej.,
+     <code>
+      ES2022
+     </code>
+     ).
+    </li>
+    <li>
+     <code>
+      module
+     </code>
+     : sistema de módulos de salida (p. ej.,
+     <code>
+      ESNext
+     </code>
+     o
+     <code>
+      CommonJS
+     </code>
+     ).
+    </li>
+    <li>
+     <code>
+      strict
+     </code>
+     : activa el modo estricto (recomendado).
+    </li>
+    <li>
+     <code>
+      outDir
+     </code>
+     : carpeta de salida (p. ej.,
+     <code>
+      dist
+     </code>
+     ).
+    </li>
+    <li>
+     <code>
+      moduleResolution
+     </code>
+     : cómo se resuelven importaciones (p. ej.,
+     <code>
+      Bundler
+     </code>
+     ,
+     <code>
+      Node
+     </code>
+     ).
+    </li>
+    <li>
+     <code>
+      include
+     </code>
+     : qué carpetas/archivos compilar (p. ej.,
+     <code>
+      src
+     </code>
+     ).
+    </li>
+   </ul>
+   <h4 id="14-tipos-basicos-y-especiales">
+    1.4 Tipos básicos y especiales
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Primitivos
+     </strong>
+     :
+     <code>
+      string
+     </code>
+     ,
+     <code>
+      number
+     </code>
+     ,
+     <code>
+      boolean
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Especiales
+     </strong>
+     :
+     <code>
+      null
+     </code>
+     ,
+     <code>
+      undefined
+     </code>
+     ,
+     <code>
+      void
+     </code>
+     (retorno de funciones sin valor).
+    </li>
+    <li>
+     <strong>
+      <code>
+       any
+      </code>
+     </strong>
+     : desactiva el chequeo de tipos (evitar salvo migraciones).
+    </li>
+    <li>
+     <strong>
+      <code>
+       unknown
+      </code>
+     </strong>
+     : dato de tipo desconocido que
+     <strong>
+      obliga
+     </strong>
+     a validar antes de usar.
+    </li>
+    <li>
+     <strong>
+      <code>
+       never
+      </code>
+     </strong>
+     : funciones que nunca retornan (p. ej., lanzan error) o código inalcanzable.
+    </li>
+   </ul>
+   <h4 id="15-inferencia-anotaciones-y-aserciones">
+    1.5 Inferencia, anotaciones y aserciones
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Inferencia
+     </strong>
+     : TS deduce el tipo a partir del valor asignado.
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">42</span><span class="p">;</span><span class="w"> </span><span class="c1">// number inferido</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Anotación
+     </strong>
+     : declaras el tipo explícitamente.
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Ada"</span><span class="p">;</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Aserciones
+      </strong>
+      (no cambian el valor, solo dicen a TS cómo tratarlo):
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       as Tipo
+      </code>
+      y
+      <code>
+       &lt;&gt;
+      </code>
+      (en TSX se usa solo
+      <code>
+       as
+      </code>
+      ),
+     </p>
+    </li>
+    <li>
+     <code>
+      as const
+     </code>
+     (vuelve literal/readonly),
+    </li>
+    <li>
+     <strong>
+      non-null assertion
+     </strong>
+     <code>
+      !
+     </code>
+     (afirma que no es
+     <code>
+      null
+     </code>
+     /
+     <code>
+      undefined
+     </code>
+     , usar con moderación).
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">el</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"app"</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">el</span><span class="o">!</span><span class="p">.</span><span class="nx">innerHTML</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Hola"</span><span class="p">;</span><span class="w"> </span><span class="c1">// ¡solo si estás seguro de que existe!</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ok"</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">;</span><span class="w"> </span><span class="c1">// tipo "ok", no string genérico</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <h4 id="16-tipado-estructural-idea-clave">
+    1.6 Tipado estructural (idea clave)
+   </h4>
+   <ul>
+    <li>
+     TS compara
+     <strong>
+      formas
+     </strong>
+     (propiedades/métodos) de los objetos, no sus nombres de tipo.
+    </li>
+    <li>
+     Si dos objetos tienen la misma estructura requerida, son compatibles.
+    </li>
+   </ul>
+   <hr/>
+   <h3 id="2-parte-practica">
+    2) Parte práctica
+   </h3>
+   <h4 id="21-preparacion-del-proyecto">
+    2.1 Preparación del proyecto
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>typescript<span class="w"> </span>@types/node<span class="w"> </span>ts-node
+npx<span class="w"> </span>tsc<span class="w"> </span>--init<span class="w"> </span>--strict
+mkdir<span class="w"> </span>src
+<span class="nb">printf</span><span class="w"> </span><span class="s2">"console.log('Hello TS');</span>
+<span class="s2">"</span><span class="w"> </span>&gt;<span class="w"> </span>src/index.ts
+</pre>
+   </div>
+   <p>
+    <strong>
+     Scripts
+    </strong>
+    en
+    <code>
+     package.json
+    </code>
+    (añade dentro de
+    <code>
+     scripts
+    </code>
+    ):
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node src/index.ts"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"typecheck"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc --noEmit"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc -p tsconfig.json"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node dist/index.js"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc -w"</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="22-ejecucion-rapida">
+    2.2 Ejecución rápida
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w">        </span><span class="c1"># Ejecuta TS directamente (ts-node)</span>
+npm<span class="w"> </span>run<span class="w"> </span>typecheck<span class="w">  </span><span class="c1"># Verifica tipos sin emitir JS</span>
+npm<span class="w"> </span>run<span class="w"> </span>build<span class="w">      </span><span class="c1"># Emite JS a dist/</span>
+node<span class="w"> </span>dist/index.js<span class="w"> </span><span class="c1"># Ejecuta salida compilada</span>
+</pre>
+   </div>
+   <h4 id="23-archivo-de-ejercicios-src01-typests">
+    2.3 Archivo de ejercicios
+    <code>
+     src/01-types.ts
+    </code>
+   </h4>
+   <p>
+    Incluye ejemplos de cada concepto:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 1) Inferencia vs anotación</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">anio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2025</span><span class="p">;</span><span class="w">            </span><span class="c1">// number inferido</span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">curso</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"TS"</span><span class="p">;</span><span class="w">     </span><span class="c1">// anotación explícita</span>
+
+<span class="c1">// 2) any vs unknown</span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="s2">"{}"</span><span class="p">);</span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">u</span><span class="o">:</span><span class="w"> </span><span class="kt">unknown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="s2">"{\"n\":1}"</span><span class="p">);</span>
+<span class="c1">// a.n.toFixed();           // OK en tiempo de tipos (peligroso)</span>
+<span class="c1">// (u as { n: number }).n.toFixed(); // validar/asertar antes</span>
+
+<span class="c1">// 3) never</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">fail</span><span class="p">(</span><span class="nx">msg</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">never</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// 4) as const y non-null assertion</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">estado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ok"</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">;</span><span class="w"> </span><span class="c1">// tipo literal "ok"</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">"app"</span><span class="p">);</span>
+<span class="c1">// root!.textContent = estado; // usar ! solo si estás seguro</span>
+
+<span class="c1">// 5) Tipado estructural (ejemplo simple)</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Persona</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">};</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s2">"Ada"</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="kt">36</span><span class="p">,</span><span class="w"> </span><span class="nx">extra</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">};</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">q</span><span class="o">:</span><span class="w"> </span><span class="kt">Persona</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">p</span><span class="p">;</span><span class="w"> </span><span class="c1">// compatible por forma</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Ejecuta
+    </strong>
+    :
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>dev
+npm<span class="w"> </span>run<span class="w"> </span>typecheck
+</pre>
+   </div>
+   <h4 id="ejercicios-opcionales">
+    Ejercicios opcionales
+   </h4>
+   <ol>
+    <li>
+     <strong>
+      Inferencia
+     </strong>
+     : declara 5 constantes con valores variados y describe qué tipo infiere TS.
+    </li>
+    <li>
+     <strong>
+      <code>
+       unknown
+      </code>
+      vs
+      <code>
+       any
+      </code>
+     </strong>
+     : crea una función
+     <code>
+      parseoSeguro
+     </code>
+     que reciba
+     <code>
+      unknown
+     </code>
+     y devuelva un número validado o lance error.
+    </li>
+    <li>
+     <strong>
+      Aserciones
+     </strong>
+     : convierte un objeto a literal con
+     <code>
+      as const
+     </code>
+     y verifica que sea
+     <code>
+      readonly
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       never
+      </code>
+     </strong>
+     : implementa una función
+     <code>
+      exhaustiveCheck(x: never): never
+     </code>
+     y úsala en un
+     <code>
+      switch
+     </code>
+     (simulación;
+     <em>
+      narrowing
+     </em>
+     se ve la sem 2).
+    </li>
+    <li>
+     <strong>
+      Build
+     </strong>
+     : compila con
+     <code>
+      npm run build
+     </code>
+     y sube
+     <code>
+      dist/
+     </code>
+     al
+     <code>
+      .gitignore
+     </code>
+     .
+    </li>
+   </ol>
+   <h3 id="3-preguntas-frecuentes">
+    3) Preguntas frecuentes
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      ¿
+      <code>
+       any
+      </code>
+      es malo?
+     </strong>
+     No siempre, pero reduce garantías. Prefiere
+     <code>
+      unknown
+     </code>
+     + validación.
+    </li>
+    <li>
+     <strong>
+      ¿Debo tipar todo?
+     </strong>
+     No. Confía en la
+     <strong>
+      inferencia
+     </strong>
+     cuando el valor es claro.
+    </li>
+    <li>
+     <strong>
+      ¿Cuándo usar
+      <code>
+       !
+      </code>
+      ?
+     </strong>
+     Solo si has verificado la existencia por otra vía (p. ej., en HTML está el elemento). Úsalo con moderación.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="construccion-de-tipos-type-vs-interface-narrowing-unionesintersecciones">
+    Construcción de tipos:
+    <code>
+     type
+    </code>
+    vs
+    <code>
+     interface
+    </code>
+    ,
+    <em>
+     narrowing
+    </em>
+    , uniones/intersecciones
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Modelar datos con compatibilidad estructural, tuplas,
+     <code>
+      readonly
+     </code>
+     ,
+     <code>
+      enum
+     </code>
+     (pros/contras).
+    </li>
+   </ul>
+   <h3 id="1-teoria_1">
+    1) Teoría
+   </h3>
+   <h4 id="11-type-vs-interface">
+    1.1
+    <code>
+     type
+    </code>
+    vs
+    <code>
+     interface
+    </code>
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Semejanzas
+     </strong>
+     : ambos describen la
+     <strong>
+      forma
+     </strong>
+     de objetos y funciones.
+    </li>
+    <li>
+     <p>
+      <strong>
+       Diferencias prácticas
+      </strong>
+      :
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       interface
+      </code>
+      admite
+      <strong>
+       declaration merging
+      </strong>
+      (extender la misma interfaz en varios lugares).
+     </p>
+    </li>
+    <li>
+     <code>
+      type
+     </code>
+     puede crear
+     <strong>
+      alias
+     </strong>
+     de cualquier tipo (uniones, tuplas, tipos primitivos, funciones…)
+    </li>
+    <li>
+     Para objetos públicos de librerías:
+     <code>
+      interface
+     </code>
+     es útil por el
+     <em>
+      merging
+     </em>
+     . Para combinaciones complejas (uniones/tuplas):
+     <code>
+      type
+     </code>
+     suele ser más expresivo.
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// interface con merging</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">Usuario</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">Usuario</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// se fusiona</span>
+
+<span class="c1">// type para uniones/tuplas</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Par</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">]</span>
+</pre>
+   </div>
+   <h4 id="12-uniones-e-intersecciones">
+    1.2 Uniones e intersecciones
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Unión
+     </strong>
+     <code>
+      A | B
+     </code>
+     : el valor es
+     <strong>
+      A o B
+     </strong>
+     . Útil para
+     <strong>
+      estados
+     </strong>
+     o
+     <strong>
+      literales
+     </strong>
+     .
+    </li>
+    <li>
+     <strong>
+      Intersección
+     </strong>
+     <code>
+      A &amp; B
+     </code>
+     : el valor es
+     <strong>
+      A y B
+     </strong>
+     (combina propiedades).
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Respuesta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ok"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"error"</span><span class="p">;</span><span class="w"> </span><span class="c1">// unión de literales</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ConMarca</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">marca</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ConModelo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">modelo</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ProductoConIdentidad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ConMarca</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">ConModelo</span>
+</pre>
+   </div>
+   <h4 id="13-tipos-literales-y-discriminated-unions">
+    1.3 Tipos literales y
+    <em>
+     discriminated unions
+    </em>
+   </h4>
+   <ul>
+    <li>
+     Los
+     <strong>
+      literales
+     </strong>
+     (
+     <code>
+      "ok"
+     </code>
+     ,
+     <code>
+      "error"
+     </code>
+     ,
+     <code>
+      1
+     </code>
+     ,
+     <code>
+      true
+     </code>
+     ) son tipos concretos.
+    </li>
+    <li>
+     Una
+     <strong>
+      discriminated union
+     </strong>
+     usa una propiedad
+     <em>
+      discriminante
+     </em>
+     (
+     <code>
+      kind
+     </code>
+     ,
+     <code>
+      type
+     </code>
+     , etc.) para facilitar el
+     <em>
+      narrowing
+     </em>
+     exhaustivo.
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Disponible</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">kind</span><span class="o">:</span><span class="w"> </span><span class="s2">"disp"</span><span class="p">;</span><span class="w"> </span><span class="nx">stock</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Discontinuado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">kind</span><span class="o">:</span><span class="w"> </span><span class="s2">"disc"</span><span class="p">;</span><span class="w"> </span><span class="nx">razon</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">EstadoProducto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Disponible</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Discontinuado</span>
+</pre>
+   </div>
+   <h4 id="14-tuplas-readonly-enum-vs-union-de-literales">
+    1.4 Tuplas,
+    <code>
+     readonly
+    </code>
+    ,
+    <code>
+     enum
+    </code>
+    vs unión de literales
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Tuplas
+     </strong>
+     : arreglos con longitud y tipos
+     <strong>
+      fijos
+     </strong>
+     por posición.
+    </li>
+    <li>
+     <strong>
+      <code>
+       readonly
+      </code>
+     </strong>
+     : evita mutaciones (en tuplas o propiedades).
+    </li>
+    <li>
+     <strong>
+      <code>
+       enum
+      </code>
+     </strong>
+     : útil, pero puede complicar
+     <em>
+      tree-shaking
+     </em>
+     y compatibilidad; muchas veces una
+     <strong>
+      unión de literales
+     </strong>
+     es suficiente.
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Dinero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">monto</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">moneda</span><span class="o">:</span><span class="w"> </span><span class="s2">"ARS"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">]</span>
+<span class="c1">// enum Moneda { ARS = "ARS", USD = "USD" } // alternativa si el proyecto lo prefiere</span>
+</pre>
+   </div>
+   <h4 id="15-narrowing-typeof-in-instanceof-type-predicates">
+    1.5
+    <em>
+     Narrowing
+    </em>
+    :
+    <code>
+     typeof
+    </code>
+    ,
+    <code>
+     in
+    </code>
+    ,
+    <code>
+     instanceof
+    </code>
+    ,
+    <em>
+     type predicates
+    </em>
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       typeof
+      </code>
+     </strong>
+     : para primitvos (
+     <code>
+      "string"
+     </code>
+     ,
+     <code>
+      "number"
+     </code>
+     , etc.).
+    </li>
+    <li>
+     <strong>
+      <code>
+       in
+      </code>
+     </strong>
+     : verifica presencia de una propiedad en objetos.
+    </li>
+    <li>
+     <strong>
+      <code>
+       instanceof
+      </code>
+     </strong>
+     : para instancias de clases.
+    </li>
+    <li>
+     <strong>
+      Predicados de tipo
+     </strong>
+     : funciones que refinan el tipo:
+     <code>
+      function esDisp(x: Estado): x is Disponible { ... }
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">longitud</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">any</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"string"</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="c1">// string</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="c1">// array</span>
+<span class="p">}</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">getStock</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">EstadoProducto</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="s2">"stock"</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">stock</span><span class="w"> </span><span class="c1">// Disponible</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="c1">// Discontinuado</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nx">Caja</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">constructor</span><span class="p">(</span><span class="k">public</span><span class="w"> </span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">doble</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Caja</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="nx">Caja</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">v</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">2</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">2</span>
+<span class="p">}</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">esDisp</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">EstadoProducto</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="nx">is</span><span class="w"> </span><span class="nx">Disponible</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">kind</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"disp"</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+   <h3 id="2-practica">
+    2) Práctica
+   </h3>
+   <p>
+    Crea los archivos de esta semana dentro de
+    <code>
+     src/
+    </code>
+    y ejecuta
+    <code>
+     npm run typecheck
+    </code>
+    frecuentemente.
+   </p>
+   <h4 id="21-modelado-basico-src02-modeladots">
+    2.1 Modelado básico (
+    <code>
+     src/02-modelado.ts
+    </code>
+    )
+   </h4>
+   <p>
+    <strong>
+     Objetivo
+    </strong>
+    : modelar un catálogo con tipos sólidos y hacer
+    <em>
+     narrowing
+    </em>
+    seguro.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Identidades y literales</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">SKU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="kt">string</span><span class="si">}</span><span class="sb">-</span><span class="si">${</span><span class="kt">number</span><span class="si">}</span><span class="sb">`</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">Moneda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ARS"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"USD"</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Dinero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">monto</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">moneda</span><span class="o">:</span><span class="w"> </span><span class="kt">Moneda</span><span class="p">]</span>
+
+<span class="c1">// Formas base</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">BaseProducto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">sku</span><span class="o">:</span><span class="w"> </span><span class="kt">SKU</span><span class="p">;</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">precio</span><span class="o">:</span><span class="w"> </span><span class="kt">Dinero</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">Disponible</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">kind</span><span class="o">:</span><span class="w"> </span><span class="s2">"disp"</span><span class="p">;</span><span class="w"> </span><span class="nx">stock</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Discontinuado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">kind</span><span class="o">:</span><span class="w"> </span><span class="s2">"disc"</span><span class="p">;</span><span class="w"> </span><span class="nx">razon</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">EstadoProducto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Disponible</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Discontinuado</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">BaseProducto</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">estado</span><span class="o">:</span><span class="w"> </span><span class="kt">EstadoProducto</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Guards y utilidades</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">esDisponible</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">EstadoProducto</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="nx">is</span><span class="w"> </span><span class="nx">Disponible</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">kind</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"disp"</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">precioEnARS</span><span class="p">([</span><span class="nx">m</span><span class="p">,</span><span class="w"> </span><span class="nx">mon</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">Dinero</span><span class="p">,</span><span class="w"> </span><span class="nx">tc</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">mon</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"USD"</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">m</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">tc</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">m</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">puedeVender</span><span class="p">(</span><span class="nx">p</span><span class="o">:</span><span class="w"> </span><span class="kt">Producto</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">esDisponible</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">estado</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">p</span><span class="p">.</span><span class="nx">estado</span><span class="p">.</span><span class="nx">stock</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+
+<span class="c1">// Ejemplos</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">p1</span><span class="o">:</span><span class="w"> </span><span class="kt">Producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">sku</span><span class="o">:</span><span class="w"> </span><span class="s2">"abc-101"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s2">"Teclado"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">precio</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="s2">"USD"</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">estado</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">kind</span><span class="o">:</span><span class="w"> </span><span class="s2">"disp"</span><span class="p">,</span><span class="w"> </span><span class="nx">stock</span><span class="o">:</span><span class="w"> </span><span class="kt">5</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">p2</span><span class="o">:</span><span class="w"> </span><span class="kt">Producto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">sku</span><span class="o">:</span><span class="w"> </span><span class="s2">"abc-102"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s2">"Mouse"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">precio</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">15000</span><span class="p">,</span><span class="w"> </span><span class="s2">"ARS"</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">estado</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">kind</span><span class="o">:</span><span class="w"> </span><span class="s2">"disc"</span><span class="p">,</span><span class="w"> </span><span class="nx">razon</span><span class="o">:</span><span class="w"> </span><span class="s2">"Reemplazado por nuevo modelo"</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"p1 en ARS:"</span><span class="p">,</span><span class="w"> </span><span class="nx">precioEnARS</span><span class="p">(</span><span class="nx">p1</span><span class="p">.</span><span class="nx">precio</span><span class="p">,</span><span class="w"> </span><span class="mf">1000</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"¿p1 vendible?"</span><span class="p">,</span><span class="w"> </span><span class="nx">puedeVender</span><span class="p">(</span><span class="nx">p1</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"¿p2 vendible?"</span><span class="p">,</span><span class="w"> </span><span class="nx">puedeVender</span><span class="p">(</span><span class="nx">p2</span><span class="p">))</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Ejecuta
+    </strong>
+    :
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>typecheck
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/02-modelado.ts
+</pre>
+   </div>
+   <blockquote>
+    <p>
+     Si tu script
+     <code>
+      dev
+     </code>
+     no acepta ruta, usa
+     <code>
+      ts-node src/02-modelado.ts
+     </code>
+     o crea un script
+     <code>
+      "dev:file": "ts-node"
+     </code>
+     y ejecuta
+     <code>
+      npm run dev:file src/02-modelado.ts
+     </code>
+     .
+    </p>
+   </blockquote>
+   <h4 id="22-tuplas-y-readonly-src02-tuplasts">
+    2.2 Tuplas y
+    <code>
+     readonly
+    </code>
+    (
+    <code>
+     src/02-tuplas.ts
+    </code>
+    )
+   </h4>
+   <p>
+    <strong>
+     Objetivo
+    </strong>
+    : forzar posiciones y evitar mutaciones accidentales.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Coordenada</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">lat</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">lon</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">]</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">casa</span><span class="o">:</span><span class="w"> </span><span class="kt">Coordenada</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="o">-</span><span class="mf">38.72</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mf">62.27</span><span class="w"> </span><span class="p">]</span>
+<span class="c1">// casa[0] = 0 // Error: readonly</span>
+
+<span class="c1">// ejemplo de zip con tuplas</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">zip</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">U</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[],</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="nx">U</span><span class="p">[])</span><span class="o">:</span><span class="w"> </span><span class="nx">ReadonlyArray</span><span class="o">&lt;</span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">U</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">min</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">Array</span><span class="o">&lt;</span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">U</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">len</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span><span class="w"> </span><span class="nx">b</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">r</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="23-enum-vs-union-de-literales-src02-enum-unionts">
+    2.3
+    <code>
+     enum
+    </code>
+    vs unión de literales (
+    <code>
+     src/02-enum-union.ts
+    </code>
+    )
+   </h4>
+   <p>
+    <strong>
+     Objetivo
+    </strong>
+    : comparar ergonomía y
+    <em>
+     DX
+    </em>
+    .
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Unión de literales</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Rol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"admin"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"editor"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"viewer"</span>
+
+<span class="c1">// enum (alternativa)</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="nx">RolEnum</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Admin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">,</span><span class="w"> </span><span class="nx">Editor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"editor"</span><span class="p">,</span><span class="w"> </span><span class="nx">Viewer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"viewer"</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">puedeEditar</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">Rol</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">RolEnum</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"string"</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">r.toString</span><span class="p">()</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"admin"</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"editor"</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="24-predicados-y-exhaustiveness-src02-guardsts">
+    2.4 Predicados y
+    <em>
+     exhaustiveness
+    </em>
+    (
+    <code>
+     src/02-guards.ts
+    </code>
+    )
+   </h4>
+   <p>
+    <strong>
+     Objetivo
+    </strong>
+    : usar
+    <em>
+     type predicates
+    </em>
+    y chequeo exhaustivo.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">EstadoProducto</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./02-modelado"</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">Cargado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">;</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">[]</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Cargando</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="s2">"load"</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ErrorNet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="s2">"err"</span><span class="p">;</span><span class="w"> </span><span class="nx">msg</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">Estado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Cargado</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Cargando</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">ErrorNet</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">esCargado</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">Estado</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="nx">is</span><span class="w"> </span><span class="nx">Cargado</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">k</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"ok"</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">assertNever</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">never</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">never</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"Estado desconocido: "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">render</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">Estado</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">esCargado</span><span class="p">(</span><span class="nx">e</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="sb">`items: </span><span class="si">${</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="si">}</span><span class="sb">`</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">k</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"load"</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s2">"cargando…"</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">k</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"err"</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="sb">`error: </span><span class="si">${</span><span class="nx">e</span><span class="p">.</span><span class="nx">msg</span><span class="si">}</span><span class="sb">`</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">assertNever</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="c1">// fuerza exhaustividad</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+   <h3 id="3-ejercicios-opcionales">
+    3) Ejercicios opcionales
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      <code>
+       type
+      </code>
+      vs
+      <code>
+       interface
+      </code>
+     </strong>
+     : modela
+     <code>
+      Usuario
+     </code>
+     con ambos; extiende
+     <code>
+      interface
+     </code>
+     vía
+     <em>
+      merging
+     </em>
+     y crea un
+     <code>
+      type
+     </code>
+     unión
+     <code>
+      Activo | Suspendido
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Discriminated union
+     </strong>
+     :
+     <code>
+      Pago
+     </code>
+     con
+     <code>
+      { kind: "cash"|"card"|"mp" }
+     </code>
+     y funciones que procesen cada caso con
+     <em>
+      exhaustiveness
+     </em>
+     .
+    </li>
+    <li>
+     <strong>
+      Tuplas/readonly
+     </strong>
+     : define
+     <code>
+      RangoFechas = readonly [inicio: Date, fin: Date]
+     </code>
+     y valida orden.
+    </li>
+    <li>
+     <strong>
+      Narrowing
+     </strong>
+     : implementa
+     <code>
+      safeLength(x: string | { length: number } | null): number
+     </code>
+     sin usar
+     <code>
+      !
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Enum vs unión
+     </strong>
+     : representa roles
+     <code>
+      admin/editor/viewer
+     </code>
+     de dos formas y comenta pros/contras en README.
+    </li>
+   </ol>
+   <hr/>
+   <h3 id="4-comandos-utiles">
+    4) Comandos útiles
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>typecheck
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/02-modelado.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/02-tuplas.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/02-enum-union.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/02-guards.ts
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="funciones-clases-y-genericos-intro">
+    Funciones, clases y genéricos (intro)
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Tipar funciones (parámetros/retorno/overloads) y clases; genéricos con restricciones.
+    </li>
+   </ul>
+   <h3 id="1-teoria_2">
+    1) Teoría
+   </h3>
+   <h4 id="11-tipado-de-funciones">
+    1.1 Tipado de funciones
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Parámetros y retorno
+     </strong>
+     :
+     <code>
+      function f(x: number): string { ... }
+     </code>
+    </li>
+    <li>
+     <strong>
+      Opcionales
+     </strong>
+     con
+     <code>
+      ?
+     </code>
+     y
+     <strong>
+      valores por defecto
+     </strong>
+     (el tipo se infiere):
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">function</span><span class="w"> </span><span class="nx">greet</span><span class="p">(</span><span class="nx">name?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Hola"</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">prefix</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">name</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s2">"mundo"</span><span class="si">}</span><span class="sb">`</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Rest parameters
+     </strong>
+     :
+     <code>
+      function sum(...xs: number[]): number { ... }
+     </code>
+    </li>
+    <li>
+     <strong>
+      Funciones como tipos
+     </strong>
+     :
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kr">type</span><span class="w"> </span><span class="nx">Fn</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">R</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">A</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">R</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">inc</span><span class="o">:</span><span class="w"> </span><span class="kt">Fn</span><span class="o">&lt;</span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="kt">number</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">n</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Call/construct signatures
+     </strong>
+     :
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kr">type</span><span class="w"> </span><span class="nx">Logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">(</span><span class="nx">msg</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span><span class="w">     </span><span class="c1">// call signature</span>
+<span class="w">    </span><span class="ow">new</span><span class="w"> </span><span class="p">(</span><span class="nx">level</span><span class="o">:</span><span class="w"> </span><span class="s2">"info"</span><span class="o">|</span><span class="s2">"warn"</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">LoggerInstance</span><span class="p">;</span><span class="w"> </span><span class="c1">// construct</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <h4 id="12-overloads-sobrecarga">
+    1.2 Overloads (sobrecarga)
+   </h4>
+   <ul>
+    <li>
+     Se declaran
+     <strong>
+      múltiples firmas
+     </strong>
+     y un
+     <strong>
+      único cuerpo
+     </strong>
+     que satisface todas:
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">  </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">  </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"number"</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">toFixed</span><span class="p">(</span><span class="mf">2</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">toISOString</span><span class="p">()</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     Usá overloads para
+     <strong>
+      APIs claras
+     </strong>
+     ; evitá abusar cuando una unión simple alcanza.
+    </li>
+   </ul>
+   <h4 id="13-genericos-intro-y-restricciones">
+    1.3 Genéricos (intro) y restricciones
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Funciones genéricas
+     </strong>
+     :
+     <code>
+      function id&lt;T&gt;(x: T): T { return x }
+     </code>
+    </li>
+    <li>
+     <strong>
+      Restricciones
+     </strong>
+     :
+     <code>
+      function prop&lt;T, K extends keyof T&gt;(obj: T, k: K): T[K] { return obj[k] }
+     </code>
+    </li>
+    <li>
+     <strong>
+      Parámetros genéricos por defecto
+     </strong>
+     :
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kr">type</span><span class="w"> </span><span class="nx">Bag</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[]</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <h4 id="14-tipar-this-en-funciones">
+    1.4 Tipar
+    <code>
+     this
+    </code>
+    en funciones
+   </h4>
+   <ul>
+    <li>
+     En métodos tradicionales podés anotar el
+     <strong>
+      tipo de
+      <code>
+       this
+      </code>
+     </strong>
+     :
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kr">type</span><span class="w"> </span><span class="nx">Counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">inc</span><span class="p">(</span><span class="nx">this</span><span class="o">:</span><span class="w"> </span><span class="kt">Counter</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">c</span><span class="o">:</span><span class="w"> </span><span class="kt">Counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="p">,</span><span class="w"> </span><span class="nx">inc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="o">++</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Arrow functions
+     </strong>
+     capturan
+     <code>
+      this
+     </code>
+     léxico; no se tipa
+     <code>
+      this
+     </code>
+     explícitamente.
+    </li>
+   </ul>
+   <h4 id="15-clases-en-typescript">
+    1.5 Clases en TypeScript
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      Modificadores
+     </strong>
+     :
+     <code>
+      public
+     </code>
+     (default),
+     <code>
+      private
+     </code>
+     ,
+     <code>
+      protected
+     </code>
+     ,
+     <code>
+      readonly
+     </code>
+     ,
+     <code>
+      abstract
+     </code>
+     ,
+     <code>
+      static
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Propiedades de parámetro
+     </strong>
+     (declará y asigná en el constructor en una sola pasada):
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">class</span><span class="w"> </span><span class="nx">Point</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Getters/Setters
+     </strong>
+     con tipos, y el modificador
+     <code>
+      override
+     </code>
+     para métodos sobreescritos.
+    </li>
+    <li>
+     <strong>
+      Campos privados nativos
+     </strong>
+     <code>
+      #x
+     </code>
+     vs
+     <code>
+      private x
+     </code>
+     : los
+     <code>
+      #
+     </code>
+     son privados
+     <strong>
+      en runtime
+     </strong>
+     (JS);
+     <code>
+      private
+     </code>
+     es sólo de tipos.
+    </li>
+    <li>
+     <strong>
+      Interfaces
+     </strong>
+     +
+     <code>
+      implements
+     </code>
+     para contratos;
+     <strong>
+      clases abstractas
+     </strong>
+     para plantillas con comportamiento.
+    </li>
+   </ul>
+   <h4 id="16-composicion-vs-herencia">
+    1.6 Composición vs Herencia
+   </h4>
+   <ul>
+    <li>
+     Preferí
+     <strong>
+      composición
+     </strong>
+     para reuso flexible:
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kr">type</span><span class="w"> </span><span class="nx">HasLogger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">log</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">m</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">withLogger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">object</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">HasLogger</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">    </span><span class="p">...</span><span class="nx">obj</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">log</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">m</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <h4 id="17-operador-satisfies-validacion-no-ensanchante">
+    1.7 Operador
+    <code>
+     satisfies
+    </code>
+    (validación no-ensanchante)
+   </h4>
+   <ul>
+    <li>
+     Verifica que un valor
+     <strong>
+      cumple
+     </strong>
+     un tipo
+     <strong>
+      sin
+     </strong>
+     cambiar sus literales:
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">routes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">home</span><span class="o">:</span><span class="w"> </span><span class="s2">"/"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">about</span><span class="o">:</span><span class="w"> </span><span class="s2">"/about"</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">satisfies</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="s2">"home"</span><span class="o">|</span><span class="s2">"about"</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <hr/>
+   <h3 id="2-practica_1">
+    2) Práctica
+   </h3>
+   <blockquote>
+    <p>
+     Si aún no instalaste
+     <strong>
+      tsup
+     </strong>
+     , hacelo para empaquetar utilidades con
+     <code>
+      .d.ts
+     </code>
+     .
+    </p>
+   </blockquote>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>tsup
+</pre>
+   </div>
+   <p>
+    Agregá/ajustá scripts en
+    <code>
+     package.json
+    </code>
+    :
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"typecheck"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc --noEmit"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsup src/index.ts --format cjs,esm --dts --sourcemap"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"prepublishOnly"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run build"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="21-utilidad-generica-resultt-e-srclibresultts">
+    2.1 Utilidad genérica:
+    <code>
+     Result&lt;T, E&gt;
+    </code>
+    (
+    <code>
+     src/lib/result.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">;</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">;</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">E</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ne">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="p">})</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">E</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="w"> </span><span class="p">})</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">Result</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">A</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">B</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">r</span><span class="p">.</span><span class="nx">ok</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">ok</span><span class="p">(</span><span class="nx">f</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">value</span><span class="p">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">r</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">flatMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">Result</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">A</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">r</span><span class="p">.</span><span class="nx">ok</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">f</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">r</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="22-funciones-genericas-utiles-src03-functionsts">
+    2.2 Funciones genéricas útiles (
+    <code>
+     src/03-functions.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// groupBy con restricciones de clave</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">groupBy</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">PropertyKey</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">xs</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[],</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="nx">K</span><span class="p">,</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">xs</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">acc</span><span class="p">,</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">key</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+<span class="w">    </span><span class="p">;(</span><span class="nx">acc</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span><span class="w"> </span><span class="o">??=</span><span class="w"> </span><span class="p">[]).</span><span class="nx">push</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">acc</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="nx">K</span><span class="p">,</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// pluck: extrae campo K de T</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">pluck</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">xs</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[],</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">][]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">xs</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">x</span><span class="p">[</span><span class="nx">k</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="c1">// mapValues tipado</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">mapValues</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">object</span><span class="p">,</span><span class="w"> </span><span class="nx">R</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[</span><span class="nx">K</span><span class="p">],</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">R</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">R</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">out</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">obj</span><span class="p">)</span><span class="w"> </span><span class="nx">out</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">f</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">k</span><span class="p">],</span><span class="w"> </span><span class="nx">k</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">out</span>
+<span class="p">}</span>
+
+<span class="c1">// overloads: format</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"number"</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">toFixed</span><span class="p">(</span><span class="mf">2</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">toISOString</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// getIn para rutas seguras</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getIn</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K1</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">o</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">k1</span><span class="o">:</span><span class="w"> </span><span class="kt">K1</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K1</span><span class="p">]</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getIn</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K1</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K2</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K1</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">o</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">k1</span><span class="o">:</span><span class="w"> </span><span class="kt">K1</span><span class="p">,</span><span class="w"> </span><span class="nx">k2</span><span class="o">:</span><span class="w"> </span><span class="kt">K2</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K1</span><span class="p">][</span><span class="nx">K2</span><span class="p">]</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getIn</span><span class="p">(</span><span class="nx">o</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">,</span><span class="w"> </span><span class="nx">...ks</span><span class="o">:</span><span class="w"> </span><span class="kt">PropertyKey</span><span class="p">[])</span><span class="o">:</span><span class="w"> </span><span class="nx">any</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">ks</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">acc</span><span class="p">,</span><span class="w"> </span><span class="nx">k</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="nx">acc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">acc</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">acc</span><span class="p">[</span><span class="nx">k</span><span class="p">]),</span><span class="w"> </span><span class="nx">o</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// demo</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">;</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">users</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"u1"</span><span class="p">,</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">30</span><span class="p">,</span><span class="w"> </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(),</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Ada"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"u2"</span><span class="p">,</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">25</span><span class="p">,</span><span class="w"> </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(),</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Linus"</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">groupBy</span><span class="p">(</span><span class="nx">users</span><span class="p">,</span><span class="w"> </span><span class="nx">u</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">30</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"30+"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">"&lt;30"</span><span class="p">)))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">users</span><span class="p">,</span><span class="w"> </span><span class="s2">"name"</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">format</span><span class="p">(</span><span class="mf">3.14159</span><span class="p">),</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">()))</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="23-clases-y-repositorio-generico-src03-classests">
+    2.3 Clases y repositorio genérico (
+    <code>
+     src/03-classes.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Entity</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Repository</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Entity</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">add</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span>
+<span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span>
+<span class="w">  </span><span class="nx">update</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span>
+<span class="w">  </span><span class="nx">remove</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span>
+<span class="w">  </span><span class="nx">all</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">InMemoryRepo</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Entity</span><span class="o">&gt;</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="nx">Repository</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">#data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Map</span><span class="o">&lt;</span><span class="nx">Id</span><span class="p">,</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="w">  </span><span class="nx">add</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">e</span><span class="p">);</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">update</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">id</span><span class="p">))</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"not found"</span><span class="p">);</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">e</span><span class="p">);</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">remove</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="ow">delete</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">all</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">Array</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">values</span><span class="p">())</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Equatable</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">equals</span><span class="p">(</span><span class="nx">other</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Vec2</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="nx">Equatable</span><span class="o">&lt;</span><span class="nx">Vec2</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="nx">zero</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">Vec2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">scale</span><span class="p">(</span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">equals</span><span class="p">(</span><span class="nx">other</span><span class="o">:</span><span class="w"> </span><span class="kt">Vec2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">other</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">other</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">get</span><span class="w"> </span><span class="nx">length</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">hypot</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Demo</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">repo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">InMemoryRepo</span><span class="o">&lt;</span><span class="nx">Vec2</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">Entity</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="nx">repo</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">),</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"a"</span><span class="w"> </span><span class="p">}))</span>
+<span class="nx">repo</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nx">Vec2</span><span class="p">.</span><span class="nx">zero</span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"b"</span><span class="w"> </span><span class="p">}))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"repo size:"</span><span class="p">,</span><span class="w"> </span><span class="nx">repo</span><span class="p">.</span><span class="nx">all</span><span class="p">().</span><span class="nx">length</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="24-aserciones-con-asserts-y-guards-src03-assertsts">
+    2.4 Aserciones con
+    <code>
+     asserts
+    </code>
+    y guards (
+    <code>
+     src/03-asserts.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">assertPresent</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"valor requerido"</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">asserts</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="nx">is</span><span class="w"> </span><span class="nx">NonNullable</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="nx">msg</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">maybe</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"ok"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="nx">assertPresent</span><span class="p">(</span><span class="nx">maybe</span><span class="p">)</span>
+<span class="c1">// a partir de acá, maybe: string</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">maybe</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">())</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="25-indice-del-paquete-srcindexts">
+    2.5 Índice del paquete (
+    <code>
+     src/index.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./lib/result"</span>
+<span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-functions"</span>
+<span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-classes"</span>
+<span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-asserts"</span>
+</pre>
+   </div>
+   <h4 id="26-comandos-utiles">
+    2.6 Comandos útiles
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>typecheck
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-functions.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-classes.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-asserts.ts
+npm<span class="w"> </span>run<span class="w"> </span>build
+</pre>
+   </div>
+   <hr/>
+   <h3 id="3-ejercicios-para-auto-evaluacion">
+    3) Ejercicios para auto-evaluación
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Overloads
+     </strong>
+     : agregá una firma
+     <code>
+      format(x: string): string
+     </code>
+     que trate strings como números si es posible y, si no, devuelva el string.
+    </li>
+    <li>
+     <strong>
+      Genéricos
+     </strong>
+     : implementá
+     <code>
+      uniqueBy&lt;T, K&gt;(xs: T[], key: (t: T) =&gt; K): T[]
+     </code>
+     sin perder tipos.
+    </li>
+    <li>
+     <strong>
+      Repositorio
+     </strong>
+     : agregá
+     <code>
+      find(predicate: (t: T) =&gt; boolean): T[]
+     </code>
+     al repo genérico.
+    </li>
+    <li>
+     <strong>
+      Clases
+     </strong>
+     : añadí
+     <code>
+      normalize()
+     </code>
+     a
+     <code>
+      Vec2
+     </code>
+     que devuelva un nuevo vector de norma 1 (o
+     <code>
+      this
+     </code>
+     si es cero).
+    </li>
+    <li>
+     <strong>
+      <code>
+       satisfies
+      </code>
+     </strong>
+     : definí un mapa de mensajes
+     <code>
+      as const
+     </code>
+     y validalo contra
+     <code>
+      Record&lt;"ok"|"err", string&gt;
+     </code>
+     .
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="genericos-avanzados-utility-types-y-conditionalmapped-types">
+    Genéricos avanzados,
+    <em>
+     utility types
+    </em>
+    y
+    <em>
+     conditional/mapped types
+    </em>
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Aplicar
+     <code>
+      keyof
+     </code>
+     ,
+     <em>
+      indexed access
+     </em>
+     ,
+     <em>
+      template literal types
+     </em>
+     ,
+     <code>
+      infer
+     </code>
+     .
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Teoría mínima
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Utility Types:
+     <code>
+      Pick
+     </code>
+     ,
+     <code>
+      Omit
+     </code>
+     ,
+     <code>
+      Partial
+     </code>
+     ,
+     <code>
+      Required
+     </code>
+     ,
+     <code>
+      Readonly
+     </code>
+     ,
+     <code>
+      NonNullable
+     </code>
+     .
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Añadir casos en
+     <code>
+      src/04-generics.ts
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Tooling de calidad
+     </strong>
+     : ESLint + Prettier.
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>eslint<span class="w"> </span>@typescript-eslint/parser<span class="w"> </span>@typescript-eslint/eslint-plugin<span class="w"> </span>prettier<span class="w"> </span>eslint-config-prettier<span class="w"> </span>eslint-plugin-import
+<span class="w">   </span>npx<span class="w"> </span>eslint<span class="w"> </span>--init<span class="w">  </span><span class="c1"># elegir TypeScript + ESM</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Scripts:
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">   </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint . --ext .ts"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"lint:fix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint . --ext .ts --fix"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prettier -w ."</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"format:check"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prettier -c ."</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+    </div>
+   </div>
+   <ol start="4">
+    <li>
+     Ejecutar CI local:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>typecheck<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>lint<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>format:check
+<span class="w">   </span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : archivo con ejemplos + reporte de lint sin errores.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="modulos-dts-publicacion-local">
+    Módulos,
+    <code>
+     .d.ts
+    </code>
+    , publicación local
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Entender resolución de módulos,
+     <em>
+      barrels
+     </em>
+     ,
+     <em>
+      module augmentation
+     </em>
+     y tipados de terceros.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Teoría mínima
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Archivos de declaración y
+     <code>
+      types
+     </code>
+     en
+     <code>
+      package.json
+     </code>
+     .
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Crear
+     <code>
+      src/index.ts
+     </code>
+     como barrel export.
+    </li>
+    <li>
+     Simular consumo local del paquete:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>pack<span class="w">     </span><span class="c1"># genera .tgz</span>
+<span class="w">   </span>mkdir<span class="w"> </span>../consumer<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../consumer<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>init<span class="w"> </span>-y
+<span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>../&lt;ruta&gt;/mi-paquete-*.tgz
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Probar imports en
+     <code>
+      consumer/src/main.ts
+     </code>
+     y compilar.
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : demo
+    <code>
+     consumer
+    </code>
+    que usa el paquete.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="asincronia-validacion-y-mini-api-ruta-backend-opcional">
+    Asincronía, validación y mini API (ruta backend opcional)
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Tipar
+     <code>
+      Promise
+     </code>
+     ,
+     <code>
+      async/await
+     </code>
+     , resultados
+     <code>
+      Result
+     </code>
+     y validación de datos.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Teoría mínima
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Esquemas con Zod como contrato de entrada/salida.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Instalar dependencias:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>fastify<span class="w"> </span>zod
+<span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>tsx
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Scripts de servidor:
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <pre><span></span><span class="w">   </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"serve"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsx watch src/server.ts"</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Crear
+     <code>
+      src/server.ts
+     </code>
+     con rutas
+     <code>
+      /health
+     </code>
+     y
+     <code>
+      /items
+     </code>
+     validando con Zod.
+    </li>
+    <li>
+     Probar:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>serve
+<span class="w">   </span>curl<span class="w"> </span>http://localhost:3000/health
+<span class="w">   </span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : servidor corriendo y tipado end-to-end.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="pruebas-en-typescript-vitest-y-pruebas-http">
+    Pruebas en TypeScript (Vitest) y pruebas HTTP
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Configurar y ejecutar pruebas unitarias/e2e mínimas.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Teoría mínima
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <em>
+      Test doubles
+     </em>
+     ,
+     <em>
+      coverage
+     </em>
+     ,
+     <em>
+      type-safe tests
+     </em>
+     .
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Instalar:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>vitest<span class="w"> </span>@vitest/coverage-v8<span class="w"> </span>supertest
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Scripts de test:
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">   </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"test:watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"test:cov"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run --coverage"</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+    </div>
+   </div>
+   <ol start="3">
+    <li>
+     Escribir
+     <code>
+      tests/server.test.ts
+     </code>
+     (probar
+     <code>
+      /health
+     </code>
+     y validaciones).
+    </li>
+    <li>
+     Ejecutar:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>test:watch
+<span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>test:cov
+<span class="w">   </span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : reporte de coverage y tests verdes.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="automatizacion-de-calidad-husky-lint-staged-tipo-estricto">
+    Automatización de calidad: Husky + lint-staged + tipo estricto
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Asegurar calidad en commits y CI local.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Teoría mínima
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Hooks de Git, pipelines locales.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Instalar y configurar:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>husky<span class="w"> </span>lint-staged
+<span class="w">   </span>npm<span class="w"> </span>pkg<span class="w"> </span><span class="nb">set</span><span class="w"> </span>scripts.prepare<span class="o">=</span><span class="s2">"husky"</span>
+<span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>prepare
+<span class="w">   </span>npx<span class="w"> </span>husky<span class="w"> </span>add<span class="w"> </span>.husky/pre-commit<span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run lint &amp;&amp; npx lint-staged"</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     <code>
+      package.json
+     </code>
+     :
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <pre><span></span><span class="w">   </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"lint-staged"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"**/*.{ts,tsx}"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"prettier -w"</span><span class="p">,</span><span class="w"> </span><span class="s2">"eslint --fix"</span><span class="p">]</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Probar commit con cambio con errores y verificar bloqueo del hook.
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : video corto o gif del hook funcionando (opcional) + commit válido.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ruta-frontend-opcional-react-ts-con-vite">
+    Ruta Frontend (opcional): React + TS con Vite
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Tipar Props/State, eventos, formularios con Zod.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Crear app:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>create<span class="w"> </span>vite@latest<span class="w"> </span>frontend<span class="w"> </span>--<span class="w"> </span>--template<span class="w"> </span>react-ts
+<span class="w">   </span><span class="nb">cd</span><span class="w"> </span>frontend<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>i<span class="w"> </span>zod
+<span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>dev
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Añadir form tipado con Zod y
+     <em>
+      discriminated unions
+     </em>
+     para estados.
+    </li>
+    <li>
+     Scripts relevantes (ya provistos por Vite):
+     <code>
+      dev
+     </code>
+     ,
+     <code>
+      build
+     </code>
+     ,
+     <code>
+      preview
+     </code>
+     .
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : demo con validación y estados tipados.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ruta-backend-alternativa-api-tipada-y-documentacion">
+    Ruta Backend (alternativa): API tipada y documentación
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Diseñar endpoints con esquemas y generar documentación.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Añadir OpenAPI (opcional):
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>zod-to-openapi
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Generar
+     <code>
+      openapi.json
+     </code>
+     desde esquemas Zod (script
+     <code>
+      npm run openapi
+     </code>
+     ).
+    </li>
+    <li>
+     Validar en Swagger UI (local o dockerizado).
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    :
+    <code>
+     openapi.json
+    </code>
+    válido y endpoints alineados.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="capstone-y-entrega-final">
+    Capstone y entrega final
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Integrar tooling:
+     <code>
+      typecheck
+     </code>
+     +
+     <code>
+      lint
+     </code>
+     +
+     <code>
+      test
+     </code>
+     +
+     <code>
+      build
+     </code>
+     en un solo comando.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Script "ci" y flujo de release:
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <pre><span></span><span class="w">   </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"ci"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run lint &amp;&amp; npm run test &amp;&amp; npm run build"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"release:dry"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm pack"</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Preparar README con instrucciones de uso/instalación.
+    </li>
+    <li>
+     (Opcional) Publicación privada:
+     <code>
+      npm publish --access=public|restricted
+     </code>
+     (usar
+     <code>
+      dry-run
+     </code>
+     primero).
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : repositorio con CI local funcionando y tag de versión (
+    <code>
+     npm version patch
+    </code>
+    ).
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="rubrica-de-evaluacion">
+    Rúbrica de evaluación
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Prácticas semanales
+     </strong>
+     (40%): cumplimiento + calidad de tipos.
+    </li>
+    <li>
+     <strong>
+      Calidad del código
+     </strong>
+     (20%): ESLint/Prettier/Husky configurados y vigentes.
+    </li>
+    <li>
+     <strong>
+      Pruebas
+     </strong>
+     (20%): cobertura mínima ≥ 60% líneas.
+    </li>
+    <li>
+     <strong>
+      Proyecto final
+     </strong>
+     (20%): documentación, DX (scripts npm), tipado end-to-end.
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="apendices">
+    Apéndices
+   </h2>
+   <h3 id="a-tsconfigjson-minimo-estricto">
+    A.
+    <code>
+     tsconfig.json
+    </code>
+    mínimo estricto
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ES2022"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ESNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bundler"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"strict"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"noUncheckedIndexedAccess"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"forceConsistentCasingInFileNames"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"esModuleInterop"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"outDir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">]</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="b-plantilla-de-packagejson-scripts-clave">
+    B. Plantilla de
+    <code>
+     package.json
+    </code>
+    (scripts clave)
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"module"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node src/index.ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc -w"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"typecheck"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc --noEmit"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsup src/index.ts --format cjs,esm --dts --sourcemap"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node dist/index.js"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"clean"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rimraf dist"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint . --ext .ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lint:fix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint . --ext .ts --fix"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"format"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prettier -w ."</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"format:check"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prettier -c ."</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:cov"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run --coverage"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"serve"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsx watch src/server.ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ci"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run lint &amp;&amp; npm run test &amp;&amp; npm run build"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"prepublishOnly"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run build"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"lint-staged"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"**/*.{ts,tsx}"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"prettier -w"</span><span class="p">,</span><span class="w"> </span><span class="s2">"eslint --fix"</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="c-estructura-sugerida-de-carpetas">
+    C. Estructura sugerida de carpetas
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>├─ src/
+│  ├─ lib/
+│  ├─ server.ts
+│  ├─ index.ts
+│  ├─ 01-types.ts
+│  ├─ 02-modelado.ts
+│  └─ 04-generics.ts
+├─ tests/
+│  └─ server.test.ts
+├─ dist/
+├─ tsconfig.json
+├─ package.json
+└─ README.md
+</pre>
+    </div>
+   </div>
+   <h3 id="d-checklist-de-entrega-por-modulo">
+    D. Checklist de entrega por módulo
+   </h3>
+   <ul>
+    <li>
+     Compila sin errores (
+     <code>
+      npm run typecheck
+     </code>
+     ).
+    </li>
+    <li>
+     Lint limpio (
+     <code>
+      npm run lint
+     </code>
+     ).
+    </li>
+    <li>
+     Pruebas mínimas (
+     <code>
+      npm run test
+     </code>
+     ).
+    </li>
+    <li>
+     Scripts reproducibles en README.
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     <strong>
+      Siguiente paso:
+     </strong>
+     dime cuántas semanas/clases tienes y adapto la carga de prácticas a tu horario exacto (y si prefieres ruta Frontend, Backend o mixta).
+    </p>
+   </blockquote>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

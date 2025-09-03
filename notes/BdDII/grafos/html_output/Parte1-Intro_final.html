@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Parte1-Intro
+  </title>
+ </head>
+ <body>
+  <h1 id="tema-1-introduccion-a-los-grafos">
+   Tema 1: Introducción a los Grafos
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#objetivos-de-aprendizaje">
+      Objetivos de Aprendizaje
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#11-que-es-un-grafo">
+      1.1 ¿Qué es un grafo?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#12-componentes-basicos">
+      1.2 Componentes Básicos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#13-representacion-en-python">
+      1.3 Representación en Python
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#14-ejercicios-practicos">
+      1.4 Ejercicios Prácticos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#15-visualizacion-basica">
+      1.5 Visualización Básica
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#16-conceptos-clave-para-recordar">
+      1.6 Conceptos Clave para Recordar
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#17-preparacion-para-el-siguiente-tema">
+      1.7 Preparación para el Siguiente Tema
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="objetivos-de-aprendizaje">
+    Objetivos de Aprendizaje
+   </h2>
+   <p>
+    Al finalizar este tema, los estudiantes serán capaces de:
+- Definir qué es un grafo y sus componentes básicos
+- Identificar grafos en situaciones cotidianas
+- Distinguir entre nodos y aristas
+- Crear representaciones simples de grafos en Python
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-que-es-un-grafo">
+    1.1 ¿Qué es un grafo?
+   </h2>
+   <p>
+    Un
+    <strong>
+     grafo
+    </strong>
+    es una estructura matemática que modela relaciones entre objetos. Consiste en un conjunto de
+    <strong>
+     nodos
+    </strong>
+    (también llamados vértices) conectados por
+    <strong>
+     aristas
+    </strong>
+    (también llamadas enlaces o relaciones).
+   </p>
+   <h3 id="ejemplos-cotidianos">
+    Ejemplos cotidianos:
+   </h3>
+   <p>
+    <strong>
+     Red Social (Facebook/Instagram)
+    </strong>
+    - Nodos: Usuarios
+- Aristas: Amistad o seguimiento entre usuarios
+   </p>
+   <p>
+    <strong>
+     Mapa de Transporte
+    </strong>
+    - Nodos: Estaciones o paradas
+- Aristas: Rutas o conexiones entre estaciones
+   </p>
+   <p>
+    <strong>
+     Árbol Genealógico
+    </strong>
+    - Nodos: Personas
+- Aristas: Relaciones familiares (padre-hijo, hermanos)
+   </p>
+   <p>
+    <strong>
+     Organigrama Empresarial
+    </strong>
+    - Nodos: Empleados o departamentos
+- Aristas: Relaciones jerárquicas o de colaboración
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="12-componentes-basicos">
+    1.2 Componentes Básicos
+   </h2>
+   <h3 id="nodos-vertices">
+    Nodos (Vértices)
+   </h3>
+   <p>
+    Los
+    <strong>
+     nodos
+    </strong>
+    representan las entidades o elementos principales del sistema:
+- En una red social: cada usuario
+- En un mapa: cada ubicación
+- En un sistema académico: estudiantes, profesores, cursos
+   </p>
+   <h3 id="aristas-relaciones">
+    Aristas (Relaciones)
+   </h3>
+   <p>
+    Las
+    <strong>
+     aristas
+    </strong>
+    representan las conexiones o relaciones entre nodos:
+- Pueden tener dirección (dirigidas) o no (no dirigidas)
+- Pueden tener peso o costo asociado
+- Pueden tener diferentes tipos o categorías
+   </p>
+   <h3 id="propiedades">
+    Propiedades
+   </h3>
+   <p>
+    Tanto nodos como aristas pueden tener
+    <strong>
+     propiedades
+    </strong>
+    que almacenan información adicional:
+- Nodo "Usuario": nombre, edad, ciudad
+- Arista "Amistad": fecha_inicio, tipo_relacion
+   </p>
+   <h3 id="etiquetas">
+    Etiquetas
+   </h3>
+   <p>
+    Las
+    <strong>
+     etiquetas
+    </strong>
+    categorizan nodos y relaciones:
+- Nodos: "Persona", "Empresa", "Producto"
+- Relaciones: "AMIGO_DE", "TRABAJA_EN", "COMPRO"
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="13-representacion-en-python">
+    1.3 Representación en Python
+   </h2>
+   <h3 id="ejemplo-1-red-social-simple">
+    Ejemplo 1: Red Social Simple
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Representación básica con diccionarios</span>
+<span class="n">red_social</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'usuarios'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'ana'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Madrid'</span><span class="p">},</span>
+        <span class="s1">'carlos'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Barcelona'</span><span class="p">},</span>
+        <span class="s1">'lucia'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">28</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Madrid'</span><span class="p">},</span>
+        <span class="s1">'pedro'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Valencia'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'amistades'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Función para encontrar amigos de un usuario</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">obtener_amigos</span><span class="p">(</span><span class="n">usuario</span><span class="p">,</span> <span class="n">red</span><span class="p">):</span>
+    <span class="n">amigos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">red</span><span class="p">[</span><span class="s1">'amistades'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario</span><span class="p">:</span>
+            <span class="n">amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario</span><span class="p">:</span>
+            <span class="n">amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">amigos</span>
+
+<span class="c1"># Ejemplo de uso</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Amigos de Ana: </span><span class="si">{</span><span class="n">obtener_amigos</span><span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span><span class="w"> </span><span class="n">red_social</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejemplo-2-sistema-de-transporte">
+    Ejemplo 2: Sistema de Transporte
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Grafo de estaciones de metro</span>
+<span class="n">metro</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'estaciones'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'sol'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">],</span> <span class="s1">'zona'</span><span class="p">:</span> <span class="s1">'centro'</span><span class="p">},</span>
+        <span class="s1">'atocha'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'1'</span><span class="p">],</span> <span class="s1">'zona'</span><span class="p">:</span> <span class="s1">'centro'</span><span class="p">},</span>
+        <span class="s1">'retiro'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'2'</span><span class="p">],</span> <span class="s1">'zona'</span><span class="p">:</span> <span class="s1">'centro'</span><span class="p">},</span>
+        <span class="s1">'cuatro_caminos'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'6'</span><span class="p">],</span> <span class="s1">'zona'</span><span class="p">:</span> <span class="s1">'norte'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'conexiones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'sol'</span><span class="p">,</span> <span class="s1">'atocha'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'sol'</span><span class="p">,</span> <span class="s1">'retiro'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'sol'</span><span class="p">,</span> <span class="s1">'cuatro_caminos'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">8</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'atocha'</span><span class="p">,</span> <span class="s1">'cuatro_caminos'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'linea'</span><span class="p">:</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Función para encontrar conexiones directas</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">conexiones_directas</span><span class="p">(</span><span class="n">estacion</span><span class="p">,</span> <span class="n">metro</span><span class="p">):</span>
+    <span class="n">conexiones</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">conexion</span> <span class="ow">in</span> <span class="n">metro</span><span class="p">[</span><span class="s1">'conexiones'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">conexion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">estacion</span><span class="p">:</span>
+            <span class="n">conexiones</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">conexion</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">conexion</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="n">conexion</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">estacion</span><span class="p">:</span>
+            <span class="n">conexiones</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">conexion</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">conexion</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">conexiones</span>
+
+<span class="c1"># Ejemplo de uso</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Desde Sol puedes ir a: </span><span class="si">{</span><span class="n">conexiones_directas</span><span class="p">(</span><span class="s1">'sol'</span><span class="p">,</span><span class="w"> </span><span class="n">metro</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejemplo-3-arbol-genealogico">
+    Ejemplo 3: Árbol Genealógico
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Representación de familia</span>
+<span class="n">familia</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'personas'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'abuelo_juan'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">75</span><span class="p">,</span> <span class="s1">'genero'</span><span class="p">:</span> <span class="s1">'M'</span><span class="p">},</span>
+        <span class="s1">'abuela_maria'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">73</span><span class="p">,</span> <span class="s1">'genero'</span><span class="p">:</span> <span class="s1">'F'</span><span class="p">},</span>
+        <span class="s1">'padre_luis'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> <span class="s1">'genero'</span><span class="p">:</span> <span class="s1">'M'</span><span class="p">},</span>
+        <span class="s1">'madre_carmen'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span> <span class="s1">'genero'</span><span class="p">:</span> <span class="s1">'F'</span><span class="p">},</span>
+        <span class="s1">'hijo_pablo'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">'genero'</span><span class="p">:</span> <span class="s1">'M'</span><span class="p">},</span>
+        <span class="s1">'hija_sofia'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'edad'</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">'genero'</span><span class="p">:</span> <span class="s1">'F'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'relaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'abuelo_juan'</span><span class="p">,</span> <span class="s1">'padre_luis'</span><span class="p">,</span> <span class="s1">'padre_de'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'abuela_maria'</span><span class="p">,</span> <span class="s1">'padre_luis'</span><span class="p">,</span> <span class="s1">'madre_de'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'padre_luis'</span><span class="p">,</span> <span class="s1">'madre_carmen'</span><span class="p">,</span> <span class="s1">'casado_con'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'padre_luis'</span><span class="p">,</span> <span class="s1">'hijo_pablo'</span><span class="p">,</span> <span class="s1">'padre_de'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'padre_luis'</span><span class="p">,</span> <span class="s1">'hija_sofia'</span><span class="p">,</span> <span class="s1">'padre_de'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'madre_carmen'</span><span class="p">,</span> <span class="s1">'hijo_pablo'</span><span class="p">,</span> <span class="s1">'madre_de'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'madre_carmen'</span><span class="p">,</span> <span class="s1">'hija_sofia'</span><span class="p">,</span> <span class="s1">'madre_de'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'hijo_pablo'</span><span class="p">,</span> <span class="s1">'hija_sofia'</span><span class="p">,</span> <span class="s1">'hermano_de'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Función para encontrar hijos de una persona</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">obtener_hijos</span><span class="p">(</span><span class="n">persona</span><span class="p">,</span> <span class="n">familia</span><span class="p">):</span>
+    <span class="n">hijos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">relacion</span> <span class="ow">in</span> <span class="n">familia</span><span class="p">[</span><span class="s1">'relaciones'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">relacion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">persona</span> <span class="ow">and</span> <span class="n">relacion</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'padre_de'</span><span class="p">,</span> <span class="s1">'madre_de'</span><span class="p">]:</span>
+            <span class="n">hijos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relacion</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">hijos</span><span class="p">))</span>  <span class="c1"># Eliminar duplicados</span>
+
+<span class="c1"># Ejemplo de uso</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Hijos de Luis: </span><span class="si">{</span><span class="n">obtener_hijos</span><span class="p">(</span><span class="s1">'padre_luis'</span><span class="p">,</span><span class="w"> </span><span class="n">familia</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="14-ejercicios-practicos">
+    1.4 Ejercicios Prácticos
+   </h2>
+   <h3 id="ejercicio-1-modelar-tu-red-de-contactos">
+    Ejercicio 1: Modelar tu red de contactos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># TODO: Completa este diccionario con tus contactos reales</span>
+<span class="n">mi_red</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'contactos'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># 'nombre': {'profesion': '...', 'ciudad': '...'},</span>
+    <span class="p">},</span>
+    <span class="s1">'relaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># ('persona1', 'persona2', 'tipo_relacion'),</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Implementa estas funciones:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">contar_contactos</span><span class="p">(</span><span class="n">red</span><span class="p">):</span>
+    <span class="c1"># Devuelve el número total de contactos</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">contactos_por_ciudad</span><span class="p">(</span><span class="n">ciudad</span><span class="p">,</span> <span class="n">red</span><span class="p">):</span>
+    <span class="c1"># Devuelve lista de contactos en una ciudad específica</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">tipos_de_relacion</span><span class="p">(</span><span class="n">red</span><span class="p">):</span>
+    <span class="c1"># Devuelve todos los tipos de relación únicos</span>
+    <span class="k">pass</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejercicio-2-sistema-academico-simple">
+    Ejercicio 2: Sistema académico simple
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Modela un sistema con estudiantes, profesores y cursos</span>
+<span class="n">sistema_academico</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'estudiantes'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># 'nombre': {'carrera': '...', 'semestre': ...},</span>
+    <span class="p">},</span>
+    <span class="s1">'profesores'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># 'nombre': {'departamento': '...', 'especialidad': '...'},</span>
+    <span class="p">},</span>
+    <span class="s1">'cursos'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># 'codigo': {'nombre': '...', 'creditos': ...},</span>
+    <span class="p">},</span>
+    <span class="s1">'relaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># ('estudiante', 'curso', 'inscrito_en'),</span>
+        <span class="c1"># ('profesor', 'curso', 'dicta'),</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Implementa:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">estudiantes_de_curso</span><span class="p">(</span><span class="n">curso</span><span class="p">,</span> <span class="n">sistema</span><span class="p">):</span>
+    <span class="c1"># Devuelve estudiantes inscritos en un curso</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cursos_de_estudiante</span><span class="p">(</span><span class="n">estudiante</span><span class="p">,</span> <span class="n">sistema</span><span class="p">):</span>
+    <span class="c1"># Devuelve cursos de un estudiante</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">profesor_de_curso</span><span class="p">(</span><span class="n">curso</span><span class="p">,</span> <span class="n">sistema</span><span class="p">):</span>
+    <span class="c1"># Devuelve el profesor que dicta un curso</span>
+    <span class="k">pass</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="15-visualizacion-basica">
+    1.5 Visualización Básica
+   </h2>
+   <h3 id="usando-networkx-opcional">
+    Usando NetworkX (opcional)
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Crear un grafo simple</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+<span class="c1"># Agregar nodos</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"Ana"</span><span class="p">,</span> <span class="n">edad</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"Carlos"</span><span class="p">,</span> <span class="n">edad</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">"Lucia"</span><span class="p">,</span> <span class="n">edad</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
+
+<span class="c1"># Agregar aristas</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">"Ana"</span><span class="p">,</span> <span class="s2">"Carlos"</span><span class="p">,</span> <span class="n">relacion</span><span class="o">=</span><span class="s2">"amigos"</span><span class="p">)</span>
+<span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">"Ana"</span><span class="p">,</span> <span class="s2">"Lucia"</span><span class="p">,</span> <span class="n">relacion</span><span class="o">=</span><span class="s2">"amigos"</span><span class="p">)</span>
+
+<span class="c1"># Visualizar</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s1">'lightblue'</span><span class="p">,</span> 
+        <span class="n">node_size</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Red Social Simple"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="16-conceptos-clave-para-recordar">
+    1.6 Conceptos Clave para Recordar
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Grafo
+     </strong>
+     : Estructura de nodos conectados por aristas
+    </li>
+    <li>
+     <strong>
+      Nodo
+     </strong>
+     : Entidad o elemento del sistema
+    </li>
+    <li>
+     <strong>
+      Arista
+     </strong>
+     : Conexión o relación entre nodos
+    </li>
+    <li>
+     <strong>
+      Propiedades
+     </strong>
+     : Información adicional de nodos y aristas
+    </li>
+    <li>
+     <strong>
+      Etiquetas
+     </strong>
+     : Categorización de elementos
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="17-preparacion-para-el-siguiente-tema">
+    1.7 Preparación para el Siguiente Tema
+   </h2>
+   <p>
+    En el próximo tema exploraremos:
+- Cuándo usar grafos vs bases de datos relacionales
+- Ventajas específicas de los grafos
+- Casos de uso donde los grafos sobresalen
+   </p>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>apuntes_typescript_parte_2</title>
+<style>
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #3D7B7B; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #F00 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666 } /* Operator */
+.highlight .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #9C6500 } /* Comment.Preproc */
+.highlight .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #E40000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #008400 } /* Generic.Inserted */
+.highlight .go { color: #717171 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #04D } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #687822 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #00F; font-weight: bold } /* Name.Class */
+.highlight .no { color: #800 } /* Name.Constant */
+.highlight .nd { color: #A2F } /* Name.Decorator */
+.highlight .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #00F } /* Name.Function */
+.highlight .nl { color: #767600 } /* Name.Label */
+.highlight .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #BBB } /* Text.Whitespace */
+.highlight .mb { color: #666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666 } /* Literal.Number.Float */
+.highlight .mh { color: #666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #A45A77 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #00F } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666 } /* Literal.Number.Integer.Long */
+    </style>
+<style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px; }
+        #main-title-block { background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center; }
+        pre:not(.highlight pre) { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0; }
+        code { font-family: "Courier New", Courier, monospace; }
+        .highlight { padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .highlight pre { background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0; }
+        .highlight .c, .highlight .c1, .highlight .cm { color: #9a8052 !important; font-style: italic; }
+        .highlight .k, .highlight .kd, .highlight .kn { color: #8250df !important; font-weight: normal; }
+        .highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .si { color: #327d41 !important; }
+        .highlight .m, .highlight .mi, .highlight .mf { color: #606060 !important; }
+        .highlight .o, .highlight .ow { color: #666666 !important; font-weight: normal; }
+        .highlight .kc, .highlight .no { color: #9a5b13 !important; }
+        .highlight .nf, .highlight .nb, .highlight .nx { color: #606060 !important; font-weight: normal; }
+        .highlight .p { color: #666666 !important; font-weight: normal; }
+        .language-jsx .highlight .k, .language-jsx .highlight .kd, .language-jsx .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }
+        .language-jsx .highlight .nx, .language-jsx .highlight .nf { color: #0969da !important; background: none !important; border: none !important; }
+        .language-jsx .highlight .nt { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-jsx .highlight .nc { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-jsx .highlight .o  { color: #666666 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-jsx .highlight .p  { color: #666666 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-jsx .highlight .na { color: #0969da !important; background: none !important; border: none !important; }
+        .language-jsx .highlight .s, .language-jsx .highlight .s1, .language-jsx .highlight .s2 { color: #0a3069 !important; background: none !important; border: none !important; }
+        .language-jsx .highlight .c, .language-jsx .highlight .c1, .language-jsx .highlight .cm { color: #656d76 !important; font-style: italic; background: none !important; border: none !important; }
+        .language-jsx .highlight .m, .language-jsx .highlight .mi, .language-jsx .highlight .mf { color: #0969da !important; background: none !important; border: none !important; }
+        .language-react .highlight .k, .language-react .highlight .kd, .language-react .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }
+        .language-react .highlight .nx, .language-react .highlight .nf { color: #0969da !important; background: none !important; border: none !important; }
+        .language-react .highlight .nt { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-react .highlight .nc { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-react .highlight .o  { color: #666666 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-react .highlight .p  { color: #666666 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-react .highlight .na { color: #0969da !important; background: none !important; border: none !important; }
+        .language-react .highlight .s, .language-react .highlight .s1, .language-react .highlight .s2 { color: #0a3069 !important; background: none !important; border: none !important; }
+        .language-react .highlight .c, .language-react .highlight .c1, .language-react .highlight .cm { color: #656d76 !important; font-style: italic; background: none !important; border: none !important; }
+        .language-react .highlight .m, .language-react .highlight .mi, .language-react .highlight .mf { color: #0969da !important; background: none !important; border: none !important; }
+        .language-tsx .highlight .k, .language-tsx .highlight .kd, .language-tsx .highlight .kr { color: #af00db !important; font-weight: normal; background: none !important; border: none !important; }
+        .language-tsx .highlight .nx, .language-tsx .highlight .nf { color: #0969da !important; background: none !important; border: none !important; }
+        .language-tsx .highlight .nt { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-tsx .highlight .nc { color: #116329 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-tsx .highlight .o  { color: #666666 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-tsx .highlight .p  { color: #666666 !important; background:none !important; border:none !important; box-shadow:none !important; outline:none !important; }
+        .language-tsx .highlight .na { color: #0969da !important; background: none !important; border: none !important; }
+        .language-tsx .highlight .s, .language-tsx .highlight .s1, .language-tsx .highlight .s2 { color: #0a3069 !important; background: none !important; border: none !important; }
+        .language-tsx .highlight .c, .language-tsx .highlight .c1, .language-tsx .highlight .cm { color: #656d76 !important; font-style: italic; background: none !important; border: none !important; }
+        .language-tsx .highlight .m, .language-tsx .highlight .mi, .language-tsx .highlight .mf { color: #0969da !important; background: none !important; border: none !important; }
+        .language-tsx .highlight .kt { color: #0969da !important; background: none !important; border: none !important; }
+        .language-javascript .highlight .err { color: #116329 !important; background: none !important; border: none !important; }
+        .language-js .highlight .err { color: #116329 !important; background: none !important; border: none !important; }
+        .highlight span { background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important; }
+        .empty-code-block { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .highlight-error { background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        img { max-width: 100%; height: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .chapter-container { background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .chapter-container h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444; }
+    </style>
+<style>
+        /* CSS from sintax.css */
+/* custom-code-style-complete.css */
+/* Estilos completos para ajustar el contraste y usar tonos de gris en el resaltado de sintaxis */
+
+
+    </style>
+<style id="collapsible-styles">
+/* Estilos para el contenedor colapsable */
+.collapsible-container {
+  position: relative;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  border-radius: 8px;
+  margin: 0;
+}
+.collapsible-container pre {
+  margin: 0;
+  line-height: 1.4; /* Forzar line-height consistente */
+}
+.collapsible-container .toggle-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.collapsible-container .toggle-button:hover {
+  background: rgba(255,255,255,1);
+}
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {
+  position: absolute;
+  top: 8px;
+  width: 24px;
+  display: flex;           /* Usamos flexbox para centrar el icono/texto */
+  align-items: center;
+  justify-content: center;
+  right: 48px;           /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.collapsible-container .copy-button:hover {
+  background: rgba(255,255,255,1);
+}
+.collapsible-container .fade-overlay {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 42px;
+  background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  );
+  pointer-events: none;
+  z-index: 5;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.collapsible-container .ellipsis {
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+  color: #888;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 6;
+}
+.collapsible-container.expanded .fade-overlay,
+.collapsible-container.expanded .ellipsis {
+  display: none;
+}
+</style><script>(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();</script><style type="text/css">
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {
+  background-color: #f0f0ff;
+  border-radius: 8px;
+  padding: 20px 30px;
+  margin: 20px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-family: Arial, sans-serif;
+  border: 1px solid #d0d0ff;
+}
+
+/* Título de la tabla de contenidos */
+#contents-header {
+  text-align: center;
+  color: #585b9e;
+  font-size: 24px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  padding-bottom: 15px;
+}
+
+/* Listas */
+ul.toc {
+  list-style-type: none;
+  padding-left: 20px;
+  margin: 0;
+}
+
+/* Elementos de la lista */
+li.toc {
+  margin: 10px 0;
+  line-height: 1.5;
+  color: #585b9e;
+}
+
+/* Enlaces */
+a.toc {
+  text-decoration: none;
+  color: #585b9e;
+  transition: color 0.2s, padding-left 0.2s;
+  display: inline-block;
+}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {
+  color: #3333cc;
+  padding-left: 3px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {
+  margin-left: 15px;
+}
+
+li.toc li.toc li.toc {
+  margin-left: 25px;
+}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc > li.toc > a.toc {
+  font-weight: 500;
+}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {
+  content: "";
+  display: block;
+  height: 0px;
+  background-color: #d0d0ff;
+  margin-bottom: 15px;
+}
+</style>
+</head>
+<body>
+
+<div id="table-of-contents" class="toc">
+  <h2 id="contents-header">Tabla de contenidos</h2>
+<ul class="toc">
+  <li class="toc"><a class="toc" href="#funciones-clases-y-genericos-intro">Funciones, clases y genéricos (intro)</a></li>
+</ul>
+</div>
+
+
+<div class="chapter-container"><h2 id="funciones-clases-y-genericos-intro">Funciones, clases y genéricos (intro)</h2>
+<p><strong>Objetivos</strong></p>
+<ul>
+<li>Tipar funciones (parámetros/retorno/overloads) y clases; genéricos con restricciones.</li>
+</ul>
+<h3 id="1-teoria">1) Teoría</h3>
+<h4 id="11-tipado-de-funciones-en-typescript">1.1 Tipado de Funciones en TypeScript</h4>
+<p>Tipar las funciones es una de las prácticas más importantes en <em>TypeScript</em>. Asegura que los datos que entran (parámetros) y los que salen (retorno) tengan la forma correcta, eliminando una gran cantidad de errores comunes.</p>
+<ul>
+<li>
+<p><strong>La Anatomía Básica: Parámetros y Retorno</strong></p>
+<p>La sintaxis fundamental te permite anotar el tipo de cada parámetro y el tipo del valor que la función devuelve.</p>
+<p><div class="highlight language-typescript"><pre><span></span><span class="w">    </span><span class="c1">// Esta función acepta un número (x: number)</span>
+<span class="w">    </span><span class="c1">// y promete devolver un string (: string).</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">sumarUnoYFormatear</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s1">'El resultado es: ${x + 1}'</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span>
+</pre></div></p>
+</li>
+<li>
+<p><strong>Flexibilidad en los Parámetros</strong></p>
+<p><em>TypeScript</em> ofrece varias formas de hacer que los parámetros de una función sean más flexibles.</p>
+<ul>
+<li><strong>Parámetros Opcionales (<code>?</code>):</strong> Puedes marcar un parámetro con un <code>?</code> para indicar que puede ser omitido al llamar a la función. Si no se proporciona, su valor será <code>undefined</code>.</li>
+<li><strong>Valores por Defecto:</strong> Puedes asignar un valor por defecto a un parámetro. Si el argumento no se proporciona, se usará ese valor. <em>TypeScript</em> inferirá automáticamente el tipo del parámetro a partir del valor por defecto.</li>
+<li><strong>Parámetros Rest (<code>...</code>):</strong> Permiten agrupar un número variable de argumentos en un único array. Debe ser el último parámetro de la función.</li>
+</ul>
+<p><div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="w">    </span><span class="c1">// name es opcional.</span>
+<span class="w">    </span><span class="c1">// prefix tiene un valor por defecto, por lo que su tipo se infiere como string.</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">saludar</span><span class="p">(</span><span class="nx">name?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Hola"</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Usamos el operador ?? (Nullish Coalescing) para dar un valor de respaldo si name es null o undefined.</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s1">'${prefix}, ${name ?? "mundo"}'</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">saludar</span><span class="p">();</span><span class="w"> </span><span class="c1">// "Hola, mundo"</span>
+<span class="w">    </span><span class="nx">saludar</span><span class="p">(</span><span class="s2">"Ana"</span><span class="p">);</span><span class="w"> </span><span class="c1">// "Hola, Ana"</span>
+<span class="w">    </span><span class="nx">saludar</span><span class="p">(</span><span class="s2">"Juan"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Adiós"</span><span class="p">);</span><span class="w"> </span><span class="c1">// "Adiós, Juan"</span>
+<span class="w">    </span><span class="c1">// Esta función acepta cualquier cantidad de números y los suma.</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">sumarTodos</span><span class="p">(</span><span class="nx">...numeros</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">[])</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">numeros</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">total</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">total</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">n</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">sumarTodos</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">4</span><span class="p">);</span><span class="w"> </span><span class="c1">// Devuelve 10</span>
+<span class="w">    </span>
+</pre></div></div></p>
+</li>
+<li>
+<p><strong>Definiendo la Forma de una Función (Tipos de Función)</strong></p>
+<p>Puedes crear un "tipo" que describa la firma de una función. Esto es extremadamente útil para asegurar que los callbacks o las funciones pasadas como parámetros tengan la forma correcta.</p>
+<p><div class="highlight language-typescript"><pre><span></span><span class="w">    </span><span class="c1">// Creamos un tipo genérico que describe una función con un argumento 'A' y un retorno 'R'.</span>
+<span class="w">    </span><span class="kr">type</span><span class="w"> </span><span class="nx">FuncionConUnArgumento</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">R</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">argumento</span><span class="o">:</span><span class="w"> </span><span class="kt">A</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">R</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// 'incrementar' debe cumplir con la forma 'FuncionConUnArgumento&lt;number, number&gt;'.</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">incrementar</span><span class="o">:</span><span class="w"> </span><span class="kt">FuncionConUnArgumento</span><span class="o">&lt;</span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="kt">number</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">n</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="w">    </span>
+</pre></div></p>
+</li>
+<li>
+<p><strong>Firmas de Llamada y Construcción (<em>Call/Construct Signatures</em>)</strong></p>
+<p>Este es un concepto avanzado, útil para describir objetos que tienen una doble naturaleza: pueden ser <strong>llamados como una función</strong> y también <strong>instanciados con <code>new</code></strong>.</p>
+<p><div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="w">    </span><span class="c1">// Este tipo describe algo que es tanto una función como un constructor.</span>
+<span class="w">    </span><span class="kr">type</span><span class="w"> </span><span class="nx">Logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Firma de llamada (call signature): se puede invocar como 'miLogger("mensaje")'</span>
+<span class="w">      </span><span class="p">(</span><span class="nx">mensaje</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="c1">// Firma de construcción (construct signature): se puede instanciar como 'new miLogger("info")'</span>
+<span class="w">      </span><span class="ow">new</span><span class="w"> </span><span class="p">(</span><span class="nx">nivel</span><span class="o">:</span><span class="w"> </span><span class="s2">"info"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"warn"</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">LoggerInstance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">interface</span><span class="w"> </span><span class="nx">LoggerInstance</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// (El uso real de un tipo como 'Logger' es complejo y se ve más en APIs y librerías).</span>
+<span class="w">    </span>
+</pre></div></div></p>
+</li>
+</ul>
+<hr/>
+<h4 id="12-sobrecarga-de-funciones-overloads">1.2 Sobrecarga de Funciones (<em>Overloads</em>)</h4>
+<p>La sobrecarga de funciones es una técnica que te permite definir múltiples "firmas" o formas de llamar a una misma función, mientras mantienes una única implementación centralizada.</p>
+<p>Piensa en ello como un <strong>menú público</strong> para los consumidores de tu función (las firmas), mientras que la implementación es la <strong>receta única</strong> que la cocina usa para preparar todos los platos.</p>
+<p><strong>¿Por qué usar sobrecargas en lugar de una simple unión de tipos?</strong></p>
+<ul>
+<li><strong>Experiencia de Desarrollo (DX) Mejorada:</strong> <em>TypeScript</em> mostrará al desarrollador las diferentes formas de llamar a la función de manera explícita, con autocompletado y documentación específica para cada caso.</li>
+<li><strong>Seguridad de Tipos Más Estricta:</strong> Permite crear una relación más precisa entre los tipos de los argumentos de entrada y el tipo del valor de retorno.</li>
+</ul>
+<p><strong>La Estructura: Firmas vs. Implementación</strong></p>
+<p>El patrón siempre consta de dos partes:</p>
+<ol>
+<li><strong>Las Firmas de Sobrecarga (El "Menú" Público):</strong> Una lista de declaraciones de función sin cuerpo. Esto es lo que <em>TypeScript</em> muestra al usuario de la función.</li>
+<li><strong>La Implementación (La "Receta" Privada):</strong> Una única función con cuerpo, cuya firma debe ser lo suficientemente general para ser compatible con todas las firmas de sobrecarga. Esta implementación no es visible para el consumidor.</li>
+</ol>
+<p><strong>Ejemplo en Acción:</strong></p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="c1">// --- 1. Las Firmas de Sobrecarga (El "Menú" Público) ---</span>
+<span class="c1">// El usuario verá que puede llamar a 'format' con un número o con una fecha.</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">input</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">input</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+
+<span class="c1">// --- 2. La Firma y Cuerpo de la Implementación (La "Receta" Privada) ---</span>
+<span class="c1">// Esta firma no es visible externamente. Debe ser compatible con todas las de arriba.</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">input</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Dentro del cuerpo, usamos "narrowing" para diferenciar los tipos.</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"number"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// TypeScript sabe que 'input' es un número aquí.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">input</span><span class="p">.</span><span class="nx">toFixed</span><span class="p">(</span><span class="mf">2</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Y aquí, TypeScript sabe que 'input' es un objeto Date.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">input</span><span class="p">.</span><span class="nx">toISOString</span><span class="p">();</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// El resultado: llamadas más claras y seguras.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">numeroFormateado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="mf">123.45</span><span class="p">);</span><span class="w"> </span><span class="c1">// Devuelve "123.45"</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">fechaFormateada</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">());</span><span class="w"> </span><span class="c1">// Devuelve una fecha en formato ISO</span>
+</pre></div></div>
+<p><strong>La Regla de Oro: Claridad ante Todo</strong></p>
+<ul>
+<li><strong>Usa la sobrecarga</strong> cuando quieras ofrecer una API pública muy clara y cuando el comportamiento de la función cambie significativamente dependiendo de los tipos de entrada.</li>
+<li><strong>Evita la sobrecarga</strong> si una simple unión de tipos en los parámetros es suficiente y la lógica interna no es compleja. A veces, una unión es más simple y legible.</li>
+</ul>
+<hr/>
+<h4 id="13-genericos-creando-componentes-reutilizables-y-seguros">1.3 Genéricos: Creando Componentes Reutilizables y Seguros</h4>
+<p>Los genéricos son una de las herramientas más poderosas de <em>TypeScript</em>. Te permiten escribir código (como funciones, clases o tipos) que es flexible y reutilizable, ya que puede operar sobre una variedad de tipos sin sacrificar la seguridad que <em>TypeScript</em> ofrece.</p>
+<ul>
+<li>
+<p><strong>¿Qué es un Genérico? El "Variable de Tipo"</strong></p>
+<p>Piensa en un genérico como un <strong>marcador de posición</strong> o una <strong>variable para un tipo</strong>. En lugar de decidir de antemano qué tipo aceptará tu función, usas un genérico para que el tipo se determine en el momento en que la función es llamada. La sintaxis <code>&lt;T&gt;</code> introduce una de estas variables de tipo.</p>
+<p><strong>Función Genérica Básica:</strong>
+<div class="highlight language-typescript"><pre><span></span><span class="w">    </span><span class="c1">// La función 'identidad' acepta un argumento 'x' de un tipo 'T'</span>
+<span class="w">    </span><span class="c1">// y promete devolver un valor del mismo tipo 'T'.</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">identidad</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span></pre></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="c1">// Al llamarla, TypeScript infiere el tipo 'T' a partir del argumento:</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">resultadoString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">identidad</span><span class="p">(</span><span class="s2">"Hola Mundo"</span><span class="p">);</span><span class="w"> </span><span class="c1">// 'T' es 'string'</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">resultadoNumero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">identidad</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span><span class="w"> </span><span class="c1">// 'T' es 'number'</span>
+<span class="w"> </span>
+</p></div>
+<pre><code>La gran ventaja sobre usar `any` es que mantenemos la seguridad de tipos. `resultadoString` es de tipo `string`, no `any`.
+</code></pre>
+<ul>
+<li>
+<p><strong>Restricciones Genéricas: Poniendo Límites con <code>extends</code></strong></p>
+<p>A menudo, necesitas que tu función genérica sepa <em>algo</em> sobre el tipo con el que está trabajando. Por ejemplo, que tiene una propiedad <code>.length</code>. Las <strong>restricciones</strong> te permiten decirle a <em>TypeScript</em>: "El tipo <code>T</code> puede ser cualquiera, <em>siempre y cuando</em> cumpla con esta forma o contrato".</p>
+<p><strong>Ejemplo Avanzado: Acceder a una Propiedad de Forma Segura</strong>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="w">    </span><span class="cm">/<em><em></em></em></span>
+<span class="cm">     * Esta función toma un objeto 'obj' (de tipo 'T') y una clave 'k' (de tipo 'K')</span>
+<span class="cm">     * y devuelve la propiedad correspondiente.</span>
+<span class="cm">     </span>
+<span class="cm">     * Las restricciones son clave aquí:</span>
+<span class="cm">     * 1. 'T': Representa el objeto.</span>
+<span class="cm">     * 2. 'K extends keyof T': Esta es la restricción. Dice que el tipo 'K' DEBE SER</span>
+<span class="cm">     *    una de las claves ('keyof') del objeto 'T'.</span>
+<span class="cm">     * 3. Retorno 'T[K]': El tipo de retorno es el "tipo de la propiedad 'K' en 'T'".</span>
+<span class="cm">     /</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">obtenerPropiedad</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">obj</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span></pre></div></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">usuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s2">"Ana"</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="kt">30</span><span class="w"> </span><span class="p">};</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">obtenerPropiedad</span><span class="p">(</span><span class="nx">usuario</span><span class="p">,</span><span class="w"> </span><span class="s2">"nombre"</span><span class="p">);</span><span class="w"> </span><span class="c1">// Válido. 'nombre' es de tipo 'string'.</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">edad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">obtenerPropiedad</span><span class="p">(</span><span class="nx">usuario</span><span class="p">,</span><span class="w"> </span><span class="s2">"edad"</span><span class="p">);</span><span class="w"> </span><span class="c1">// Válido. 'edad' es de tipo 'number'.</span>
+<span class="w"> </span><span class="c1">// const invalido = obtenerPropiedad(usuario, "email"); // ❌ Error: "email" no es una clave de 'usuario'.</span>
+<span class="w"> </span>
+</p>
+<ul>
+<li>
+<p><strong>Parámetros Genéricos por Defecto</strong></p>
+<p>Al igual que los parámetros de una función, los parámetros genéricos pueden tener un <strong>tipo por defecto</strong>. Esto proporciona un tipo de respaldo si el usuario no especifica uno, haciendo tu código más conveniente.</p>
+<p><div class="highlight language-typescript"><pre><span></span><span class="w">    </span><span class="c1">// 'Bolsa' es un tipo genérico que contiene un array de 'T'.</span>
+<span class="w">    </span><span class="c1">// Si no se especifica 'T', por defecto será 'string'.</span>
+<span class="w">    </span><span class="kr">type</span><span class="w"> </span><span class="nx">Bolsa</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[];</span>
+<span class="w">    </span><span class="p">};</span></pre></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">bolsaDeCuerdas</span><span class="o">:</span><span class="w"> </span><span class="kt">Bolsa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"cuerda1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cuerda2"</span><span class="p">]</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 'T' es 'string' (por defecto)</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">bolsaDeNumeros</span><span class="o">:</span><span class="w"> </span><span class="kt">Bolsa</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">]</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 'T' es 'number' (especificado)</span>
+<span class="w"> </span>
+</p>
+<hr/>
+<h4 id="14-tipado-de-this-en-funciones-evitando-errores-de-contexto">1.4 Tipado de <code>this</code> en Funciones: Evitando Errores de Contexto</h4>
+<p>En JavaScript, el valor de <code>this</code> es dinámico y una fuente común de errores, especialmente cuando una función se pasa como callback y pierde su contexto original. <em>TypeScript</em> ofrece dos mecanismos principales para controlar <code>this</code> y asegurar que siempre se use correctamente.</p>
+<ul>
+<li>
+<p><strong>1. Tipado Explícito de <code>this</code> (Para Métodos Tradicionales)</strong></p>
+<p>Para funciones declaradas con la sintaxis tradicional (<code>function() { ... }</code> o <code>metodo() { ... }</code>), puedes forzar el tipo de <code>this</code> añadiéndolo como un "parámetro fantasma" al principio de la lista de argumentos. Este parámetro no existe en el JavaScript compilado, pero le sirve a <em>TypeScript</em> como una <strong>restricción de contexto</strong>.</p>
+<p><strong>¿Para qué sirve?</strong> Garantiza que un método solo pueda ser llamado si su <code>this</code> corresponde al tipo que has especificado.</p>
+<p><div class="highlight language-typescript"><pre><span></span><span class="w">    </span><span class="kr">type</span><span class="w"> </span><span class="nx">Contador</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">      </span><span class="c1">// Esta firma EXIGE que 'incrementar' sea llamado en un contexto ('this') de tipo 'Contador'.</span>
+<span class="w">      </span><span class="nx">incrementar</span><span class="p">(</span><span class="nx">this</span><span class="o">:</span><span class="w"> </span><span class="kt">Contador</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span></pre></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">miContador</span><span class="o">:</span><span class="w"> </span><span class="kt">Contador</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="p">,</span>
+<span class="w"> </span><span class="nx">incrementar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">valor</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// TypeScript sabe que 'this' aquí es de tipo 'Contador'.</span>
+<span class="w"> </span><span class="p">},</span>
+<span class="w"> </span><span class="p">};</span></p>
+<p><span class="w"> </span><span class="nx">miContador</span><span class="p">.</span><span class="nx">incrementar</span><span class="p">();</span><span class="w"> </span><span class="c1">// Válido: 'this' es 'miContador'.</span></p>
+<p><span class="w"> </span><span class="c1">// Aquí es donde TypeScript nos protege:</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">miContador</span><span class="p">.</span><span class="nx">incrementar</span><span class="p">;</span>
+<span class="w"> </span><span class="c1">// fn(); // ❌ Error: El contexto 'this' de esta llamada es 'undefined' (en modo estricto) y no es de tipo 'Contador'.</span>
+<span class="w"> </span>
+</p>
+<ul>
+<li>
+<p><strong>2. Funciones de Flecha y el <code>this</code> Léxico (La Solución Moderna)</strong></p>
+<p>Las funciones de flecha (<code>=&gt;</code>) se comportan de manera diferente: <strong>no tienen su propio <code>this</code></strong>. En su lugar, capturan o "heredan" el <code>this</code> del ámbito en el que fueron definidas. A esto se le llama <code>this</code> léxico.</p>
+<p><strong>¿Por qué es útil?</strong> Elimina por completo la necesidad de preocuparse por la pérdida de contexto, haciendo el código más predecible y robusto, especialmente en clases, callbacks o manejadores de eventos (como en React).</p>
+<p>Debido a este comportamiento, <strong>no se puede (ni se necesita) tipar <code>this</code> explícitamente en una función de flecha.</strong></p>
+<p><div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="w">    </span><span class="kd">class</span><span class="w"> </span><span class="nx">Cronometro</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">segundos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="c1">// Usamos una función de flecha para el método.</span>
+<span class="w">      </span><span class="nx">iniciar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setInterval</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="c1">// Gracias a la función de flecha, 'this' aquí siempre</span>
+<span class="w">          </span><span class="c1">// se referirá a la instancia de la clase 'Cronometro'.</span>
+<span class="w">          </span><span class="c1">// No hay riesgo de perder el contexto.</span>
+<span class="w">          </span><span class="k">this</span><span class="p">.</span><span class="nx">segundos</span><span class="o">++</span><span class="p">;</span>
+<span class="w">          </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">segundos</span><span class="p">);</span>
+<span class="w">        </span><span class="p">},</span><span class="w"> </span><span class="mf">1000</span><span class="p">);</span>
+<span class="w">      </span><span class="p">};</span>
+<span class="w">    </span><span class="p">}</span></pre></div></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">miCronometro</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Cronometro</span><span class="p">();</span>
+<span class="w"> </span><span class="nx">miCronometro</span><span class="p">.</span><span class="nx">iniciar</span><span class="p">();</span>
+<span class="w"> </span>
+</p>
+<hr/>
+<h3 id="15-clases-en-typescript-blueprints-con-superpoderes">1.5 Clases en TypeScript: Blueprints con Superpoderes</h3>
+<p>Las clases en <em>TypeScript</em> son la evolución natural de las clases de JavaScript, enriquecidas con un robusto sistema de tipos que permite crear "planos" para objetos de forma segura y escalable.</p>
+<ul>
+<li>
+<p><strong>Modificadores: Controlando la Visibilidad y el Comportamiento</strong></p>
+<p>Los modificadores son palabras clave que se anteponen a las propiedades y métodos para controlar cómo y desde dónde se pueden acceder.</p>
+<ul>
+<li><strong><code>public</code></strong>: (Por defecto) Accesible desde cualquier lugar, dentro o fuera de la clase.</li>
+<li><strong><code>private</code></strong>: Solo accesible <strong>desde dentro</strong> de la misma clase. Ideal para ocultar detalles de implementación.</li>
+<li><strong><code>protected</code></strong>: Accesible desde dentro de la clase y <strong>desde las clases que la heredan</strong> (subclases), pero no desde fuera.</li>
+<li><strong><code>readonly</code></strong>: La propiedad solo se puede asignar en el constructor. Una vez asignada, no se puede cambiar, promoviendo la inmutabilidad.</li>
+</ul>
+</li>
+<li>
+<p><strong>Propiedades de Parámetro: Menos Código, Misma Claridad</strong></p>
+<p><em>TypeScript</em> ofrece una sintaxis abreviada muy conveniente que te permite declarar e inicializar una propiedad de clase directamente en la firma del constructor.</p>
+<p><div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="w">    </span><span class="c1">// La forma larga y repetitiva:</span>
+<span class="w">    </span><span class="kd">class</span><span class="w"> </span><span class="nx">PuntoLargo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">      </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">y</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span></pre></div></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="c1">// La forma moderna con propiedades de parámetro:</span>
+<span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Punto</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="c1">// Declara y asigna 'x' e 'y' como propiedades públicas de solo lectura en un solo paso.</span>
+<span class="w"> </span><span class="kr">constructor</span><span class="p">(</span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span>
+</p>
+<ul>
+<li>
+<p><strong><code>getters</code> / <code>setters</code> y <code>override</code></strong></p>
+<ul>
+<li><strong>Getters y Setters</strong>: Permiten ejecutar lógica personalizada al leer o escribir una propiedad. Son útiles para validaciones, cálculos derivados o para exponer una versión controlada de una propiedad privada.
+<div class="highlight language-ts"><pre><span></span><span class="w">      </span><span class="kd">class</span><span class="w"> </span><span class="nx">Usuario</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="nx">_nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="nx">_apellido</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span></pre></div></li>
+</ul>
+</li>
+</ul>
+<p><span class="w"> </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">apellido</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nombre</span><span class="p">;</span>
+<span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_apellido</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">apellido</span><span class="p">;</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="nx">get</span><span class="w"> </span><span class="nx">nombreCompleto</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"-&gt; Se está usando el GETTER para leer el nombre completo."</span><span class="p">);</span>
+<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s1">'${this._nombre} ${this._apellido}'</span><span class="p">;</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="nx">set</span><span class="w"> </span><span class="nx">nombreCompleto</span><span class="p">(</span><span class="nx">nuevoNombreCompleto</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"-&gt; Se está usando el SETTER para cambiar el nombre completo."</span><span class="p">);</span>
+<span class="w"> </span>
+<span class="w"> </span><span class="c1">// Lógica de validación: nos aseguramos de que el nombre tenga al menos un espacio.</span>
+<span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">nuevoNombreCompleto</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">nuevoNombreCompleto</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Error: El nombre completo debe contener nombre y apellido."</span><span class="p">);</span>
+<span class="w"> </span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="c1">// No hacemos ningún cambio si el valor es inválido.</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="c1">// Si es válido, separamos el nombre y el apellido y actualizamos las propiedades internas.</span>
+<span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">nuevoNombre</span><span class="p">,</span><span class="w"> </span><span class="nx">nuevoApellido</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nuevoNombreCompleto</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+<span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nuevoNombre</span><span class="p">;</span>
+<span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_apellido</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nuevoApellido</span><span class="p">;</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span>
+<span class="w"> </span>
+</p>
+<pre><code>*   **`override`**: Una palabra clave de seguridad. Al usarla en un método de una subclase, le dices a *TypeScript*: "Tengo la intención de sobrescribir el método de la clase padre". Si te equivocas en el nombre del método, *TypeScript* te dará un error, previniendo bugs difíciles de encontrar.
+&lt;div class="highlight language-ts"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;// --- 1. La Clase Base (Padre) ---&lt;/span&gt;
+</code></pre>
+<p><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="kr">constructor</span><span class="p">(</span><span class="k">protected</span><span class="w"> </span><span class="nx">marca</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="k">protected</span><span class="w"> </span><span class="nx">anio</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span></p>
+<p><span class="w"> </span><span class="nx">mostrarDetalles</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Vehículo base: ${this.marca}, Año: ${this.anio}'</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="c1">// --- 2. La Subclase Correcta (Hija) ---</span>
+<span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Coche</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">marca</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="nx">numeroDePuertas</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="c1">// 'super()' llama al constructor de la clase padre (Vehiculo)</span>
+<span class="w"> </span><span class="k">super</span><span class="p">(</span><span class="nx">marca</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="cm">/*<em></em></span>
+<span class="cm">      * Usamos 'override' para indicar que estamos sobrescribiendo intencionadamente</span>
+<span class="cm">      * el método 'mostrarDetalles' de la clase 'Vehiculo'.</span>
+<span class="cm">      * TypeScript verifica que este método realmente exista en la clase padre.</span>
+<span class="cm"> /</span>
+<span class="w"> </span><span class="kd">override</span><span class="w"> </span><span class="nx">mostrarDetalles</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="c1">// 'super.mostrarDetalles()' nos permite llamar a la implementación original del padre.</span>
+<span class="w"> </span><span class="k">super</span><span class="p">.</span><span class="nx">mostrarDetalles</span><span class="p">();</span><span class="w"> </span>
+<span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'  -&gt; Detalles del Coche: ${this.numeroDePuertas} puertas.'</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="c1">// --- 3. La Protección de 'override' en Acción ---</span>
+<span class="w"> </span><span class="c1">// Ahora, imaginemos que cometemos un error de tipeo al intentar sobrescribir.</span></p>
+<p><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Motocicleta</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">marca</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="nx">tieneSidecar</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="k">super</span><span class="p">(</span><span class="nx">marca</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="p">);</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="c1">// ¡ERROR INTENCIONADO! Escribimos "mostrarDetalle" en singular.</span>
+<span class="w"> </span><span class="c1">// Gracias a 'override', TypeScript nos avisa inmediatamente del error.</span>
+<span class="w"> </span><span class="c1">// Si quitas 'override', el error desaparece, pero creas un bug silencioso:</span>
+<span class="w"> </span><span class="c1">// un método nuevo en lugar de sobrescribir el existente.</span>
+<span class="w"> </span>
+<span class="w"> </span><span class="cm">/<em> </em></span>
+<span class="cm">        // DESCOMENTA ESTA SECCIÓN PARA VER EL ERROR DE TYPESCRIPT:</span>
+<span class="cm">        override mostrarDetalle(): void { </span>
+<span class="cm">          // Error: This member cannot have an 'override' modifier because it is not </span>
+<span class="cm">          // declared in the base class 'Vehiculo'. Did you mean to write 'mostrarDetalles'?</span>
+<span class="cm">          console.log("Este método nunca se llamará como esperamos");</span>
+<span class="cm">        }</span>
+<span class="cm"> /</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span>
+</p>
+<ul>
+<li>
+<p><strong>Privacidad Real (<code>#</code>) vs. Privacidad de Tipos (<code>private</code>)</strong></p>
+<p>Existen dos formas de declarar propiedades privadas, y la diferencia es crucial:</p>
+<ul>
+<li><strong><code>private</code> (TypeScript)</strong>: Es una construcción de <em>TypeScript</em> que solo existe <strong>en tiempo de compilación</strong>. Desaparece en el JavaScript final. Un desarrollador podría, si quisiera, acceder a la propiedad en el JavaScript compilado. Es como un "pacto de caballeros".</li>
+<li><strong><code>#</code> (Campos Privados de JS)</strong>: Es una característica nativa de JavaScript (ECMAScript). La privacidad se mantiene <strong>en tiempo de ejecución</strong>. Si intentas acceder a un campo <code>#privado</code> desde fuera de la clase, obtendrás un error real. Es como una puerta con cerradura.</li>
+</ul>
+<p><div class="highlight language-typescript"><pre><span></span><span class="w">    </span><span class="kd">class</span><span class="w"> </span><span class="nx">Secreto</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">private</span><span class="w"> </span><span class="nx">secretoSuave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Esto es un secreto de TypeScript"</span><span class="p">;</span>
+<span class="w">      </span><span class="n">#secretoReal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Esto es un secreto real de JavaScript"</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span></pre></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">miSecreto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Secreto</span><span class="p">();</span>
+<span class="w"> </span><span class="c1">// console.log(miSecreto.#secretoReal); // Error en tiempo de ejecución</span>
+<span class="w"> </span>
+</p>
+<pre><code>**Regla general:** Usa `#` para una privacidad robusta y garantizada.
+</code></pre>
+<ul>
+<li>
+<p><strong><code>implements</code> vs. <code>abstract</code>: Definiendo Contratos y Plantillas</strong></p>
+<p>Ambos ayudan a estandarizar tus clases, pero de maneras diferentes:</p>
+<ul>
+<li><strong><code>interface</code> + <code>implements</code> (El Contrato)</strong>: Una <code>interface</code> define la "forma" pública que una clase debe tener (qué métodos y propiedades debe exponer). La clase <strong>promete</strong> cumplir con ese contrato usando la palabra clave <code>implements</code>. La <code>interface</code> no proporciona ninguna implementación.</li>
+<li><strong><code>abstract class</code> (La Plantilla)</strong>: Es una clase a medio construir que no puede ser instanciada directamente. Puede contener métodos y propiedades ya implementados (comportamiento compartido) y también métodos <code>abstract</code> (sin implementación) que las clases hijas <strong>están obligadas</strong> a implementar.</li>
+</ul>
+<p><div class="highlight language-typescript"><pre><span></span><span class="w">    </span><span class="c1">// El Contrato: Cualquier "Vehículo" debe tener estos métodos.</span>
+<span class="w">    </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">acelerar</span><span class="p">(</span><span class="nx">velocidad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span></pre></div></p>
+</li>
+</ul>
+<p><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Coche</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">acelerar</span><span class="p">(</span><span class="nx">velocidad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/<em> ... </em>/</span><span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="c1">// La Plantilla: Un "Animal" tiene un método 'mover' compartido,</span>
+<span class="w"> </span><span class="c1">// pero cada subclase debe definir cómo 'hacerSonido'.</span>
+<span class="w"> </span><span class="k">abstract</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Animal</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">mover</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Moviéndose..."</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w"> </span><span class="k">abstract</span><span class="w"> </span><span class="nx">hacerSonido</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w"> </span><span class="p">}</span></p>
+<p><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Perro</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Animal</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="nx">hacerSonido</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Guau!"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Obligatorio</span>
+<span class="w"> </span><span class="p">}</span>
+<span class="w"> </span>
+</p>
+<hr/>
+<h4 id="16-composicion-sobre-herencia-un-principio-de-diseno-clave">1.6 Composición sobre Herencia: Un Principio de Diseño Clave</h4>
+<p>En el diseño de software, tanto la herencia como la composición son mecanismos para reutilizar código, pero lo hacen de maneras fundamentalmente diferentes. Un principio de diseño ampliamente aceptado es <strong>"preferir la composición sobre la herencia"</strong> por su flexibilidad y robustez.</p>
+<ul>
+<li>
+<p><strong>Herencia (Relación "es un/a"):</strong>
+    La herencia crea una jerarquía rígida y fuertemente acoplada. Cuando una clase <code>Perro</code> hereda de <code>Animal</code>, se establece que un <code>Perro</code> <strong>es un</strong> <code>Animal</code>. Esto significa que <code>Perro</code> obtiene <em>todo</em> el comportamiento de <code>Animal</code>, lo quiera o no. Los cambios en la clase padre (<code>Animal</code>) pueden romper inesperadamente a las clases hijas (<code>Perro</code>), lo que hace que el código sea más frágil.</p>
+</li>
+<li>
+<p><strong>Composición (Relación "tiene un/a"):</strong>
+    La composición es como construir con bloques de LEGO. En lugar de heredar un conjunto de características, construyes objetos complejos combinando piezas más pequeñas e independientes que encapsulan un comportamiento específico. Un <code>Coche</code> no <em>es un</em> motor, sino que <strong>tiene un</strong> motor. Esta aproximación es mucho más flexible, ya que puedes "conectar" y "desconectar" comportamientos según sea necesario sin afectar a otras partes del sistema.</p>
+</li>
+</ul>
+<p><strong>Ejemplo Práctico: Composición con Funciones (Patrón Mixin)</strong></p>
+<p>El código que presentaste es un excelente ejemplo de composición funcional. En lugar de una clase <code>ObjetoConLogger</code> que hereda de <code>ObjetoBase</code>, creamos una función "mixin" que puede <strong>añadir la capacidad de registrar logs a <em>cualquier</em> objeto</strong>.</p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="c1">// 1. Definimos la "capacidad" que queremos añadir.</span>
+<span class="c1">// Cualquier objeto que tenga esta forma, "tiene un logger".</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">HasLogger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">log</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Esta es una función de orden superior que actúa como un "compositor".</span>
+<span class="cm"> * Toma un objeto genérico 'T' y le añade la capacidad de logging.</span>
+<span class="cm"> * @param obj El objeto base al que se le añadirá la funcionalidad.</span>
+<span class="cm"> * @returns Un nuevo objeto que es una combinación del original Y la capacidad de logger.</span>
+<span class="cm"> */</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">withLogger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">object</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">HasLogger</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Usamos el operador de propagación (...) para copiar todas las propiedades del objeto original.</span>
+<span class="w">  </span><span class="c1">// Luego, añadimos la nueva propiedad 'log'.</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">...</span><span class="nx">obj</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// Esta es la nueva capacidad que estamos "componiendo".</span>
+<span class="w">    </span><span class="nx">log</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'[LOG]: ${message}'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">};</span>
+
+<span class="c1">// --- Veamos cómo se usa ---</span>
+
+<span class="c1">// Un objeto simple sin ninguna capacidad especial.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">usuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s2">"Ana"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">iniciarSesion</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'${this.nombre} ha iniciado sesión.'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">};</span>
+
+<span class="c1">// Usamos nuestra función compositora para crear una versión mejorada del usuario.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">usuarioConLogger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">withLogger</span><span class="p">(</span><span class="nx">usuario</span><span class="p">);</span>
+
+<span class="c1">// Ahora 'usuarioConLogger' tiene tanto sus métodos originales como el nuevo método 'log'.</span>
+<span class="nx">usuarioConLogger</span><span class="p">.</span><span class="nx">iniciarSesion</span><span class="p">();</span><span class="w">        </span><span class="c1">// Salida: Ana ha iniciado sesión.</span>
+<span class="nx">usuarioConLogger</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Intento de inicio de sesión exitoso."</span><span class="p">);</span><span class="w"> </span><span class="c1">// Salida: [LOG]: Intento de inicio de sesión exitoso.</span>
+</pre></div></div>
+<p><strong>Ventaja Clave:</strong> Podríamos usar la misma función <code>withLogger</code> para añadir esta capacidad a cualquier otro objeto (<code>Producto</code>, <code>Pedido</code>, etc.), demostrando la increíble flexibilidad y reusabilidad de la composición.</p>
+<h4 id="17-operador-satisfies-validacion-no-ensanchante">1.7 Operador <code>satisfies</code> (validación no-ensanchante)</h4>
+<ul>
+<li>Verifica que un valor <strong>cumple</strong> un tipo <strong>sin</strong> cambiar sus literales:</li>
+</ul>
+<div class="highlight language-ts"><pre><span></span><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">routes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">home</span><span class="o">:</span><span class="w"> </span><span class="s2">"/"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">about</span><span class="o">:</span><span class="w"> </span><span class="s2">"/about"</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">satisfies</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="s2">"home"</span><span class="o">|</span><span class="s2">"about"</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span>
+<span class="w">  </span>
+</pre></div>
+<hr/>
+<h3 id="2-practica">2) Práctica</h3>
+<blockquote>
+<p>Si aún no instalaste <strong>tsup</strong>, hacelo para empaquetar utilidades con <code>.d.ts</code>.</p>
+</blockquote>
+<div class="highlight language-bash"><pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>tsup
+</pre></div>
+<p>Agregá/ajustá scripts en <code>package.json</code>:</p>
+<div class="highlight language-json"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"typecheck"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc --noEmit"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsup src/index.ts --format cjs,esm --dts --sourcemap"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"prepublishOnly"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run build"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div></div>
+<h4 id="21-utilidad-generica-resultt-e-srclibresultts">2.1 Utilidad genérica: <code>Result&lt;T, E&gt;</code> (<code>src/lib/result.ts</code>)</h4>
+<div class="highlight language-ts"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">;</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">;</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">E</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ne">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="w"> </span><span class="p">})</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">E</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="w"> </span><span class="p">})</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">Result</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">A</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">B</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">r</span><span class="p">.</span><span class="nx">ok</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">ok</span><span class="p">(</span><span class="nx">f</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">value</span><span class="p">))</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">r</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">flatMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">Result</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">A</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">r</span><span class="p">.</span><span class="nx">ok</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">f</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">r</span>
+</pre></div></div>
+<h4 id="22-funciones-genericas-utiles-src03-functionsts">2.2 Funciones genéricas útiles (<code>src/03-functions.ts</code>)</h4>
+<div class="highlight language-ts"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="c1">// groupBy con restricciones de clave</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">groupBy</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">PropertyKey</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">xs</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[],</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="nx">K</span><span class="p">,</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">xs</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">acc</span><span class="p">,</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">key</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+<span class="w">    </span><span class="p">;(</span><span class="nx">acc</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span><span class="w"> </span><span class="o">??=</span><span class="w"> </span><span class="p">[]).</span><span class="nx">push</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">acc</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="nx">K</span><span class="p">,</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// pluck: extrae campo K de T</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">pluck</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">xs</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[],</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">][]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">xs</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">x</span><span class="p">[</span><span class="nx">k</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="c1">// mapValues tipado</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">mapValues</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">object</span><span class="p">,</span><span class="w"> </span><span class="nx">R</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[</span><span class="nx">K</span><span class="p">],</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">R</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">R</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">out</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">k</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">obj</span><span class="p">)</span><span class="w"> </span><span class="nx">out</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">f</span><span class="p">(</span><span class="nx">obj</span><span class="p">[</span><span class="nx">k</span><span class="p">],</span><span class="w"> </span><span class="nx">k</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">out</span>
+<span class="p">}</span>
+
+<span class="c1">// overloads: format</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nb">Date</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"number"</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">toFixed</span><span class="p">(</span><span class="mf">2</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">x</span><span class="p">.</span><span class="nx">toISOString</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1">// getIn para rutas seguras</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getIn</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K1</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">o</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">k1</span><span class="o">:</span><span class="w"> </span><span class="kt">K1</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K1</span><span class="p">]</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getIn</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K1</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K2</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K1</span><span class="p">]</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">o</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">k1</span><span class="o">:</span><span class="w"> </span><span class="kt">K1</span><span class="p">,</span><span class="w"> </span><span class="nx">k2</span><span class="o">:</span><span class="w"> </span><span class="kt">K2</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K1</span><span class="p">][</span><span class="nx">K2</span><span class="p">]</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getIn</span><span class="p">(</span><span class="nx">o</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">,</span><span class="w"> </span><span class="nx">...ks</span><span class="o">:</span><span class="w"> </span><span class="kt">PropertyKey</span><span class="p">[])</span><span class="o">:</span><span class="w"> </span><span class="nx">any</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">ks</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">acc</span><span class="p">,</span><span class="w"> </span><span class="nx">k</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="nx">acc</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">acc</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">acc</span><span class="p">[</span><span class="nx">k</span><span class="p">]),</span><span class="w"> </span><span class="nx">o</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// demo</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">;</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">users</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"u1"</span><span class="p">,</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">30</span><span class="p">,</span><span class="w"> </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(),</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Ada"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"u2"</span><span class="p">,</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">25</span><span class="p">,</span><span class="w"> </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(),</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Linus"</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">groupBy</span><span class="p">(</span><span class="nx">users</span><span class="p">,</span><span class="w"> </span><span class="nx">u</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">age</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">30</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"30+"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">"&lt;30"</span><span class="p">)))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">users</span><span class="p">,</span><span class="w"> </span><span class="s2">"name"</span><span class="p">))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">format</span><span class="p">(</span><span class="mf">3.14159</span><span class="p">),</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">()))</span>
+</pre></div></div>
+<h4 id="23-clases-y-repositorio-generico-src03-classests">2.3 Clases y repositorio genérico (<code>src/03-classes.ts</code>)</h4>
+<div class="highlight language-ts"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Entity</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Repository</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Entity</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">add</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span>
+<span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span>
+<span class="w">  </span><span class="nx">update</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span>
+<span class="w">  </span><span class="nx">remove</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span>
+<span class="w">  </span><span class="nx">all</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">InMemoryRepo</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Entity</span><span class="o">&gt;</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="nx">Repository</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">#data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Map</span><span class="o">&lt;</span><span class="nx">Id</span><span class="p">,</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="w">  </span><span class="nx">add</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">e</span><span class="p">);</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">update</span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">id</span><span class="p">))</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"not found"</span><span class="p">);</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">e</span><span class="p">);</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">e</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">remove</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="ow">delete</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">all</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">Array</span><span class="p">.</span><span class="kr">from</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">#data</span><span class="p">.</span><span class="nx">values</span><span class="p">())</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Equatable</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">equals</span><span class="p">(</span><span class="nx">other</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Vec2</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="nx">Equatable</span><span class="o">&lt;</span><span class="nx">Vec2</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="nx">zero</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">Vec2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">scale</span><span class="p">(</span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">f</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">f</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">equals</span><span class="p">(</span><span class="nx">other</span><span class="o">:</span><span class="w"> </span><span class="kt">Vec2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">other</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">other</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">get</span><span class="w"> </span><span class="nx">length</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">hypot</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Demo</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">repo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">InMemoryRepo</span><span class="o">&lt;</span><span class="nx">Vec2</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">Entity</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="nx">repo</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">Vec2</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">),</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"a"</span><span class="w"> </span><span class="p">}))</span>
+<span class="nx">repo</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nx">Vec2</span><span class="p">.</span><span class="nx">zero</span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"b"</span><span class="w"> </span><span class="p">}))</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"repo size:"</span><span class="p">,</span><span class="w"> </span><span class="nx">repo</span><span class="p">.</span><span class="nx">all</span><span class="p">().</span><span class="nx">length</span><span class="p">)</span>
+</pre></div></div>
+<hr/>
+<h4 id="24-aserciones-de-tipo-con-asserts">2.4 Aserciones de Tipo con <code>asserts</code></h4>
+<p>Las funciones de aserción son una forma de decirle al compilador de <em>TypeScript</em>: "<strong>Te garantizo que esta condición es verdadera. Si no lo es, mi programa se detendrá.</strong>"</p>
+<p>El principal beneficio es que te permiten crear funciones de validación reutilizables que refinan (o "estrechan") el tipo de una variable para todo el código que sigue a la llamada de la función.</p>
+<p><strong>El Problema Común (Sin Aserción)</strong></p>
+<p>Imagina que tienes que comprobar si una variable es nula en varios lugares:</p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">procesar</span><span class="p">(</span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">valor</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"El valor no puede ser nulo"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// TypeScript sabe que aquí `valor` es un string</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">valor</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div></div>
+<p>Esto funciona, pero si tienes que repetir esta validación en 10 funciones diferentes, se vuelve tedioso. Si lo extraes a una función normal, pierdes el refinamiento de tipo.</p>
+<p><strong>La Solución Elegante con <code>asserts</code></strong></p>
+<p>Una función de aserción encapsula esta lógica y, lo más importante, <strong>comunica el resultado de la validación al compilador</strong>.</p>
+<p><strong>Desglosando el Ejemplo:</strong></p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="c1">// La firma de la función es la clave de todo.</span>
+<span class="c1">// `asserts x is NonNullable&lt;T&gt;` le dice a TypeScript:</span>
+<span class="c1">// 1. `asserts`: Esto no es una función normal; es una aserción.</span>
+<span class="c1">// 2. `x is ...`: Si esta función NO lanza un error, te prometo que el parámetro `x`...</span>
+<span class="c1">// 3. `... is NonNullable&lt;T&gt;`: ...cumple con el tipo `NonNullable&lt;T&gt;`.</span>
+<span class="c1">//    (NonNullable&lt;T&gt; es un tipo de utilidad que elimina `null` y `undefined` de `T`).</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">assertPresent</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"valor requerido"</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">asserts</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="nx">is</span><span class="w"> </span><span class="nx">NonNullable</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// La lógica de la aserción: si la condición no se cumple, LANZA UN ERROR.</span>
+<span class="w">  </span><span class="c1">// Esto es obligatorio. La función no debe retornar si la aserción falla.</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// --- Poniéndolo en práctica ---</span>
+
+<span class="c1">// 1. `maybe` es de tipo `string | null`. TypeScript no puede estar seguro de su valor.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">maybe</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"ok"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+
+<span class="c1">// console.log(maybe.toUpperCase()); // ❌ Error: 'maybe' could be 'null'.</span>
+
+<span class="c1">// 2. Llamamos a nuestra función de aserción.</span>
+<span class="nx">assertPresent</span><span class="p">(</span><span class="nx">maybe</span><span class="p">);</span>
+
+<span class="c1">// 3. El "milagro" de TypeScript:</span>
+<span class="c1">// El compilador sabe que si el código ha llegado hasta esta línea, es porque</span>
+<span class="c1">// `assertPresent` NO lanzó un error. Por lo tanto, la promesa (`asserts x is NonNullable&lt;T&gt;`)</span>
+<span class="c1">// debe ser cierta. TypeScript ahora trata a `maybe` como si fuera de tipo `string`.</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">maybe</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">());</span><span class="w"> </span><span class="c1">// ✅ ¡Ahora es válido!</span>
+</pre></div></div>
+<p><strong>Regla Mental:</strong></p>
+<p>Usa <code>asserts</code> para crear funciones de validación que actúan como "guardias". Si la variable pasa la guardia (la función no lanza un error), <em>TypeScript</em> confía en que es segura y le aplica un tipo más específico para todo el código que viene después.</p>
+<h4 id="25-indice-del-paquete-srcindexts">2.5 Índice del paquete (<code>src/index.ts</code>)</h4>
+<div class="highlight language-ts"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./lib/result"</span>
+<span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-functions"</span>
+<span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-classes"</span>
+<span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-asserts"</span>
+</pre></div>
+<h4 id="26-comandos-utiles">2.6 Comandos útiles</h4>
+<div class="highlight language-bash"><pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>typecheck
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-functions.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-classes.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-asserts.ts
+npm<span class="w"> </span>run<span class="w"> </span>build
+</pre></div>
+<hr/>
+<h3 id="3-ejercicios-para-auto-evaluacion">3) Ejercicios para auto-evaluación</h3>
+<ol>
+<li><strong>Overloads</strong>: Agrega una firma <code>format(x: string): string</code> que trate strings como números si es posible y, si no, devuelva el string.</li>
+<li><strong>Genéricos</strong>: implementá <code>uniqueBy&lt;T, K&gt;(xs: T[], key: (t: T) =&gt; K): T[]</code> sin perder tipos.</li>
+<li><strong>Repositorio</strong>: Agrega <code>find(predicate: (t: T) =&gt; boolean): T[]</code> al repo genérico.</li>
+<li><strong>Clases</strong>: Añade <code>normalize()</code> a <code>Vec2</code> que devuelva un nuevo vector de norma 1 (o <code>this</code> si es cero).</li>
+<li><strong><code>satisfies</code></strong>: definí un mapa de mensajes <code>as const</code> y validalo contra <code>Record&lt;"ok"|"err", string&gt;</code>.</li>
+</ol>
+</body>
+</html>

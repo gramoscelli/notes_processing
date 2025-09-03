@@ -1,0 +1,241 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>update</title>
+    <style>
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #49483e }
+.highlight { background: #272822; color: #f8f8f2 }
+.highlight .c { color: #75715e } /* Comment */
+.highlight .err { color: #960050; background-color: #1e0010 } /* Error */
+.highlight .esc { color: #f8f8f2 } /* Escape */
+.highlight .g { color: #f8f8f2 } /* Generic */
+.highlight .k { color: #66d9ef } /* Keyword */
+.highlight .l { color: #ae81ff } /* Literal */
+.highlight .n { color: #f8f8f2 } /* Name */
+.highlight .o { color: #f92672 } /* Operator */
+.highlight .x { color: #f8f8f2 } /* Other */
+.highlight .p { color: #f8f8f2 } /* Punctuation */
+.highlight .ch { color: #75715e } /* Comment.Hashbang */
+.highlight .cm { color: #75715e } /* Comment.Multiline */
+.highlight .cp { color: #75715e } /* Comment.Preproc */
+.highlight .cpf { color: #75715e } /* Comment.PreprocFile */
+.highlight .c1 { color: #75715e } /* Comment.Single */
+.highlight .cs { color: #75715e } /* Comment.Special */
+.highlight .gd { color: #f92672 } /* Generic.Deleted */
+.highlight .ge { color: #f8f8f2; font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #f8f8f2 } /* Generic.Error */
+.highlight .gh { color: #f8f8f2 } /* Generic.Heading */
+.highlight .gi { color: #a6e22e } /* Generic.Inserted */
+.highlight .go { color: #66d9ef } /* Generic.Output */
+.highlight .gp { color: #f92672; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { color: #f8f8f2; font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #75715e } /* Generic.Subheading */
+.highlight .gt { color: #f8f8f2 } /* Generic.Traceback */
+.highlight .kc { color: #66d9ef } /* Keyword.Constant */
+.highlight .kd { color: #66d9ef } /* Keyword.Declaration */
+.highlight .kn { color: #f92672 } /* Keyword.Namespace */
+.highlight .kp { color: #66d9ef } /* Keyword.Pseudo */
+.highlight .kr { color: #66d9ef } /* Keyword.Reserved */
+.highlight .kt { color: #66d9ef } /* Keyword.Type */
+.highlight .ld { color: #e6db74 } /* Literal.Date */
+.highlight .m { color: #ae81ff } /* Literal.Number */
+.highlight .s { color: #e6db74 } /* Literal.String */
+.highlight .na { color: #a6e22e } /* Name.Attribute */
+.highlight .nb { color: #f8f8f2 } /* Name.Builtin */
+.highlight .nc { color: #a6e22e } /* Name.Class */
+.highlight .no { color: #66d9ef } /* Name.Constant */
+.highlight .nd { color: #a6e22e } /* Name.Decorator */
+.highlight .ni { color: #f8f8f2 } /* Name.Entity */
+.highlight .ne { color: #a6e22e } /* Name.Exception */
+.highlight .nf { color: #a6e22e } /* Name.Function */
+.highlight .nl { color: #f8f8f2 } /* Name.Label */
+.highlight .nn { color: #f8f8f2 } /* Name.Namespace */
+.highlight .nx { color: #a6e22e } /* Name.Other */
+.highlight .py { color: #f8f8f2 } /* Name.Property */
+.highlight .nt { color: #f92672 } /* Name.Tag */
+.highlight .nv { color: #f8f8f2 } /* Name.Variable */
+.highlight .ow { color: #f92672 } /* Operator.Word */
+.highlight .w { color: #f8f8f2 } /* Text.Whitespace */
+.highlight .mb { color: #ae81ff } /* Literal.Number.Bin */
+.highlight .mf { color: #ae81ff } /* Literal.Number.Float */
+.highlight .mh { color: #ae81ff } /* Literal.Number.Hex */
+.highlight .mi { color: #ae81ff } /* Literal.Number.Integer */
+.highlight .mo { color: #ae81ff } /* Literal.Number.Oct */
+.highlight .sa { color: #e6db74 } /* Literal.String.Affix */
+.highlight .sb { color: #e6db74 } /* Literal.String.Backtick */
+.highlight .sc { color: #e6db74 } /* Literal.String.Char */
+.highlight .dl { color: #e6db74 } /* Literal.String.Delimiter */
+.highlight .sd { color: #e6db74 } /* Literal.String.Doc */
+.highlight .s2 { color: #e6db74 } /* Literal.String.Double */
+.highlight .se { color: #ae81ff } /* Literal.String.Escape */
+.highlight .sh { color: #e6db74 } /* Literal.String.Heredoc */
+.highlight .si { color: #e6db74 } /* Literal.String.Interpol */
+.highlight .sx { color: #e6db74 } /* Literal.String.Other */
+.highlight .sr { color: #e6db74 } /* Literal.String.Regex */
+.highlight .s1 { color: #e6db74 } /* Literal.String.Single */
+.highlight .ss { color: #e6db74 } /* Literal.String.Symbol */
+.highlight .bp { color: #f8f8f2 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #a6e22e } /* Name.Function.Magic */
+.highlight .vc { color: #f8f8f2 } /* Name.Variable.Class */
+.highlight .vg { color: #f8f8f2 } /* Name.Variable.Global */
+.highlight .vi { color: #f8f8f2 } /* Name.Variable.Instance */
+.highlight .vm { color: #f8f8f2 } /* Name.Variable.Magic */
+.highlight .il { color: #ae81ff } /* Literal.Number.Integer.Long */
+    </style>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        pre { background-color: transparent; padding: 0; border-radius: 5px; overflow-x: auto; }
+        code { font-family: "Courier New", Courier, monospace; }
+        img { max-width: 100%; height: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .highlight { padding: 1em; border-radius: 5px; margin: 1em 0; }
+    </style>
+</head>
+<body>
+<h1 id="operaciones-de-actualizacion-en-mongodb">Operaciones de Actualización en MongoDB</h1><div id="table-of-contents" style="margin: 20px 0px; padding: 15px; border: 1px solid rgb(221, 221, 221); background-color: rgb(249, 249, 249);"><h2>Tabla de contenidos</h2><ul style="list-style-type: none; padding-left: 15px;"><li style="margin-left: 0px; margin-top: 5px;"><a href="#operaciones-de-actualizacion-update-operations">Operaciones de Actualización (Update Operations)</a></li><li style="margin-left: 20px; margin-top: 5px;"><a href="#1-updateone">1. updateOne()</a></li><li style="margin-left: 20px; margin-top: 5px;"><a href="#2-updatemany">2. updateMany()</a></li><li style="margin-left: 20px; margin-top: 5px;"><a href="#3-replaceone">3. replaceOne()</a></li><li style="margin-left: 20px; margin-top: 5px;"><a href="#operadores-de-actualizacion-principales">Operadores de Actualización Principales</a></li><li style="margin-left: 20px; margin-top: 5px;"><a href="#opciones-de-actualizacion">Opciones de Actualización</a></li><li style="margin-left: 20px; margin-top: 5px;"><a href="#actualizaciones-en-documentos-anidados">Actualizaciones en Documentos Anidados</a></li><li style="margin-left: 20px; margin-top: 5px;"><a href="#actualizaciones-en-arrays">Actualizaciones en Arrays</a></li></ul></div>
+<h2 id="operaciones-de-actualizacion-update-operations">Operaciones de Actualización (Update Operations)</h2>
+<p>Las operaciones de actualización en MongoDB nos permiten modificar documentos existentes en una colección. Existen tres métodos principales para realizar actualizaciones:</p>
+<h3 id="1-updateone">1. updateOne()</h3>
+<p>Este método actualiza el primer documento que coincide con el filtro especificado.</p>
+<p><strong>Sintaxis básica:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">coleccion</span><span class="p">.</span><span class="nx">updateOne</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">filtro</span> <span class="p">},</span> 
+    <span class="p">{</span> <span class="nx">$operador</span><span class="o">:</span> <span class="p">{</span> <span class="nx">campo</span><span class="o">:</span> <span class="nx">valor</span> <span class="p">}</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">opciones</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<p><strong>Ejemplo:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">empleados</span><span class="p">.</span><span class="nx">updateOne</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">nombre</span><span class="o">:</span> <span class="s2">"Carlos"</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">$set</span><span class="o">:</span> <span class="p">{</span> <span class="nx">departamento</span><span class="o">:</span> <span class="s2">"Ventas"</span> <span class="p">}</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<h3 id="2-updatemany">2. updateMany()</h3>
+<p>Actualiza todos los documentos que coinciden con el filtro especificado.</p>
+<p><strong>Sintaxis básica:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">coleccion</span><span class="p">.</span><span class="nx">updateMany</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">filtro</span> <span class="p">},</span> 
+    <span class="p">{</span> <span class="nx">$operador</span><span class="o">:</span> <span class="p">{</span> <span class="nx">campo</span><span class="o">:</span> <span class="nx">valor</span> <span class="p">}</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">opciones</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<p><strong>Ejemplo:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">productos</span><span class="p">.</span><span class="nx">updateMany</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">categoria</span><span class="o">:</span> <span class="s2">"Electrónica"</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">$inc</span><span class="o">:</span> <span class="p">{</span> <span class="nx">precio</span><span class="o">:</span> <span class="mf">100</span> <span class="p">}</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<h3 id="3-replaceone">3. replaceOne()</h3>
+<p>Reemplaza completamente un documento con uno nuevo, manteniendo su _id.</p>
+<p><strong>Sintaxis básica:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">coleccion</span><span class="p">.</span><span class="nx">replaceOne</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">filtro</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">documento_completo_nuevo</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">opciones</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<p><strong>Ejemplo:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">clientes</span><span class="p">.</span><span class="nx">replaceOne</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">"5f8d0b3c7f74b42a1c8b4567"</span><span class="p">)</span> <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="nx">nombre</span><span class="o">:</span> <span class="s2">"Ana García"</span><span class="p">,</span>
+        <span class="nx">email</span><span class="o">:</span> <span class="s2">"ana@ejemplo.com"</span><span class="p">,</span>
+        <span class="nx">telefono</span><span class="o">:</span> <span class="s2">"555-123-456"</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<h3 id="operadores-de-actualizacion-principales">Operadores de Actualización Principales</h3>
+<h4 id="set">$set</h4>
+<ul>
+<li>Modifica el valor de un campo existente o crea el campo si no existe.</li>
+<li><strong>Ejemplo:</strong> <code>{ $set: { nombre: "Nuevo Nombre" } }</code></li>
+</ul>
+<h4 id="inc">$inc</h4>
+<ul>
+<li>Incrementa el valor de un campo numérico por la cantidad especificada.</li>
+<li><strong>Ejemplo:</strong> <code>{ $inc: { stock: -1, visitas: 5 } }</code></li>
+</ul>
+<h4 id="push">$push</h4>
+<ul>
+<li>Añade un elemento a un array.</li>
+<li><strong>Ejemplo:</strong> <code>{ $push: { comentarios: "Muy buen producto" } }</code></li>
+</ul>
+<h4 id="pull">$pull</h4>
+<ul>
+<li>Elimina elementos de un array que coincidan con la condición.</li>
+<li><strong>Ejemplo:</strong> <code>{ $pull: { tags: "oferta" } }</code></li>
+</ul>
+<h4 id="addtoset">$addToSet</h4>
+<ul>
+<li>Añade elementos a un array solo si no existen.</li>
+<li><strong>Ejemplo:</strong> <code>{ $addToSet: { categorias: "Premium" } }</code></li>
+</ul>
+<h4 id="unset">$unset</h4>
+<ul>
+<li>Elimina campos de un documento.</li>
+<li><strong>Ejemplo:</strong> <code>{ $unset: { temporal: "" } }</code></li>
+</ul>
+<h4 id="rename">$rename</h4>
+<ul>
+<li>Cambia el nombre de un campo.</li>
+<li><strong>Ejemplo:</strong> <code>{ $rename: { "nombre_antiguo": "nombre_nuevo" } }</code></li>
+</ul>
+<h4 id="mul">$mul</h4>
+<ul>
+<li>Multiplica el valor de un campo por un número.</li>
+<li><strong>Ejemplo:</strong> <code>{ $mul: { precio: 1.1 } }</code></li>
+</ul>
+<h3 id="opciones-de-actualizacion">Opciones de Actualización</h3>
+<ul>
+<li><strong>upsert</strong>: Si es true, crea un nuevo documento cuando no encuentra coincidencias con el filtro.</li>
+<li><strong>multi</strong>: (Obsoleto en versiones nuevas, usar updateMany en su lugar) </li>
+<li><strong>arrayFilters</strong>: Condiciones para actualizar elementos específicos en arrays.</li>
+</ul>
+<p><strong>Ejemplo con upsert:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">pedidos</span><span class="p">.</span><span class="nx">updateOne</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">cliente_id</span><span class="o">:</span> <span class="mf">12345</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">$set</span><span class="o">:</span> <span class="p">{</span> <span class="nx">estado</span><span class="o">:</span> <span class="s2">"Procesando"</span> <span class="p">}</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">upsert</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<h3 id="actualizaciones-en-documentos-anidados">Actualizaciones en Documentos Anidados</h3>
+<p>Para actualizar campos en documentos anidados o subdocumentos, se utiliza la notación de punto.</p>
+<p><strong>Ejemplo:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">usuarios</span><span class="p">.</span><span class="nx">updateOne</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">"5f8d0b3c7f74b42a1c8b4568"</span><span class="p">)</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">$set</span><span class="o">:</span> <span class="p">{</span> <span class="s2">"direccion.ciudad"</span><span class="o">:</span> <span class="s2">"Madrid"</span><span class="p">,</span> <span class="s2">"direccion.codigo_postal"</span><span class="o">:</span> <span class="s2">"28001"</span> <span class="p">}</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<h3 id="actualizaciones-en-arrays">Actualizaciones en Arrays</h3>
+<p>Las actualizaciones en arrays pueden ser complejas. Se pueden usar operadores específicos como $[] y $[identifier] junto con arrayFilters.</p>
+<p><strong>Ejemplo de actualización de elemento específico en un array:</strong></p>
+<div class="highlight language-javascript"><pre><span></span><span class="nx">db</span><span class="p">.</span><span class="nx">inventario</span><span class="p">.</span><span class="nx">updateOne</span><span class="p">(</span>
+    <span class="p">{</span> <span class="nx">_id</span><span class="o">:</span> <span class="nx">ObjectId</span><span class="p">(</span><span class="s2">"5f8d0b3c7f74b42a1c8b4569"</span><span class="p">)</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">$set</span><span class="o">:</span> <span class="p">{</span> <span class="s2">"productos.$[elem].disponible"</span><span class="o">:</span> <span class="kc">false</span> <span class="p">}</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="nx">arrayFilters</span><span class="o">:</span> <span class="p">[</span> <span class="p">{</span> <span class="s2">"elem.stock"</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$lt</span><span class="o">:</span> <span class="mf">5</span> <span class="p">}</span> <span class="p">}</span> <span class="p">]</span> <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+<hr>
+<p><strong>Buenas prácticas:</strong>
+1. Usar operadores de actualización en lugar de reemplazar documentos completos cuando sea posible.
+2. Considerar el uso de transacciones para actualizaciones complejas en múltiples documentos.
+3. Verificar los resultados de la operación para asegurar que se realizaron correctamente.
+4. Utilizar upsert con precaución para evitar crear documentos no deseados.</p>
+
+</body></html>

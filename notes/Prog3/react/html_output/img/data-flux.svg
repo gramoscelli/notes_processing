@@ -1,0 +1,192 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="800"
+  height="200"
+  viewBox="0 0 800 200"
+  font-family="Arial, sans-serif"
+>
+  <!-- Definitions (marker) -->
+  <defs>
+    <marker
+      id="arrowhead"
+      markerWidth="10"
+      markerHeight="7"
+      refX="9"
+      refY="3.5"
+      orient="auto"
+    >
+      <polygon points="0 0, 10 3.5, 0 7" fill="#059669" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text
+    x="400"
+    y="30"
+    text-anchor="middle"
+    font-size="20"
+    font-weight="bold"
+    fill="#1e293b"
+  >
+    Flujo Unidireccional de Datos
+  </text>
+
+  <!-- Estado del Padre -->
+  <g id="estado-padre">
+    <rect
+      x="50"
+      y="80"
+      width="150"
+      height="60"
+      rx="8"
+      fill="#3b82f6"
+      stroke="#1d4ed8"
+      stroke-width="2"
+    />
+    <text
+      x="125"
+      y="105"
+      text-anchor="middle"
+      font-size="14"
+      font-weight="bold"
+      fill="#fff"
+    >
+      Estado del
+    </text>
+    <text
+      x="125"
+      y="125"
+      text-anchor="middle"
+      font-size="14"
+      font-weight="bold"
+      fill="#fff"
+    >
+      Padre
+    </text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <line
+    x1="200"
+    y1="110"
+    x2="250"
+    y2="110"
+    stroke="#059669"
+    stroke-width="3"
+    marker-end="url(#arrowhead)"
+  />
+
+  <!-- Props -->
+  <g id="props">
+    <rect
+      x="270"
+      y="80"
+      width="100"
+      height="60"
+      rx="8"
+      fill="#10b981"
+      stroke="#047857"
+      stroke-width="2"
+    />
+    <text
+      x="320"
+      y="115"
+      text-anchor="middle"
+      font-size="14"
+      font-weight="bold"
+      fill="#fff"
+    >
+      Props
+    </text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <line
+    x1="370"
+    y1="110"
+    x2="420"
+    y2="110"
+    stroke="#059669"
+    stroke-width="3"
+    marker-end="url(#arrowhead)"
+  />
+
+  <!-- Componente Hijo -->
+  <g id="componente-hijo">
+    <rect
+      x="440"
+      y="80"
+      width="120"
+      height="60"
+      rx="8"
+      fill="#8b5cf6"
+      stroke="#7c3aed"
+      stroke-width="2"
+    />
+    <text
+      x="500"
+      y="105"
+      text-anchor="middle"
+      font-size="14"
+      font-weight="bold"
+      fill="#fff"
+    >
+      Componente
+    </text>
+    <text
+      x="500"
+      y="125"
+      text-anchor="middle"
+      font-size="14"
+      font-weight="bold"
+      fill="#fff"
+    >
+      Hijo
+    </text>
+  </g>
+
+  <!-- Arrow 3 -->
+  <line
+    x1="560"
+    y1="110"
+    x2="610"
+    y2="110"
+    stroke="#059669"
+    stroke-width="3"
+    marker-end="url(#arrowhead)"
+  />
+
+  <!-- Interfaz de Usuario -->
+  <g id="interfaz-usuario">
+    <rect
+      x="630"
+      y="80"
+      width="120"
+      height="60"
+      rx="8"
+      fill="#f59e0b"
+      stroke="#d97706"
+      stroke-width="2"
+    />
+    <text
+      x="690"
+      y="105"
+      text-anchor="middle"
+      font-size="14"
+      font-weight="bold"
+      fill="#fff"
+    >
+      Interfaz
+    </text>
+    <text
+      x="690"
+      y="125"
+      text-anchor="middle"
+      font-size="14"
+      font-weight="bold"
+      fill="#fff"
+    >
+      Usuario
+    </text>
+  </g>
+</svg>

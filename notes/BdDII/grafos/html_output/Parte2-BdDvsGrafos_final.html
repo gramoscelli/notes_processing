@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Parte2-BdDvsGrafos
+  </title>
+ </head>
+ <body>
+  <h1 id="tema-2-bases-de-datos-de-grafos-vs-relacionales">
+   Tema 2: Bases de Datos de Grafos vs Relacionales
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#objetivos-de-aprendizaje">
+      Objetivos de Aprendizaje
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#21-limitaciones-de-las-bases-de-datos-relacionales-con-relaciones-complejas">
+      2.1 Limitaciones de las Bases de Datos Relacionales con Relaciones Complejas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#22-ventajas-de-las-bases-de-datos-de-grafos">
+      2.2 Ventajas de las Bases de Datos de Grafos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#23-casos-de-uso-comparativos">
+      2.3 Casos de Uso Comparativos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#24-flexibilidad-del-esquema">
+      2.4 Flexibilidad del Esquema
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#25-ejercicios-practicos">
+      2.5 Ejercicios Prácticos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#26-comparacion-de-performance">
+      2.6 Comparación de Performance
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#27-resumen-y-decision">
+      2.7 Resumen y Decisión
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#28-preparacion-para-el-siguiente-tema">
+      2.8 Preparación para el Siguiente Tema
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="objetivos-de-aprendizaje">
+    Objetivos de Aprendizaje
+   </h2>
+   <p>
+    Al finalizar este tema, los estudiantes serán capaces de:
+- Identificar cuándo usar grafos vs bases de datos relacionales
+- Reconocer las ventajas y limitaciones de cada enfoque
+- Convertir modelos relacionales a modelos de grafos
+- Implementar comparaciones prácticas en Python
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="21-limitaciones-de-las-bases-de-datos-relacionales-con-relaciones-complejas">
+    2.1 Limitaciones de las Bases de Datos Relacionales con Relaciones Complejas
+   </h2>
+   <h3 id="problema-consultas-con-multiples-joins">
+    Problema: Consultas con Múltiples JOINs
+   </h3>
+   <p>
+    Cuando tenemos muchas relaciones interconectadas, las consultas SQL se vuelven complejas y lentas.
+   </p>
+   <p>
+    <strong>
+     Ejemplo: Red Social en Modelo Relacional
+    </strong>
+   </p>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Simulación de tablas relacionales en Python</span>
+<span class="n">usuarios_tabla</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Ana'</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Madrid'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Carlos'</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Barcelona'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Lucia'</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Madrid'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Pedro'</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Valencia'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Sofia'</span><span class="p">,</span> <span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Sevilla'</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="n">amistades_tabla</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">'usuario1_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'usuario2_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2023-01-15'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario1_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'usuario2_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2023-02-10'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario1_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'usuario2_id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2023-01-20'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario1_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'usuario2_id'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2023-03-05'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario1_id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'usuario2_id'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2023-02-28'</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="c1"># Consulta compleja: "Amigos de amigos de Ana que viven en Madrid"</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">amigos_de_amigos_madrid_relacional</span><span class="p">():</span>
+    <span class="c1"># Paso 1: Encontrar amigos de Ana (ID = 1)</span>
+    <span class="n">amigos_ana</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">amistades_tabla</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">amigos_ana</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">amigos_ana</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">])</span>
+
+    <span class="c1"># Paso 2: Encontrar amigos de los amigos de Ana</span>
+    <span class="n">amigos_de_amigos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">amigo_id</span> <span class="ow">in</span> <span class="n">amigos_ana</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">amistades_tabla</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">amigo_id</span><span class="p">:</span>
+                <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">amigo_id</span><span class="p">:</span>
+                <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">])</span>
+
+    <span class="c1"># Paso 3: Filtrar por Madrid y excluir a Ana y sus amigos directos</span>
+    <span class="n">resultado</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">excluir</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">amigos_ana</span>
+    <span class="k">for</span> <span class="n">usuario_id</span> <span class="ow">in</span> <span class="n">amigos_de_amigos</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">usuario_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excluir</span><span class="p">:</span>
+            <span class="c1"># Buscar datos del usuario</span>
+            <span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">usuarios_tabla</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">usuario</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario_id</span> <span class="ow">and</span> <span class="n">usuario</span><span class="p">[</span><span class="s1">'ciudad'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'Madrid'</span><span class="p">:</span>
+                    <span class="n">resultado</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">usuario</span><span class="p">[</span><span class="s1">'nombre'</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">resultado</span><span class="p">))</span>  <span class="c1"># Eliminar duplicados</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Modelo Relacional - Amigos de amigos en Madrid:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">amigos_de_amigos_madrid_relacional</span><span class="p">())</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="el-mismo-problema-con-grafos">
+    El Mismo Problema con Grafos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Representación como grafo</span>
+<span class="n">red_social_grafo</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'usuarios'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'ana'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Madrid'</span><span class="p">},</span>
+        <span class="s1">'carlos'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Barcelona'</span><span class="p">},</span>
+        <span class="s1">'lucia'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Madrid'</span><span class="p">},</span>
+        <span class="s1">'pedro'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Valencia'</span><span class="p">},</span>
+        <span class="s1">'sofia'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ciudad'</span><span class="p">:</span> <span class="s1">'Sevilla'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'amistades'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'sofia'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'pedro'</span><span class="p">,</span> <span class="s1">'sofia'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">amigos_de_amigos_madrid_grafo</span><span class="p">():</span>
+    <span class="c1"># Paso 1: Amigos directos de Ana</span>
+    <span class="n">amigos_directos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">red_social_grafo</span><span class="p">[</span><span class="s1">'amistades'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'ana'</span><span class="p">:</span>
+            <span class="n">amigos_directos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'ana'</span><span class="p">:</span>
+            <span class="n">amigos_directos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Paso 2: Amigos de los amigos</span>
+    <span class="n">amigos_de_amigos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">amigo</span> <span class="ow">in</span> <span class="n">amigos_directos</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">red_social_grafo</span><span class="p">[</span><span class="s1">'amistades'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">amigo</span> <span class="ow">and</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">]</span> <span class="o">+</span> <span class="n">amigos_directos</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">red_social_grafo</span><span class="p">[</span><span class="s1">'usuarios'</span><span class="p">][</span><span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s1">'ciudad'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'Madrid'</span><span class="p">:</span>
+                    <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">amigo</span> <span class="ow">and</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">]</span> <span class="o">+</span> <span class="n">amigos_directos</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">red_social_grafo</span><span class="p">[</span><span class="s1">'usuarios'</span><span class="p">][</span><span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s1">'ciudad'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'Madrid'</span><span class="p">:</span>
+                    <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">amigos_de_amigos</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Modelo de Grafos - Amigos de amigos en Madrid:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">amigos_de_amigos_madrid_grafo</span><span class="p">())</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="22-ventajas-de-las-bases-de-datos-de-grafos">
+    2.2 Ventajas de las Bases de Datos de Grafos
+   </h2>
+   <h3 id="1-representacion-natural-de-relaciones">
+    1. Representación Natural de Relaciones
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Ejemplo: Sistema de Recomendaciones de Productos</span>
+
+<span class="c1"># Modelo Relacional (complejo)</span>
+<span class="n">productos_tabla</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Laptop Gaming'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Electrónicos'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Mouse Gamer'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Accesorios'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Teclado Mecánico'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Accesorios'</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Monitor 4K'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Electrónicos'</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="n">compras_tabla</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="p">]</span>
+
+<span class="c1"># Modelo de Grafos (intuitivo)</span>
+<span class="n">tienda_grafo</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'usuario_1'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'usuario'</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Ana'</span><span class="p">},</span>
+        <span class="s1">'usuario_2'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'usuario'</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Carlos'</span><span class="p">},</span>
+        <span class="s1">'usuario_3'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'usuario'</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Lucia'</span><span class="p">},</span>
+        <span class="s1">'laptop_gaming'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'producto'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Electrónicos'</span><span class="p">},</span>
+        <span class="s1">'mouse_gamer'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'producto'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Accesorios'</span><span class="p">},</span>
+        <span class="s1">'teclado_mecanico'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'producto'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Accesorios'</span><span class="p">},</span>
+        <span class="s1">'monitor_4k'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'producto'</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Electrónicos'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'relaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'usuario_1'</span><span class="p">,</span> <span class="s1">'laptop_gaming'</span><span class="p">,</span> <span class="s1">'COMPRO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'usuario_1'</span><span class="p">,</span> <span class="s1">'mouse_gamer'</span><span class="p">,</span> <span class="s1">'COMPRO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'usuario_2'</span><span class="p">,</span> <span class="s1">'laptop_gaming'</span><span class="p">,</span> <span class="s1">'COMPRO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'usuario_2'</span><span class="p">,</span> <span class="s1">'teclado_mecanico'</span><span class="p">,</span> <span class="s1">'COMPRO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'usuario_3'</span><span class="p">,</span> <span class="s1">'mouse_gamer'</span><span class="p">,</span> <span class="s1">'COMPRO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'usuario_3'</span><span class="p">,</span> <span class="s1">'teclado_mecanico'</span><span class="p">,</span> <span class="s1">'COMPRO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'laptop_gaming'</span><span class="p">,</span> <span class="s1">'mouse_gamer'</span><span class="p">,</span> <span class="s1">'COMPATIBLE_CON'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'laptop_gaming'</span><span class="p">,</span> <span class="s1">'teclado_mecanico'</span><span class="p">,</span> <span class="s1">'COMPATIBLE_CON'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'laptop_gaming'</span><span class="p">,</span> <span class="s1">'monitor_4k'</span><span class="p">,</span> <span class="s1">'COMPATIBLE_CON'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">recomendar_productos</span><span class="p">(</span><span class="n">usuario</span><span class="p">,</span> <span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Recomienda productos basado en compras de usuarios similares"""</span>
+    <span class="c1"># Productos que compró el usuario</span>
+    <span class="n">productos_usuario</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'relaciones'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">rel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario</span> <span class="ow">and</span> <span class="n">rel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'COMPRO'</span><span class="p">:</span>
+            <span class="n">productos_usuario</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Usuarios que compraron productos similares</span>
+    <span class="n">usuarios_similares</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">producto</span> <span class="ow">in</span> <span class="n">productos_usuario</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'relaciones'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">rel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">producto</span> <span class="ow">and</span> <span class="n">rel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'COMPRO'</span> <span class="ow">and</span> <span class="n">rel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">usuario</span><span class="p">:</span>
+                <span class="n">usuarios_similares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Productos que compraron usuarios similares</span>
+    <span class="n">recomendaciones</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">usuario_similar</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">usuarios_similares</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'relaciones'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">rel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario_similar</span> <span class="ow">and</span> <span class="n">rel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'COMPRO'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">rel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">productos_usuario</span><span class="p">:</span>
+                    <span class="n">recomendaciones</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">recomendaciones</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Recomendaciones para usuario_1:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">recomendar_productos</span><span class="p">(</span><span class="s1">'usuario_1'</span><span class="p">,</span> <span class="n">tienda_grafo</span><span class="p">))</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="2-consultas-mas-intuitivas">
+    2. Consultas Más Intuitivas
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Ejemplo: Análisis de Influencia en Redes Sociales</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">encontrar_influencers</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">min_conexiones</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Encuentra usuarios con muchas conexiones"""</span>
+    <span class="n">conteo_conexiones</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">relacion</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'amistades'</span><span class="p">]:</span>
+        <span class="c1"># Contar conexiones para cada usuario</span>
+        <span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="p">[</span><span class="n">relacion</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">relacion</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+            <span class="n">conteo_conexiones</span><span class="p">[</span><span class="n">usuario</span><span class="p">]</span> <span class="o">=</span> <span class="n">conteo_conexiones</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">usuario</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Filtrar influencers</span>
+    <span class="n">influencers</span> <span class="o">=</span> <span class="p">{</span><span class="n">usuario</span><span class="p">:</span> <span class="n">conexiones</span> 
+                  <span class="k">for</span> <span class="n">usuario</span><span class="p">,</span> <span class="n">conexiones</span> <span class="ow">in</span> <span class="n">conteo_conexiones</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> 
+                  <span class="k">if</span> <span class="n">conexiones</span> <span class="o">&gt;=</span> <span class="n">min_conexiones</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">influencers</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analizar_comunidades</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Encuentra grupos de usuarios conectados"""</span>
+    <span class="n">visitados</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">comunidades</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">explorar_comunidad</span><span class="p">(</span><span class="n">usuario</span><span class="p">,</span> <span class="n">comunidad_actual</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>
+        <span class="n">comunidad_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span>
+
+        <span class="c1"># Buscar amigos del usuario</span>
+        <span class="k">for</span> <span class="n">relacion</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'amistades'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">relacion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario</span><span class="p">:</span>
+                <span class="n">explorar_comunidad</span><span class="p">(</span><span class="n">relacion</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">comunidad_actual</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">relacion</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario</span><span class="p">:</span>
+                <span class="n">explorar_comunidad</span><span class="p">(</span><span class="n">relacion</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">comunidad_actual</span><span class="p">)</span>
+
+    <span class="c1"># Explorar cada usuario no visitado</span>
+    <span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'usuarios'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">usuario</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+            <span class="n">comunidad</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">explorar_comunidad</span><span class="p">(</span><span class="n">usuario</span><span class="p">,</span> <span class="n">comunidad</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comunidad</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">comunidades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comunidad</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">comunidades</span>
+
+<span class="c1"># Análisis de la red social</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Influencers en la red:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">encontrar_influencers</span><span class="p">(</span><span class="n">red_social_grafo</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Comunidades detectadas:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">analizar_comunidades</span><span class="p">(</span><span class="n">red_social_grafo</span><span class="p">))</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="3-performance-en-consultas-complejas">
+    3. Performance en Consultas Complejas
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">medir_performance_busqueda</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Compara performance entre modelos relacionales y grafos"""</span>
+
+    <span class="c1"># Crear datos más grandes para la prueba</span>
+    <span class="n">usuarios_grandes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">amistades_grandes</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Generar 1000 usuarios</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="n">usuarios_grandes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">'id'</span><span class="p">:</span> <span class="n">i</span><span class="p">,</span>
+            <span class="s1">'nombre'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'Usuario_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="s1">'ciudad'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'Madrid'</span><span class="p">,</span> <span class="s1">'Barcelona'</span><span class="p">,</span> <span class="s1">'Valencia'</span><span class="p">][</span><span class="n">i</span> <span class="o">%</span> <span class="mi">3</span><span class="p">]</span>
+        <span class="p">})</span>
+
+    <span class="c1"># Generar 5000 amistades aleatorias</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5000</span><span class="p">):</span>
+        <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">amistades_grandes</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'usuario1_id'</span><span class="p">:</span> <span class="n">u1</span><span class="p">,</span> <span class="s1">'usuario2_id'</span><span class="p">:</span> <span class="n">u2</span><span class="p">})</span>
+
+    <span class="c1"># Modelo relacional: buscar amigos de amigos</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">busqueda_relacional</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+        <span class="c1"># Buscar amigos directos</span>
+        <span class="n">amigos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">amistades_grandes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">:</span>
+                <span class="n">amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">:</span>
+                <span class="n">amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">])</span>
+
+        <span class="c1"># Buscar amigos de amigos</span>
+        <span class="n">amigos_de_amigos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">amigo</span> <span class="ow">in</span> <span class="n">amigos</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">amistades_grandes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">amigo</span><span class="p">:</span>
+                    <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">amigo</span><span class="p">:</span>
+                    <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">amigos_de_amigos</span><span class="p">))</span>
+
+    <span class="n">resultado_rel</span> <span class="o">=</span> <span class="n">busqueda_relacional</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">tiempo_relacional</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Modelo Relacional: </span><span class="si">{</span><span class="n">resultado_rel</span><span class="si">}</span><span class="s2"> amigos de amigos en </span><span class="si">{</span><span class="n">tiempo_relacional</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> segundos"</span><span class="p">)</span>
+
+    <span class="c1"># Modelo de grafos usando diccionario de adyacencia (más eficiente)</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Pre-procesar para crear índice de adyacencia</span>
+    <span class="n">grafo_adyacencia</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">amistades_grandes</span><span class="p">:</span>
+        <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario1_id'</span><span class="p">],</span> <span class="n">amistad</span><span class="p">[</span><span class="s1">'usuario2_id'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">u1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grafo_adyacencia</span><span class="p">:</span>
+            <span class="n">grafo_adyacencia</span><span class="p">[</span><span class="n">u1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">u2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grafo_adyacencia</span><span class="p">:</span>
+            <span class="n">grafo_adyacencia</span><span class="p">[</span><span class="n">u2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">grafo_adyacencia</span><span class="p">[</span><span class="n">u1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u2</span><span class="p">)</span>
+        <span class="n">grafo_adyacencia</span><span class="p">[</span><span class="n">u2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">busqueda_grafo</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">user_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grafo_adyacencia</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">amigos</span> <span class="o">=</span> <span class="n">grafo_adyacencia</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
+        <span class="n">amigos_de_amigos</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">amigo</span> <span class="ow">in</span> <span class="n">amigos</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">amigo</span> <span class="ow">in</span> <span class="n">grafo_adyacencia</span><span class="p">:</span>
+                <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">grafo_adyacencia</span><span class="p">[</span><span class="n">amigo</span><span class="p">])</span>
+
+        <span class="c1"># Excluir al usuario y sus amigos directos</span>
+        <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="n">amigos_de_amigos</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">amigos</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">amigos_de_amigos</span><span class="p">)</span>
+
+    <span class="n">resultado_grafo</span> <span class="o">=</span> <span class="n">busqueda_grafo</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">tiempo_grafo</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Modelo de Grafos: </span><span class="si">{</span><span class="n">resultado_grafo</span><span class="si">}</span><span class="s2"> amigos de amigos en </span><span class="si">{</span><span class="n">tiempo_grafo</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> segundos"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Mejora de performance: </span><span class="si">{</span><span class="n">tiempo_relacional</span><span class="o">/</span><span class="n">tiempo_grafo</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x más rápido"</span><span class="p">)</span>
+
+<span class="c1"># Ejecutar comparación de performance</span>
+<span class="n">medir_performance_busqueda</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="23-casos-de-uso-comparativos">
+    2.3 Casos de Uso Comparativos
+   </h2>
+   <h3 id="cuando-usar-grafos">
+    Cuándo Usar Grafos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># 1. DETECCIÓN DE FRAUDE</span>
+<span class="n">transacciones_sospechosas</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'cuentas'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'cuenta_1'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'titular'</span><span class="p">:</span> <span class="s1">'Juan Pérez'</span><span class="p">,</span> <span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'personal'</span><span class="p">},</span>
+        <span class="s1">'cuenta_2'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'titular'</span><span class="p">:</span> <span class="s1">'María García'</span><span class="p">,</span> <span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'personal'</span><span class="p">},</span>
+        <span class="s1">'cuenta_3'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'titular'</span><span class="p">:</span> <span class="s1">'Empresa XYZ'</span><span class="p">,</span> <span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'empresarial'</span><span class="p">},</span>
+        <span class="s1">'cuenta_4'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'titular'</span><span class="p">:</span> <span class="s1">'Carlos López'</span><span class="p">,</span> <span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'personal'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'transacciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'cuenta_1'</span><span class="p">,</span> <span class="s1">'cuenta_2'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'monto'</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2024-01-15'</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'cuenta_2'</span><span class="p">,</span> <span class="s1">'cuenta_3'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'monto'</span><span class="p">:</span> <span class="mi">950</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2024-01-15'</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'cuenta_3'</span><span class="p">,</span> <span class="s1">'cuenta_4'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'monto'</span><span class="p">:</span> <span class="mi">900</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2024-01-16'</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'cuenta_4'</span><span class="p">,</span> <span class="s1">'cuenta_1'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'monto'</span><span class="p">:</span> <span class="mi">850</span><span class="p">,</span> <span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2024-01-16'</span><span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">detectar_ciclos_sospechosos</span><span class="p">(</span><span class="n">grafo_transacciones</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Detecta ciclos de transacciones que podrían indicar lavado de dinero"""</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encontrar_ciclo</span><span class="p">(</span><span class="n">cuenta_inicio</span><span class="p">,</span> <span class="n">camino_actual</span><span class="p">,</span> <span class="n">visitados</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">transaccion</span> <span class="ow">in</span> <span class="n">grafo_transacciones</span><span class="p">[</span><span class="s1">'transacciones'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">transaccion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">camino_actual</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># Desde la última cuenta</span>
+                <span class="n">destino</span> <span class="o">=</span> <span class="n">transaccion</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">destino</span> <span class="o">==</span> <span class="n">cuenta_inicio</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">camino_actual</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="c1"># Encontramos un ciclo</span>
+                    <span class="k">return</span> <span class="n">camino_actual</span> <span class="o">+</span> <span class="p">[</span><span class="n">destino</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">destino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">camino_actual</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+                    <span class="c1"># Continuar explorando</span>
+                    <span class="n">nuevo_camino</span> <span class="o">=</span> <span class="n">encontrar_ciclo</span><span class="p">(</span>
+                        <span class="n">cuenta_inicio</span><span class="p">,</span> 
+                        <span class="n">camino_actual</span> <span class="o">+</span> <span class="p">[</span><span class="n">destino</span><span class="p">],</span> 
+                        <span class="n">visitados</span> <span class="o">|</span> <span class="p">{</span><span class="n">destino</span><span class="p">}</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">nuevo_camino</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">nuevo_camino</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">ciclos_detectados</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">cuenta</span> <span class="ow">in</span> <span class="n">grafo_transacciones</span><span class="p">[</span><span class="s1">'cuentas'</span><span class="p">]:</span>
+        <span class="n">ciclo</span> <span class="o">=</span> <span class="n">encontrar_ciclo</span><span class="p">(</span><span class="n">cuenta</span><span class="p">,</span> <span class="p">[</span><span class="n">cuenta</span><span class="p">],</span> <span class="p">{</span><span class="n">cuenta</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">ciclo</span><span class="p">:</span>
+            <span class="n">ciclos_detectados</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ciclo</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ciclos_detectados</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Ciclos sospechosos detectados:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ciclo</span> <span class="ow">in</span> <span class="n">detectar_ciclos_sospechosos</span><span class="p">(</span><span class="n">transacciones_sospechosas</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="s1">' -&gt; '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ciclo</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="cuando-usar-bases-de-datos-relacionales">
+    Cuándo Usar Bases de Datos Relacionales
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Para datos tabulares con estructura fija y consultas OLAP</span>
+<span class="n">inventario_tienda</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'productos'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Laptop'</span><span class="p">,</span> <span class="s1">'precio'</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Electrónicos'</span><span class="p">,</span> <span class="s1">'stock'</span><span class="p">:</span> <span class="mi">15</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Mouse'</span><span class="p">,</span> <span class="s1">'precio'</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Accesorios'</span><span class="p">,</span> <span class="s1">'stock'</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Teclado'</span><span class="p">,</span> <span class="s1">'precio'</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'Accesorios'</span><span class="p">,</span> <span class="s1">'stock'</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s1">'ventas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2024-01-15'</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'cantidad'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'total'</span><span class="p">:</span> <span class="mi">2400</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2024-01-15'</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'cantidad'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'total'</span><span class="p">:</span> <span class="mi">125</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'fecha'</span><span class="p">:</span> <span class="s1">'2024-01-16'</span><span class="p">,</span> <span class="s1">'producto_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'cantidad'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'total'</span><span class="p">:</span> <span class="mi">240</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">reporte_ventas_relacional</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Ejemplo de consulta típica relacional: agregaciones y reportes"""</span>
+    <span class="c1"># Ventas por categoría</span>
+    <span class="n">ventas_por_categoria</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">venta</span> <span class="ow">in</span> <span class="n">inventario_tienda</span><span class="p">[</span><span class="s1">'ventas'</span><span class="p">]:</span>
+        <span class="c1"># Buscar producto</span>
+        <span class="n">producto</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">inventario_tienda</span><span class="p">[</span><span class="s1">'productos'</span><span class="p">]</span> 
+                       <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">venta</span><span class="p">[</span><span class="s1">'producto_id'</span><span class="p">])</span>
+        <span class="n">categoria</span> <span class="o">=</span> <span class="n">producto</span><span class="p">[</span><span class="s1">'categoria'</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">categoria</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ventas_por_categoria</span><span class="p">:</span>
+            <span class="n">ventas_por_categoria</span><span class="p">[</span><span class="n">categoria</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'cantidad'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'total'</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="n">ventas_por_categoria</span><span class="p">[</span><span class="n">categoria</span><span class="p">][</span><span class="s1">'cantidad'</span><span class="p">]</span> <span class="o">+=</span> <span class="n">venta</span><span class="p">[</span><span class="s1">'cantidad'</span><span class="p">]</span>
+        <span class="n">ventas_por_categoria</span><span class="p">[</span><span class="n">categoria</span><span class="p">][</span><span class="s1">'total'</span><span class="p">]</span> <span class="o">+=</span> <span class="n">venta</span><span class="p">[</span><span class="s1">'total'</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">ventas_por_categoria</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Reporte de ventas por categoría:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">categoria</span><span class="p">,</span> <span class="n">datos</span> <span class="ow">in</span> <span class="n">reporte_ventas_relacional</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">categoria</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">datos</span><span class="p">[</span><span class="s1">'cantidad'</span><span class="p">]</span><span class="si">}</span><span class="s2"> unidades, $</span><span class="si">{</span><span class="n">datos</span><span class="p">[</span><span class="s1">'total'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="24-flexibilidad-del-esquema">
+    2.4 Flexibilidad del Esquema
+   </h2>
+   <h3 id="problema-con-esquemas-rigidos">
+    Problema con Esquemas Rígidos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># En bases relacionales, cambiar el esquema es complejo</span>
+<span class="c1"># Ejemplo: Agregar nuevo tipo de relación requiere modificar tablas</span>
+
+<span class="c1"># Esquema original: solo amistades</span>
+<span class="n">red_original</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'usuarios'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Ana'</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Carlos'</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s1">'amistades'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'usuario1_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'usuario2_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># ¿Cómo agregar relaciones de trabajo sin romper el esquema?</span>
+<span class="c1"># En SQL necesitaríamos nueva tabla o modificar la existente</span>
+
+<span class="c1"># En grafos, es natural</span>
+<span class="n">red_flexible</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'ana'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'persona'</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Ana'</span><span class="p">,</span> <span class="s1">'edad'</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
+        <span class="s1">'carlos'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'persona'</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Carlos'</span><span class="p">,</span> <span class="s1">'edad'</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+        <span class="s1">'empresa_abc'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'empresa'</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'ABC Corp'</span><span class="p">,</span> <span class="s1">'sector'</span><span class="p">:</span> <span class="s1">'Tecnología'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'relaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'AMIGO_DE'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'empresa_abc'</span><span class="p">,</span> <span class="s1">'TRABAJA_EN'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'empresa_abc'</span><span class="p">,</span> <span class="s1">'TRABAJA_EN'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">agregar_nueva_relacion</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">nodo1</span><span class="p">,</span> <span class="n">nodo2</span><span class="p">,</span> <span class="n">tipo_relacion</span><span class="p">,</span> <span class="n">propiedades</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Agregar cualquier tipo de relación dinámicamente"""</span>
+    <span class="n">relacion</span> <span class="o">=</span> <span class="p">(</span><span class="n">nodo1</span><span class="p">,</span> <span class="n">nodo2</span><span class="p">,</span> <span class="n">tipo_relacion</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">propiedades</span><span class="p">:</span>
+        <span class="n">relacion</span> <span class="o">=</span> <span class="n">relacion</span> <span class="o">+</span> <span class="p">(</span><span class="n">propiedades</span><span class="p">,)</span>
+    <span class="n">grafo</span><span class="p">[</span><span class="s1">'relaciones'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">relacion</span><span class="p">)</span>
+
+<span class="c1"># Fácil agregar nuevos tipos de relaciones</span>
+<span class="n">agregar_nueva_relacion</span><span class="p">(</span><span class="n">red_flexible</span><span class="p">,</span> <span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'COLABORA_CON'</span><span class="p">,</span> 
+                      <span class="p">{</span><span class="s1">'proyecto'</span><span class="p">:</span> <span class="s1">'Sistema XYZ'</span><span class="p">,</span> <span class="s1">'desde'</span><span class="p">:</span> <span class="s1">'2024-01-01'</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Red flexible con múltiples tipos de relaciones:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">relacion</span> <span class="ow">in</span> <span class="n">red_flexible</span><span class="p">[</span><span class="s1">'relaciones'</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">relacion</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="25-ejercicios-practicos">
+    2.5 Ejercicios Prácticos
+   </h2>
+   <h3 id="ejercicio-1-convertir-modelo-relacional-a-grafo">
+    Ejercicio 1: Convertir Modelo Relacional a Grafo
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Dado este modelo relacional de una biblioteca:</span>
+<span class="n">biblioteca_relacional</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'autores'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Gabriel García Márquez'</span><span class="p">,</span> <span class="s1">'nacionalidad'</span><span class="p">:</span> <span class="s1">'Colombiana'</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Isabel Allende'</span><span class="p">,</span> <span class="s1">'nacionalidad'</span><span class="p">:</span> <span class="s1">'Chilena'</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Mario Vargas Llosa'</span><span class="p">,</span> <span class="s1">'nacionalidad'</span><span class="p">:</span> <span class="s1">'Peruana'</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s1">'libros'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'titulo'</span><span class="p">:</span> <span class="s1">'Cien años de soledad'</span><span class="p">,</span> <span class="s1">'autor_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'año'</span><span class="p">:</span> <span class="mi">1967</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'titulo'</span><span class="p">:</span> <span class="s1">'La casa de los espíritus'</span><span class="p">,</span> <span class="s1">'autor_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'año'</span><span class="p">:</span> <span class="mi">1982</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'titulo'</span><span class="p">:</span> <span class="s1">'Conversación en La Catedral'</span><span class="p">,</span> <span class="s1">'autor_id'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'año'</span><span class="p">:</span> <span class="mi">1969</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s1">'usuarios'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Ana Pérez'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">:</span> <span class="s1">'ana@email.com'</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'nombre'</span><span class="p">:</span> <span class="s1">'Carlos López'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">:</span> <span class="s1">'carlos@email.com'</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s1">'prestamos'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'libro_id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'fecha_prestamo'</span><span class="p">:</span> <span class="s1">'2024-01-15'</span><span class="p">,</span> <span class="s1">'fecha_devolucion'</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">'usuario_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'libro_id'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'fecha_prestamo'</span><span class="p">:</span> <span class="s1">'2024-01-10'</span><span class="p">,</span> <span class="s1">'fecha_devolucion'</span><span class="p">:</span> <span class="s1">'2024-01-25'</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># TODO: Convierte este modelo a un grafo</span>
+<span class="n">biblioteca_grafo</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Completa aquí</span>
+    <span class="p">},</span>
+    <span class="s1">'relaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># Completa aquí</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">encontrar_libros_disponibles</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Encuentra libros que no están prestados actualmente"""</span>
+    <span class="c1"># Implementa esta función</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">recomendar_por_autor</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">usuario</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Recomienda libros basado en autores que el usuario ha leído"""</span>
+    <span class="c1"># Implementa esta función</span>
+    <span class="k">pass</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejercicio-2-sistema-de-transporte-multimodal">
+    Ejercicio 2: Sistema de Transporte Multimodal
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Modela un sistema que incluye metro, autobús y bicicleta compartida</span>
+<span class="n">transporte_multimodal</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Estaciones de metro</span>
+        <span class="s1">'metro_sol'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'estacion_metro'</span><span class="p">,</span> <span class="s1">'lineas'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">]},</span>
+        <span class="s1">'metro_atocha'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'estacion_metro'</span><span class="p">,</span> <span class="s1">'lineas'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'1'</span><span class="p">]},</span>
+
+        <span class="c1"># Paradas de autobús</span>
+        <span class="s1">'bus_plaza_mayor'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'parada_bus'</span><span class="p">,</span> <span class="s1">'lineas'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'25'</span><span class="p">,</span> <span class="s1">'39'</span><span class="p">]},</span>
+        <span class="s1">'bus_retiro'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'parada_bus'</span><span class="p">,</span> <span class="s1">'lineas'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'19'</span><span class="p">]},</span>
+
+        <span class="c1"># Estaciones de bicis</span>
+        <span class="s1">'bici_centro'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'estacion_bici'</span><span class="p">,</span> <span class="s1">'bicis_disponibles'</span><span class="p">:</span> <span class="mi">12</span><span class="p">},</span>
+        <span class="s1">'bici_parque'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'estacion_bici'</span><span class="p">,</span> <span class="s1">'bicis_disponibles'</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'relaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># Conexiones directas de transporte</span>
+        <span class="p">(</span><span class="s1">'metro_sol'</span><span class="p">,</span> <span class="s1">'metro_atocha'</span><span class="p">,</span> <span class="s1">'METRO_LINEA_1'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'bus_plaza_mayor'</span><span class="p">,</span> <span class="s1">'bus_retiro'</span><span class="p">,</span> <span class="s1">'BUS_LINEA_25'</span><span class="p">),</span>
+
+        <span class="c1"># Conexiones de cambio modal (a pie)</span>
+        <span class="p">(</span><span class="s1">'metro_sol'</span><span class="p">,</span> <span class="s1">'bus_plaza_mayor'</span><span class="p">,</span> <span class="s1">'CAMINANDO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'metro_atocha'</span><span class="p">,</span> <span class="s1">'bici_centro'</span><span class="p">,</span> <span class="s1">'CAMINANDO'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'bus_retiro'</span><span class="p">,</span> <span class="s1">'bici_parque'</span><span class="p">,</span> <span class="s1">'CAMINANDO'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">planificar_ruta_multimodal</span><span class="p">(</span><span class="n">origen</span><span class="p">,</span> <span class="n">destino</span><span class="p">,</span> <span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Planifica una ruta usando diferentes medios de transporte"""</span>
+    <span class="c1"># TODO: Implementa algoritmo de búsqueda de rutas</span>
+    <span class="c1"># Considera diferentes tipos de transporte y transbordos</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_tiempo_ruta</span><span class="p">(</span><span class="n">ruta</span><span class="p">,</span> <span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Calcula el tiempo total de una ruta multimodal"""</span>
+    <span class="c1"># TODO: Asigna tiempos diferentes según el tipo de transporte</span>
+    <span class="c1"># Metro: 2 min entre estaciones + 1 min transbordo</span>
+    <span class="c1"># Bus: 3 min entre paradas + 2 min transbordo  </span>
+    <span class="c1"># Bici: 5 min entre estaciones + 3 min recoger/dejar</span>
+    <span class="c1"># Caminando: 8 min</span>
+    <span class="k">pass</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="26-comparacion-de-performance">
+    2.6 Comparación de Performance
+   </h2>
+   <h3 id="benchmark-analisis-de-redes-sociales">
+    Benchmark: Análisis de Redes Sociales
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">benchmark_consultas_complejas</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Compara performance en consultas de múltiples grados de separación"""</span>
+
+    <span class="c1"># Generar red social grande</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+    <span class="c1"># Crear 500 usuarios</span>
+    <span class="n">usuarios_grandes</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">'usuario_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'ciudad'</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">'Madrid'</span><span class="p">,</span> <span class="s1">'Barcelona'</span><span class="p">,</span> <span class="s1">'Valencia'</span><span class="p">])}</span> 
+                       <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">)}</span>
+
+    <span class="c1"># Crear 2000 conexiones aleatorias</span>
+    <span class="n">conexiones_grandes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
+        <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">usuarios_grandes</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">conexiones_grandes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">))</span>
+
+    <span class="n">red_grande</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'usuarios'</span><span class="p">:</span> <span class="n">usuarios_grandes</span><span class="p">,</span> <span class="s1">'amistades'</span><span class="p">:</span> <span class="n">conexiones_grandes</span><span class="p">}</span>
+
+    <span class="c1"># Consulta: "Encontrar todos los usuarios a exactamente 3 grados de separación"</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">grados_separacion_ingenuo</span><span class="p">(</span><span class="n">usuario_inicio</span><span class="p">,</span> <span class="n">grados</span><span class="p">,</span> <span class="n">red</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Método ingenuo sin optimización"""</span>
+        <span class="n">nivel_actual</span> <span class="o">=</span> <span class="p">{</span><span class="n">usuario_inicio</span><span class="p">}</span>
+        <span class="n">visitados</span> <span class="o">=</span> <span class="p">{</span><span class="n">usuario_inicio</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">grado</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grados</span><span class="p">):</span>
+            <span class="n">siguiente_nivel</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">nivel_actual</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">red</span><span class="p">[</span><span class="s1">'amistades'</span><span class="p">]:</span>
+                    <span class="n">vecino</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">if</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario</span><span class="p">:</span>
+                        <span class="n">vecino</span> <span class="o">=</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">usuario</span><span class="p">:</span>
+                        <span class="n">vecino</span> <span class="o">=</span> <span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">vecino</span> <span class="ow">and</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                        <span class="n">siguiente_nivel</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+                        <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+
+            <span class="n">nivel_actual</span> <span class="o">=</span> <span class="n">siguiente_nivel</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nivel_actual</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">nivel_actual</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">grados_separacion_optimizado</span><span class="p">(</span><span class="n">usuario_inicio</span><span class="p">,</span> <span class="n">grados</span><span class="p">,</span> <span class="n">red</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Método optimizado con índice de adyacencia"""</span>
+        <span class="c1"># Pre-computar índice de adyacencia</span>
+        <span class="n">adyacencia</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">red</span><span class="p">[</span><span class="s1">'usuarios'</span><span class="p">]:</span>
+            <span class="n">adyacencia</span><span class="p">[</span><span class="n">usuario</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">amistad</span> <span class="ow">in</span> <span class="n">red</span><span class="p">[</span><span class="s1">'amistades'</span><span class="p">]:</span>
+            <span class="n">adyacencia</span><span class="p">[</span><span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">adyacencia</span><span class="p">[</span><span class="n">amistad</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amistad</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># BFS optimizado</span>
+        <span class="n">nivel_actual</span> <span class="o">=</span> <span class="p">{</span><span class="n">usuario_inicio</span><span class="p">}</span>
+        <span class="n">visitados</span> <span class="o">=</span> <span class="p">{</span><span class="n">usuario_inicio</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">grado</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grados</span><span class="p">):</span>
+            <span class="n">siguiente_nivel</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">usuario</span> <span class="ow">in</span> <span class="n">nivel_actual</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">vecino</span> <span class="ow">in</span> <span class="n">adyacencia</span><span class="p">[</span><span class="n">usuario</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                        <span class="n">siguiente_nivel</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+                        <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+
+            <span class="n">nivel_actual</span> <span class="o">=</span> <span class="n">siguiente_nivel</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nivel_actual</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">nivel_actual</span>
+
+    <span class="c1"># Medir performance</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+    <span class="n">usuario_test</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">usuarios_grandes</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">resultado_ingenuo</span> <span class="o">=</span> <span class="n">grados_separacion_ingenuo</span><span class="p">(</span><span class="n">usuario_test</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">red_grande</span><span class="p">)</span>
+    <span class="n">tiempo_ingenuo</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">resultado_optimizado</span> <span class="o">=</span> <span class="n">grados_separacion_optimizado</span><span class="p">(</span><span class="n">usuario_test</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">red_grande</span><span class="p">)</span>
+    <span class="n">tiempo_optimizado</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Método ingenuo: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resultado_ingenuo</span><span class="p">)</span><span class="si">}</span><span class="s2"> usuarios en </span><span class="si">{</span><span class="n">tiempo_ingenuo</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Método optimizado: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resultado_optimizado</span><span class="p">)</span><span class="si">}</span><span class="s2"> usuarios en </span><span class="si">{</span><span class="n">tiempo_optimizado</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">s"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Mejora: </span><span class="si">{</span><span class="n">tiempo_ingenuo</span><span class="o">/</span><span class="n">tiempo_optimizado</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">x más rápido"</span><span class="p">)</span>
+
+<span class="n">benchmark_consultas_complejas</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="27-resumen-y-decision">
+    2.7 Resumen y Decisión
+   </h2>
+   <h3 id="cuando-usar-grafos_1">
+    Cuándo Usar Grafos
+   </h3>
+   <p>
+    ✅
+    <strong>
+     Relaciones complejas y dinámicas
+    </strong>
+    - Redes sociales, sistemas de recomendación
+- Detección de fraude, análisis de influencia
+- Rutas y navegación
+   </p>
+   <p>
+    ✅
+    <strong>
+     Consultas de conexión y caminos
+    </strong>
+    - "Amigos de amigos que..."
+- "¿Cómo está conectado X con Y?"
+- "¿Qué influencia tiene X en Y?"
+   </p>
+   <p>
+    ✅
+    <strong>
+     Esquemas flexibles y evolutivos
+    </strong>
+    - Nuevos tipos de relaciones frecuentes
+- Propiedades variables por entidad
+   </p>
+   <h3 id="cuando-usar-bases-de-datos-relacionales_1">
+    Cuándo Usar Bases de Datos Relacionales
+   </h3>
+   <p>
+    ✅
+    <strong>
+     Datos tabulares estructurados
+    </strong>
+    - Inventarios, facturación, contabilidad
+- Reportes y agregaciones (OLAP)
+- Transacciones ACID críticas
+   </p>
+   <p>
+    ✅
+    <strong>
+     Consultas de agregación
+    </strong>
+    - SUM, COUNT, GROUP BY, etc.
+- Reportes financieros y estadísticas
+- Análisis temporal de métricas
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="28-preparacion-para-el-siguiente-tema">
+    2.8 Preparación para el Siguiente Tema
+   </h2>
+   <p>
+    En el próximo tema exploraremos la
+    <strong>
+     teoría básica de grafos
+    </strong>
+    , incluyendo:
+- Tipos de grafos (dirigidos, no dirigidos, ponderados)
+- Conceptos fundamentales (caminos, ciclos, conectividad)
+- Propiedades importantes para el análisis
+   </p>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

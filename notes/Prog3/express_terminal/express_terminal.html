@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Proyectos Express desde la Terminal Linux</title>
+    <style>
+        body {
+            font-family: 'Ubuntu', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 5px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+        .subtitle {
+            color: #bdc3c7;
+            font-weight: 300;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 35px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        code {
+            font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
+            background-color: #ecf0f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+        .terminal {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            line-height: 1.4;
+            color: #ecf0f1;
+            border-left: 4px solid #3498db;
+            margin: 15px 0;
+        }
+        .terminal code {
+            background-color: transparent;
+            color: #ecf0f1;
+            padding: 0;
+            font-family: 'Ubuntu Mono', 'Courier New', Courier, monospace;
+        }
+        .terminal .prompt {
+            color: #2ecc71;
+            user-select: none;
+        }
+        .terminal .comment {
+            color: #95a5a6;
+            font-style: italic;
+        }
+        pre {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            line-height: 1.4;
+            border-left: 4px solid #3498db;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #2c3e50;
+        }
+        ul, ol {
+            padding-left: 25px;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 5px solid #17a2b8;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 5px solid #ffc107;
+        }
+        .tip-box {
+            background-color: #e8f8f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 5px solid #1abc9c;
+        }
+        .method {
+            margin: 30px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tree {
+            font-family: 'Ubuntu Mono', 'Courier New', monospace;
+            line-height: 1.3;
+            margin: 15px 0;
+            padding-left: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+        }
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+        .index {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .index ol {
+            padding-left: 20px;
+            counter-reset: item;
+        }
+        .index li {
+            margin: 8px 0;
+            font-weight: 500;
+        }
+        .index ul {
+            padding-left: 25px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        .index ul li {
+            font-weight: normal;
+            margin: 5px 0;
+            list-style-type: disc;
+        }
+        .index a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .index a:hover {
+            color: #2c3e50;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Iniciar Proyectos Express desde la Terminal Linux</h1>
+        <p class="subtitle">Guía para crear aplicaciones Express desde cero utilizando la línea de comandos</p>
+    </header>
+
+    <section class="section">
+        <h2>Índice de Contenidos</h2>
+        <nav class="index">
+            <ol>
+                <li><a href="#introduccion">Introducción</a></li>
+                <li><a href="#verificar-instalacion">Verificar la instalación de Node.js y npm</a></li>
+                <li><a href="#metodos-iniciar">Métodos para iniciar un proyecto Express</a></li>
+                <li><a href="#metodo-generator">Método 1: Usando Express Generator</a>
+                    <ul>
+                        <li><a href="#generator-paso1">Paso 1: Instalar Express Generator globalmente</a></li>
+                        <li><a href="#generator-paso2">Paso 2: Crear una nueva aplicación Express</a></li>
+                        <li><a href="#generator-paso3">Paso 3: Acceder al directorio e instalar dependencias</a></li>
+                        <li><a href="#generator-paso4">Paso 4: Iniciar la aplicación</a></li>
+                        <li><a href="#generator-estructura">Estructura de directorios generada</a></li>
+                    </ul>
+                </li>
+                <li><a href="#metodo-manual">Método 2: Configuración manual</a>
+                    <ul>
+                        <li><a href="#manual-paso1">Paso 1: Crear un directorio para el proyecto</a></li>
+                        <li><a href="#manual-paso2">Paso 2: Inicializar el proyecto npm</a></li>
+                        <li><a href="#manual-paso3">Paso 3: Instalar Express</a></li>
+                        <li><a href="#manual-paso4">Paso 4: Crear la estructura básica de directorios</a></li>
+                        <li><a href="#manual-paso5">Paso 5: Crear el archivo principal</a></li>
+                        <li><a href="#manual-paso6">Paso 6: Editar el archivo app.js</a></li>
+                        <li><a href="#manual-paso7">Paso 7: Modificar el script de inicio en package.json</a></li>
+                        <li><a href="#manual-paso8">Paso 8: Iniciar la aplicación</a></li>
+                    </ul>
+                </li>
+                <li><a href="#mejoras">Mejoras y configuración adicional</a>
+                    <ul>
+                        <li><a href="#config-entornos">Configuración de entornos</a></li>
+                        <li><a href="#config-middleware">Configurar middleware adicional</a></li>
+                        <li><a href="#rutas-modular">Crear un sistema de rutas modular</a></li>
+                        <li><a href="#gitignore">Crear un archivo .gitignore</a></li>
+                    </ul>
+                </li>
+                <li><a href="#comparativa">Comparativa de métodos</a></li>
+                <li><a href="#scripts">Scripts npm útiles</a></li>
+                <li><a href="#buenas-practicas">Buenas prácticas</a></li>
+                <li><a href="#problemas">Solución de problemas comunes</a>
+                    <ul>
+                        <li><a href="#puerto-uso">Error: Puerto en uso</a></li>
+                        <li><a href="#modulo-no-encontrado">Error: Módulo no encontrado</a></li>
+                        <li><a href="#cambios-no-reflejan">Cambios no se reflejan</a></li>
+                    </ul>
+                </li>
+                <li><a href="#recursos">Recursos adicionales</a></li>
+            </ol>
+        </nav>
+    </section>
+
+    <section id="introduccion" class="section">
+        <h2>Introducción</h2>
+        <p>Express.js es un framework web minimalista, flexible y rápido para Node.js. Proporciona un conjunto robusto de características para desarrollar aplicaciones web y APIs. Este apunte te guiará paso a paso para crear proyectos Express desde la terminal de Linux, ya sea utilizando herramientas automatizadas o configurando todo manualmente.</p>
+        
+        <div class="info-box">
+            <p><strong>Requisitos previos:</strong></p>
+            <ul>
+                <li>Node.js y npm instalados en tu sistema Linux</li>
+                <li>Conocimientos básicos de comandos de terminal</li>
+                <li>Editor de texto (como Visual Studio Code, Sublime Text, Vim, etc.)</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="verificar-instalacion" class="section">
+        <h2>Verificar la instalación de Node.js y npm</h2>
+        <p>Antes de comenzar, asegúrate de tener Node.js y npm correctamente instalados:</p>
+        
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> node -v</code><br>
+            <code>v18.16.0</code><br>
+            <code><span class="prompt">usuario@linux:~$</span> npm -v</code><br>
+            <code>9.5.1</code>
+        </div>
+        
+        <p>Si no tienes Node.js instalado, puedes instalarlo en distribuciones basadas en Debian/Ubuntu con:</p>
+        
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> sudo apt update</code><br>
+            <code><span class="prompt">usuario@linux:~$</span> sudo apt install nodejs npm</code>
+        </div>
+
+        <p>O para distribuciones basadas en Red Hat/Fedora:</p>
+        
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> sudo dnf install nodejs npm</code>
+        </div>
+
+        <div class="tip-box">
+            <p><strong>Consejo:</strong> Para obtener versiones más recientes de Node.js, considera usar <a href="https://github.com/nvm-sh/nvm">NVM (Node Version Manager)</a> que permite instalar y gestionar múltiples versiones de Node.js en tu sistema.</p>
+        </div>
+    </section>
+
+    <section id="metodos-iniciar" class="section">
+        <h2>Métodos para iniciar un proyecto Express</h2>
+        <p>Existen dos enfoques principales para iniciar un proyecto Express en Linux:</p>
+        <ol>
+            <li>Usar <strong>Express Generator</strong>: una herramienta oficial que crea rápidamente la estructura base de una aplicación.</li>
+            <li>Configuración <strong>manual</strong>: crear la estructura del proyecto desde cero, con mayor control sobre cada componente.</li>
+        </ol>
+        <p>Vamos a explorar ambos métodos en detalle.</p>
+    </section>
+
+    <section id="metodo-generator" class="section method">
+        <h2>Método 1: Usando Express Generator</h2>
+        <p>Express Generator es una herramienta oficial que crea rápidamente un esqueleto de aplicación con estructura de directorios predefinida y configuración básica.</p>
+        
+        <h3 id="generator-paso1">Paso 1: Instalar Express Generator globalmente</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> npm install -g express-generator</code>
+        </div>
+
+        <div class="info-box">
+            <p>La bandera <code>-g</code> instala el paquete globalmente en tu sistema, permitiéndote usar el comando <code>express</code> desde cualquier ubicación.</p>
+        </div>
+
+        <h3 id="generator-paso2">Paso 2: Crear una nueva aplicación Express</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> express mi-aplicacion-express</code>
+        </div>
+
+        <p>Por defecto, Express Generator utiliza el motor de plantillas Jade/Pug. Si prefieres otro motor, puedes especificarlo con la opción <code>--view</code>:</p>
+
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> express --view=ejs mi-aplicacion-express</code><br>
+            <code><span class="comment"># O para usar Handlebars</span></code><br>
+            <code><span class="prompt">usuario@linux:~$</span> express --view=hbs mi-aplicacion-express</code>
+        </div>
+
+        <p>También puedes crear una aplicación sin ninguna vista, útil para APIs:</p>
+
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> express --no-view mi-aplicacion-express</code>
+        </div>
+
+        <h3 id="generator-paso3">Paso 3: Acceder al directorio e instalar dependencias</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> cd mi-aplicacion-express</code><br>
+            <code><span class="prompt">usuario@linux:~/mi-aplicacion-express$</span> npm install</code>
+        </div>
+
+        <h3 id="generator-paso4">Paso 4: Iniciar la aplicación</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-aplicacion-express$</span> npm start</code>
+        </div>
+
+        <p>Tu aplicación estará disponible en <a href="http://localhost:3000">http://localhost:3000</a></p>
+
+        <h3 id="generator-estructura">Estructura de directorios generada</h3>
+        <div class="tree">
+            <pre>mi-aplicacion-express/
+├── app.js
+├── bin/
+│   └── www
+├── package.json
+├── public/
+│   ├── images/
+│   ├── javascripts/
+│   └── stylesheets/
+│       └── style.css
+├── routes/
+│   ├── index.js
+│   └── users.js
+└── views/
+    ├── error.pug
+    ├── index.pug
+    └── layout.pug</pre>
+        </div>
+
+        <div class="tip-box">
+            <p><strong>Consejo:</strong> Puedes ver todas las opciones disponibles de Express Generator con:</p>
+            <div class="terminal">
+                <code><span class="prompt">usuario@linux:~$</span> express --help</code>
+            </div>
+        </div>
+    </section>
+
+    <section id="metodo-manual" class="section method">
+        <h2>Método 2: Configuración manual</h2>
+        <p>La configuración manual te da mayor control sobre la estructura y dependencias de tu proyecto. Es ideal para aprender los conceptos fundamentales de Express o cuando necesitas una configuración personalizada.</p>
+
+        <h3 id="manual-paso1">Paso 1: Crear un directorio para el proyecto</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> mkdir mi-proyecto-express</code><br>
+            <code><span class="prompt">usuario@linux:~$</span> cd mi-proyecto-express</code>
+        </div>
+
+        <h3 id="manual-paso2">Paso 2: Inicializar el proyecto npm</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm init -y</code>
+        </div>
+
+        <p>La opción <code>-y</code> acepta todos los valores predeterminados. Si quieres personalizar los detalles del proyecto, omite esta bandera:</p>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm init</code>
+        </div>
+
+        <h3 id="manual-paso3">Paso 3: Instalar Express</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm install express</code>
+        </div>
+
+        <h3 id="manual-paso4">Paso 4: Crear la estructura básica de directorios</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> mkdir routes public views models controllers</code>
+        </div>
+
+        <h3 id="manual-paso5">Paso 5: Crear el archivo principal</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> touch app.js</code>
+        </div>
+
+        <h3 id="manual-paso6">Paso 6: Editar el archivo app.js</h3>
+        <p>Usando tu editor de texto preferido (nano, vim, vs code, etc.), añade el siguiente código básico:</p>
+
+        <pre><code>const express = require('express');
+const path = require('path');
+
+// Inicializar app
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware para analizar el cuerpo de las solicitudes JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Configurar archivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Ruta de ejemplo
+app.get('/', (req, res) => {
+  res.send('¡Hola mundo desde Express!');
+});
+
+// Iniciar el servidor
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});</code></pre>
+
+        <h3 id="manual-paso7">Paso 7: Modificar el script de inicio en package.json</h3>
+        <p>Edita el archivo package.json para añadir un script de inicio:</p>
+
+        <pre><code>{
+  "name": "mi-proyecto-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}</code></pre>
+
+        <div class="warning-box">
+            <p><strong>Nota:</strong> Para usar el script <code>dev</code>, necesitas instalar nodemon:</p>
+            <div class="terminal">
+                <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm install --save-dev nodemon</code>
+            </div>
+        </div>
+
+        <h3 id="manual-paso8">Paso 8: Iniciar la aplicación</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm start</code>
+        </div>
+
+        <p>O para desarrollo con reinicio automático:</p>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm run dev</code>
+        </div>
+    </section>
+
+    <section id="mejoras" class="section">
+        <h2>Mejoras y configuración adicional</h2>
+
+        <h3 id="config-entornos">Configuración de entornos</h3>
+        <p>Es una buena práctica usar variables de entorno para configurar tu aplicación:</p>
+
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm install dotenv</code><br>
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> touch .env</code>
+        </div>
+
+        <p>Edita el archivo .env:</p>
+        <pre><code># Variables de entorno
+PORT=3000
+NODE_ENV=development
+# Añade otras variables según necesidad
+DB_URI=mongodb://localhost:27017/miapp</code></pre>
+
+        <p>Y modifica tu app.js para usar estas variables:</p>
+        <pre><code>// Cargar variables de entorno
+require('dotenv').config();
+
+// Ahora puedes usar process.env.PORT, etc.</code></pre>
+
+        <h3 id="config-middleware">Configurar middleware adicional</h3>
+        <p>Instalar middleware comúnmente usado:</p>
+
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm install morgan cors helmet</code>
+        </div>
+
+        <p>Edita app.js para incluir estos middleware:</p>
+        <pre><code>const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const cors = require('cors');
+const helmet = require('helmet');
+
+const app = express();
+
+// Middleware de seguridad
+app.use(helmet());
+
+// Habilitar CORS
+app.use(cors());
+
+// Logger de solicitudes HTTP
+app.use(logger('dev'));
+
+// Resto del código...</code></pre>
+
+        <h3 id="rutas-modular">Crear un sistema de rutas modular</h3>
+        <p>Crea archivos de rutas separados en el directorio routes:</p>
+
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> touch routes/index.js routes/users.js</code>
+        </div>
+
+        <p>Edita routes/index.js:</p>
+        <pre><code>const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+  res.send('Página de inicio');
+});
+
+module.exports = router;</code></pre>
+
+        <p>Edita routes/users.js:</p>
+        <pre><code>const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res) => {
+  res.send('Lista de usuarios');
+});
+
+router.get('/:id', (req, res) => {
+  res.send(`Usuario con ID: ${req.params.id}`);
+});
+
+module.exports = router;</code></pre>
+
+        <p>Y modifica app.js para usar estas rutas:</p>
+        <pre><code>// ...
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+
+// ...
+
+// Usar rutas
+app.use('/', indexRouter);
+app.use('/users', usersRouter);</code></pre>
+
+        <h3 id="gitignore">Crear un archivo .gitignore</h3>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> touch .gitignore</code>
+        </div>
+
+        <p>Añade lo siguiente al archivo .gitignore:</p>
+        <pre><code># Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Variables de entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Directorios de caché
+.npm
+.eslintcache
+
+# Logs
+logs
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db</code></pre>
+    </section>
+
+    <section id="comparativa" class="section">
+        <h2>Comparativa de métodos</h2>
+        
+        <table>
+            <tr>
+                <th>Aspecto</th>
+                <th>Express Generator</th>
+                <th>Configuración Manual</th>
+            </tr>
+            <tr>
+                <td>Velocidad de inicio</td>
+                <td>Rápido, estructura predefinida</td>
+                <td>Más lento, requiere configuración</td>
+            </tr>
+            <tr>
+                <td>Estructura</td>
+                <td>Estructura MVC básica predefinida</td>
+                <td>Totalmente personalizable</td>
+            </tr>
+            <tr>
+                <td>Facilidad</td>
+                <td>Simple, pocos comandos</td>
+                <td>Más complejo, requiere más conocimientos</td>
+            </tr>
+            <tr>
+                <td>Aprendizaje</td>
+                <td>Puede ocultar detalles de implementación</td>
+                <td>Mejor para entender los fundamentos</td>
+            </tr>
+            <tr>
+                <td>Personalización</td>
+                <td>Requiere modificar la estructura generada</td>
+                <td>Estructura flexible desde el inicio</td>
+            </tr>
+            <tr>
+                <td>Ideal para</td>
+                <td>Proyectos que siguen patrones estándar</td>
+                <td>Proyectos con requisitos específicos</td>
+            </tr>
+        </table>
+    </section>
+
+    <section id="scripts" class="section">
+        <h2>Scripts npm útiles</h2>
+        <p>Estos son algunos scripts npm comunes que puedes añadir a tu package.json:</p>
+        
+        <pre><code>"scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js",
+  "debug": "nodemon --inspect app.js",
+  "test": "jest",
+  "lint": "eslint .",
+  "format": "prettier --write \"**/*.js\""
+}</code></pre>
+
+        <div class="info-box">
+            <p>Para usar estos scripts, necesitarás instalar las dependencias correspondientes:</p>
+            <div class="terminal">
+                <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm install --save-dev nodemon jest eslint prettier</code>
+            </div>
+        </div>
+    </section>
+
+    <section id="buenas-practicas" class="section">
+        <h2>Buenas prácticas</h2>
+        <ul>
+            <li><strong>Organización modular:</strong> Divide tu aplicación en módulos y componentes reutilizables.</li>
+            <li><strong>Variables de entorno:</strong> Usa .env para configuraciones según el entorno (desarrollo, pruebas, producción).</li>
+            <li><strong>Gestión de errores:</strong> Implementa middleware para capturar y manejar errores.</li>
+            <li><strong>Validación:</strong> Valida siempre la entrada de usuario (puedes usar express-validator).</li>
+            <li><strong>Pruebas:</strong> Escribe pruebas unitarias y de integración.</li>
+            <li><strong>Documentación:</strong> Documenta tus API con herramientas como Swagger/OpenAPI.</li>
+            <li><strong>Seguridad:</strong> Usa helmet y otras prácticas de seguridad recomendadas.</li>
+        </ul>
+    </section>
+
+    <section id="problemas" class="section">
+        <h2>Solución de problemas comunes</h2>
+        
+        <h3 id="puerto-uso">Error: Puerto en uso</h3>
+        <div class="terminal">
+            <code>Error: listen EADDRINUSE: address already in use :::3000</code>
+        </div>
+        <p><strong>Solución:</strong> Cambia el puerto o libera el puerto ocupado:</p>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~$</span> sudo lsof -i :3000</code><br>
+            <code><span class="prompt">usuario@linux:~$</span> kill -9 PID</code><br>
+            <code><span class="comment"># O simplemente usa otro puerto en tu aplicación</span></code>
+        </div>
+
+        <h3 id="modulo-no-encontrado">Error: Módulo no encontrado</h3>
+        <div class="terminal">
+            <code>Error: Cannot find module 'express'</code>
+        </div>
+        <p><strong>Solución:</strong> Instala las dependencias:</p>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm install</code>
+        </div>
+
+        <h3 id="cambios-no-reflejan">Cambios no se reflejan</h3>
+        <p><strong>Solución:</strong> Usa nodemon para reinicio automático:</p>
+        <div class="terminal">
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm install --save-dev nodemon</code><br>
+            <code><span class="prompt">usuario@linux:~/mi-proyecto-express$</span> npm run dev</code>
+        </div>
+    </section>
+
+    <section id="recursos" class="section">
+        <h2>Recursos adicionales</h2>
+        <ul>
+            <li><a href="https://expressjs.com/">Documentación oficial de Express.js</a></li>
+            <li><a href="https://expressjs.com/en/guide/routing.html">Guía de enrutamiento de Express</a></li>
+            <li><a href="https://expressjs.com/en/guide/using-middleware.html">Uso de middleware en Express</a></li>
+            <li><a href="https://expressjs.com/en/guide/database-integration.html">Integración de bases de datos con Express</a></li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>Iniciar Proyectos Express desde la Terminal Linux - Guía práctica para desarrolladores</p>
+    </footer>
+</body>
+</html>

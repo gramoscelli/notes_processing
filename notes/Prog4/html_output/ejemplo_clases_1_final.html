@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   ejemplo_clases_1
+  </title>
+ </head>
+ <body>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#estructura-del-proyecto">
+      Estructura del proyecto
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#parte-a-jerarquia-de-figuras-clases-y-polimorfismo">
+      Parte A — Jerarquía de figuras (clases y polimorfismo)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#parte-b-arreglos-y-operaciones-con-cadenas">
+      Parte B — Arreglos y operaciones con cadenas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#parte-c-referencias-tipos-y-aserciones">
+      Parte C — Referencias, tipos y aserciones
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#requisitos-de-entrega">
+      Requisitos de entrega
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#criterios-de-evaluacion">
+      Criterios de evaluación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#nota-rapida-buenas-practicas-ts">
+      Nota rápida (buenas prácticas TS)
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="estructura-del-proyecto">
+    Estructura del proyecto
+   </h2>
+   <ul>
+    <li>
+     <p>
+      Archivos dentro de
+      <code>
+       src/
+      </code>
+      :
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       figure.ts
+      </code>
+      ,
+      <code>
+       circle.ts
+      </code>
+      ,
+      <code>
+       rectangle.ts
+      </code>
+      ,
+      <code>
+       triangulo.ts
+      </code>
+      ,
+      <code>
+       arreglo.ts
+      </code>
+      ,
+      <code>
+       main.ts
+      </code>
+     </p>
+    </li>
+    <li>
+     Configuración mínima sugerida:
+    </li>
+   </ul>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">  </span>npm<span class="w"> </span>init<span class="w"> </span>-y
+<span class="w">  </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>typescript<span class="w"> </span>ts-node<span class="w"> </span>@types/node
+<span class="w">  </span>npx<span class="w"> </span>tsc<span class="w"> </span>--init<span class="w"> </span>--rootDir<span class="w"> </span>src<span class="w"> </span>--outDir<span class="w"> </span>dist<span class="w"> </span>--target<span class="w"> </span>ES2020<span class="w"> </span>--module<span class="w"> </span>commonjs<span class="w"> </span>--strict<span class="w"> </span><span class="nb">true</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <p>
+      Ejecución:
+     </p>
+    </li>
+    <li>
+     <p>
+      Desarrollo:
+      <code>
+       npx ts-node src/arreglo.ts
+      </code>
+      y
+      <code>
+       npx ts-node src/main.ts
+      </code>
+     </p>
+    </li>
+    <li>
+     Compilado:
+     <code>
+      npx tsc
+     </code>
+     y luego
+     <code>
+      node dist/arreglo.js
+     </code>
+     ,
+     <code>
+      node dist/main.js
+     </code>
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="parte-a-jerarquia-de-figuras-clases-y-polimorfismo">
+    Parte A — Jerarquía de figuras (clases y polimorfismo)
+   </h2>
+   <ol>
+    <li>
+     Cree una
+     <strong>
+      clase abstracta
+     </strong>
+     <code>
+      Figure
+     </code>
+     en
+     <code>
+      figure.ts
+     </code>
+     con:
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Campos privados
+     <code>
+      x: number
+     </code>
+     ,
+     <code>
+      y: number
+     </code>
+     .
+    </li>
+    <li>
+     Dos constructores: por defecto (0, 0) y otro que reciba
+     <code>
+      (x: number, y: number)
+     </code>
+     .
+    </li>
+    <li>
+     Accesores (
+     <code>
+      get x()
+     </code>
+     ,
+     <code>
+      set x(v: number)
+     </code>
+     ,
+     <code>
+      get y()
+     </code>
+     ,
+     <code>
+      set y(v: number)
+     </code>
+     ).
+    </li>
+    <li>
+     <p>
+      <strong>
+       Métodos abstractos
+      </strong>
+      (sin implementación) que retornen
+      <code>
+       void
+      </code>
+      :
+     </p>
+     <ul>
+      <li>
+       <code>
+        dibujar()
+       </code>
+       ,
+       <code>
+        borrar()
+       </code>
+       ,
+       <code>
+        mover()
+       </code>
+       ,
+       <code>
+        eliminar()
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <p>
+    <em>
+     Sugerencia de firma mínima:
+    </em>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">   </span><span class="k">export</span><span class="w"> </span><span class="k">abstract</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Figure</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="kr">constructor</span><span class="p">(</span><span class="k">private</span><span class="w"> </span><span class="nx">_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="k">private</span><span class="w"> </span><span class="nx">_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">     </span><span class="nx">get</span><span class="w"> </span><span class="nx">x</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_x</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="nx">set</span><span class="w"> </span><span class="nx">x</span><span class="p">(</span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">v</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">     </span><span class="nx">get</span><span class="w"> </span><span class="nx">y</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_y</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="nx">set</span><span class="w"> </span><span class="nx">y</span><span class="p">(</span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">v</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">     </span><span class="k">abstract</span><span class="w"> </span><span class="nx">dibujar</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">     </span><span class="k">abstract</span><span class="w"> </span><span class="nx">borrar</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">     </span><span class="k">abstract</span><span class="w"> </span><span class="nx">mover</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">     </span><span class="k">abstract</span><span class="w"> </span><span class="nx">eliminar</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+    </div>
+   </div>
+   <ol start="2">
+    <li>
+     Cree las subclases en archivos separados:
+    </li>
+   </ol>
+   <ul>
+    <li>
+     <code>
+      circle.ts
+     </code>
+     → clase
+     <code>
+      Circle extends Figure
+     </code>
+    </li>
+    <li>
+     <code>
+      rectangle.ts
+     </code>
+     → clase
+     <code>
+      Rectangle extends Figure
+     </code>
+    </li>
+    <li>
+     <code>
+      triangulo.ts
+     </code>
+     → clase
+     <code>
+      Triangulo extends Figure
+     </code>
+    </li>
+   </ul>
+   <p>
+    Cada subclase debe
+    <strong>
+     sobrescribir
+    </strong>
+    (con
+    <code>
+     override
+    </code>
+    ) los métodos abstractos para que
+    <strong>
+     impriman exactamente
+    </strong>
+    :
+   </p>
+   <ul>
+    <li>
+     <code>
+      Circle
+     </code>
+     :
+     <code>
+      Dibujar Circle
+     </code>
+     ,
+     <code>
+      Borrar Circle
+     </code>
+     ,
+     <code>
+      Mover Circle
+     </code>
+     ,
+     <code>
+      Eliminar Circle
+     </code>
+    </li>
+    <li>
+     <code>
+      Rectangle
+     </code>
+     (al menos
+     <code>
+      dibujar
+     </code>
+     y
+     <code>
+      borrar
+     </code>
+     ):
+     <code>
+      Dibujar Rectangle
+     </code>
+     ,
+     <code>
+      Borrar Rectangle
+     </code>
+    </li>
+    <li>
+     <code>
+      Triangulo
+     </code>
+     :
+     <code>
+      Dibujar Triangulo
+     </code>
+     ,
+     <code>
+      Borrar Triangulo
+     </code>
+     ,
+     <code>
+      Mover Triangulo
+     </code>
+     ,
+     <code>
+      Eliminar Triangulo
+     </code>
+    </li>
+   </ul>
+   <p>
+    <em>
+     Ejemplo de una implementación (sólo ilustrativo):
+    </em>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">   </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Figure</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./figure"</span><span class="p">;</span>
+<span class="w">   </span><span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Circle</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Figure</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="kd">override</span><span class="w"> </span><span class="nx">dibujar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Dibujar Circle"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">     </span><span class="kd">override</span><span class="w"> </span><span class="nx">borrar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Borrar Circle"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">     </span><span class="kd">override</span><span class="w"> </span><span class="nx">mover</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Mover Circle"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">     </span><span class="kd">override</span><span class="w"> </span><span class="nx">eliminar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Eliminar Circle"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+    </div>
+   </div>
+   <ol start="3">
+    <li>
+     En
+     <code>
+      arreglo.ts
+     </code>
+     :
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Importe las clases y cree
+     <code>
+      const figuras: Figure[] = []
+     </code>
+     .
+    </li>
+    <li>
+     Agregue un
+     <code>
+      Circle
+     </code>
+     , un
+     <code>
+      Rectangle
+     </code>
+     y un
+     <code>
+      Triangulo
+     </code>
+     .
+    </li>
+    <li>
+     Recorra
+     <code>
+      figuras
+     </code>
+     e invoque
+     <code>
+      dibujar()
+     </code>
+     (debe verse el
+     <strong>
+      polimorfismo
+     </strong>
+     ).
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Salida esperada mínima (orden no estricto):
+    </strong>
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>Dibujar Circle
+Dibujar Rectangle
+Dibujar Triangulo
+</pre>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="parte-b-arreglos-y-operaciones-con-cadenas">
+    Parte B — Arreglos y operaciones con cadenas
+   </h2>
+   <p>
+    En el
+    <strong>
+     mismo
+     <code>
+      arreglo.ts
+     </code>
+    </strong>
+    , después de la Parte A:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Arreglos numéricos y de cadenas
+     </strong>
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Declare
+     <code>
+      const arreglo: number[] = new Array(5);
+     </code>
+     (no asigne valores).
+    </li>
+    <li>
+     Declare
+     <code>
+      const finDeSemana: string[] = ["Sabado", "Domingo"];
+     </code>
+    </li>
+    <li>
+     Recorra e imprima ambos arreglos (use
+     <code>
+      .length
+     </code>
+     ).
+    </li>
+   </ul>
+   <ol start="2">
+    <li>
+     <strong>
+      Lista de nombres
+     </strong>
+     (use un arreglo
+     <code>
+      string[]
+     </code>
+     )
+    </li>
+   </ol>
+   <ul>
+    <li>
+     <code>
+      const nombres: string[] = [];
+     </code>
+    </li>
+    <li>
+     Agregue en este orden:
+     <code>
+      "Juan"
+     </code>
+     ,
+     <code>
+      "Pedro"
+     </code>
+     ,
+     <code>
+      "María"
+     </code>
+     ,
+     <code>
+      "Carla"
+     </code>
+     .
+    </li>
+    <li>
+     Inserte
+     <code>
+      "Juana"
+     </code>
+     en la
+     <strong>
+      posición 1
+     </strong>
+     con
+     <code>
+      splice(1, 0, "Juana")
+     </code>
+     .
+    </li>
+    <li>
+     Agregue nuevamente
+     <code>
+      "Juan"
+     </code>
+     al final.
+    </li>
+    <li>
+     Imprima todos los nombres (uno por línea).
+    </li>
+    <li>
+     Muestre la
+     <strong>
+      posición del primer
+      <code>
+       "Juan"
+      </code>
+     </strong>
+     usando
+     <code>
+      indexOf("Juan")
+     </code>
+     .
+    </li>
+    <li>
+     <p>
+      Indique si
+      <strong>
+       existe
+       <code>
+        "Carla"
+       </code>
+      </strong>
+      usando
+      <code>
+       includes("Carla")
+      </code>
+      y muestre:
+     </p>
+     <ul>
+      <li>
+       <code>
+        "Carla está en la lista"
+       </code>
+       o
+       <code>
+        "Carla no está en la lista"
+       </code>
+       .
+      </li>
+      <li>
+       Elimine
+       <strong>
+        una ocurrencia
+       </strong>
+       de
+       <code>
+        "Juan"
+       </code>
+       :
+      </li>
+     </ul>
+     <p>
+      <div class="highlight language-ts">
+       <pre><span></span><span class="w">     </span><span class="kd">const</span><span class="w"> </span><span class="nx">idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nombres</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">"Juan"</span><span class="p">);</span>
+<span class="w">     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">idx</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="p">)</span><span class="w"> </span><span class="nx">nombres</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">idx</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">     </span>
+</pre>
+      </div>
+     </p>
+    </li>
+    <li>
+     <p>
+      Invierta el orden con
+      <code>
+       nombres.reverse()
+      </code>
+      e imprima nuevamente.
+     </p>
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="parte-c-referencias-tipos-y-aserciones">
+    Parte C — Referencias, tipos y aserciones
+   </h2>
+   <p>
+    Cree
+    <code>
+     main.ts
+    </code>
+    para demostrar:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Asignación por referencia
+     </strong>
+    </li>
+   </ol>
+   <ul>
+    <li>
+     <p>
+      Declare dos referencias de tipo
+      <code>
+       Figure
+      </code>
+      apuntando a objetos distintos:
+     </p>
+     <p>
+      <div class="highlight language-ts">
+       <pre><span></span><span class="w">     </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Figure</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./figure"</span><span class="p">;</span>
+<span class="w">     </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Circle</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./circle"</span><span class="p">;</span>
+<span class="w">     </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Rectangle</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./rectangle"</span><span class="p">;</span></pre>
+      </div>
+     </p>
+    </li>
+   </ul>
+   <p>
+    <span class="w">
+    </span>
+    <span class="kd">
+     let
+    </span>
+    <span class="w">
+    </span>
+    <span class="nx">
+     f
+    </span>
+    <span class="o">
+     :
+    </span>
+    <span class="w">
+    </span>
+    <span class="kt">
+     Figure
+    </span>
+    <span class="w">
+    </span>
+    <span class="o">
+     =
+    </span>
+    <span class="w">
+    </span>
+    <span class="ow">
+     new
+    </span>
+    <span class="w">
+    </span>
+    <span class="nx">
+     Rectangle
+    </span>
+    <span class="p">
+     (
+    </span>
+    <span class="mf">
+     0
+    </span>
+    <span class="p">
+     ,
+    </span>
+    <span class="w">
+    </span>
+    <span class="mf">
+     0
+    </span>
+    <span class="p">
+     );
+    </span>
+    <span class="w">
+    </span>
+    <span class="kd">
+     let
+    </span>
+    <span class="w">
+    </span>
+    <span class="nx">
+     g
+    </span>
+    <span class="o">
+     :
+    </span>
+    <span class="w">
+    </span>
+    <span class="kt">
+     Figure
+    </span>
+    <span class="w">
+    </span>
+    <span class="o">
+     =
+    </span>
+    <span class="w">
+    </span>
+    <span class="ow">
+     new
+    </span>
+    <span class="w">
+    </span>
+    <span class="nx">
+     Circle
+    </span>
+    <span class="p">
+     (
+    </span>
+    <span class="mf">
+     1
+    </span>
+    <span class="p">
+     ,
+    </span>
+    <span class="w">
+    </span>
+    <span class="mf">
+     1
+    </span>
+    <span class="p">
+     );
+    </span>
+    <span class="w">
+    </span>
+    <span class="nx">
+     f
+    </span>
+    <span class="w">
+    </span>
+    <span class="o">
+     =
+    </span>
+    <span class="w">
+    </span>
+    <span class="nx">
+     g
+    </span>
+    <span class="p">
+     ;
+    </span>
+    <span class="w">
+    </span>
+    <span class="c1">
+     // ahora f y g referencian el mismo objeto Circle
+    </span>
+    <span class="w">
+    </span>
+    <span class="nx">
+     f
+    </span>
+    <span class="p">
+     .
+    </span>
+    <span class="nx">
+     dibujar
+    </span>
+    <span class="p">
+     ();
+    </span>
+    <span class="w">
+    </span>
+    <span class="c1">
+     // Debe imprimir "Dibujar Circle"
+    </span>
+    <span class="w">
+    </span>
+   </p>
+  </div>
+  <ul>
+   <li>
+    Comente que en JS/TS las
+    <strong>
+     variables contienen referencias
+    </strong>
+    a objetos.
+   </li>
+  </ul>
+  <ol start="2">
+   <li>
+    <strong>
+     Conversión de valores (runtime) vs. type assertions (compile-time)
+    </strong>
+   </li>
+  </ol>
+  <ul>
+   <li>
+    <p>
+     Muestre que para “convertir” un
+     <code>
+      number
+     </code>
+     a entero se usa una función, no un casteo de tipos:
+    </p>
+    <p>
+     <div class="highlight language-ts">
+      <pre><span></span><span class="w">     </span><span class="kd">const</span><span class="w"> </span><span class="nx">v</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5.3</span><span class="p">;</span>
+<span class="w">     </span><span class="kd">let</span><span class="w"> </span><span class="nx">h</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">7</span><span class="p">;</span>
+<span class="w">     </span><span class="nx">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">trunc</span><span class="p">(</span><span class="nx">v</span><span class="p">);</span><span class="w">   </span><span class="c1">// conversión real en tiempo de ejecución</span>
+<span class="w">     </span>
+</pre>
+     </div>
+    </p>
+   </li>
+   <li>
+    <p>
+     Ejemplo de
+     <strong>
+      type assertion
+     </strong>
+     (no convierte, sólo guía al checker):
+    </p>
+    <p>
+     <div class="highlight language-ts">
+      <pre><span></span><span class="w">     </span><span class="kd">const</span><span class="w"> </span><span class="nx">algo</span><span class="o">:</span><span class="w"> </span><span class="kt">unknown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">123</span><span class="p">;</span>
+<span class="w">     </span><span class="kd">const</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">algo</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="c1">// assertion: afirma que es number</span>
+<span class="w">     </span>
+</pre>
+     </div>
+    </p>
+   </li>
+   <li>
+    <p>
+     Contraste breve
+     <code>
+      any
+     </code>
+     vs
+     <code>
+      unknown
+     </code>
+     :
+    </p>
+    <ul>
+     <li>
+      <code>
+       any
+      </code>
+      : desactiva chequeo de tipos (peligroso si se abusa).
+     </li>
+     <li>
+      <code>
+       unknown
+      </code>
+      : obliga a
+      <strong>
+       narrowing
+      </strong>
+      (más seguro).
+     </li>
+    </ul>
+   </li>
+  </ul>
+  <ol start="3">
+   <li>
+    <strong>
+     <code>
+      object
+     </code>
+     ,
+     <code>
+      Object
+     </code>
+     y
+     <code>
+      toString()
+     </code>
+    </strong>
+   </li>
+  </ol>
+  <ul>
+   <li>
+    <p>
+     Demuestre que puede asignar una instancia a
+     <code>
+      object
+     </code>
+     /
+     <code>
+      unknown
+     </code>
+     , y llamar métodos solo tras refinar el tipo:
+    </p>
+    <p>
+     <div class="highlight language-ts">
+      <pre><span></span><span class="w">     </span><span class="kd">let</span><span class="w"> </span><span class="nx">o</span><span class="o">:</span><span class="w"> </span><span class="kt">object</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">unknown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">f</span><span class="p">;</span>
+<span class="w">     </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">o</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="nb">Object</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="c1">// Aquí se puede hacer más, o convertir con 'as'</span>
+<span class="w">       </span><span class="p">(</span><span class="nx">o</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Figure</span><span class="p">).</span><span class="nx">dibujar</span><span class="p">();</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">     </span>
+</pre>
+     </div>
+    </p>
+   </li>
+  </ul>
+  <hr/>
+  <div class="chapter-container">
+   <h2 id="requisitos-de-entrega">
+    Requisitos de entrega
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Separación en módulos
+     </strong>
+     (un archivo por clase) y uso de
+     <code>
+      export
+     </code>
+     /
+     <code>
+      import
+     </code>
+     .
+    </li>
+    <li>
+     <p>
+      Archivos TypeScript:
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       figure.ts
+      </code>
+      ,
+      <code>
+       circle.ts
+      </code>
+      ,
+      <code>
+       rectangle.ts
+      </code>
+      ,
+      <code>
+       triangulo.ts
+      </code>
+      ,
+      <code>
+       arreglo.ts
+      </code>
+      ,
+      <code>
+       main.ts
+      </code>
+     </p>
+    </li>
+    <li>
+     <p>
+      Debe ejecutarse sin errores con:
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       npx ts-node src/arreglo.ts
+      </code>
+      y
+      <code>
+       npx ts-node src/main.ts
+      </code>
+     </p>
+    </li>
+    <li>
+     (o bien compilado a
+     <code>
+      dist
+     </code>
+     con
+     <code>
+      npx tsc
+     </code>
+     y luego
+     <code>
+      node
+     </code>
+     )
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="criterios-de-evaluacion">
+    Criterios de evaluación
+   </h2>
+   <ul>
+    <li>
+     Clase base
+     <strong>
+      abstracta
+     </strong>
+     y subclases con métodos
+     <code>
+      override
+     </code>
+     correctos.
+    </li>
+    <li>
+     <strong>
+      Polimorfismo
+     </strong>
+     observable al iterar
+     <code>
+      Figure[]
+     </code>
+     e invocar
+     <code>
+      dibujar()
+     </code>
+     .
+    </li>
+    <li>
+     Operaciones con arreglos (
+     <code>
+      push
+     </code>
+     ,
+     <code>
+      splice
+     </code>
+     ,
+     <code>
+      indexOf
+     </code>
+     ,
+     <code>
+      includes
+     </code>
+     ,
+     <code>
+      reverse
+     </code>
+     ) y recorrido correctos.
+    </li>
+    <li>
+     Demostración clara de
+     <strong>
+      referencias
+     </strong>
+     ,
+     <strong>
+      type assertions
+     </strong>
+     , y diferencia entre
+     <strong>
+      conversión de valores
+     </strong>
+     (p. ej.,
+     <code>
+      Math.trunc
+     </code>
+     ) y
+     <strong>
+      assertions
+     </strong>
+     (no convierten).
+    </li>
+    <li>
+     Mensajes por consola
+     <strong>
+      exactos
+     </strong>
+     para las operaciones de cada figura.
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="nota-rapida-buenas-practicas-ts">
+    Nota rápida (buenas prácticas TS)
+   </h2>
+   <ul>
+    <li>
+     Use
+     <code>
+      strict: true
+     </code>
+     en
+     <code>
+      tsconfig.json
+     </code>
+     .
+    </li>
+    <li>
+     Prefiera
+     <code>
+      unknown
+     </code>
+     sobre
+     <code>
+      any
+     </code>
+     cuando no conozca el tipo por adelantado.
+    </li>
+    <li>
+     Use
+     <code>
+      override
+     </code>
+     en métodos sobrescritos para que el compilador verifique la firma.
+    </li>
+   </ul>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

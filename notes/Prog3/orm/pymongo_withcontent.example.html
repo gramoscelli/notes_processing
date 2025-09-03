@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pymongo</title>
+    <style>
+        pre {
+            line-height: 125%;
+        }
+
+        td.linenos .normal {
+            color: inherit;
+            background-color: transparent;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        span.linenos {
+            color: inherit;
+            background-color: transparent;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        td.linenos .special {
+            color: #000000;
+            background-color: #ffffc0;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        span.linenos.special {
+            color: #000000;
+            background-color: #ffffc0;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        .highlight .hll {
+            background-color: #49483e
+        }
+
+        .highlight {
+            background: #272822;
+            color: #f8f8f2
+        }
+
+        .highlight .c {
+            color: #75715e
+        }
+
+        /* Comment */
+        .highlight .err {
+            color: #960050;
+            background-color: #1e0010
+        }
+
+        /* Error */
+        .highlight .esc {
+            color: #f8f8f2
+        }
+
+        /* Escape */
+        .highlight .g {
+            color: #f8f8f2
+        }
+
+        /* Generic */
+        .highlight .k {
+            color: #66d9ef
+        }
+
+        /* Keyword */
+        .highlight .l {
+            color: #ae81ff
+        }
+
+        /* Literal */
+        .highlight .n {
+            color: #f8f8f2
+        }
+
+        /* Name */
+        .highlight .o {
+            color: #f92672
+        }
+
+        /* Operator */
+        .highlight .x {
+            color: #f8f8f2
+        }
+
+        /* Other */
+        .highlight .p {
+            color: #f8f8f2
+        }
+
+        /* Punctuation */
+        .highlight .ch {
+            color: #75715e
+        }
+
+        /* Comment.Hashbang */
+        .highlight .cm {
+            color: #75715e
+        }
+
+        /* Comment.Multiline */
+        .highlight .cp {
+            color: #75715e
+        }
+
+        /* Comment.Preproc */
+        .highlight .cpf {
+            color: #75715e
+        }
+
+        /* Comment.PreprocFile */
+        .highlight .c1 {
+            color: #75715e
+        }
+
+        /* Comment.Single */
+        .highlight .cs {
+            color: #75715e
+        }
+
+        /* Comment.Special */
+        .highlight .gd {
+            color: #f92672
+        }
+
+        /* Generic.Deleted */
+        .highlight .ge {
+            color: #f8f8f2;
+            font-style: italic
+        }
+
+        /* Generic.Emph */
+        .highlight .gr {
+            color: #f8f8f2
+        }
+
+        /* Generic.Error */
+        .highlight .gh {
+            color: #f8f8f2
+        }
+
+        /* Generic.Heading */
+        .highlight .gi {
+            color: #a6e22e
+        }
+
+        /* Generic.Inserted */
+        .highlight .go {
+            color: #66d9ef
+        }
+
+        /* Generic.Output */
+        .highlight .gp {
+            color: #f92672;
+            font-weight: bold
+        }
+
+        /* Generic.Prompt */
+        .highlight .gs {
+            color: #f8f8f2;
+            font-weight: bold
+        }
+
+        /* Generic.Strong */
+        .highlight .gu {
+            color: #75715e
+        }
+
+        /* Generic.Subheading */
+        .highlight .gt {
+            color: #f8f8f2
+        }
+
+        /* Generic.Traceback */
+        .highlight .kc {
+            color: #66d9ef
+        }
+
+        /* Keyword.Constant */
+        .highlight .kd {
+            color: #66d9ef
+        }
+
+        /* Keyword.Declaration */
+        .highlight .kn {
+            color: #f92672
+        }
+
+        /* Keyword.Namespace */
+        .highlight .kp {
+            color: #66d9ef
+        }
+
+        /* Keyword.Pseudo */
+        .highlight .kr {
+            color: #66d9ef
+        }
+
+        /* Keyword.Reserved */
+        .highlight .kt {
+            color: #66d9ef
+        }
+
+        /* Keyword.Type */
+        .highlight .ld {
+            color: #e6db74
+        }
+
+        /* Literal.Date */
+        .highlight .m {
+            color: #ae81ff
+        }
+
+        /* Literal.Number */
+        .highlight .s {
+            color: #e6db74
+        }
+
+        /* Literal.String */
+        .highlight .na {
+            color: #a6e22e
+        }
+
+        /* Name.Attribute */
+        .highlight .nb {
+            color: #f8f8f2
+        }
+
+        /* Name.Builtin */
+        .highlight .nc {
+            color: #a6e22e
+        }
+
+        /* Name.Class */
+        .highlight .no {
+            color: #66d9ef
+        }
+
+        /* Name.Constant */
+        .highlight .nd {
+            color: #a6e22e
+        }
+
+        /* Name.Decorator */
+        .highlight .ni {
+            color: #f8f8f2
+        }
+
+        /* Name.Entity */
+        .highlight .ne {
+            color: #a6e22e
+        }
+
+        /* Name.Exception */
+        .highlight .nf {
+            color: #a6e22e
+        }
+
+        /* Name.Function */
+        .highlight .nl {
+            color: #f8f8f2
+        }
+
+        /* Name.Label */
+        .highlight .nn {
+            color: #f8f8f2
+        }
+
+        /* Name.Namespace */
+        .highlight .nx {
+            color: #a6e22e
+        }
+
+        /* Name.Other */
+        .highlight .py {
+            color: #f8f8f2
+        }
+
+        /* Name.Property */
+        .highlight .nt {
+            color: #f92672
+        }
+
+        /* Name.Tag */
+        .highlight .nv {
+            color: #f8f8f2
+        }
+
+        /* Name.Variable */
+        .highlight .ow {
+            color: #f92672
+        }
+
+        /* Operator.Word */
+        .highlight .w {
+            color: #f8f8f2
+        }
+
+        /* Text.Whitespace */
+        .highlight .mb {
+            color: #ae81ff
+        }
+
+        /* Literal.Number.Bin */
+        .highlight .mf {
+            color: #ae81ff
+        }
+
+        /* Literal.Number.Float */
+        .highlight .mh {
+            color: #ae81ff
+        }
+
+        /* Literal.Number.Hex */
+        .highlight .mi {
+            color: #ae81ff
+        }
+
+        /* Literal.Number.Integer */
+        .highlight .mo {
+            color: #ae81ff
+        }
+
+        /* Literal.Number.Oct */
+        .highlight .sa {
+            color: #e6db74
+        }
+
+        /* Literal.String.Affix */
+        .highlight .sb {
+            color: #e6db74
+        }
+
+        /* Literal.String.Backtick */
+        .highlight .sc {
+            color: #e6db74
+        }
+
+        /* Literal.String.Char */
+        .highlight .dl {
+            color: #e6db74
+        }
+
+        /* Literal.String.Delimiter */
+        .highlight .sd {
+            color: #e6db74
+        }
+
+        /* Literal.String.Doc */
+        .highlight .s2 {
+            color: #e6db74
+        }
+
+        /* Literal.String.Double */
+        .highlight .se {
+            color: #ae81ff
+        }
+
+        /* Literal.String.Escape */
+        .highlight .sh {
+            color: #e6db74
+        }
+
+        /* Literal.String.Heredoc */
+        .highlight .si {
+            color: #e6db74
+        }
+
+        /* Literal.String.Interpol */
+        .highlight .sx {
+            color: #e6db74
+        }
+
+        /* Literal.String.Other */
+        .highlight .sr {
+            color: #e6db74
+        }
+
+        /* Literal.String.Regex */
+        .highlight .s1 {
+            color: #e6db74
+        }
+
+        /* Literal.String.Single */
+        .highlight .ss {
+            color: #e6db74
+        }
+
+        /* Literal.String.Symbol */
+        .highlight .bp {
+            color: #f8f8f2
+        }
+
+        /* Name.Builtin.Pseudo */
+        .highlight .fm {
+            color: #a6e22e
+        }
+
+        /* Name.Function.Magic */
+        .highlight .vc {
+            color: #f8f8f2
+        }
+
+        /* Name.Variable.Class */
+        .highlight .vg {
+            color: #f8f8f2
+        }
+
+        /* Name.Variable.Global */
+        .highlight .vi {
+            color: #f8f8f2
+        }
+
+        /* Name.Variable.Instance */
+        .highlight .vm {
+            color: #f8f8f2
+        }
+
+        /* Name.Variable.Magic */
+        .highlight .il {
+            color: #ae81ff
+        }
+
+        /* Literal.Number.Integer.Long */
+    </style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        pre {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .highlight {
+            padding: 1em;
+            border-radius: 5px;
+            margin: 1em 0;
+        }
+
+        .empty-code-block {
+            background-color: #f5f5f5;
+            padding: 1em;
+            border-radius: 5px;
+            margin: 1em 0;
+            font-family: monospace;
+        }
+
+        .highlight-error {
+            background-color: #fff0f0;
+            padding: 1em;
+            border-radius: 5px;
+            margin: 1em 0;
+            font-family: monospace;
+            color: #c00;
+        }
+    </style>
+    <style>
+        /* CSS from style.css */
+        body {
+            font-family: Century Gothic, Arial, Helvetica, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            max-width: none;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            display: block;
+            background-color: #333;
+            color: #f78e25;
+            font-size: 3em;
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: none;
+            border-radius: 20px;
+        }
+
+        h1 small {
+            display: block;
+            font-size: 0.8em;
+            color: #ccc;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+
+        h2 {
+            color: #448;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #bbf;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #2020f0;
+            font-size: 1.5em;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        h4 {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        pre {
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+            background-color: #101030;
+            color: #d0d0d0;
+            padding: 2px 4px;
+            font-size: 0.9em;
+            margin: 10px;
+            padding: 10px;
+        }
+
+        #table-of-contents {
+            background-color: #e0e0ff;
+            border-radius: 12px;
+            padding: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 5px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        #contents-header {
+            color: #d66767;
+            margin-top: 0;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .toc ul,
+        .toc li {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            padding-left: 15px;
+            border-left: 3px solid #f78e25;
+        }
+
+        .toc a {
+            display: block;
+            transition: color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: #f78e25;
+            background-color: #e4f8f7;
+            text-decoration: none;
+        }
+
+        .example {
+            margin: 20px 0;
+            padding: 0;
+        }
+
+        .example h4 {
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        /* Estilos para títolos de sección similares a la imagen */
+        .section-title {
+            background-color: #333;
+            color: #f78e25;
+            /* Naranja como en la imagen */
+            padding: 10px 15px;
+            font-size: 1.3em;
+            margin: 30px 0 20px 0;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 1.1em;
+            color: #333;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* Párrafos explicativos */
+        .explanation {
+            margin-bottom: 15px;
+        }
+
+        /* Estilos para el glosario */
+        dl {
+            margin: 20px 0;
+        }
+
+        dt {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        dd {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="guia-completa-de-pymongo">Guía Completa de PyMongo</h1>
+    <div id="table-of-contents">
+        <h2 id="contents-header">Tabla de contenidos</h2>
+        <ul class="toc">
+            <li class="toc"><a href="#introduccion-a-pymongo" class="toc">Introducción a PyMongo</a></li>
+            <li class="toc"><a href="#instalacion" class="toc">Instalación</a></li>
+            <li class="toc"><a href="#conexion-a-mongodb" class="toc">Conexión a MongoDB</a></li>
+            <li class="toc"><a href="#operaciones-crud-basicas" class="toc">Operaciones CRUD Básicas</a></li>
+            <li class="toc"><a href="#consultas-avanzadas" class="toc">Consultas Avanzadas</a></li>
+            <li class="toc"><a href="#operaciones-con-indices" class="toc">Operaciones con Índices</a></li>
+            <li class="toc"><a href="#agregaciones" class="toc">Agregaciones</a></li>
+            <li class="toc"><a href="#transacciones" class="toc">Transacciones</a></li>
+            <li class="toc"><a href="#manejo-de-errores" class="toc">Manejo de Errores</a></li>
+            <li class="toc"><a href="#buenas-practicas" class="toc">Buenas Prácticas</a></li>
+            <li class="toc"><a href="#ejemplo-completo-sistema-de-blog-simple" class="toc">Ejemplo Completo: Sistema de
+                    Blog Simple</a></li>
+        </ul>
+    </div>
+    <h2 id="introduccion-a-pymongo">Introducción a PyMongo</h2>
+    <p>PyMongo es la biblioteca oficial de Python para trabajar con MongoDB, una base de datos NoSQL orientada a
+        documentos. PyMongo permite interactuar con MongoDB desde aplicaciones Python de manera sencilla y eficiente.
+    </p>
+    <p>MongoDB almacena datos en documentos tipo JSON (llamados BSON) organizados en colecciones, en lugar de tablas con
+        filas y columnas como las bases de datos relacionales.</p>
+    <h2 id="instalacion">Instalación</h2>
+    <p>Para instalar PyMongo, utiliza pip:</p>
+    <div class="highlight language-python">
+        <pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pymongo</span>
+</pre>
+    </div>
+
+    <p>Si necesitas soporte para características específicas como autenticación GSSAPI o conectividad TLS/SSL:</p>
+    <pre><code class="highlight">pip install pymongo[snappy,gssapi,srv,tls]
+</code></pre>
+    <h2 id="conexion-a-mongodb">Conexión a MongoDB</h2>
+    <h3 id="conexion-basica-a-una-instancia-local">Conexión básica a una instancia local</h3>
+    <pre><code class="language-python">from pymongo import MongoClient
+
+# Conexión a instancia local por defecto
+client = MongoClient()  # Se conecta a 'localhost', puerto 27017
+
+# Alternativamente, especificar host y puerto
+client = MongoClient('localhost', 27017)
+
+# O usando formato URI
+client = MongoClient('mongodb://localhost:27017/')
+</code></pre>
+    <h3 id="conexion-a-mongodb-atlas-en-la-nube">Conexión a MongoDB Atlas (en la nube)</h3>
+    <pre><code class="language-python">from pymongo import MongoClient
+
+# Conexión a MongoDB Atlas
+client = MongoClient('mongodb+srv://usuario:contraseña@cluster0.ejemplo.mongodb.net/myFirstDatabase?retryWrites=true&amp;w=majority')
+</code></pre>
+    <h3 id="acceso-a-bases-de-datos-y-colecciones">Acceso a bases de datos y colecciones</h3>
+    <pre><code class="language-python"># Acceder a una base de datos
+db = client.mi_base_datos  # Sintaxis de atributo
+# O alternativamente:
+db = client['mi_base_datos']  # Sintaxis de diccionario
+
+# Acceder a una colección
+coleccion = db.usuarios  # Sintaxis de atributo
+# O alternativamente:
+coleccion = db['usuarios']  # Sintaxis de diccionario
+</code></pre>
+    <h2 id="operaciones-crud-basicas">Operaciones CRUD Básicas</h2>
+    <h3 id="create-crear">Create (Crear)</h3>
+    <h4 id="insertar-un-solo-documento">Insertar un solo documento</h4>
+    <pre><code class="language-python">import datetime
+from pymongo import MongoClient
+
+client = MongoClient('mongodb://localhost:27017/')
+db = client.mi_base_datos
+usuarios = db.usuarios
+
+usuario = {
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "email": "juan.perez@ejemplo.com",
+    "fecha_registro": datetime.datetime.now()
+}
+
+# Insertar un documento
+resultado = usuarios.insert_one(usuario)
+print(f"ID del documento insertado: {resultado.inserted_id}")
+</code></pre>
+    <h4 id="insertar-multiples-documentos">Insertar múltiples documentos</h4>
+    <pre><code class="language-python">nuevos_usuarios = [
+    {
+        "nombre": "María",
+        "apellido": "González",
+        "email": "maria.gonzalez@ejemplo.com",
+        "fecha_registro": datetime.datetime.now()
+    },
+    {
+        "nombre": "Carlos",
+        "apellido": "Rodríguez",
+        "email": "carlos.rodriguez@ejemplo.com",
+        "fecha_registro": datetime.datetime.now()
+    }
+]
+
+# Insertar múltiples documentos
+resultado = usuarios.insert_many(nuevos_usuarios)
+print(f"IDs de documentos insertados: {resultado.inserted_ids}")
+</code></pre>
+    <h3 id="read-leer">Read (Leer)</h3>
+    <h4 id="encontrar-un-solo-documento">Encontrar un solo documento</h4>
+    <pre><code class="language-python"># Encontrar un documento
+usuario = usuarios.find_one({"nombre": "Juan"})
+print(usuario)
+
+# Encontrar por ID
+from bson.objectid import ObjectId
+usuario_por_id = usuarios.find_one({"_id": ObjectId("5f50a15d0b3...")})
+</code></pre>
+    <h4 id="encontrar-multiples-documentos">Encontrar múltiples documentos</h4>
+    <pre><code class="language-python"># Encontrar todos los documentos de la colección
+todos_usuarios = usuarios.find()
+for usuario in todos_usuarios:
+    print(usuario)
+
+# Encontrar con filtro
+usuarios_filtrados = usuarios.find({"apellido": "González"})
+for usuario in usuarios_filtrados:
+    print(usuario)
+
+# Limitar campos devueltos (1 incluye, 0 excluye)
+usuarios_proyeccion = usuarios.find({}, {"nombre": 1, "email": 1, "_id": 0})
+for usuario in usuarios_proyeccion:
+    print(usuario)  # Solo muestra nombre y email
+</code></pre>
+    <h4 id="ordenacion-limites-y-saltos">Ordenación, límites y saltos</h4>
+    <pre><code class="language-python"># Ordenar resultados
+usuarios_ordenados = usuarios.find().sort("apellido", 1)  # 1 ascendente, -1 descendente
+
+# Limitar resultados
+usuarios_limitados = usuarios.find().limit(5)  # Solo 5 documentos
+
+# Saltar resultados
+usuarios_con_skip = usuarios.find().skip(10).limit(5)  # Saltar 10, mostrar 5 (para paginación)
+</code></pre>
+    <h3 id="update-actualizar">Update (Actualizar)</h3>
+    <h4 id="actualizar-un-solo-documento">Actualizar un solo documento</h4>
+    <pre><code class="language-python"># Actualizar un documento
+filtro = {"nombre": "Juan"}
+nueva_info = {"$set": {"email": "juan.nuevo@ejemplo.com"}}
+
+resultado = usuarios.update_one(filtro, nueva_info)
+print(f"Documentos modificados: {resultado.modified_count}")
+</code></pre>
+    <h4 id="actualizar-multiples-documentos">Actualizar múltiples documentos</h4>
+    <pre><code class="language-python"># Actualizar múltiples documentos
+filtro = {"apellido": "González"}
+nueva_info = {"$set": {"activo": True}}
+
+resultado = usuarios.update_many(filtro, nueva_info)
+print(f"Documentos modificados: {resultado.modified_count}")
+</code></pre>
+    <h4 id="reemplazar-un-documento-completo">Reemplazar un documento completo</h4>
+    <pre><code class="language-python"># Reemplazar un documento entero
+filtro = {"nombre": "Carlos"}
+nuevo_documento = {
+    "nombre": "Carlos",
+    "apellido": "Rodríguez Gómez",  # Apellido actualizado
+    "email": "carlos.rodriguez@ejemplo.com",
+    "activo": True,
+    "ultima_actualizacion": datetime.datetime.now()
+}
+
+resultado = usuarios.replace_one(filtro, nuevo_documento)
+print(f"Documentos modificados: {resultado.modified_count}")
+</code></pre>
+    <h3 id="delete-eliminar">Delete (Eliminar)</h3>
+    <h4 id="eliminar-un-solo-documento">Eliminar un solo documento</h4>
+    <pre><code class="language-python"># Eliminar un documento
+filtro = {"nombre": "Juan"}
+resultado = usuarios.delete_one(filtro)
+print(f"Documentos eliminados: {resultado.deleted_count}")
+</code></pre>
+    <h4 id="eliminar-multiples-documentos">Eliminar múltiples documentos</h4>
+    <pre><code class="language-python"># Eliminar múltiples documentos
+filtro = {"activo": False}
+resultado = usuarios.delete_many(filtro)
+print(f"Documentos eliminados: {resultado.deleted_count}")
+</code></pre>
+    <h2 id="consultas-avanzadas">Consultas Avanzadas</h2>
+    <h3 id="operadores-de-comparacion">Operadores de comparación</h3>
+    <pre><code class="language-python"># Usuarios mayores de cierta edad
+mayores = usuarios.find({"edad": {"$gt": 30}})  # mayor que 30
+# Usuarios en un rango de edad
+rango_edad = usuarios.find({"edad": {"$gte": 18, "$lte": 65}})  # entre 18 y 65
+# Usuarios con ciertos apellidos
+apellidos = usuarios.find({"apellido": {"$in": ["González", "Rodríguez", "López"]}})
+</code></pre>
+    <h3 id="operadores-logicos">Operadores lógicos</h3>
+    <pre><code class="language-python"># AND implícito (todos los criterios deben cumplirse)
+usuarios.find({"edad": {"$gt": 30}, "activo": True})
+
+# OR explícito
+from pymongo import MongoClient
+import pymongo
+
+usuarios.find({
+    "$or": [
+        {"edad": {"$lt": 18}},
+        {"edad": {"$gt": 65}}
+    ]
+})
+
+# AND y OR combinados
+usuarios.find({
+    "genero": "F",
+    "$or": [
+        {"edad": {"$lt": 18}},
+        {"edad": {"$gt": 65}}
+    ]
+})
+</code></pre>
+    <h3 id="expresiones-regulares">Expresiones regulares</h3>
+    <pre><code class="language-python"># Búsqueda por coincidencia parcial usando regex
+regex_usuarios = usuarios.find({"nombre": {"$regex": "^Mar"}})  # Nombres que empiezan con "Mar"
+</code></pre>
+    <h2 id="operaciones-con-indices">Operaciones con Índices</h2>
+    <h3 id="crear-indices">Crear índices</h3>
+    <pre><code class="language-python"># Crear un índice simple
+usuarios.create_index("email")
+
+# Crear un índice único
+usuarios.create_index("email", unique=True)
+
+# Crear un índice compuesto
+usuarios.create_index([("apellido", pymongo.ASCENDING), ("nombre", pymongo.ASCENDING)])
+
+# Crear un índice TTL (Time-To-Live)
+usuarios.create_index("fecha_ultimo_acceso", expireAfterSeconds=2592000)  # 30 días
+</code></pre>
+    <h3 id="listar-y-eliminar-indices">Listar y eliminar índices</h3>
+    <pre><code class="language-python"># Listar todos los índices
+for indice in usuarios.list_indexes():
+    print(indice)
+
+# Eliminar un índice específico
+usuarios.drop_index("email_1")
+
+# Eliminar todos los índices excepto _id
+usuarios.drop_indexes()
+</code></pre>
+    <h2 id="agregaciones">Agregaciones</h2>
+    <p>El framework de agregación de MongoDB permite realizar operaciones de transformación y análisis de datos
+        complejas.</p>
+    <h3 id="pipeline-de-agregacion-basico">Pipeline de agregación básico</h3>
+    <pre><code class="language-python"># Ejemplo: Contar usuarios por apellido
+pipeline = [
+    {"$group": {"_id": "$apellido", "count": {"$sum": 1}}},
+    {"$sort": {"count": -1}}
+]
+
+resultados = usuarios.aggregate(pipeline)
+for resultado in resultados:
+    print(f"Apellido: {resultado['_id']}, Cantidad: {resultado['count']}")
+</code></pre>
+    <h3 id="ejemplo-de-pipeline-mas-complejo">Ejemplo de pipeline más complejo</h3>
+    <pre><code class="language-python"># Estadísticas de usuarios por grupo de edad
+pipeline = [
+    # Etapa 1: Agregar un campo calculado
+    {"$addFields": {
+        "grupo_edad": {
+            "$switch": {
+                "branches": [
+                    {"case": {"$lt": ["$edad", 18]}, "then": "Menor"},
+                    {"case": {"$lt": ["$edad", 30]}, "then": "Joven"},
+                    {"case": {"$lt": ["$edad", 60]}, "then": "Adulto"}
+                ],
+                "default": "Senior"
+            }
+        }
+    }},
+    # Etapa 2: Agrupar por el nuevo campo
+    {"$group": {
+        "_id": "$grupo_edad",
+        "cantidad": {"$sum": 1},
+        "edad_promedio": {"$avg": "$edad"},
+        "usuarios": {"$push": {"nombre": "$nombre", "edad": "$edad"}}
+    }},
+    # Etapa 3: Ordenar resultados
+    {"$sort": {"_id": 1}}
+]
+
+resultados = usuarios.aggregate(pipeline)
+for resultado in resultados:
+    print(f"Grupo: {resultado['_id']}")
+    print(f"Cantidad: {resultado['cantidad']}")
+    print(f"Edad promedio: {resultado['edad_promedio']:.1f}")
+    print("----------------")
+</code></pre>
+    <h2 id="transacciones">Transacciones</h2>
+    <p>MongoDB 4.0+ soporta transacciones multi-documento en implementaciones replicadas. PyMongo 3.7+ tiene soporte
+        para estas transacciones.</p>
+    <pre><code class="language-python"># Ejemplo de transacción
+from pymongo import MongoClient
+
+# Asegúrate de usar MongoDB 4.0+ y un replica set
+client = MongoClient('mongodb://localhost:27017/?replicaSet=rs0')
+db = client.mi_base_datos
+
+# Iniciar una sesión
+with client.start_session() as session:
+    # Iniciar transacción
+    with session.start_transaction():
+        # Operaciones dentro de la transacción
+        db.cuentas.update_one(
+            {"_id": cuenta_origen_id},
+            {"$inc": {"saldo": -monto}},
+            session=session
+        )
+
+        db.cuentas.update_one(
+            {"_id": cuenta_destino_id},
+            {"$inc": {"saldo": monto}},
+            session=session
+        )
+
+        db.transacciones.insert_one(
+            {
+                "origen": cuenta_origen_id,
+                "destino": cuenta_destino_id,
+                "monto": monto,
+                "fecha": datetime.datetime.now()
+            },
+            session=session
+        )
+        # La transacción se confirma automáticamente al salir del bloque
+        # Si ocurre una excepción, se revierte automáticamente
+</code></pre>
+    <h2 id="manejo-de-errores">Manejo de Errores</h2>
+    <pre><code class="language-python">from pymongo.errors import ConnectionFailure, OperationFailure, DuplicateKeyError
+
+try:
+    # Intentar conectar
+    client = MongoClient('mongodb://localhost:27017/')
+    # Verificar conexión
+    client.admin.command('ismaster')
+    print("Conexión exitosa a MongoDB")
+
+    try:
+        # Intentar operación con posible error de clave duplicada
+        result = db.usuarios.insert_one({"email": "usuario@ejemplo.com"})
+    except DuplicateKeyError:
+        print("Error: El email ya existe en la base de datos")
+
+except ConnectionFailure:
+    print("Error: No se pudo conectar al servidor MongoDB")
+except OperationFailure as e:
+    print(f"Error de operación: {e}")
+</code></pre>
+    <h2 id="buenas-practicas">Buenas Prácticas</h2>
+    <ol>
+        <li>
+            <p><strong>Manejo de conexiones</strong>:
+                - Reutiliza objetos <code>MongoClient</code> en tu aplicación.
+                - MongoDB maneja internamente un pool de conexiones.
+                - Cierra las conexiones explícitamente al terminar tu programa con <code>client.close()</code>.</p>
+        </li>
+        <li>
+            <p><strong>Seguridad</strong>:
+                - Nunca incluyas credenciales directamente en el código fuente.
+                - Usa variables de entorno o archivos de configuración seguros.
+                - Implementa autenticación y SSL/TLS para conexiones.</p>
+        </li>
+        <li>
+            <p><strong>Rendimiento</strong>:
+                - Crea índices para consultas frecuentes.
+                - Usa proyecciones para devolver solo campos necesarios.
+                - Evita documentos demasiado grandes (&gt;16MB).
+                - Utiliza el operador <code>$exists</code> con precaución, ya que no aprovecha índices.</p>
+        </li>
+        <li>
+            <p><strong>Diseño de esquemas</strong>:
+                - Prefiere la desnormalización cuando sea apropiado.
+                - Almacena datos que se acceden juntos en el mismo documento.
+                - Considera las limitaciones de tamaño de documento (16MB).
+                - Implementa referencias cuando sea necesario para documentos grandes.</p>
+        </li>
+        <li>
+            <p><strong>Monitoreo</strong>:
+                - Usa <code>explain()</code> para analizar el rendimiento de consultas.
+                - Configura el registro y monitoreo para operaciones lentas.</p>
+        </li>
+    </ol>
+    <h2 id="ejemplo-completo-sistema-de-blog-simple">Ejemplo Completo: Sistema de Blog Simple</h2>
+    <p>A continuación, un ejemplo que integra varios conceptos para un sistema de blog simple:</p>
+    <pre><code class="language-python">from pymongo import MongoClient
+from bson.objectid import ObjectId
+import datetime
+import pprint
+
+# Configurar cliente de MongoDB
+client = MongoClient('mongodb://localhost:27017/')
+db = client.blog_db
+
+# Función para crear un nuevo post
+def crear_post(titulo, contenido, autor_id, tags=None):
+    post = {
+        "titulo": titulo,
+        "contenido": contenido,
+        "autor_id": autor_id,
+        "fecha_creacion": datetime.datetime.now(),
+        "comentarios": [],
+        "tags": tags or [],
+        "visitas": 0
+    }
+
+    resultado = db.posts.insert_one(post)
+    return resultado.inserted_id
+
+# Función para añadir un comentario
+def añadir_comentario(post_id, autor, texto):
+    comentario = {
+        "autor": autor,
+        "texto": texto,
+        "fecha": datetime.datetime.now()
+    }
+
+    db.posts.update_one(
+        {"_id": ObjectId(post_id)},
+        {"$push": {"comentarios": comentario}}
+    )
+
+# Función para buscar posts por tag
+def buscar_por_tag(tag):
+    return db.posts.find({"tags": tag}).sort("fecha_creacion", -1)
+
+# Función para mostrar estadísticas
+def estadisticas_tags():
+    pipeline = [
+        {"$unwind": "$tags"},
+        {"$group": {"_id": "$tags", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ]
+
+    return list(db.posts.aggregate(pipeline))
+
+# Ejecutar ejemplo
+if __name__ == "__main__":
+    # Crear un autor
+    autor_id = db.autores.insert_one({
+        "nombre": "Ana García",
+        "email": "ana@ejemplo.com",
+        "bio": "Escritora y programadora"
+    }).inserted_id
+
+    # Crear posts
+    post_id1 = crear_post(
+        "Introducción a MongoDB", 
+        "MongoDB es una base de datos NoSQL...",
+        autor_id,
+        ["mongodb", "nosql", "bases de datos"]
+    )
+
+    post_id2 = crear_post(
+        "Python y MongoDB con PyMongo", 
+        "PyMongo es la biblioteca oficial...",
+        autor_id,
+        ["python", "mongodb", "pymongo"]
+    )
+
+    # Añadir comentarios
+    añadir_comentario(post_id1, "Carlos López", "¡Gran artículo!")
+    añadir_comentario(post_id1, "María Rodríguez", "Muy útil, gracias")
+
+    # Incrementar visitas
+    db.posts.update_one({"_id": ObjectId(post_id1)}, {"$inc": {"visitas": 5}})
+    db.posts.update_one({"_id": ObjectId(post_id2)}, {"$inc": {"visitas": 3}})
+
+    # Mostrar un post completo
+    post = db.posts.find_one({"_id": ObjectId(post_id1)})
+    print("\n----- POST -----")
+    pprint.pprint(post)
+
+    # Mostrar posts con el tag "mongodb"
+    print("\n----- POSTS CON TAG 'mongodb' -----")
+    for post in buscar_por_tag("mongodb"):
+        print(f"{post['titulo']} - {post['fecha_creacion']}")
+
+    # Mostrar estadísticas de tags
+    print("\n----- ESTADÍSTICAS DE TAGS -----")
+    for stat in estadisticas_tags():
+        print(f"{stat['_id']}: {stat['count']} posts")
+
+    # Cerrar conexión
+    client.close()
+</code></pre>
+    <p>Este apunte cubre las operaciones fundamentales y avanzadas que puedes realizar con PyMongo para interactuar con
+        MongoDB desde Python, proporcionando ejemplos prácticos para cada sección.</p>
+
+</body>
+
+</html>

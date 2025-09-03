@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   parteA
+  </title>
+ </head>
+ <body>
+  <h1 id="parte-a-fundamentos-de-neo4j">
+   Parte A: Fundamentos de Neo4j
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#11-que-son-las-bases-de-datos-de-grafos">
+      1.1 ¿Qué son las bases de datos de grafos?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#12-casos-de-uso-ideales">
+      1.2 Casos de uso ideales
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#13-introduccion-a-neo4j">
+      1.3 Introducción a Neo4j
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#14-instalacion-y-configuracion-inicial">
+      1.4 Instalación y configuración inicial
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#15-neo4j-desktop-vs-neo4j-browser">
+      1.5 Neo4j Desktop vs Neo4j Browser
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#16-primeros-pasos-en-neo4j-browser">
+      1.6 Primeros pasos en Neo4j Browser
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ejercicios-practicos">
+      Ejercicios Prácticos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#recursos-adicionales">
+      Recursos adicionales
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#resumen">
+      Resumen
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-que-son-las-bases-de-datos-de-grafos">
+    1.1 ¿Qué son las bases de datos de grafos?
+   </h2>
+   <h3 id="definicion">
+    Definición
+   </h3>
+   <p>
+    Una base de datos de grafos es un sistema de gestión de bases de datos que utiliza estructuras de grafos para representar y almacenar datos. Los datos se organizan como nodos (entidades) conectados por aristas (relaciones).
+   </p>
+   <h3 id="componentes-basicos">
+    Componentes básicos
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Nodos
+     </strong>
+     : Representan entidades (personas, productos, lugares)
+    </li>
+    <li>
+     <strong>
+      Relaciones
+     </strong>
+     : Conexiones direccionales entre nodos
+    </li>
+    <li>
+     <strong>
+      Propiedades
+     </strong>
+     : Atributos tanto de nodos como de relaciones
+    </li>
+   </ul>
+   <h3 id="diferencias-con-bases-de-datos-relacionales">
+    Diferencias con bases de datos relacionales
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Aspecto
+      </th>
+      <th>
+       Base de Datos Relacional
+      </th>
+      <th>
+       Base de Datos de Grafos
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Estructura
+      </td>
+      <td>
+       Tablas con filas y columnas
+      </td>
+      <td>
+       Nodos y relaciones
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Relaciones
+      </td>
+      <td>
+       Foreign keys, JOINs
+      </td>
+      <td>
+       Relaciones directas
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Consultas complejas
+      </td>
+      <td>
+       Múltiples JOINs costosos
+      </td>
+      <td>
+       Traversal natural
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Esquema
+      </td>
+      <td>
+       Rígido
+      </td>
+      <td>
+       Flexible
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Escalabilidad
+      </td>
+      <td>
+       Vertical principalmente
+      </td>
+      <td>
+       Horizontal para relaciones
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="ejemplo-practico-red-social">
+    Ejemplo práctico: Red Social
+   </h3>
+   <p>
+    <strong>
+     Modelo Relacional:
+    </strong>
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">-- Tabla usuarios</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">usuarios</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span>
+<span class="w">    </span><span class="n">email</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- Tabla amistades</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">amistades</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">usuario1_id</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">usuario2_id</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">fecha_amistad</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">usuario1_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">usuarios</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">usuario2_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">usuarios</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- Consulta: Amigos de amigos</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">u3</span><span class="p">.</span><span class="n">nombre</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">usuarios</span><span class="w"> </span><span class="n">u1</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">amistades</span><span class="w"> </span><span class="n">a1</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">u1</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a1</span><span class="p">.</span><span class="n">usuario1_id</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">usuarios</span><span class="w"> </span><span class="n">u2</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">a1</span><span class="p">.</span><span class="n">usuario2_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">u2</span><span class="p">.</span><span class="n">id</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">amistades</span><span class="w"> </span><span class="n">a2</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">u2</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a2</span><span class="p">.</span><span class="n">usuario1_id</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">usuarios</span><span class="w"> </span><span class="n">u3</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">a2</span><span class="p">.</span><span class="n">usuario2_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">u3</span><span class="p">.</span><span class="n">id</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">u1</span><span class="p">.</span><span class="n">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Juan'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">u3</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">u1</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Modelo de Grafos (Neo4j):
+    </strong>
+    Ejemplo:
+   </p>
+   <div class="highlight language-cypher">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Crear nodos</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">juan</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Juan'</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="s">'juan@email.com'</span><span class="p">});</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">maria</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'María'</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="s">'maria@email.com'</span><span class="p">});</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">carlos</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Carlos'</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="s">'carlos@email.com'</span><span class="p">});</span>
+
+<span class="c1">// Crear relaciones</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">juan</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Juan'</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">maria</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'María'</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">carlos</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Carlos'</span><span class="p">})</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">juan</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="w"> </span><span class="p">{</span><span class="n">desde</span><span class="p">:</span><span class="w"> </span><span class="s">'2023-01-15'</span><span class="p">}</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">maria</span><span class="p">),</span>
+<span class="w">       </span><span class="p">(</span><span class="n">maria</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="w"> </span><span class="p">{</span><span class="n">desde</span><span class="p">:</span><span class="w"> </span><span class="s">'2023-02-10'</span><span class="p">}</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">carlos</span><span class="p">);</span>
+
+<span class="c1">// Consulta: Amigos de amigos</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">juan</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Juan'</span><span class="p">})</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="o">]-&gt;</span><span class="p">()</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">amigo_de_amigo</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">amigo_de_amigo</span><span class="p">.</span><span class="n">nombre</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Mismo ejemplo de arriba, pero con una creación de nodos y relaciones más compacta:
+   </p>
+   <div class="highlight language-cypher">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Crear nodos y relaciones</span>
+<span class="k">CREATE</span><span class="w"> </span>
+<span class="w">  </span><span class="p">(</span><span class="n">juan</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Juan'</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="s">'juan@email.com'</span><span class="p">}),</span>
+<span class="w">  </span><span class="p">(</span><span class="n">maria</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'María'</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="s">'maria@email.com'</span><span class="p">}),</span>
+<span class="w">  </span><span class="p">(</span><span class="n">carlos</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Carlos'</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="s">'carlos@email.com'</span><span class="p">}),</span>
+<span class="w">  </span><span class="p">(</span><span class="n">juan</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="w"> </span><span class="p">{</span><span class="n">desde</span><span class="p">:</span><span class="w"> </span><span class="s">'2023-01-15'</span><span class="p">}</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">maria</span><span class="p">),</span>
+<span class="w">  </span><span class="p">(</span><span class="n">maria</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="w"> </span><span class="p">{</span><span class="n">desde</span><span class="p">:</span><span class="w"> </span><span class="s">'2023-02-10'</span><span class="p">}</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">carlos</span><span class="p">);</span>
+
+<span class="c1">// Consulta: Amigos de amigos</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">juan</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Juan'</span><span class="p">})</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="o">]-&gt;</span><span class="p">()</span><span class="o">-[</span><span class="p">:</span><span class="n">AMIGO_DE</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">amigo_de_amigo</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">amigo_de_amigo</span><span class="p">.</span><span class="n">nombre</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="12-casos-de-uso-ideales">
+    1.2 Casos de uso ideales
+   </h2>
+   <h3 id="1-redes-sociales">
+    1. Redes Sociales
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Problema
+     </strong>
+     : Encontrar conexiones, sugerir amigos, analizar influencia
+    </li>
+    <li>
+     <strong>
+      Ventaja
+     </strong>
+     : Navegación natural por relaciones sociales
+    </li>
+    <li>
+     <strong>
+      Ejemplo
+     </strong>
+     : "Personas que podrías conocer" en Facebook
+    </li>
+   </ul>
+   <h3 id="2-sistemas-de-recomendacion">
+    2. Sistemas de Recomendación
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Problema
+     </strong>
+     : Recomendar productos basados en comportamiento similar
+    </li>
+    <li>
+     <strong>
+      Ventaja
+     </strong>
+     : Análisis de patrones complejos de comportamiento
+    </li>
+    <li>
+     <strong>
+      Ejemplo
+     </strong>
+     : Amazon, Netflix, Spotify
+    </li>
+   </ul>
+   <div class="highlight language-cypher">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Ejemplo: Recomendación de productos</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">usuario</span><span class="p">:</span><span class="n">Usuario</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Ana'</span><span class="p">})</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPRO</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">producto</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">COMPRO</span><span class="o">]-</span><span class="p">(</span><span class="n">otros</span><span class="p">:</span><span class="n">Usuario</span><span class="p">)</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">otros</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPRO</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">recomendacion</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="p">(</span><span class="n">usuario</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPRO</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">recomendacion</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">recomendacion</span><span class="p">.</span><span class="n">nombre</span><span class="p">,</span><span class="w"> </span><span class="n">COUNT</span><span class="p">(*)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">popularidad</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">popularidad</span><span class="w"> </span><span class="k">DESC</span>
+<span class="k">LIMIT</span><span class="w"> </span><span class="m">5</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="3-deteccion-de-fraude">
+    3. Detección de Fraude
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Problema
+     </strong>
+     : Identificar patrones sospechosos en transacciones
+    </li>
+    <li>
+     <strong>
+      Ventaja
+     </strong>
+     : Análisis de redes complejas de transacciones
+    </li>
+    <li>
+     <strong>
+      Ejemplo
+     </strong>
+     : Detección de lavado de dinero
+    </li>
+   </ul>
+   <h3 id="4-gestion-de-conocimiento">
+    4. Gestión de Conocimiento
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Problema
+     </strong>
+     : Mapear relaciones entre conceptos y documentos
+    </li>
+    <li>
+     <strong>
+      Ventaja
+     </strong>
+     : Navegación semántica del conocimiento
+    </li>
+    <li>
+     <strong>
+      Ejemplo
+     </strong>
+     : Grafos de conocimiento empresarial
+    </li>
+   </ul>
+   <h3 id="5-analisis-de-dependencias">
+    5. Análisis de Dependencias
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Problema
+     </strong>
+     : Mapear dependencias en software o infraestructura
+    </li>
+    <li>
+     <strong>
+      Ventaja
+     </strong>
+     : Análisis de impacto y dependencias circulares
+    </li>
+    <li>
+     <strong>
+      Ejemplo
+     </strong>
+     : Microservicios, análisis de impacto
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="13-introduccion-a-neo4j">
+    1.3 Introducción a Neo4j
+   </h2>
+   <h3 id="que-es-neo4j">
+    ¿Qué es Neo4j?
+   </h3>
+   <p>
+    Neo4j es la base de datos de grafos más popular del mundo, desarrollada en Java y disponible tanto en versión Community (gratuita) como Enterprise (comercial).
+   </p>
+   <h3 id="caracteristicas-principales">
+    Características principales
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      ACID compliant
+     </strong>
+     : Garantiza la integridad de las transacciones
+    </li>
+    <li>
+     <strong>
+      Cypher
+     </strong>
+     : Lenguaje de consulta declarativo específico para grafos
+    </li>
+    <li>
+     <strong>
+      Escalabilidad
+     </strong>
+     : Soporta billones de nodos y relaciones
+    </li>
+    <li>
+     <strong>
+      Alto rendimiento
+     </strong>
+     : Consultas en tiempo real sobre grafos complejos
+    </li>
+    <li>
+     <strong>
+      Herramientas visuales
+     </strong>
+     : Neo4j Browser y Neo4j Bloom
+    </li>
+   </ul>
+   <h3 id="arquitectura-de-neo4j">
+    Arquitectura de Neo4j
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>┌─────────────────┐
+│   Aplicación    │
+└─────────┬───────┘
+          │
+┌─────────▼───────┐
+│   Driver API    │ (Bolt Protocol)
+└─────────┬───────┘
+          │
+┌─────────▼───────┐
+│   Neo4j Core    │
+├─────────────────┤
+│ Cypher Engine   │
+├─────────────────┤
+│ Transaction Log │
+├─────────────────┤
+│  Storage Engine │
+└─────────────────┘
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="14-instalacion-y-configuracion-inicial">
+    1.4 Instalación y configuración inicial
+   </h2>
+   <h3 id="opcion-1-neo4j-desktop-recomendada-para-desarrollo">
+    Opción 1: Neo4j Desktop (Recomendada para desarrollo)
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Descargar Neo4j Desktop
+     </strong>
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Ir a https://neo4j.com/download/
+    </li>
+    <li>
+     Registrarse y descargar Neo4j Desktop
+    </li>
+    <li>
+     Instalar siguiendo el asistente
+    </li>
+   </ul>
+   <ol start="2">
+    <li>
+     <p>
+      <strong>
+       Crear primer proyecto
+      </strong>
+      <br/>
+      <div class="highlight language-text">
+       <pre><span></span>   1. Abrir Neo4j Desktop
+   2. Crear nuevo proyecto: "Curso Neo4j"
+   3. Agregar base de datos local
+   4. Configurar nombre: "mi-primera-bd"
+   5. Establecer contraseña para usuario 'neo4j'
+   6. Iniciar la base de datos
+
+</pre>
+      </div>
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Acceder a Neo4j Browser
+      </strong>
+      - Hacer clic en "Open" junto a la base de datos
+   - Se abrirá Neo4j Browser en el navegador
+     </p>
+    </li>
+   </ol>
+   <h3 id="opcion-2-neo4j-aura-cloud">
+    Opción 2: Neo4j Aura (Cloud)
+   </h3>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       Crear cuenta gratuita
+      </strong>
+      - Ir a https://neo4j.com/cloud/aura/
+   - Registrarse con email
+   - Crear instancia gratuita
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Configurar conexión
+      </strong>
+      <br/>
+      <div class="highlight language-text">
+       <pre><span></span>   URI: neo4j+s://xxxxxxx.databases.neo4j.io
+   Usuario: neo4j
+   Contraseña: [tu contraseña generada]
+
+</pre>
+      </div>
+     </p>
+    </li>
+   </ol>
+   <h3 id="opcion-3-docker-para-usuarios-avanzados">
+    Opción 3: Docker (Para usuarios avanzados)
+   </h3>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Ejecutar Neo4j en Docker</span>
+docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--name<span class="w"> </span>neo4j-curso<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-p7474:7474<span class="w"> </span>-p7687:7687<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$HOME</span>/neo4j/data:/data<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$HOME</span>/neo4j/logs:/logs<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$HOME</span>/neo4j/import:/var/lib/neo4j/import<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="nv">$HOME</span>/neo4j/plugins:/plugins<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--env<span class="w"> </span><span class="nv">NEO4J_AUTH</span><span class="o">=</span>neo4j/password123<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>neo4j:latest
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="15-neo4j-desktop-vs-neo4j-browser">
+    1.5 Neo4j Desktop vs Neo4j Browser
+   </h2>
+   <h3 id="neo4j-desktop">
+    Neo4j Desktop
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Función
+     </strong>
+     : Administrador local de instancias Neo4j
+    </li>
+    <li>
+     <strong>
+      Ventajas
+     </strong>
+     :
+    </li>
+    <li>
+     Gestión múltiples bases de datos
+    </li>
+    <li>
+     Instalación de plugins
+    </li>
+    <li>
+     Gestión de versiones
+    </li>
+    <li>
+     Monitoreo de rendimiento
+    </li>
+    <li>
+     <strong>
+      Uso
+     </strong>
+     : Desarrollo local, experimentación
+    </li>
+   </ul>
+   <h3 id="neo4j-browser">
+    Neo4j Browser
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Función
+     </strong>
+     : Interfaz web para consultas e visualización
+    </li>
+    <li>
+     <strong>
+      Ventajas
+     </strong>
+     :
+    </li>
+    <li>
+     Interfaz intuitiva
+    </li>
+    <li>
+     Visualización de grafos
+    </li>
+    <li>
+     Historial de consultas
+    </li>
+    <li>
+     Guías interactivas
+    </li>
+    <li>
+     <strong>
+      Uso
+     </strong>
+     : Consultas, exploración, presentaciones
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="16-primeros-pasos-en-neo4j-browser">
+    1.6 Primeros pasos en Neo4j Browser
+   </h2>
+   <h3 id="conectarse-a-la-base-de-datos">
+    Conectarse a la base de datos
+   </h3>
+   <div class="highlight language-cypher">
+    <pre><span></span><span class="c1">// Verificar conexión</span>
+<span class="k">CALL</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">ping</span><span class="p">()</span>
+</pre>
+   </div>
+   <h3 id="comandos-basicos-del-browser">
+    Comandos básicos del Browser
+   </h3>
+   <div class="highlight language-cypher">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Limpiar el área de trabajo</span>
+<span class="p">:</span><span class="n">clear</span>
+
+<span class="c1">// Ayuda general</span>
+<span class="p">:</span><span class="n">help</span>
+
+<span class="c1">// Listar comandos disponibles</span>
+<span class="p">:</span><span class="n">help</span><span class="w"> </span><span class="n">commands</span>
+
+<span class="c1">// Ver configuración actual</span>
+<span class="p">:</span><span class="n">sysinfo</span>
+
+<span class="c1">// Cambiar tema visual</span>
+<span class="p">:</span><span class="n">style</span><span class="w"> </span><span class="n">reset</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="tu-primera-consulta">
+    Tu primera consulta
+   </h3>
+   <div class="highlight language-cypher">
+    <pre><span></span><span class="c1">// Crear tu primer nodo</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">yo</span><span class="p">:</span><span class="n">Persona</span><span class="w"> </span><span class="p">{</span><span class="n">nombre</span><span class="p">:</span><span class="w"> </span><span class="s">'Tu Nombre'</span><span class="p">,</span><span class="w"> </span><span class="n">profesion</span><span class="p">:</span><span class="w"> </span><span class="s">'Estudiante Neo4j'</span><span class="p">})</span>
+
+<span class="c1">// Ver lo que creaste</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="n">Persona</span><span class="p">)</span><span class="w"> </span><span class="k">RETURN</span><span class="w"> </span><span class="n">n</span>
+
+<span class="c1">// Limpiar cuando termines</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="n">n</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ejercicios-practicos">
+    Ejercicios Prácticos
+   </h2>
+   <h3 id="ejercicio-1-exploracion-del-browser">
+    Ejercicio 1: Exploración del Browser
+   </h3>
+   <ol>
+    <li>
+     Conectarse a Neo4j Browser
+    </li>
+    <li>
+     Ejecutar
+     <code>
+      :play intro
+     </code>
+     para ver la guía interactiva
+    </li>
+    <li>
+     Completar al menos los primeros 3 slides
+    </li>
+    <li>
+     Experimentar con los diferentes paneles del Browser
+    </li>
+   </ol>
+   <h3 id="ejercicio-2-comparacion-de-modelos">
+    Ejercicio 2: Comparación de modelos
+   </h3>
+   <ol>
+    <li>
+     Diseñar un modelo relacional simple para una biblioteca (libros, autores, préstamos)
+    </li>
+    <li>
+     Diseñar el mismo modelo como grafo
+    </li>
+    <li>
+     Escribir la consulta SQL y Cypher para "encontrar todos los libros prestados por usuarios de una ciudad específica"
+    </li>
+    <li>
+     Comparar la complejidad de ambas consultas
+    </li>
+   </ol>
+   <h3 id="ejercicio-3-casos-de-uso">
+    Ejercicio 3: Casos de uso
+   </h3>
+   <ol>
+    <li>
+     Identificar 3 problemas en tu trabajo/estudios que podrían beneficiarse de una base de datos de grafos
+    </li>
+    <li>
+     Para cada problema, describir:
+   - ¿Qué entidades principales existen?
+   - ¿Qué relaciones hay entre ellas?
+   - ¿Por qué un grafo sería mejor que una base relacional?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="recursos-adicionales">
+    Recursos adicionales
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Documentación oficial
+     </strong>
+     : https://neo4j.com/docs/
+    </li>
+    <li>
+     <strong>
+      Neo4j GraphAcademy
+     </strong>
+     : https://graphacademy.neo4j.com/
+    </li>
+    <li>
+     <strong>
+      Comunidad
+     </strong>
+     : https://community.neo4j.com/
+    </li>
+    <li>
+     <strong>
+      Datasets de práctica
+     </strong>
+     : https://neo4j.com/developer/example-data/
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="resumen">
+    Resumen
+   </h2>
+   <p>
+    En esta parte hemos cubierto:
+   </p>
+   <ul>
+    <li>
+     ✅ Conceptos fundamentales de bases de datos de grafos
+    </li>
+    <li>
+     ✅ Diferencias con bases de datos relacionales
+    </li>
+    <li>
+     ✅ Casos de uso ideales para Neo4j
+    </li>
+    <li>
+     ✅ Instalación y configuración de Neo4j
+    </li>
+    <li>
+     ✅ Familiarización con Neo4j Browser
+    </li>
+   </ul>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

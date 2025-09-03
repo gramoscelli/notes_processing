@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Parte3-Teoria
+  </title>
+ </head>
+ <body>
+  <h1 id="tema-3-teoria-basica-de-grafos">
+   Tema 3: Teoría Básica de Grafos
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#objetivos-de-aprendizaje">
+      Objetivos de Aprendizaje
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#31-tipos-de-grafos">
+      3.1 Tipos de Grafos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#32-conceptos-fundamentales">
+      3.2 Conceptos Fundamentales
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#33-propiedades-importantes">
+      3.3 Propiedades Importantes
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#34-ejercicios-practicos">
+      3.4 Ejercicios Prácticos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#35-algoritmos-fundamentales-de-recorrido">
+      3.5 Algoritmos Fundamentales de Recorrido
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#36-comparacion-y-aplicaciones">
+      3.6 Comparación y Aplicaciones
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#37-resumen-de-conceptos-clave">
+      3.7 Resumen de Conceptos Clave
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#38-preparacion-para-el-siguiente-tema">
+      3.8 Preparación para el Siguiente Tema
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="objetivos-de-aprendizaje">
+    Objetivos de Aprendizaje
+   </h2>
+   <p>
+    Al finalizar este tema, los estudiantes serán capaces de:
+- Clasificar diferentes tipos de grafos
+- Identificar caminos, ciclos y componentes conectados
+- Calcular propiedades básicas de grafos
+- Implementar algoritmos fundamentales en Python
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="31-tipos-de-grafos">
+    3.1 Tipos de Grafos
+   </h2>
+   <h3 id="grafos-dirigidos-vs-no-dirigidos">
+    Grafos Dirigidos vs No Dirigidos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Grafo NO DIRIGIDO: Las relaciones son bidireccionales</span>
+<span class="n">amistad_facebook</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">],</span>
+    <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span>      <span class="c1"># Ana y Carlos son amigos mutuamente</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span>       <span class="c1"># Ana y Lucia son amigas mutuamente</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">),</span>    <span class="c1"># Carlos y Pedro son amigos mutuamente</span>
+        <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">)</span>      <span class="c1"># Lucia y Pedro son amigos mutuamente</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Grafo DIRIGIDO: Las relaciones tienen dirección específica</span>
+<span class="n">seguimiento_twitter</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">],</span>
+    <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span>      <span class="c1"># Ana sigue a Carlos (no necesariamente viceversa)</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'ana'</span><span class="p">),</span>      <span class="c1"># Carlos sigue a Ana</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span>       <span class="c1"># Ana sigue a Lucia</span>
+        <span class="p">(</span><span class="s1">'pedro'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span>     <span class="c1"># Pedro sigue a Lucia</span>
+        <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">)</span>      <span class="c1"># Lucia sigue a Pedro</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">es_mutuo</span><span class="p">(</span><span class="n">usuario1</span><span class="p">,</span> <span class="n">usuario2</span><span class="p">,</span> <span class="n">grafo_dirigido</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verifica si dos usuarios se siguen mutuamente"""</span>
+    <span class="n">sigue_12</span> <span class="o">=</span> <span class="p">(</span><span class="n">usuario1</span><span class="p">,</span> <span class="n">usuario2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">grafo_dirigido</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]</span>
+    <span class="n">sigue_21</span> <span class="o">=</span> <span class="p">(</span><span class="n">usuario2</span><span class="p">,</span> <span class="n">usuario1</span><span class="p">)</span> <span class="ow">in</span> <span class="n">grafo_dirigido</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">sigue_12</span> <span class="ow">and</span> <span class="n">sigue_21</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Relaciones mutuas en Twitter:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">u1</span> <span class="ow">in</span> <span class="n">seguimiento_twitter</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">u2</span> <span class="ow">in</span> <span class="n">seguimiento_twitter</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">u1</span> <span class="o">&lt;</span> <span class="n">u2</span> <span class="ow">and</span> <span class="n">es_mutuo</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">,</span> <span class="n">seguimiento_twitter</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">u1</span><span class="si">}</span><span class="s2"> ↔ </span><span class="si">{</span><span class="n">u2</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="grafos-ponderados">
+    Grafos Ponderados
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Grafo ponderado: Las aristas tienen peso o costo</span>
+<span class="n">red_transporte</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'estaciones'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'norte'</span><span class="p">,</span> <span class="s1">'sur'</span><span class="p">,</span> <span class="s1">'este'</span><span class="p">,</span> <span class="s1">'oeste'</span><span class="p">],</span>
+    <span class="s1">'rutas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'norte'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'sur'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'este'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'norte'</span><span class="p">,</span> <span class="s1">'oeste'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mf">3.5</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'sur'</span><span class="p">,</span> <span class="s1">'oeste'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mf">2.8</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'este'</span><span class="p">,</span> <span class="s1">'norte'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mf">3.2</span><span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">encontrar_ruta_mas_rapida</span><span class="p">(</span><span class="n">origen</span><span class="p">,</span> <span class="n">destino</span><span class="p">,</span> <span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Encuentra la ruta más rápida entre dos estaciones"""</span>
+    <span class="c1"># Implementación simple de Dijkstra</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span>
+
+    <span class="c1"># Inicializar distancias</span>
+    <span class="n">distancias</span> <span class="o">=</span> <span class="p">{</span><span class="n">estacion</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">)</span> <span class="k">for</span> <span class="n">estacion</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'estaciones'</span><span class="p">]}</span>
+    <span class="n">distancias</span><span class="p">[</span><span class="n">origen</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">predecesores</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Cola de prioridad: (distancia, nodo)</span>
+    <span class="n">cola</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="n">origen</span><span class="p">)]</span>
+    <span class="n">visitados</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="n">cola</span><span class="p">:</span>
+        <span class="n">dist_actual</span><span class="p">,</span> <span class="n">nodo_actual</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">cola</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">nodo_actual</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nodo_actual</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">nodo_actual</span> <span class="o">==</span> <span class="n">destino</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="c1"># Examinar vecinos</span>
+        <span class="k">for</span> <span class="n">ruta</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'rutas'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">ruta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">ruta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">peso</span> <span class="o">=</span> <span class="n">ruta</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">'tiempo'</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">ruta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">ruta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">peso</span> <span class="o">=</span> <span class="n">ruta</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">'tiempo'</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">vecino</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">nueva_distancia</span> <span class="o">=</span> <span class="n">dist_actual</span> <span class="o">+</span> <span class="n">peso</span>
+            <span class="k">if</span> <span class="n">nueva_distancia</span> <span class="o">&lt;</span> <span class="n">distancias</span><span class="p">[</span><span class="n">vecino</span><span class="p">]:</span>
+                <span class="n">distancias</span><span class="p">[</span><span class="n">vecino</span><span class="p">]</span> <span class="o">=</span> <span class="n">nueva_distancia</span>
+                <span class="n">predecesores</span><span class="p">[</span><span class="n">vecino</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodo_actual</span>
+                <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">cola</span><span class="p">,</span> <span class="p">(</span><span class="n">nueva_distancia</span><span class="p">,</span> <span class="n">vecino</span><span class="p">))</span>
+
+    <span class="c1"># Reconstruir camino</span>
+    <span class="k">if</span> <span class="n">destino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">predecesores</span> <span class="ow">and</span> <span class="n">destino</span> <span class="o">!=</span> <span class="n">origen</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">)</span>
+
+    <span class="n">camino</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="n">destino</span>
+    <span class="k">while</span> <span class="n">actual</span> <span class="o">!=</span> <span class="n">origen</span><span class="p">:</span>
+        <span class="n">camino</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">predecesores</span><span class="p">[</span><span class="n">actual</span><span class="p">]</span>
+    <span class="n">camino</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">origen</span><span class="p">)</span>
+    <span class="n">camino</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">camino</span><span class="p">,</span> <span class="n">distancias</span><span class="p">[</span><span class="n">destino</span><span class="p">]</span>
+
+<span class="c1"># Ejemplo de uso</span>
+<span class="n">ruta</span><span class="p">,</span> <span class="n">tiempo</span> <span class="o">=</span> <span class="n">encontrar_ruta_mas_rapida</span><span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'oeste'</span><span class="p">,</span> <span class="n">red_transporte</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Ruta más rápida de centro a oeste: </span><span class="si">{</span><span class="s1">' → '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ruta</span><span class="p">)</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">tiempo</span><span class="si">}</span><span class="s2"> minutos)"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="multigrafos">
+    Multigrafos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Multigrafo: Múltiples aristas entre los mismos nodos</span>
+<span class="n">comunicacion_empresarial</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'empleados'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">],</span>
+    <span class="s1">'comunicaciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'frecuencia'</span><span class="p">:</span> <span class="s1">'diaria'</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'slack'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'frecuencia'</span><span class="p">:</span> <span class="s1">'constante'</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'reunion'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'frecuencia'</span><span class="p">:</span> <span class="s1">'semanal'</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'email'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'frecuencia'</span><span class="p">:</span> <span class="s1">'ocasional'</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'telefono'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'frecuencia'</span><span class="p">:</span> <span class="s1">'rara'</span><span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analizar_intensidad_comunicacion</span><span class="p">(</span><span class="n">empleado1</span><span class="p">,</span> <span class="n">empleado2</span><span class="p">,</span> <span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Analiza la intensidad de comunicación entre dos empleados"""</span>
+    <span class="n">canales</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">comm</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'comunicaciones'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">comm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">empleado1</span> <span class="ow">and</span> <span class="n">comm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">empleado2</span><span class="p">)</span> <span class="ow">or</span> \
+           <span class="p">(</span><span class="n">comm</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">empleado2</span> <span class="ow">and</span> <span class="n">comm</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">empleado1</span><span class="p">):</span>
+            <span class="n">canales</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">'canal'</span><span class="p">:</span> <span class="n">comm</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="s1">'frecuencia'</span><span class="p">:</span> <span class="n">comm</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="s1">'frecuencia'</span><span class="p">]</span>
+            <span class="p">})</span>
+
+    <span class="c1"># Asignar puntuación por frecuencia</span>
+    <span class="n">puntuacion_freq</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'constante'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="s1">'diaria'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="s1">'semanal'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s1">'ocasional'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s1">'rara'</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+
+    <span class="n">puntuacion_total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">puntuacion_freq</span><span class="p">[</span><span class="n">canal</span><span class="p">[</span><span class="s1">'frecuencia'</span><span class="p">]]</span> <span class="k">for</span> <span class="n">canal</span> <span class="ow">in</span> <span class="n">canales</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">'canales'</span><span class="p">:</span> <span class="n">canales</span><span class="p">,</span>
+        <span class="s1">'puntuacion_comunicacion'</span><span class="p">:</span> <span class="n">puntuacion_total</span>
+    <span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Análisis de comunicación Ana-Carlos:"</span><span class="p">)</span>
+<span class="n">resultado</span> <span class="o">=</span> <span class="n">analizar_intensidad_comunicacion</span><span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="n">comunicacion_empresarial</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Canales: </span><span class="si">{</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s1">'canal'</span><span class="p">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">resultado</span><span class="p">[</span><span class="s1">'canales'</span><span class="p">]]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Puntuación de intensidad: </span><span class="si">{</span><span class="n">resultado</span><span class="p">[</span><span class="s1">'puntuacion_comunicacion'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="32-conceptos-fundamentales">
+    3.2 Conceptos Fundamentales
+   </h2>
+   <h3 id="caminos-y-ciclos">
+    Caminos y Ciclos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">encontrar_todos_los_caminos</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">inicio</span><span class="p">,</span> <span class="n">fin</span><span class="p">,</span> <span class="n">camino_actual</span><span class="o">=</span><span class="p">[]):</span>
+<span class="w">    </span><span class="sd">"""Encuentra todos los caminos posibles entre dos nodos"""</span>
+    <span class="n">camino_actual</span> <span class="o">=</span> <span class="n">camino_actual</span> <span class="o">+</span> <span class="p">[</span><span class="n">inicio</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">inicio</span> <span class="o">==</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">camino_actual</span><span class="p">]</span>
+
+    <span class="n">caminos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+        <span class="n">siguiente</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">inicio</span> <span class="ow">and</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">camino_actual</span><span class="p">:</span>
+            <span class="n">siguiente</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">inicio</span> <span class="ow">and</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">camino_actual</span><span class="p">:</span>
+            <span class="n">siguiente</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">siguiente</span><span class="p">:</span>
+            <span class="n">nuevos_caminos</span> <span class="o">=</span> <span class="n">encontrar_todos_los_caminos</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">siguiente</span><span class="p">,</span> <span class="n">fin</span><span class="p">,</span> <span class="n">camino_actual</span><span class="p">)</span>
+            <span class="n">caminos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">nuevos_caminos</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">caminos</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">detectar_ciclos</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Detecta todos los ciclos en un grafo no dirigido"""</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dfs_ciclos</span><span class="p">(</span><span class="n">nodo</span><span class="p">,</span> <span class="n">visitados</span><span class="p">,</span> <span class="n">padre</span><span class="p">,</span> <span class="n">camino_actual</span><span class="p">):</span>
+        <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nodo</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+            <span class="n">vecino</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">vecino</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                    <span class="n">resultado</span> <span class="o">=</span> <span class="n">dfs_ciclos</span><span class="p">(</span><span class="n">vecino</span><span class="p">,</span> <span class="n">visitados</span><span class="p">,</span> <span class="n">nodo</span><span class="p">,</span> <span class="n">camino_actual</span> <span class="o">+</span> <span class="p">[</span><span class="n">vecino</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">resultado</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">resultado</span>
+                <span class="k">elif</span> <span class="n">vecino</span> <span class="o">!=</span> <span class="n">padre</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">camino_actual</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="c1"># Encontramos un ciclo</span>
+                    <span class="n">idx_inicio</span> <span class="o">=</span> <span class="n">camino_actual</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">camino_actual</span><span class="p">[</span><span class="n">idx_inicio</span><span class="p">:]</span> <span class="o">+</span> <span class="p">[</span><span class="n">vecino</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">visitados_global</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">ciclos</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">nodo</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">nodo</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados_global</span><span class="p">:</span>
+            <span class="n">visitados_locales</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">ciclo</span> <span class="o">=</span> <span class="n">dfs_ciclos</span><span class="p">(</span><span class="n">nodo</span><span class="p">,</span> <span class="n">visitados_locales</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="n">nodo</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">ciclo</span><span class="p">:</span>
+                <span class="n">ciclos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ciclo</span><span class="p">)</span>
+            <span class="n">visitados_global</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">visitados_locales</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ciclos</span>
+
+<span class="c1"># Ejemplo con red social</span>
+<span class="n">red_con_ciclos</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">],</span>
+    <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'ana'</span><span class="p">),</span>      <span class="c1"># Ciclo: ana → carlos → lucia → ana</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'pedro'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">)</span>     <span class="c1"># Otro ciclo posible</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Todos los caminos de Ana a Pedro:"</span><span class="p">)</span>
+<span class="n">caminos</span> <span class="o">=</span> <span class="n">encontrar_todos_los_caminos</span><span class="p">(</span><span class="n">red_con_ciclos</span><span class="p">,</span> <span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">camino</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">caminos</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Camino </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">' → '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">camino</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Ciclos detectados:"</span><span class="p">)</span>
+<span class="n">ciclos</span> <span class="o">=</span> <span class="n">detectar_ciclos</span><span class="p">(</span><span class="n">red_con_ciclos</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ciclo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ciclos</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Ciclo </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">' → '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ciclo</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="conectividad-y-componentes">
+    Conectividad y Componentes
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">encontrar_componentes_conectados</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Encuentra todos los componentes conectados en un grafo"""</span>
+    <span class="n">visitados</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">componentes</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dfs</span><span class="p">(</span><span class="n">nodo</span><span class="p">,</span> <span class="n">componente_actual</span><span class="p">):</span>
+        <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nodo</span><span class="p">)</span>
+        <span class="n">componente_actual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodo</span><span class="p">)</span>
+
+        <span class="c1"># Buscar todos los vecinos</span>
+        <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+            <span class="n">vecino</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo</span> <span class="ow">and</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo</span> <span class="ow">and</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">vecino</span><span class="p">:</span>
+                <span class="n">dfs</span><span class="p">(</span><span class="n">vecino</span><span class="p">,</span> <span class="n">componente_actual</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">nodo</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">nodo</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+            <span class="n">componente</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dfs</span><span class="p">(</span><span class="n">nodo</span><span class="p">,</span> <span class="n">componente</span><span class="p">)</span>
+            <span class="n">componentes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">componente</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">componentes</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_grado_nodos</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Calcula el grado (número de conexiones) de cada nodo"""</span>
+    <span class="n">grados</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodo</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">nodo</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]}</span>
+
+    <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+        <span class="n">grados</span><span class="p">[</span><span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">grados</span><span class="p">[</span><span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">grados</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">es_grafo_conectado</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Verifica si el grafo está completamente conectado"""</span>
+    <span class="n">componentes</span> <span class="o">=</span> <span class="n">encontrar_componentes_conectados</span><span class="p">(</span><span class="n">grafo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">componentes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+<span class="c1"># Ejemplo: Red social fragmentada</span>
+<span class="n">red_fragmentada</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">,</span> <span class="s1">'sofia'</span><span class="p">,</span> <span class="s1">'miguel'</span><span class="p">],</span>
+    <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># Grupo 1: Ana, Carlos, Lucia</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span>
+
+        <span class="c1"># Grupo 2: Pedro, Sofia (aislados del grupo 1)</span>
+        <span class="p">(</span><span class="s1">'pedro'</span><span class="p">,</span> <span class="s1">'sofia'</span><span class="p">),</span>
+
+        <span class="c1"># Miguel está completamente aislado</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Análisis de conectividad:"</span><span class="p">)</span>
+<span class="n">componentes</span> <span class="o">=</span> <span class="n">encontrar_componentes_conectados</span><span class="p">(</span><span class="n">red_fragmentada</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Número de componentes: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">componentes</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">comp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">componentes</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Componente </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">comp</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Grado de cada nodo:"</span><span class="p">)</span>
+<span class="n">grados</span> <span class="o">=</span> <span class="n">calcular_grado_nodos</span><span class="p">(</span><span class="n">red_fragmentada</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">nodo</span><span class="p">,</span> <span class="n">grado</span> <span class="ow">in</span> <span class="n">grados</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">nodo</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">grado</span><span class="si">}</span><span class="s2"> conexiones"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">¿Está conectado? </span><span class="si">{</span><span class="n">es_grafo_conectado</span><span class="p">(</span><span class="n">red_fragmentada</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="33-propiedades-importantes">
+    3.3 Propiedades Importantes
+   </h2>
+   <h3 id="densidad-del-grafo">
+    Densidad del Grafo
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calcular_densidad</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Calcula la densidad del grafo (0 = sin aristas, 1 = completo)"""</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">])</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">])</span>
+
+    <span class="c1"># Máximo número de aristas posibles en grafo no dirigido</span>
+    <span class="n">max_aristas</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="k">if</span> <span class="n">max_aristas</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">densidad</span> <span class="o">=</span> <span class="n">m</span> <span class="o">/</span> <span class="n">max_aristas</span>
+    <span class="k">return</span> <span class="n">densidad</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">comparar_redes_sociales</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Compara la densidad de diferentes redes sociales"""</span>
+
+    <span class="c1"># Red muy densa (todos conocen a todos)</span>
+    <span class="n">red_densa</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">],</span>
+        <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Red dispersa (pocas conexiones)</span>
+    <span class="n">red_dispersa</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">,</span> <span class="s1">'sofia'</span><span class="p">,</span> <span class="s1">'miguel'</span><span class="p">,</span> <span class="s1">'elena'</span><span class="p">],</span>
+        <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'sofia'</span><span class="p">,</span> <span class="s1">'miguel'</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Comparación de densidades:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Red densa: </span><span class="si">{</span><span class="n">calcular_densidad</span><span class="p">(</span><span class="n">red_densa</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Red dispersa: </span><span class="si">{</span><span class="n">calcular_densidad</span><span class="p">(</span><span class="n">red_dispersa</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="n">comparar_redes_sociales</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="diametro-del-grafo">
+    Diámetro del Grafo
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calcular_distancia_minima</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">origen</span><span class="p">,</span> <span class="n">destino</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Calcula la distancia mínima entre dos nodos usando BFS"""</span>
+    <span class="k">if</span> <span class="n">origen</span> <span class="o">==</span> <span class="n">destino</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+
+    <span class="n">cola</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([(</span><span class="n">origen</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+    <span class="n">visitados</span> <span class="o">=</span> <span class="p">{</span><span class="n">origen</span><span class="p">}</span>
+
+    <span class="k">while</span> <span class="n">cola</span><span class="p">:</span>
+        <span class="n">nodo_actual</span><span class="p">,</span> <span class="n">distancia</span> <span class="o">=</span> <span class="n">cola</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+        <span class="c1"># Buscar vecinos</span>
+        <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+            <span class="n">vecino</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">vecino</span> <span class="ow">and</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">vecino</span> <span class="o">==</span> <span class="n">destino</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">distancia</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+                <span class="n">cola</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vecino</span><span class="p">,</span> <span class="n">distancia</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">)</span>  <span class="c1"># No hay camino</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_diametro</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Calcula el diámetro del grafo (máxima distancia entre cualquier par de nodos)"""</span>
+    <span class="n">max_distancia</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">nodo1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">nodo2</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">][</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">distancia</span> <span class="o">=</span> <span class="n">calcular_distancia_minima</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">nodo1</span><span class="p">,</span> <span class="n">nodo2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">distancia</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">):</span>
+                <span class="n">max_distancia</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_distancia</span><span class="p">,</span> <span class="n">distancia</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">max_distancia</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analizar_distancias_red</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Analiza todas las distancias en una red"""</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Matriz de distancias:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"    "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">nodo</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">nodo</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">nodo1</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">nodo1</span><span class="si">:</span><span class="s2">&gt;3</span><span class="si">}</span><span class="s2"> "</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nodo2</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">nodo1</span> <span class="o">==</span> <span class="n">nodo2</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'0'</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">calcular_distancia_minima</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">nodo1</span><span class="p">,</span> <span class="n">nodo2</span><span class="p">)</span>
+                <span class="n">dist_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span> <span class="k">if</span> <span class="n">dist</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">'inf'</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"∞"</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dist_str</span><span class="si">:</span><span class="s2">&gt;6</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+    <span class="n">diametro</span> <span class="o">=</span> <span class="n">calcular_diametro</span><span class="p">(</span><span class="n">grafo</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Diámetro del grafo: </span><span class="si">{</span><span class="n">diametro</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Ejemplo de análisis</span>
+<span class="n">red_ejemplo</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">],</span>
+    <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'B'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'C'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">analizar_distancias_red</span><span class="p">(</span><span class="n">red_ejemplo</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="centralidad-de-nodos">
+    Centralidad de Nodos
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calcular_centralidad_grado</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Calcula la centralidad de grado (normalizada)"""</span>
+    <span class="n">grados</span> <span class="o">=</span> <span class="n">calcular_grado_nodos</span><span class="p">(</span><span class="n">grafo</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">])</span>
+    <span class="n">max_grado</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Máximo grado posible</span>
+
+    <span class="n">centralidad</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">nodo</span><span class="p">,</span> <span class="n">grado</span> <span class="ow">in</span> <span class="n">grados</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">centralidad</span><span class="p">[</span><span class="n">nodo</span><span class="p">]</span> <span class="o">=</span> <span class="n">grado</span> <span class="o">/</span> <span class="n">max_grado</span> <span class="k">if</span> <span class="n">max_grado</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">centralidad</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calcular_centralidad_intermediacion</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Calcula centralidad de intermediación (betweenness)"""</span>
+    <span class="n">centralidad</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodo</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">nodo</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]}</span>
+
+    <span class="c1"># Para cada par de nodos, encontrar todos los caminos más cortos</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">t</span><span class="p">:</span>
+                <span class="n">caminos_cortos</span> <span class="o">=</span> <span class="n">encontrar_caminos_mas_cortos</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">caminos_cortos</span><span class="p">:</span>
+                    <span class="c1"># Contar cuántos caminos pasan por cada nodo intermedio</span>
+                    <span class="k">for</span> <span class="n">camino</span> <span class="ow">in</span> <span class="n">caminos_cortos</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">nodo_intermedio</span> <span class="ow">in</span> <span class="n">camino</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># Excluir origen y destino</span>
+                            <span class="n">centralidad</span><span class="p">[</span><span class="n">nodo_intermedio</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">caminos_cortos</span><span class="p">)</span>
+
+    <span class="c1"># Normalizar</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">])</span>
+    <span class="n">normalizacion</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">1</span>
+
+    <span class="k">for</span> <span class="n">nodo</span> <span class="ow">in</span> <span class="n">centralidad</span><span class="p">:</span>
+        <span class="n">centralidad</span><span class="p">[</span><span class="n">nodo</span><span class="p">]</span> <span class="o">/=</span> <span class="n">normalizacion</span>
+
+    <span class="k">return</span> <span class="n">centralidad</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">encontrar_caminos_mas_cortos</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">inicio</span><span class="p">,</span> <span class="n">fin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Encuentra todos los caminos más cortos entre dos nodos"""</span>
+    <span class="k">if</span> <span class="n">inicio</span> <span class="o">==</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">inicio</span><span class="p">]]</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+
+    <span class="c1"># BFS para encontrar la distancia mínima</span>
+    <span class="n">cola</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([(</span><span class="n">inicio</span><span class="p">,</span> <span class="p">[</span><span class="n">inicio</span><span class="p">])])</span>
+    <span class="n">visitados</span> <span class="o">=</span> <span class="p">{</span><span class="n">inicio</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">caminos_cortos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">distancia_minima</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span> <span class="n">cola</span><span class="p">:</span>
+        <span class="n">nodo_actual</span><span class="p">,</span> <span class="n">camino_actual</span> <span class="o">=</span> <span class="n">cola</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">distancia_minima</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">camino_actual</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">distancia_minima</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+            <span class="n">vecino</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">vecino</span><span class="p">:</span>
+                <span class="n">nuevo_camino</span> <span class="o">=</span> <span class="n">camino_actual</span> <span class="o">+</span> <span class="p">[</span><span class="n">vecino</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">vecino</span> <span class="o">==</span> <span class="n">fin</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">distancia_minima</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">distancia_minima</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nuevo_camino</span><span class="p">)</span>
+                        <span class="n">caminos_cortos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nuevo_camino</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">nuevo_camino</span><span class="p">)</span> <span class="o">==</span> <span class="n">distancia_minima</span><span class="p">:</span>
+                        <span class="n">caminos_cortos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nuevo_camino</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span> <span class="ow">or</span> <span class="n">visitados</span><span class="p">[</span><span class="n">vecino</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nuevo_camino</span><span class="p">):</span>
+                    <span class="n">visitados</span><span class="p">[</span><span class="n">vecino</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nuevo_camino</span><span class="p">)</span>
+                    <span class="n">cola</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vecino</span><span class="p">,</span> <span class="n">nuevo_camino</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">caminos_cortos</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analizar_centralidades</span><span class="p">(</span><span class="n">grafo</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Analiza diferentes medidas de centralidad"""</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Análisis de Centralidades:"</span><span class="p">)</span>
+
+    <span class="n">cent_grado</span> <span class="o">=</span> <span class="n">calcular_centralidad_grado</span><span class="p">(</span><span class="n">grafo</span><span class="p">)</span>
+    <span class="n">cent_intermediacion</span> <span class="o">=</span> <span class="n">calcular_centralidad_intermediacion</span><span class="p">(</span><span class="n">grafo</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'Nodo'</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'Grado'</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'Intermediación'</span><span class="si">:</span><span class="s2">&lt;15</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"-"</span> <span class="o">*</span> <span class="mi">35</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">nodo</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'nodos'</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">nodo</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cent_grado</span><span class="p">[</span><span class="n">nodo</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;10.3f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cent_intermediacion</span><span class="p">[</span><span class="n">nodo</span><span class="p">]</span><span class="si">:</span><span class="s2">&lt;15.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Ejemplo: Red con nodo central importante</span>
+<span class="n">red_centralidad</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">],</span>
+    <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'centro'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'C'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="n">analizar_centralidades</span><span class="p">(</span><span class="n">red_centralidad</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="34-ejercicios-practicos">
+    3.4 Ejercicios Prácticos
+   </h2>
+   <h3 id="ejercicio-1-analisis-de-red-universitaria">
+    Ejercicio 1: Análisis de Red Universitaria
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Red de colaboración entre departamentos universitarios</span>
+<span class="n">universidad</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'departamentos'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">'informatica'</span><span class="p">,</span> <span class="s1">'matematicas'</span><span class="p">,</span> <span class="s1">'fisica'</span><span class="p">,</span> <span class="s1">'quimica'</span><span class="p">,</span> 
+        <span class="s1">'biologia'</span><span class="p">,</span> <span class="s1">'psicologia'</span><span class="p">,</span> <span class="s1">'economia'</span><span class="p">,</span> <span class="s1">'literatura'</span>
+    <span class="p">],</span>
+    <span class="s1">'colaboraciones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'informatica'</span><span class="p">,</span> <span class="s1">'matematicas'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'informatica'</span><span class="p">,</span> <span class="s1">'fisica'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'matematicas'</span><span class="p">,</span> <span class="s1">'fisica'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'matematicas'</span><span class="p">,</span> <span class="s1">'economia'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'fisica'</span><span class="p">,</span> <span class="s1">'quimica'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'quimica'</span><span class="p">,</span> <span class="s1">'biologia'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'biologia'</span><span class="p">,</span> <span class="s1">'psicologia'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'psicologia'</span><span class="p">,</span> <span class="s1">'literatura'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">'economia'</span><span class="p">,</span> <span class="s1">'psicologia'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analizar_universidad</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Realiza un análisis completo de la red universitaria"""</span>
+
+    <span class="c1"># TODO: Implementa las siguientes funciones:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">departamentos_mas_conectados</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Encuentra los departamentos con más colaboraciones"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">departamentos_puente</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Identifica departamentos que conectan diferentes áreas"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">areas_aisladas</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Encuentra grupos de departamentos que colaboran solo entre sí"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">proponer_nuevas_colaboraciones</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Sugiere nuevas colaboraciones para mejorar la conectividad"""</span>
+        <span class="k">pass</span>
+
+<span class="c1"># Implementa el análisis completo</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejercicio-2-red-de-distribucion-logistica">
+    Ejercicio 2: Red de Distribución Logística
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Red de centros de distribución y rutas</span>
+<span class="n">logistica</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'centros'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'madrid'</span><span class="p">,</span> <span class="s1">'barcelona'</span><span class="p">,</span> <span class="s1">'valencia'</span><span class="p">,</span> <span class="s1">'sevilla'</span><span class="p">,</span> <span class="s1">'bilbao'</span><span class="p">,</span> <span class="s1">'zaragoza'</span><span class="p">],</span>
+    <span class="s1">'rutas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'madrid'</span><span class="p">,</span> <span class="s1">'barcelona'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">400</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'madrid'</span><span class="p">,</span> <span class="s1">'valencia'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">250</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'madrid'</span><span class="p">,</span> <span class="s1">'sevilla'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">350</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'madrid'</span><span class="p">,</span> <span class="s1">'zaragoza'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">200</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'barcelona'</span><span class="p">,</span> <span class="s1">'zaragoza'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">180</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'valencia'</span><span class="p">,</span> <span class="s1">'barcelona'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">220</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'sevilla'</span><span class="p">,</span> <span class="s1">'valencia'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">450</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'bilbao'</span><span class="p">,</span> <span class="s1">'zaragoza'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">280</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'bilbao'</span><span class="p">,</span> <span class="s1">'madrid'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tiempo'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'costo'</span><span class="p">:</span> <span class="mi">320</span><span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">optimizar_logistica</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Optimiza la red de distribución"""</span>
+
+    <span class="c1"># TODO: Implementa:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ruta_mas_economica</span><span class="p">(</span><span class="n">origen</span><span class="p">,</span> <span class="n">destino</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Encuentra la ruta de menor costo"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">ruta_mas_rapida</span><span class="p">(</span><span class="n">origen</span><span class="p">,</span> <span class="n">destino</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Encuentra la ruta más rápida"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">centros_criticos</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Identifica centros cuya falla afectaría más la red"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">redundancia_rutas</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Analiza rutas alternativas disponibles"""</span>
+        <span class="k">pass</span>
+
+<span class="c1"># Implementa las optimizaciones</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejercicio-3-red-social-con-influencia">
+    Ejercicio 3: Red Social con Influencia
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Red social con diferentes tipos de influencia</span>
+<span class="n">red_influencia</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'usuarios'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'ana'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'seguidores'</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'tech'</span><span class="p">},</span>
+        <span class="s1">'carlos'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'seguidores'</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'deportes'</span><span class="p">},</span>
+        <span class="s1">'lucia'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'seguidores'</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'arte'</span><span class="p">},</span>
+        <span class="s1">'pedro'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'seguidores'</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'tech'</span><span class="p">},</span>
+        <span class="s1">'sofia'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'seguidores'</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'lifestyle'</span><span class="p">},</span>
+        <span class="s1">'miguel'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'seguidores'</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s1">'categoria'</span><span class="p">:</span> <span class="s1">'tech'</span><span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">'conexiones'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'carlos'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'menciona'</span><span class="p">,</span> <span class="s1">'frecuencia'</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'ana'</span><span class="p">,</span> <span class="s1">'pedro'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'colabora'</span><span class="p">,</span> <span class="s1">'frecuencia'</span><span class="p">:</span> <span class="mi">8</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'carlos'</span><span class="p">,</span> <span class="s1">'sofia'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'comparte'</span><span class="p">,</span> <span class="s1">'frecuencia'</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'lucia'</span><span class="p">,</span> <span class="s1">'ana'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'menciona'</span><span class="p">,</span> <span class="s1">'frecuencia'</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'pedro'</span><span class="p">,</span> <span class="s1">'miguel'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'colabora'</span><span class="p">,</span> <span class="s1">'frecuencia'</span><span class="p">:</span> <span class="mi">6</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'sofia'</span><span class="p">,</span> <span class="s1">'lucia'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'tipo'</span><span class="p">:</span> <span class="s1">'comparte'</span><span class="p">,</span> <span class="s1">'frecuencia'</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analizar_influencia</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Analiza patrones de influencia en la red social"""</span>
+
+    <span class="c1"># TODO: Implementa:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calcular_influencia_total</span><span class="p">(</span><span class="n">usuario</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Calcula influencia basada en seguidores y conexiones"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">detectar_influencers_por_categoria</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Encuentra influencers en cada categoría"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">medir_propagacion_contenido</span><span class="p">(</span><span class="n">usuario_origen</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Simula cómo se propaga contenido desde un usuario"""</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sugerir_colaboraciones</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">"""Sugiere colaboraciones entre usuarios de diferentes categorías"""</span>
+        <span class="k">pass</span>
+
+<span class="c1"># Implementa el análisis de influencia</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="35-algoritmos-fundamentales-de-recorrido">
+    3.5 Algoritmos Fundamentales de Recorrido
+   </h2>
+   <h3 id="busqueda-en-profundidad-dfs">
+    Búsqueda en Profundidad (DFS)
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">dfs_recursivo</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">nodo_inicio</span><span class="p">,</span> <span class="n">visitados</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">orden_visita</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Implementación recursiva de DFS"""</span>
+    <span class="k">if</span> <span class="n">visitados</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">visitados</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">orden_visita</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">orden_visita</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nodo_inicio</span><span class="p">)</span>
+    <span class="n">orden_visita</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodo_inicio</span><span class="p">)</span>
+
+    <span class="c1"># Visitar todos los vecinos no visitados</span>
+    <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+        <span class="n">vecino</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_inicio</span> <span class="ow">and</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+            <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_inicio</span> <span class="ow">and</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+            <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">vecino</span><span class="p">:</span>
+            <span class="n">dfs_recursivo</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">vecino</span><span class="p">,</span> <span class="n">visitados</span><span class="p">,</span> <span class="n">orden_visita</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">orden_visita</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">dfs_iterativo</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">nodo_inicio</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Implementación iterativa de DFS usando pila"""</span>
+    <span class="n">visitados</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">pila</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodo_inicio</span><span class="p">]</span>
+    <span class="n">orden_visita</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">while</span> <span class="n">pila</span><span class="p">:</span>
+        <span class="n">nodo_actual</span> <span class="o">=</span> <span class="n">pila</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">nodo_actual</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+            <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nodo_actual</span><span class="p">)</span>
+            <span class="n">orden_visita</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodo_actual</span><span class="p">)</span>
+
+            <span class="c1"># Agregar vecinos a la pila</span>
+            <span class="n">vecinos</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                    <span class="n">vecinos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                    <span class="n">vecinos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="c1"># Agregar en orden inverso para mantener orden alfabético</span>
+            <span class="k">for</span> <span class="n">vecino</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">vecinos</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                    <span class="n">pila</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">orden_visita</span>
+
+<span class="c1"># Ejemplo de uso</span>
+<span class="n">grafo_ejemplo</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'nodos'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">,</span> <span class="s1">'F'</span><span class="p">],</span>
+    <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'B'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">),</span> 
+        <span class="p">(</span><span class="s1">'C'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'D'</span><span class="p">,</span> <span class="s1">'F'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'E'</span><span class="p">,</span> <span class="s1">'F'</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"DFS Recursivo desde A:"</span><span class="p">,</span> <span class="n">dfs_recursivo</span><span class="p">(</span><span class="n">grafo_ejemplo</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"DFS Iterativo desde A:"</span><span class="p">,</span> <span class="n">dfs_iterativo</span><span class="p">(</span><span class="n">grafo_ejemplo</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">))</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="busqueda-en-amplitud-bfs">
+    Búsqueda en Amplitud (BFS)
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bfs</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">nodo_inicio</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Implementación de BFS usando cola"""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+
+    <span class="n">visitados</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">cola</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([</span><span class="n">nodo_inicio</span><span class="p">])</span>
+    <span class="n">orden_visita</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nodo_inicio</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">cola</span><span class="p">:</span>
+        <span class="n">nodo_actual</span> <span class="o">=</span> <span class="n">cola</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="n">orden_visita</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodo_actual</span><span class="p">)</span>
+
+        <span class="c1"># Buscar vecinos y agregarlos a la cola</span>
+        <span class="n">vecinos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecinos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecinos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Agregar vecinos no visitados en orden alfabético</span>
+        <span class="k">for</span> <span class="n">vecino</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">vecinos</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                <span class="n">visitados</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+                <span class="n">cola</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vecino</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">orden_visita</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">bfs_con_niveles</span><span class="p">(</span><span class="n">grafo</span><span class="p">,</span> <span class="n">nodo_inicio</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""BFS que también retorna el nivel de cada nodo"""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+
+    <span class="n">visitados</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodo_inicio</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">cola</span> <span class="o">=</span> <span class="n">deque</span><span class="p">([(</span><span class="n">nodo_inicio</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+    <span class="n">orden_visita</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">while</span> <span class="n">cola</span><span class="p">:</span>
+        <span class="n">nodo_actual</span><span class="p">,</span> <span class="n">nivel_actual</span> <span class="o">=</span> <span class="n">cola</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="n">orden_visita</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nodo_actual</span><span class="p">,</span> <span class="n">nivel_actual</span><span class="p">))</span>
+
+        <span class="c1"># Buscar vecinos</span>
+        <span class="k">for</span> <span class="n">arista</span> <span class="ow">in</span> <span class="n">grafo</span><span class="p">[</span><span class="s1">'aristas'</span><span class="p">]:</span>
+            <span class="n">vecino</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">arista</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">nodo_actual</span><span class="p">:</span>
+                <span class="n">vecino</span> <span class="o">=</span> <span class="n">arista</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">vecino</span> <span class="ow">and</span> <span class="n">vecino</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visitados</span><span class="p">:</span>
+                <span class="n">visitados</span><span class="p">[</span><span class="n">vecino</span><span class="p">]</span> <span class="o">=</span> <span class="n">nivel_actual</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">cola</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vecino</span><span class="p">,</span> <span class="n">nivel_actual</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">orden_visita</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"BFS desde A:"</span><span class="p">,</span> <span class="n">bfs</span><span class="p">(</span><span class="n">grafo_ejemplo</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"BFS con niveles desde A:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">nodo</span><span class="p">,</span> <span class="n">nivel</span> <span class="ow">in</span> <span class="n">bfs_con_niveles</span><span class="p">(</span><span class="n">grafo_ejemplo</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">nodo</span><span class="si">}</span><span class="s2">: nivel </span><span class="si">{</span><span class="n">nivel</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="36-comparacion-y-aplicaciones">
+    3.6 Comparación y Aplicaciones
+   </h2>
+   <h3 id="cuando-usar-cada-algoritmo">
+    Cuándo Usar Cada Algoritmo
+   </h3>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">comparar_algoritmos_recorrido</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Compara DFS vs BFS en diferentes escenarios"""</span>
+
+    <span class="c1"># Crear un grafo más complejo</span>
+    <span class="n">grafo_complejo</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'nodos'</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="s1">'ABCDEFGHIJ'</span><span class="p">),</span>
+        <span class="s1">'aristas'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'B'</span><span class="p">,</span> <span class="s1">'E'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'B'</span><span class="p">,</span> <span class="s1">'F'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'C'</span><span class="p">,</span> <span class="s1">'G'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'C'</span><span class="p">,</span> <span class="s1">'H'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'D'</span><span class="p">,</span> <span class="s1">'I'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'D'</span><span class="p">,</span> <span class="s1">'J'</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'E'</span><span class="p">,</span> <span class="s1">'F'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'G'</span><span class="p">,</span> <span class="s1">'H'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'I'</span><span class="p">,</span> <span class="s1">'J'</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Comparación de algoritmos de recorrido:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"=========================================="</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"DFS - Exploración en profundidad:"</span><span class="p">)</span>
+    <span class="n">dfs_resultado</span> <span class="o">=</span> <span class="n">dfs_recursivo</span><span class="p">(</span><span class="n">grafo_complejo</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Orden: </span><span class="si">{</span><span class="s1">' → '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dfs_resultado</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">BFS - Exploración por niveles:"</span><span class="p">)</span>
+    <span class="n">bfs_resultado</span> <span class="o">=</span> <span class="n">bfs_con_niveles</span><span class="p">(</span><span class="n">grafo_complejo</span><span class="p">,</span> <span class="s1">'A'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">nivel</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">nivel</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">nivel</span> <span class="ow">in</span> <span class="n">bfs_resultado</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">nodos_nivel</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodo</span> <span class="k">for</span> <span class="n">nodo</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">bfs_resultado</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">nivel</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Nivel </span><span class="si">{</span><span class="n">nivel</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">nodos_nivel</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Aplicaciones típicas:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"DFS:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Detectar ciclos"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Encontrar componentes conectados"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Resolver laberintos"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Análisis de dependencias"</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">BFS:"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Camino más corto (sin pesos)"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Análisis de grados de separación"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Propagación en redes sociales"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  - Algoritmos de búsqueda web"</span><span class="p">)</span>
+
+<span class="n">comparar_algoritmos_recorrido</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="37-resumen-de-conceptos-clave">
+    3.7 Resumen de Conceptos Clave
+   </h2>
+   <h3 id="checklist-de-conceptos-importantes">
+    Checklist de Conceptos Importantes
+   </h3>
+   <ul>
+    <li>
+     [ ]
+     <strong>
+      Tipos de grafos
+     </strong>
+    </li>
+    <li>
+     Dirigidos vs no dirigidos
+    </li>
+    <li>
+     Ponderados vs no ponderados
+    </li>
+    <li>
+     <p>
+      Multigrafos
+     </p>
+    </li>
+    <li>
+     <p>
+      [ ]
+      <strong>
+       Propiedades fundamentales
+      </strong>
+     </p>
+    </li>
+    <li>
+     Caminos y ciclos
+    </li>
+    <li>
+     Conectividad
+    </li>
+    <li>
+     Componentes conectados
+    </li>
+    <li>
+     <p>
+      Grado de nodos
+     </p>
+    </li>
+    <li>
+     <p>
+      [ ]
+      <strong>
+       Métricas importantes
+      </strong>
+     </p>
+    </li>
+    <li>
+     Densidad del grafo
+    </li>
+    <li>
+     Diámetro del grafo
+    </li>
+    <li>
+     <p>
+      Centralidad (grado, intermediación)
+     </p>
+    </li>
+    <li>
+     <p>
+      [ ]
+      <strong>
+       Algoritmos básicos
+      </strong>
+     </p>
+    </li>
+    <li>
+     DFS (Búsqueda en profundidad)
+    </li>
+    <li>
+     BFS (Búsqueda en amplitud)
+    </li>
+    <li>
+     Detección de ciclos
+    </li>
+    <li>
+     Componentes conectados
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="38-preparacion-para-el-siguiente-tema">
+    3.8 Preparación para el Siguiente Tema
+   </h2>
+   <p>
+    En el próximo tema exploraremos el
+    <strong>
+     modelado de datos con grafos
+    </strong>
+    , incluyendo:
+- Cómo identificar entidades y relaciones
+- Patrones comunes de modelado
+- Ejercicios prácticos de diseño
+   </p>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssCode = document.getElementById('css-editor').value;
+    var style = document.createElement('style');
+    style.textContent = cssCode;
+    document.head.appendChild(style);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+    setTimeout(function() {
+        document.querySelectorAll('.toggle-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+            if (!btn.textContent.trim()) {
+                btn.textContent = '+';
+            }
+        });
+        document.querySelectorAll('.copy-button').forEach(btn => {
+            btn.style.setProperty('color', 'black', 'important');
+        });
+    }, 1000);
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>
