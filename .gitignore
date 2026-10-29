@@ -76,3 +76,6 @@ pids/
 
 # Testing
 test-output/
+
+# Python
+__pycache__/

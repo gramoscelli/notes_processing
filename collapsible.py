@@ -69,8 +69,8 @@ COLLAPSIBLE_CSS = """
   height: 42px;
   background: linear-gradient(
     to bottom, 
-    rgba(255,249,229,0), 
-    rgba(255,249,229,1)
+    rgba(254,246,228,0),
+    rgba(254,246,228,1)
   );
   pointer-events: none;
   z-index: 5;
@@ -99,7 +99,8 @@ COLLAPSIBLE_JS = """(function() {
     setTimeout(() => {
       document.querySelectorAll('.collapsible-container').forEach(container => {
         const pre = container.querySelector('pre');
-        if (!pre) return;
+        // Se inicializa en DOMContentLoaded y de nuevo en load: no duplicar botones
+        if (!pre || container.dataset.collapsibleInit) return;
         
         const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
         
@@ -119,20 +120,13 @@ COLLAPSIBLE_JS = """(function() {
         const fullHeight = pre.scrollHeight;
         const collapsedHeight = Math.ceil(lineHeight * maxLines);
         
-        console.log('Debug:', {
-          maxLines,
-          lineHeight,
-          fullHeight,
-          collapsedHeight,
-          shouldCollapse: fullHeight > collapsedHeight + 10
-        });
-        
         // Solo colapsar si realmente es necesario
         if (fullHeight <= collapsedHeight + 10) {
           return;
         }
 
         // Estado inicial: colapsado
+        container.dataset.collapsibleInit = '1';
         container.style.maxHeight = collapsedHeight + 'px';
         container.classList.add('collapsed');
 
@@ -141,6 +135,8 @@ COLLAPSIBLE_JS = """(function() {
         copyBtn.className = 'copy-button';
         copyBtn.innerHTML = '📋';
         copyBtn.title = 'Copiar código';
+        // !important para que no lo pise el color de botones del tema (Moodle)
+        copyBtn.style.setProperty('color', 'black', 'important');
         container.appendChild(copyBtn);
 
         // Evento para copiar el texto del <pre> al portapapeles
@@ -163,6 +159,7 @@ COLLAPSIBLE_JS = """(function() {
         btn.className = 'toggle-button';
         btn.textContent = '+';
         btn.title = 'Expandir/Colapsar código';
+        btn.style.setProperty('color', 'black', 'important');
         container.appendChild(btn);
 
         // Crear overlay y ellipsis

@@ -1,38 +1,31 @@
-import sys
 import os
-import re
+import base64
 import argparse
 from bs4 import BeautifulSoup
 
 def _parse_arguments():
     parser = argparse.ArgumentParser(description='Convertir estilos CSS en <style> a inline y mover scripts.')
-    parser.add_argument('input_file', help='Input HTML file')
+    parser.add_argument('input_file', help='Archivo HTML de entrada')
     parser.add_argument('-o', '--output', nargs='?', const=True,
-                        help='Optional output file name. If used without value, default to input filename with _inline.')
+                        help='Archivo de salida (por defecto: <entrada>_inline.html)')
     return parser.parse_args()
 
 def process_mermaid_divs(soup):
-    """Procesa todos los divs de clase 'mermaid' para codificar saltos de línea como #10"""
+    """Guarda el código de cada div 'mermaid' en base64 en data-mermaid-src.
+    Moodle altera los saltos de línea del texto, pero no los atributos data-*;
+    un script restaura el código antes de que Mermaid.js lo procese."""
     mermaid_divs = soup.find_all("div", class_="mermaid")
-    
     for div in mermaid_divs:
-        # Obtener el contenido del div
-        if div.string:
-            # Reemplazar saltos de línea Windows (\r\n) y Unix (\n) por #10
-            content = div.string
-            content = content.replace('\r\n', '#10')  # Windows
-            content = content.replace('\n', '#10')    # Unix/Linux
-            content = content.replace('\r', '#10')    # Mac clásico (por completitud)
-            div.string = content
-        else:
-            # Si el div tiene contenido mixto (texto + otros elementos)
-            for text_node in div.find_all(string=True):
-                if text_node.parent.name != 'script':  # Evitar procesar scripts internos
-                    new_text = str(text_node)
-                    new_text = new_text.replace('\r\n', '#10')
-                    new_text = new_text.replace('\n', '#10')
-                    new_text = new_text.replace('\r', '#10')
-                    text_node.replace_with(new_text)
+        codigo = div.get_text().replace('\r\n', '\n')
+        div['data-mermaid-src'] = base64.b64encode(codigo.encode('utf-8')).decode('ascii')
+    return mermaid_divs
+
+def _asegurar_body(soup):
+    """Devuelve el <body>, creándolo si no existe."""
+    if not soup.body:
+        body = soup.new_tag("body")
+        (soup.html or soup).append(body)
+    return soup.body
 
 def _merge_style(tag, new_styles):
     """Agrega estilos inline a un tag sin perder los existentes."""
@@ -107,8 +100,7 @@ def main():
             wrapped_scripts.append(new_script)
         tag.decompose()  # Eliminar el <script> original del <head>
 
-    # NUEVA FUNCIONALIDAD: Procesar divs de clase "mermaid"
-    process_mermaid_divs(soup)
+    mermaid_divs = process_mermaid_divs(soup)
 
     # Aplicar estilos responsivos críticos como atributos inline directamente
     # en SVGs e imágenes, para que funcionen en Moodle incluso si el JS
@@ -124,9 +116,7 @@ def main():
         textarea_tag.string = css_content
 
         # Insertar el <textarea> al final del <body>
-        if not soup.body:
-            soup.body = soup.new_tag("body")
-        soup.body.append(textarea_tag)
+        _asegurar_body(soup).append(textarea_tag)
 
         # Agregar script que recargue el CSS desde el <textarea>
         css_loader_script = soup.new_tag("script")
@@ -138,19 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
         var style = document.createElement('style');
         style.textContent = cssCode;
         document.head.appendChild(style);
-        
-        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
-        setTimeout(function() {
-            document.querySelectorAll('.toggle-button').forEach(btn => {
-                btn.style.setProperty('color', 'black', 'important');
-                if (!btn.textContent.trim()) {
-                    btn.textContent = '+';
-                }
-            });
-            document.querySelectorAll('.copy-button').forEach(btn => {
-                btn.style.setProperty('color', 'black', 'important');
-            });
-        }, 1000);
     }
 });
 """
@@ -169,27 +146,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 """
-        if not soup.body:
-            soup.body = soup.new_tag("body")
-        soup.body.append(viewbox_restore_script)
+        _asegurar_body(soup).append(viewbox_restore_script)
 
     # Insertar los scripts originalmente extraídos y envueltos
-    if not soup.body:
-        soup.body = soup.new_tag("body")
+    body = _asegurar_body(soup)
     for tag in wrapped_scripts:
-        soup.body.append(tag)
+        body.append(tag)
 
-    # Agregar script para restaurar saltos de línea en divs mermaid solo si hay divs mermaid
+    # Script para restaurar el código de los divs mermaid desde data-mermaid-src.
     # IMPORTANTE: debe ejecutarse de forma sincrónica ANTES del módulo mermaid,
     # que usa startOnLoad y se dispara en DOMContentLoaded.
-    mermaid_divs = soup.find_all("div", class_="mermaid")
     if mermaid_divs:
         mermaid_restore_script = soup.new_tag("script")
         mermaid_restore_script.string = """
-// Restaurar saltos de línea antes de que mermaid los procese
-var mermaidDivs = document.querySelectorAll('div.mermaid');
-mermaidDivs.forEach(function(div) {
-    div.innerHTML = div.innerHTML.replace(/#10/g, '\\n');
+document.querySelectorAll('div.mermaid[data-mermaid-src]').forEach(function(div) {
+    var bytes = Uint8Array.from(atob(div.dataset.mermaidSrc), function(c) { return c.charCodeAt(0); });
+    div.textContent = new TextDecoder().decode(bytes);
 });
 """
         # Insertar ANTES del script module de mermaid para que se ejecute primero
@@ -197,10 +169,10 @@ mermaidDivs.forEach(function(div) {
         if mermaid_script:
             mermaid_script.insert_before(mermaid_restore_script)
         else:
-            soup.body.append(mermaid_restore_script)
+            body.append(mermaid_restore_script)
 
     with open(archivo_salida, "w", encoding="utf-8") as f:
-        f.write(str(soup.prettify()).replace(' viewbox=', ' viewBox='))
+        f.write(str(soup).replace(' viewbox=', ' viewBox='))
 
     print(f"Archivo procesado: {archivo_entrada}")
     print(f"Archivo de salida: {archivo_salida}")

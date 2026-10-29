@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 Pre-renderiza bloques Mermaid en un HTML a SVG inline usando mmdc (mermaid-cli).
-Elimina la dependencia de Mermaid.js en el cliente.
+Elimina la dependencia de Mermaid.js en el cliente. Si mmdc no está instalado
+o algún diagrama falla, se conserva Mermaid.js para que se renderice en el navegador.
 """
 import os
 import re
@@ -26,10 +27,14 @@ def render_mermaid_to_svg(code, tmpdir, index):
     with open(input_path, 'w', encoding='utf-8') as f:
         f.write(code)
 
-    result = subprocess.run(
-        ['mmdc', '-i', input_path, '-o', output_path, '-b', 'transparent', '--quiet'],
-        capture_output=True, text=True, timeout=30
-    )
+    try:
+        result = subprocess.run(
+            ['mmdc', '-i', input_path, '-o', output_path, '-b', 'transparent', '--quiet'],
+            capture_output=True, text=True, timeout=30
+        )
+    except subprocess.TimeoutExpired:
+        print(f"  Error en diagrama {index + 1}: mmdc no respondió en 30 s")
+        return None
 
     if result.returncode != 0:
         print(f"  Error en diagrama {index + 1}: {result.stderr.strip()}")
@@ -50,7 +55,7 @@ def clean_svg(svg_content, index):
     # Moodle stripea width, height y viewBox del <svg>, así que:
     # 1. Guardamos viewBox en data-viewbox (Moodle no stripea data-*)
     # 2. Ponemos las dimensiones en CSS style (que Moodle preserva)
-    vb_match = re.search(r'viewBox="([\d.]+ [\d.]+ ([\d.]+) ([\d.]+))"', svg_content)
+    vb_match = re.search(r'viewBox="(-?[\d.]+ -?[\d.]+ ([\d.]+) ([\d.]+))"', svg_content)
     if vb_match:
         vb_full = vb_match.group(1)
         vb_width = vb_match.group(2)
@@ -73,6 +78,24 @@ def clean_svg(svg_content, index):
     return svg_content
 
 
+def quitar_mermaid_js(soup, verbose):
+    """Elimina el script de Mermaid.js y los estilos de .mermaid, que ya no se necesitan."""
+    for script in soup.find_all('script'):
+        text = script.string or ''
+        src = script.get('src', '')
+        if 'mermaid' in src or 'mermaid' in text:
+            if verbose:
+                print(f"  Eliminando script de mermaid: {src or text[:50]}")
+            script.decompose()
+
+    # Eliminar estilos de .mermaid que ya no aplican
+    for style in soup.find_all('style'):
+        if style.string and '.mermaid' in style.string:
+            style.string = re.sub(
+                r'\.mermaid\s*\{[^}]*\}', '', style.string
+            )
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Pre-renderiza bloques Mermaid en HTML a SVG inline usando mmdc'
@@ -87,11 +110,14 @@ def main():
 
     args = parser.parse_args()
 
-    if not shutil.which('mmdc'):
-        print("Error: mmdc no encontrado. Instalar con: npm install -g @mermaid-js/mermaid-cli")
-        sys.exit(1)
-
     output_file = args.output or args.input_file
+
+    if not shutil.which('mmdc'):
+        print("Aviso: mmdc no encontrado; los diagramas se renderizarán en el navegador con Mermaid.js.")
+        print("       Para pre-renderizarlos: npm install -g @mermaid-js/mermaid-cli")
+        if output_file != args.input_file:
+            shutil.copyfile(args.input_file, output_file)
+        return
 
     with open(args.input_file, 'r', encoding='utf-8') as f:
         soup = BeautifulSoup(f, 'html.parser')
@@ -111,8 +137,6 @@ def main():
         ok = 0
         for i, div in enumerate(mermaid_blocks):
             code = div.get_text().strip()
-            # Restaurar saltos de línea si están codificados como #10
-            code = code.replace('#10', '\n')
 
             if args.verbose:
                 print(f"  Diagrama {i + 1}: {code[:60]}...")
@@ -127,23 +151,11 @@ def main():
                 div.replace_with(container)
                 ok += 1
             else:
-                print(f"  Diagrama {i + 1} falló, se mantiene como texto")
+                print(f"  Diagrama {i + 1} falló; se renderizará en el navegador con Mermaid.js")
 
-    # Eliminar el script de mermaid.js (ya no se necesita)
-    for script in soup.find_all('script'):
-        text = script.string or ''
-        src = script.get('src', '')
-        if 'mermaid' in src or 'mermaid' in text:
-            if args.verbose:
-                print(f"  Eliminando script de mermaid: {src or text[:50]}")
-            script.decompose()
-
-    # Eliminar estilos de .mermaid que ya no aplican
-    for style in soup.find_all('style'):
-        if style.string and '.mermaid' in style.string:
-            style.string = re.sub(
-                r'\.mermaid\s*\{[^}]*\}', '', style.string
-            )
+    # Si quedó algún diagrama sin renderizar, se conserva Mermaid.js y sus estilos
+    if ok == len(mermaid_blocks):
+        quitar_mermaid_js(soup, args.verbose)
 
     output_html = str(soup)
     # BeautifulSoup html.parser convierte atributos SVG camelCase a minúsculas

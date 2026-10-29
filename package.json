@@ -1,17 +1,9 @@
 {
-  "name": "db2",
+  "name": "build-docs",
   "version": "1.0.0",
   "main": "add_content_table.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
   "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "css": "^3.0.0",
-    "jsdom": "^26.1.0",
-    "parse5": "^7.3.0",
-    "parse5-htmlparser2-tree-adapter": "^7.1.0"
-  }
+  "description": "Conversión de apuntes Markdown a HTML autocontenido",
+  "private": true
 }
