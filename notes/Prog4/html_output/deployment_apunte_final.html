@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   deployment_apunte
+  </title>
+ </head>
+ <body>
+  <h1 id="apunte-deployment-de-aplicaciones-web-docker-nginx-ssl-cicd-cloud">
+   🚀 Apunte: Deployment de Aplicaciones Web (Docker, Nginx, SSL, CI/CD, Cloud)
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-que-es-deployment">
+      1) ¿Qué es Deployment?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-tipos-de-servicios">
+      2) Tipos de Servicios
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-modalidades-de-infraestructura">
+      3) Modalidades de Infraestructura
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-proveedores-cloud-mas-usados">
+      4) Proveedores Cloud más usados
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-entornos-de-despliegue">
+      4) Entornos de despliegue
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-usar-dominio-en-desarrollo-local">
+      5) Usar dominio en desarrollo local
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-usar-nginx-como-proxy-reverso-en-docker">
+      6) Usar NGINX como proxy reverso en Docker
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-configurar-nginx-para-proxy-ssl">
+      7) Configurar NGINX para proxy + SSL
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-generar-certificados-con-lets-encrypt">
+      8) Generar certificados con Let's Encrypt
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-https-en-local-con-mkcert">
+      9) HTTPS en local con mkcert
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-cicd-automatizacion-del-despliegue">
+      🔄 10) CI/CD — Automatización del despliegue
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#11-observabilidad-monitoreo">
+      11) Observabilidad (Monitoreo)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#12-seguridad-minima-recomendada">
+      12) Seguridad mínima recomendada
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#resumen">
+      ✅ Resumen
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="1-que-es-deployment">
+    1) ¿Qué es Deployment?
+   </h2>
+   <p>
+    Desplegar (
+    <em>
+     deploy
+    </em>
+    ) es el proceso de mover una aplicación desde la
+etapa de desarrollo hasta un entorno donde los usuarios puedan
+utilizarla. Involucra:
+   </p>
+   <ul>
+    <li>
+     Configurar servidores
+    </li>
+    <li>
+     Publicar servicios
+    </li>
+    <li>
+     Asegurar escalabilidad, seguridad y monitoreo
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-tipos-de-servicios">
+    2) Tipos de Servicios
+   </h2>
+   <p>
+    Aquí tienes un
+    <strong>
+     apunte corto y claro
+    </strong>
+    , separado específicamente sobre los
+    <strong>
+     tipos de servicios en la nube
+    </strong>
+    :
+   </p>
+   <h3 id="tipos-de-servicios-en-la-nube-cloud-service-models">
+    ☁️
+    <strong>
+     Tipos de Servicios en la Nube (Cloud Service Models)
+    </strong>
+   </h3>
+   <p>
+    Los servicios cloud se clasifican según
+    <strong>
+     qué nivel de control y responsabilidad tiene el usuario vs el proveedor
+    </strong>
+    .
+   </p>
+   <h3 id="1-iaas-infrastructure-as-a-service">
+    1️⃣
+    <strong>
+     IaaS – Infrastructure as a Service
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     (Infraestructura como Servicio)
+    </strong>
+   </p>
+   <p>
+    El proveedor da
+    <strong>
+     servidores, almacenamiento y redes
+    </strong>
+    .
+Vos administrás el sistema operativo, aplicaciones y configuración.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Administra el proveedor
+      </th>
+      <th>
+       Administra el usuario
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Servidores, red, storage, virtualización
+      </td>
+      <td>
+       SO, actualizaciones, apps, bases de datos, seguridad interna
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    ✅ Control total
+✅ Ideal para instalar Docker, bases de datos, etc
+❌ Requiere conocimientos de administración de servidores
+   </p>
+   <p>
+    <strong>
+     Ejemplos:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     AWS EC2
+    </li>
+    <li>
+     Google Compute Engine
+    </li>
+    <li>
+     Azure Virtual Machines
+    </li>
+    <li>
+     DigitalOcean Droplets
+    </li>
+    <li>
+     Hetzner VPS
+    </li>
+   </ul>
+   <h3 id="2-paas-platform-as-a-service">
+    2️⃣
+    <strong>
+     PaaS – Platform as a Service
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     (Plataforma como Servicio)
+    </strong>
+   </p>
+   <p>
+    El proveedor da
+    <strong>
+     todo el entorno listo para desplegar apps
+    </strong>
+    .
+No te ocupás del sistema operativo ni del servidor.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Administra el proveedor
+      </th>
+      <th>
+       Administra el usuario
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       SO, red, runtime, escalado, seguridad
+      </td>
+      <td>
+       Código, configuración, datos
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    ✅ Muy fácil desplegar apps
+✅ CI/CD y escalado a veces automaticos
+❌ Menos control técnico, puede ser caro
+   </p>
+   <p>
+    <strong>
+     Ejemplos:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Heroku
+    </li>
+    <li>
+     Render
+    </li>
+    <li>
+     Railway
+    </li>
+    <li>
+     Google App Engine
+    </li>
+    <li>
+     Azure App Service
+    </li>
+   </ul>
+   <h3 id="3-saas-software-as-a-service">
+    3️⃣
+    <strong>
+     SaaS – Software as a Service
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     (Software como Servicio)
+    </strong>
+   </p>
+   <p>
+    Es software listo para usar desde el navegador.
+No se programa ni se administra infraestructura.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Todo lo administra el proveedor
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Servidores, red, app, datos, seguridad
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    ✅ No requiere conocimientos técnicos
+❌ No permite modificar la infraestructura
+   </p>
+   <p>
+    <strong>
+     Ejemplos:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Gmail
+    </li>
+    <li>
+     Google Drive
+    </li>
+    <li>
+     Notion
+    </li>
+    <li>
+     Slack
+    </li>
+    <li>
+     Microsoft 365
+    </li>
+   </ul>
+   <h3 id="4-caas-containers-as-a-service">
+    4️⃣
+    <strong>
+     CaaS – Containers as a Service
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     (Contenedores como Servicio)
+    </strong>
+   </p>
+   <p>
+    Plataformas específicas para desplegar
+    <strong>
+     Docker/Kubernetes
+    </strong>
+    sin administrar servidores directamente.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Proveedor maneja
+      </th>
+      <th>
+       Usuario maneja
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Orquestación, nodos, escalado
+      </td>
+      <td>
+       Imágenes Docker, servicios
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    ✅ Ideal si trabajás con contenedores
+✅ Escala fácil
+❌ Puede ser complejo si usa Kubernetes
+   </p>
+   <p>
+    <strong>
+     Ejemplos:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     AWS ECS / EKS
+    </li>
+    <li>
+     Google GKE
+    </li>
+    <li>
+     Azure AKS
+    </li>
+    <li>
+     Docker Swarm (Cloud providers lo ofrecen como servicio)
+    </li>
+    <li>
+     Railway / Render (bajo el capó usan contenedores)
+    </li>
+   </ul>
+   <h3 id="5-faas-function-as-a-service-serverless">
+    5️⃣
+    <strong>
+     FaaS – Function as a Service (Serverless)
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     (Funciones como Servicio)
+    </strong>
+   </p>
+   <p>
+    No hay servidor, solo subís funciones que se ejecutan cuando se llaman.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Proveedor maneja
+      </th>
+      <th>
+       Usuario maneja
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Servidores, escalado, ejecución
+      </td>
+      <td>
+       Código de funciones
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    ✅ Se paga solo por uso
+✅ Escala automáticamente
+❌ No ideal para apps tradicionales largas o con estado
+   </p>
+   <p>
+    <strong>
+     Ejemplos:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     AWS Lambda
+    </li>
+    <li>
+     Google Cloud Functions
+    </li>
+    <li>
+     Azure Functions
+    </li>
+    <li>
+     Cloudflare Workers
+    </li>
+   </ul>
+   <h3 id="6-baas-backend-as-a-service">
+    6️⃣
+    <strong>
+     BaaS – Backend as a Service
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     (Backend listo para usar)
+    </strong>
+   </p>
+   <p>
+    Servicios ya listos como autenticación, base de datos, storage, notificaciones.
+   </p>
+   <p>
+    ✅ No hay que programar backend desde cero
+❌ Dependencia del proveedor
+   </p>
+   <p>
+    <strong>
+     Ejemplos:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Firebase
+    </li>
+    <li>
+     Supabase
+    </li>
+    <li>
+     Appwrite
+    </li>
+   </ul>
+   <h3 id="resumen-rapido">
+    Resumen rápido
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Te da
+      </th>
+      <th>
+       Vos controlás
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        IaaS
+       </strong>
+      </td>
+      <td>
+       Servidores virtuales
+      </td>
+      <td>
+       SO, apps, deploy
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        PaaS
+       </strong>
+      </td>
+      <td>
+       Plataforma lista para apps
+      </td>
+      <td>
+       Código y datos
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        SaaS
+       </strong>
+      </td>
+      <td>
+       Software listo
+      </td>
+      <td>
+       Uso del software
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        CaaS
+       </strong>
+      </td>
+      <td>
+       Contenedores listos para correr
+      </td>
+      <td>
+       Contenedores y servicios
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        FaaS
+       </strong>
+      </td>
+      <td>
+       Funciones serverless
+      </td>
+      <td>
+       Lógica de funciones
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        BaaS
+       </strong>
+      </td>
+      <td>
+       Backend listo (auth, DB, storage)
+      </td>
+      <td>
+       Uso y lógica de negocio
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-modalidades-de-infraestructura">
+    3) Modalidades de Infraestructura
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Descripción
+      </th>
+      <th>
+       Ventajas
+      </th>
+      <th>
+       Desventajas
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Máquina virtual (VM)
+       </strong>
+      </td>
+      <td>
+       Servidores virtuales (EC2, Azure VM, DigitalOcean Droplet)
+      </td>
+      <td>
+       Control total, usar Docker
+      </td>
+      <td>
+       Administrar el sistema, parches, etc
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Infraestructura como Servicio (IaaS)
+       </strong>
+      </td>
+      <td>
+       Servidores bajo demanda
+      </td>
+      <td>
+       Flexibilidad, escalabilidad
+      </td>
+      <td>
+       Costos variables, requiere experiencia
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Plataforma como Servicio (PaaS)
+       </strong>
+      </td>
+      <td>
+       No gestionas servidores (Heroku, Railway, Render)
+      </td>
+      <td>
+       Deploy rápido
+      </td>
+      <td>
+       Menos control, costos altos a escala
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Serverless
+       </strong>
+      </td>
+      <td>
+       Sin servidores, se paga por uso (Cloudflare Workers, AWS Lambda)
+      </td>
+      <td>
+       Muy escalable, barato
+      </td>
+      <td>
+       No ideal para apps tradicionales con Docker
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Contenedores administrados
+       </strong>
+      </td>
+      <td>
+       Kubernetes, AWS ECS, Azure ACS
+      </td>
+      <td>
+       Escalable y moderno
+      </td>
+      <td>
+       Complejo
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-proveedores-cloud-mas-usados">
+    4) Proveedores Cloud más usados
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Servicio
+      </th>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Soporta Docker
+      </th>
+      <th>
+       Observaciones
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        AWS
+       </strong>
+      </td>
+      <td>
+       IaaS + PaaS
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       Muy completo, costoso, complejo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Azure
+       </strong>
+      </td>
+      <td>
+       IaaS + PaaS
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       Ideal integración con Microsoft
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Google Cloud
+       </strong>
+      </td>
+      <td>
+       IaaS + PaaS
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       Muy bueno para IA + datos
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Heroku
+       </strong>
+      </td>
+      <td>
+       PaaS
+      </td>
+      <td>
+       ⚠ (Buildpacks)
+      </td>
+      <td>
+       Fácil, caro a escala
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        DigitalOcean
+       </strong>
+      </td>
+      <td>
+       IaaS
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       Simple, económico
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Railway
+       </strong>
+      </td>
+      <td>
+       PaaS
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       Ideal estudiantes, rápido
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Render
+       </strong>
+      </td>
+      <td>
+       PaaS
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       Más control que Heroku
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Cloudflare
+       </strong>
+      </td>
+      <td>
+       Edge (CDN + Seguridad + Serverless)
+      </td>
+      <td>
+       ⚠ Workers
+      </td>
+      <td>
+       Muy usado por: CDN, anti-DDoS, caché, tunnels
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="por-que-se-usa-tanto-cloudflare">
+    ¿Por qué se usa tanto Cloudflare?
+   </h3>
+   <p>
+    ✅ CDN global (el sitio carga rápido desde cualquier país)
+   </p>
+   <p>
+    ✅ Protección contra ataques (DDoS, bots, WAF)
+   </p>
+   <p>
+    ✅ Certificados SSL gratis
+   </p>
+   <p>
+    ✅ Cache y optimización automática
+   </p>
+   <p>
+    ✅
+    <em>
+     Cloudflare Tunnels
+    </em>
+    : exponer tu PC/servidor sin abrir puertos
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-entornos-de-despliegue">
+    4) Entornos de despliegue
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Entorno
+      </th>
+      <th>
+       Para qué se usa
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Development
+       </strong>
+      </td>
+      <td>
+       Programar y probar
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Staging
+       </strong>
+      </td>
+      <td>
+       Igual a producción, para pruebas finales
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Production
+       </strong>
+      </td>
+      <td>
+       Acceso de usuarios reales
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-usar-dominio-en-desarrollo-local">
+    5) Usar dominio en desarrollo local
+   </h2>
+   <h3 id="editar-hosts">
+    Editar
+    <code>
+     hosts
+    </code>
+   </h3>
+   <p>
+    📍
+    <strong>
+     Windows
+    </strong>
+   </p>
+   <pre><code>C:\Windows\System32\drivers\etc\hosts
+</code></pre>
+   <p>
+    📍
+    <strong>
+     Linux / macOS
+    </strong>
+   </p>
+   <pre><code>/etc/hosts
+</code></pre>
+   <p>
+    Agregar:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>    127.0.0.1    miapp.local
+    127.0.0.1    api.miapp.local
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-usar-nginx-como-proxy-reverso-en-docker">
+    6) Usar NGINX como proxy reverso en Docker
+   </h2>
+   <h3 id="docker-composeyml">
+    <code>
+     docker-compose.yml
+    </code>
+   </h3>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">backend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./backend</span>
+<span class="w">    </span><span class="nt">expose</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">web</span><span class="p p-Indicator">]</span>
+
+<span class="w">  </span><span class="nt">frontend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./frontend</span>
+<span class="w">    </span><span class="nt">expose</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">80</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">web</span><span class="p p-Indicator">]</span>
+
+<span class="w">  </span><span class="nt">nginx</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx:latest</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"80:80"</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"443:443"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./nginx/nginx.conf:/etc/nginx/nginx.conf</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./certbot/conf:/etc/letsencrypt</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./certbot/www:/var/www/certbot</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">web</span><span class="p p-Indicator">]</span>
+
+<span class="w">  </span><span class="nt">certbot</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">certbot/certbot</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./certbot/conf:/etc/letsencrypt</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./certbot/www:/var/www/certbot</span>
+<span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="s">"/bin/sh</span><span class="nv"> </span><span class="s">-c"</span>
+<span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s">"sleep</span><span class="nv"> </span><span class="s">12h"</span>
+<span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">web</span><span class="p p-Indicator">]</span>
+
+<span class="nt">networks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">web</span><span class="p">:</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-configurar-nginx-para-proxy-ssl">
+    7) Configurar NGINX para proxy + SSL
+   </h2>
+   <p>
+    Archivo
+    <code>
+     nginx/nginx.conf
+    </code>
+    :
+   </p>
+   <div class="highlight language-nginx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">events</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="k">http</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">server_name</span><span class="w"> </span><span class="s">miapp.com</span><span class="w"> </span><span class="s">www.miapp.com</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/.well-known/acme-challenge/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kn">root</span><span class="w"> </span><span class="s">/var/www/certbot</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kn">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="s">https://</span><span class="nv">$host$request_uri</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kn">server</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="s">ssl</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">server_name</span><span class="w"> </span><span class="s">miapp.com</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kn">ssl_certificate</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/miapp.com/fullchain.pem</span><span class="p">;</span>
+<span class="w">        </span><span class="kn">ssl_certificate_key</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/miapp.com/privkey.pem</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://frontend:80</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="kn">location</span><span class="w"> </span><span class="s">/api/</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://backend:3000/</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    .
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-generar-certificados-con-lets-encrypt">
+    8) Generar certificados con Let's Encrypt
+   </h2>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+docker<span class="w"> </span>compose<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>certbot<span class="w"> </span>certonly<span class="w">   </span>--webroot<span class="w"> </span>--webroot-path<span class="o">=</span>/var/www/certbot<span class="w">   </span>-d<span class="w"> </span>miapp.com<span class="w"> </span>-d<span class="w"> </span>www.miapp.com<span class="w">   </span>--email<span class="w"> </span>mail@ejemplo.com<span class="w"> </span>--agree-tos<span class="w"> </span>--no-eff-email
+docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>nginx
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-https-en-local-con-mkcert">
+    9) HTTPS en local con
+    <code>
+     mkcert
+    </code>
+   </h2>
+   <p>
+    Instalar y generar:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>mkcert<span class="w"> </span>-install
+mkcert<span class="w"> </span>miapp.local<span class="w"> </span>api.miapp.local
+</pre>
+   </div>
+   <p>
+    Colocar los
+    <code>
+     .pem
+    </code>
+    en
+    <code>
+     ./certs
+    </code>
+    y montar en docker-compose.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-cicd-automatizacion-del-despliegue">
+    🔄 10) CI/CD — Automatización del despliegue
+   </h2>
+   <h3 id="que-significa-cicd">
+    🧩 ¿Qué significa CI/CD?
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Sigla
+      </th>
+      <th>
+       Significa
+      </th>
+      <th>
+       Objetivo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        CI
+       </strong>
+      </td>
+      <td>
+       <em>
+        Continuous Integration
+       </em>
+       (Integración Continua)
+      </td>
+      <td>
+       Evitar que el código nuevo rompa el proyecto. Se prueba y valida automáticamente.
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        CD
+       </strong>
+      </td>
+      <td>
+       <em>
+        Continuous Delivery / Deployment
+       </em>
+       (Entrega o Despliegue Continuo)
+      </td>
+      <td>
+       Publicar automáticamente los cambios validados a un servidor o entorno (staging o producción).
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="idea-clave-en-pocas-palabras">
+    🧠 Idea clave en pocas palabras
+   </h3>
+   <blockquote>
+    <p>
+     <strong>
+      Cada vez que subo cambios al repositorio, el sistema los prueba y los despliega automáticamente sin intervención manual.
+     </strong>
+    </p>
+   </blockquote>
+   <p>
+    Esto evita:
+   </p>
+   <p>
+    ❌ subir código roto
+❌ olvidarse de ejecutar pasos del deploy
+❌ errores humanos
+❌ tiempo perdido haciendo deploys manuales
+   </p>
+   <p>
+    Y permite:
+   </p>
+   <p>
+    ✅ deploys rápidos y frecuentes
+✅ procesos repetibles y automáticos
+✅ menos bugs en producción
+✅ equipos trabajando sin pisarse
+   </p>
+   <h3 id="flujo-tipico-de-cicd">
+    🏭 Flujo típico de CI/CD
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>(1) Programador sube código a GitHub / GitLab
+        ↓
+(2) CI ejecuta pruebas automáticas (test, lint, build)
+        ↓
+(3) Si pasa → CD despliega en servidor (con Docker)
+        ↓
+(4) Aplicación actualizada sin tocar el servidor manualmente
+</pre>
+    </div>
+   </div>
+   <h3 id="que-se-automatiza-habitualmente">
+    💡 ¿Qué se automatiza habitualmente?
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tarea
+      </th>
+      <th style="text-align: center;">
+       Se puede automatizar con CI/CD
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Ejecutar tests
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Verificar errores de sintaxis (lint)
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Construir imágenes Docker
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Publicar a un servidor
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Reiniciar servicios
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Notificar éxito o error (Slack, Discord, email)
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="que-es-github-actions">
+    🧠 ¿Qué es GitHub Actions?
+   </h3>
+   <p>
+    <strong>
+     GitHub Actions es el sistema de automatización de GitHub
+    </strong>
+    .
+Permite ejecutar tareas automáticamente cuando ocurre algo en un repositorio.
+   </p>
+   <h4 id="definicion-simple">
+    🧠 Definición simple
+   </h4>
+   <blockquote>
+    <p>
+     <strong>
+      Es una herramienta que ejecuta procesos automáticos
+     </strong>
+     (llamados
+     <em>
+      workflows
+     </em>
+     ) cuando haces cosas como:
+     <code>
+      git push
+     </code>
+     ,
+     <code>
+      git pull request
+     </code>
+     , crear un tag, etc.
+    </p>
+   </blockquote>
+   <h4 id="para-que-sirve">
+    🏭 ¿Para qué sirve?
+   </h4>
+   <p>
+    Automatiza tareas como:
+   </p>
+   <p>
+    ✅ Probar el código (tests)
+✅ Revisar errores (lint, formato)
+✅ Compilar o construir una app
+✅ Crear imágenes Docker
+✅ Desplegar en un servidor (deploy)
+✅ Enviar notificaciones (Slack, correo, etc)
+   </p>
+   <h4 id="cuando-se-ejecuta">
+    ⏱ ¿Cuándo se ejecuta?
+   </h4>
+   <p>
+    Puede activarse cuando ocurre un evento, por ejemplo:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Evento
+      </th>
+      <th>
+       Se ejecuta cuando...
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        push
+       </code>
+      </td>
+      <td>
+       Subís código (git push)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        pull_request
+       </code>
+      </td>
+      <td>
+       Alguien abre un PR
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        schedule
+       </code>
+      </td>
+      <td>
+       A una hora programada
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        workflow_dispatch
+       </code>
+      </td>
+      <td>
+       Lo ejecutás manualmente
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="como-funciona">
+    ⚙ ¿Cómo funciona?
+   </h4>
+   <p>
+    Vos creás un archivo dentro del repositorio en:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>.github/workflows/archivo.yml
+</pre>
+   </div>
+   <p>
+    Ese archivo describe
+    <strong>
+     qué debe hacer
+    </strong>
+    y
+    <strong>
+     cuándo
+    </strong>
+    .
+   </p>
+   <h4 id="ejemplo-minimo">
+    🔎 Ejemplo mínimo
+   </h4>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mensaje de prueba</span>
+<span class="nt">on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">push</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">saludar</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo "¡Hola! Esto se está ejecutando automáticamente 🚀"</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Cuando haces
+    <code>
+     git push
+    </code>
+    , GitHub:
+   </p>
+   <ol>
+    <li>
+     Crea una máquina con Ubuntu
+    </li>
+    <li>
+     Ejecuta el comando
+     <code>
+      echo
+     </code>
+    </li>
+    <li>
+     Te muestra el resultado en la pestaña
+     <strong>
+      Actions
+     </strong>
+    </li>
+   </ol>
+   <h4 id="componentes-clave">
+    🧩 Componentes clave
+   </h4>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Concepto
+      </th>
+      <th>
+       Qué es
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Workflow
+       </strong>
+      </td>
+      <td>
+       Todo el proceso automatizado
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Job
+       </strong>
+      </td>
+      <td>
+       Un conjunto de pasos que se ejecutan en una máquina
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Step
+       </strong>
+      </td>
+      <td>
+       Una instrucción individual (comando o acción)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Runner
+       </strong>
+      </td>
+      <td>
+       La computadora que ejecuta el proceso (GitHub provee una)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Action
+       </strong>
+      </td>
+      <td>
+       Una tarea ya hecha por alguien (como
+       <code>
+        appleboy/ssh-action
+       </code>
+       )
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="relacion-con-cicd">
+    ✅ Relación con CI/CD
+   </h4>
+   <p>
+    GitHub Actions se usa mucho para
+    <strong>
+     CI/CD
+    </strong>
+    , es decir:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       CI/CD
+      </th>
+      <th>
+       Qué hace GitHub Actions
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        CI (probar)
+       </strong>
+      </td>
+      <td>
+       Ejecuta tests, revisa errores, construye el proyecto
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        CD (desplegar)
+       </strong>
+      </td>
+      <td>
+       Sube la app al servidor y la actualiza
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="en-palabras-simples">
+    🧠 En palabras simples
+   </h4>
+   <blockquote>
+    <p>
+     <strong>
+      GitHub Actions es un “robot” que trabaja para vos cada vez que subís código.
+     </strong>
+    </p>
+   </blockquote>
+   <div class="highlight language-yaml">
+    <pre><span></span><span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">deploy</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+</pre>
+   </div>
+   <p>
+    ➡️ Crea un
+    <strong>
+     trabajo llamado
+     <code>
+      deploy
+     </code>
+    </strong>
+    y lo ejecuta en una máquina de GitHub con
+    <strong>
+     Linux Ubuntu
+    </strong>
+    .
+   </p>
+   <div class="highlight language-yaml">
+    <pre><span></span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Conectar al servidor y ejecutar deploy</span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">appleboy/ssh-action@master</span>
+</pre>
+   </div>
+   <p>
+    ➡️ Utiliza una acción ya creada (
+    <code>
+     appleboy/ssh-action
+    </code>
+    ) que sirve para
+    <strong>
+     conectarse por SSH a un servidor remoto
+    </strong>
+    .
+   </p>
+   <div class="highlight language-yaml">
+    <pre><span></span><span class="nt">with</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.SERVER_IP }}</span>
+<span class="w">  </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.SERVER_USER }}</span>
+<span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.SSH_KEY }}</span>
+</pre>
+   </div>
+   <p>
+    ➡️ Usa credenciales guardadas en GitHub (
+    <code>
+     Secrets
+    </code>
+    ) para conectarse:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Secret
+      </th>
+      <th>
+       Qué contiene
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        SERVER_IP
+       </code>
+      </td>
+      <td>
+       La IP o dominio del servidor
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        SERVER_USER
+       </code>
+      </td>
+      <td>
+       El usuario SSH (ej: root, ubuntu, admin)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        SSH_KEY
+       </code>
+      </td>
+      <td>
+       La clave privada SSH para autenticarse
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Estas credenciales
+    <strong>
+     NO están en el código
+    </strong>
+    , son seguras.
+   </p>
+   <div class="highlight language-yaml">
+    <pre><span></span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">  </span><span class="no">cd /var/www/miapp</span>
+<span class="w">  </span><span class="no">git pull</span>
+<span class="w">  </span><span class="no">docker compose down</span>
+<span class="w">  </span><span class="no">docker compose up -d --build</span>
+</pre>
+   </div>
+   <p>
+    ➡️ Una vez conectado al servidor, ejecuta estos comandos
+    <strong>
+     como si los escribieras vos a mano por SSH
+    </strong>
+    :
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Comando
+      </th>
+      <th>
+       Qué hace
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        cd /var/www/miapp
+       </code>
+      </td>
+      <td>
+       Entra a la carpeta donde está tu proyecto en el servidor
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        git pull
+       </code>
+      </td>
+      <td>
+       Descarga los últimos cambios del repositorio
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        docker compose down
+       </code>
+      </td>
+      <td>
+       Apaga la versión de la app que está corriendo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        docker compose up -d --build
+       </code>
+      </td>
+      <td>
+       Re-construye y levanta la app actualizada en segundo plano
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="en-resumen-simple">
+    ✅ En resumen simple:
+   </h3>
+   <p>
+    Cada vez que se ejecuta este job:
+   </p>
+   <ol>
+    <li>
+     Se conecta a tu servidor remoto por SSH
+    </li>
+    <li>
+     Actualiza el código del proyecto (
+     <code>
+      git pull
+     </code>
+     )
+    </li>
+    <li>
+     Apaga los contenedores
+    </li>
+    <li>
+     Los vuelve a construir y levantar con la nueva versión
+    </li>
+   </ol>
+   <h3 id="ejemplo-practico-cicd-con-github-actions-docker">
+    🔧 Ejemplo práctico: CI/CD con GitHub Actions + Docker
+   </h3>
+   <p>
+    📌 Archivo:
+    <code>
+     .github/workflows/deploy.yml
+    </code>
+   </p>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy automático</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span><span class="w">   </span><span class="c1"># se activa cuando hay push en main</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">deploy</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Conectar al servidor y ejecutar deploy</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">appleboy/ssh-action@master</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.SERVER_IP }}</span>
+<span class="w">          </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.SERVER_USER }}</span>
+<span class="w">          </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.SSH_KEY }}</span>
+<span class="w">          </span><span class="nt">script</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">            </span><span class="no">cd /var/www/miapp</span>
+<span class="w">            </span><span class="no">git pull</span>
+<span class="w">            </span><span class="no">docker compose down</span>
+<span class="w">            </span><span class="no">docker compose up -d --build</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="que-son-los-secrets">
+    🔐 ¿Qué son los
+    <code>
+     secrets
+    </code>
+    ?
+   </h3>
+   <p>
+    Son variables seguras (no visibles en el repositorio) donde guardamos secretos como:
+   </p>
+   <ul>
+    <li>
+     IP del servidor
+    </li>
+    <li>
+     Usuario SSH
+    </li>
+    <li>
+     Claves privadas
+    </li>
+    <li>
+     Tokens
+    </li>
+    <li>
+     Passwords
+    </li>
+   </ul>
+   <p>
+    📍 En GitHub se cargan en:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>Settings → Secrets → Actions
+</pre>
+   </div>
+   <p>
+    Y se usan así:
+   </p>
+   <div class="highlight language-yaml">
+    <pre><span></span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.NOMBRE_DEL_SECRETO }}</span>
+</pre>
+   </div>
+   <p>
+    Nunca deben ir en el código ni en commits ❗
+   </p>
+   <h3 id="por-que-funciona-bien-con-docker">
+    🐳 ¿Por qué funciona bien con Docker?
+   </h3>
+   <p>
+    Porque el deploy se vuelve
+    <strong>
+     idéntico en cualquier servidor
+    </strong>
+    , solo ejecuta:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+</pre>
+   </div>
+   <p>
+    Ventajas:
+   </p>
+   <p>
+    ✅ No importa si el server es Ubuntu, Debian, etc
+✅ No hay "en mi máquina funciona"
+✅ Todo está versionado: app + entorno + dependencias
+   </p>
+   <h3 id="cicd-vs-deploy-manual">
+    🧪 CI/CD vs Deploy manual
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Deploy manual
+      </th>
+      <th>
+       CI/CD automatizado
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Lento
+      </td>
+      <td>
+       Rápido
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Puede fallar por error humano
+      </td>
+      <td>
+       Repetible y confiable
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Pasos que se olvidan
+      </td>
+      <td>
+       Todo documentado y versionado
+      </td>
+     </tr>
+     <tr>
+      <td>
+       No hay pruebas antes de subir
+      </td>
+      <td>
+       Tests automáticos evitan errores
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Hay que conectarse al server
+      </td>
+      <td>
+       Ocurre sin tocar el servidor
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="conclusion-simple">
+    🏁 Conclusión simple
+   </h3>
+   <blockquote>
+    <p>
+     <strong>
+      CI/CD convierte el deploy en un proceso automático, seguro, repetible y rápido.
+     </strong>
+     Cuanto menos manual, mejor.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-observabilidad-monitoreo">
+    11) Observabilidad (Monitoreo)
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Herramienta
+      </th>
+      <th>
+       Función
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Portainer
+      </td>
+      <td>
+       UI para Docker
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Grafana
+      </td>
+      <td>
+       Métricas
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Uptime Kuma
+      </td>
+      <td>
+       Status del servicio
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Dozzle
+      </td>
+      <td>
+       Logs
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="chapter-container">
+   <h2 id="12-seguridad-minima-recomendada">
+    12) Seguridad mínima recomendada
+   </h2>
+   <div class="highlight language-text">
+    <pre><span></span>sudo ufw allow 22
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="resumen">
+    ✅ Resumen
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tema
+      </th>
+      <th>
+       Concepto
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Proxy reverso
+      </td>
+      <td>
+       Nginx
+      </td>
+     </tr>
+     <tr>
+      <td>
+       SSL
+      </td>
+      <td>
+       Let's Encrypt o mkcert
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Director de tráfico global
+      </td>
+      <td>
+       Cloudflare
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Automatización
+      </td>
+      <td>
+       CI/CD
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Infraestructura
+      </td>
+      <td>
+       VM, IaaS, PaaS, Containers
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

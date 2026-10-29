@@ -1,0 +1,4098 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   react_ts
+  </title>
+ </head>
+ <body>
+  <h1 id="migracion-de-react-con-javascript-a-typescript">
+   Migración de React con JavaScript a TypeScript
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-configuracion-inicial">
+      1. Configuración inicial
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-ejemplo-de-componente-con-props-tipadas">
+      2. Ejemplo de componente con props tipadas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-ejemplo-con-usestate-y-tipado-explicito">
+      3. Ejemplo con useState y Tipado Explícito
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-ejemplo-con-eventos-tipados-en-react">
+      4. Ejemplo con Eventos Tipados en React
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-ejemplo-con-useref-y-tipado-explicito">
+      5. Ejemplo con useRef y Tipado Explícito
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-ejemplo-con-validacion-de-datos-de-api-usando-zod">
+      6. Ejemplo con Validación de Datos de API (Usando Zod)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-ejemplo-con-uniones-discriminadas-discriminated-unions">
+      7. Ejemplo con Uniones Discriminadas (Discriminated Unions)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-importacion-y-tipado-de-assets-ejemplo-para-vite-y-css-modules">
+      8. Importación y Tipado de Assets (Ejemplo para Vite y CSS Modules)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-path-aliases-alias-de-rutas-de-importacion">
+      9. Path Aliases (Alias de Rutas de Importación)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-resumen">
+      10. Resumen
+     </a>
+    </li>
+   </ul>
+  </div>
+  <p>
+   Este documento explica cómo pasar de un proyecto de React con JavaScript a uno con TypeScript, incluyendo ejemplos prácticos.
+  </p>
+  <div class="chapter-container">
+   <h2 id="1-configuracion-inicial">
+    1. Configuración inicial
+   </h2>
+   <h3 id="nuevo-proyecto-con-typescript">
+    Nuevo proyecto con TypeScript
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>create<span class="w"> </span>vite@latest<span class="w"> </span>mi-app<span class="w"> </span>--<span class="w"> </span>--template<span class="w"> </span>react-ts
+</pre>
+   </div>
+   <h3 id="proyecto-existente">
+    Proyecto existente
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>-D<span class="w"> </span>typescript<span class="w"> </span>@types/react<span class="w"> </span>@types/react-dom
+</pre>
+   </div>
+   <p>
+    Crear un archivo
+    <code>
+     tsconfig.json
+    </code>
+    básico:
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ES2022"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lib"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"ES2022"</span><span class="p">,</span><span class="w"> </span><span class="s2">"DOM"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"jsx"</span><span class="p">:</span><span class="w"> </span><span class="s2">"react-jsx"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ESNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bundler"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"strict"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">]</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Renombrar archivos:
+   </p>
+   <ul>
+    <li>
+     <code>
+      .js
+     </code>
+     →
+     <code>
+      .ts
+     </code>
+    </li>
+    <li>
+     <code>
+      .jsx
+     </code>
+     →
+     <code>
+      .tsx
+     </code>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-ejemplo-de-componente-con-props-tipadas">
+    2. Ejemplo de componente con props tipadas
+   </h2>
+   <p>
+    Este ejemplo nos muestra cómo transformar un componente funcional de React, escrito inicialmente en JavaScript, para aprovechar el tipado estático que ofrece TypeScript. El objetivo es hacer que las propiedades (props) que recibe el componente sean explícitas en cuanto a su tipo, lo que mejora la legibilidad, la robustez y la facilidad de mantenimiento del código.
+   </p>
+   <h3 id="antes-javascript">
+    Antes (JavaScript)
+   </h3>
+   <div class="highlight language-jsx">
+    <pre><span></span><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">Button</span><span class="p">({</span><span class="w"> </span><span class="nx">label</span><span class="p">,</span><span class="w"> </span><span class="nx">onClick</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">onClick</span><span class="p">}&gt;{</span><span class="nx">label</span><span class="p">}&lt;/</span><span class="nt">button</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <p>
+    En esta versión de JavaScript, tenemos un componente
+    <code>
+     Button
+    </code>
+    que acepta dos propiedades:
+    <code>
+     label
+    </code>
+    y
+    <code>
+     onClick
+    </code>
+    .
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Simplicidad:
+     </strong>
+     A primera vista, es muy conciso y fácil de escribir.
+    </li>
+    <li>
+     <strong>
+      Falta de información:
+     </strong>
+     Sin embargo, mirando solo la firma del componente, no sabemos qué tipo de dato se espera para
+     <code>
+      label
+     </code>
+     (¿es un string, un número, un elemento JSX?) ni qué tipo de dato o función se espera para
+     <code>
+      onClick
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Errores en tiempo de ejecución:
+     </strong>
+     Si por error pasamos un tipo de dato incorrecto a
+     <code>
+      label
+     </code>
+     (por ejemplo, un objeto) o a
+     <code>
+      onClick
+     </code>
+     (por ejemplo, un string), el editor no nos avisará. El error solo se manifestará cuando la aplicación se ejecute en el navegador y el componente intente renderizarse o se intente llamar a
+     <code>
+      onClick
+     </code>
+     , lo que puede llevar a bugs difíciles de depurar.
+    </li>
+    <li>
+     <strong>
+      Documentación implícita:
+     </strong>
+     La única "documentación" sobre el tipo de las props está en cómo se usan dentro del componente o en la memoria del desarrollador. Esto es problemático en equipos o proyectos grandes.
+    </li>
+   </ul>
+   <h3 id="despues-typescript">
+    Después (TypeScript)
+   </h3>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">ButtonProps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">onClick</span><span class="o">?:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">Button</span><span class="p">({</span><span class="w"> </span><span class="nx">label</span><span class="p">,</span><span class="w"> </span><span class="nx">onClick</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="nx">ButtonProps</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">onClick</span><span class="p">}&gt;{</span><span class="nx">label</span><span class="p">}&lt;/</span><span class="nt">button</span><span class="p">&gt;;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Esta es la versión TypeScript del mismo componente
+    <code>
+     Button
+    </code>
+    , que introduce el concepto de "props tipadas".
+   </p>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       Definición de tipos (
+       <code>
+        type ButtonProps
+       </code>
+       ):
+      </strong>
+      <div class="highlight language-tsx">
+       <pre><span></span><span class="w">    </span><span class="kr">type</span><span class="w"> </span><span class="nx">ButtonProps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">label</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">onClick</span><span class="o">?:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span>
+</pre>
+      </div>
+     </p>
+     <p>
+      Aquí definimos un nuevo tipo llamado
+      <code>
+       ButtonProps
+      </code>
+      . Este tipo es un objeto que describe la forma exacta de las propiedades que el componente
+      <code>
+       Button
+      </code>
+      espera recibir:
+*
+      <code>
+       label: string;
+      </code>
+      : Especifica que la prop
+      <code>
+       label
+      </code>
+      <strong>
+       debe
+      </strong>
+      ser un
+      <code>
+       string
+      </code>
+      .
+*
+      <code>
+       onClick?: () =&gt; void;
+      </code>
+      : Especifica que la prop
+      <code>
+       onClick
+      </code>
+      es una
+      <strong>
+       función
+      </strong>
+      que no toma argumentos y no devuelve nada (
+      <code>
+       void
+      </code>
+      ). El signo de interrogación (
+      <code>
+       ?
+      </code>
+      ) indica que esta prop es
+      <strong>
+       opcional
+      </strong>
+      . Si no se proporciona, el componente seguirá funcionando. Si se proporciona, TypeScript se asegurará de que sea una función con la firma correcta.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Aplicación de tipos al componente:
+      </strong>
+      <div class="highlight language-tsx">
+       <pre><span></span><span class="w">    </span><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">Button</span><span class="p">({</span><span class="w"> </span><span class="nx">label</span><span class="p">,</span><span class="w"> </span><span class="nx">onClick</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="nx">ButtonProps</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">onClick</span><span class="p">}&gt;{</span><span class="nx">label</span><span class="p">}&lt;/</span><span class="nt">button</span><span class="p">&gt;;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span>
+</pre>
+      </div>
+     </p>
+     <p>
+      Aquí, justo después de la desestructuración de las props (
+      <code>
+       { label, onClick }
+      </code>
+      ), añadimos
+      <code>
+       : ButtonProps
+      </code>
+      . Esto le dice a TypeScript que las props que se esperan en este componente deben ajustarse a la estructura definida en
+      <code>
+       ButtonProps
+      </code>
+      .
+     </p>
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Beneficios de esta aproximación:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Detección de errores en tiempo de desarrollo:
+     </strong>
+     Tu editor de código (como VS Code) ahora puede verificar el uso de tu componente. Si intentas usar
+     <code>
+      &lt;Button label={123} /&gt;
+     </code>
+     (pasando un número en lugar de un string a
+     <code>
+      label
+     </code>
+     ), TypeScript te mostrará un error
+     <strong>
+      inmediato
+     </strong>
+     antes de que incluso ejecutes tu código.
+    </li>
+    <li>
+     <strong>
+      Autocompletado inteligente:
+     </strong>
+     Cuando uses el componente
+     <code>
+      Button
+     </code>
+     , tu editor te ofrecerá sugerencias de autocompletado para
+     <code>
+      label
+     </code>
+     y
+     <code>
+      onClick
+     </code>
+     , junto con sus tipos esperados.
+    </li>
+    <li>
+     <strong>
+      Código autodocumentado:
+     </strong>
+     Cualquiera que lea
+     <code>
+      ButtonProps
+     </code>
+     sabrá instantáneamente qué props acepta el componente y de qué tipo son, sin necesidad de consultar otra documentación.
+    </li>
+    <li>
+     <strong>
+      Refactorización segura:
+     </strong>
+     Si decides cambiar el nombre o el tipo de una prop, TypeScript te alertará en todos los lugares donde se use el componente, ayudándote a refactorizar de forma segura.
+    </li>
+    <li>
+     <strong>
+      Mejora la colaboración:
+     </strong>
+     En equipos, estandariza cómo se comunican los componentes y reduce malentendidos.
+    </li>
+   </ul>
+   <p>
+    En resumen, aunque la versión JavaScript es más corta, la versión TypeScript añade una capa invaluable de seguridad y claridad al definir explícitamente las expectativas de datos del componente. Esto lleva a un código más robusto, menos propenso a errores y más fácil de mantener a largo plazo.
+   </p>
+   <p>
+    ¡Absolutamente! El ejemplo
+    <code>
+     useState
+    </code>
+    es un pilar en React, y TypeScript lo potencia enormemente. Aquí te presento una versión mejorada con una explicación más profunda y contextualizada.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-ejemplo-con-usestate-y-tipado-explicito">
+    3. Ejemplo con
+    <code>
+     useState
+    </code>
+    y Tipado Explícito
+   </h2>
+   <p>
+    El hook
+    <code>
+     useState
+    </code>
+    es fundamental en React para añadir estado local a los componentes funcionales. TypeScript eleva el uso de
+    <code>
+     useState
+    </code>
+    al permitirnos definir explícitamente los tipos de los valores de estado, lo que brinda los mismos beneficios de seguridad y claridad que vimos con las
+    <code>
+     props
+    </code>
+    tipadas.
+   </p>
+   <h3 id="usestate-con-tipos-inferidos-typescript-hace-el-trabajo-por-ti">
+    <code>
+     useState
+    </code>
+    con Tipos Inferidos (TypeScript hace el trabajo por ti)
+   </h3>
+   <div class="highlight language-tsx">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">count</span><span class="p">,</span><span class="w"> </span><span class="nx">setCount</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="mf">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// TypeScript infiere que 'count' es de tipo number</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">isOpen</span><span class="p">,</span><span class="w"> </span><span class="nx">setIsOpen</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span><span class="w"> </span><span class="c1">// TypeScript infiere que 'isOpen' es de tipo boolean</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">setUser</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Alice"</span><span class="p">,</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">30</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">// TypeScript infiere el tipo de objeto</span>
+</pre>
+   </div>
+   <p>
+    En muchos casos, TypeScript es lo suficientemente inteligente como para
+    <strong>
+     inferir
+    </strong>
+    el tipo de tu estado basándose en el valor inicial que le proporcionas a
+    <code>
+     useState
+    </code>
+    .
+   </p>
+   <ul>
+    <li>
+     Para
+     <code>
+      count
+     </code>
+     , como el valor inicial es
+     <code>
+      0
+     </code>
+     (un número), TypeScript infiere que
+     <code>
+      count
+     </code>
+     será de tipo
+     <code>
+      number
+     </code>
+     .
+    </li>
+    <li>
+     Para
+     <code>
+      isOpen
+     </code>
+     , con un valor inicial de
+     <code>
+      false
+     </code>
+     (un booleano), TypeScript infiere que
+     <code>
+      isOpen
+     </code>
+     será de tipo
+     <code>
+      boolean
+     </code>
+     .
+    </li>
+    <li>
+     Para
+     <code>
+      user
+     </code>
+     , TypeScript infiere la estructura del objeto
+     <code>
+      { name: string, age: number }
+     </code>
+     .
+    </li>
+   </ul>
+   <p>
+    Esta inferencia es muy útil y cubre la mayoría de los casos. Sin embargo, hay situaciones donde necesitamos ser más explícitos.
+   </p>
+   <h3 id="usestate-con-tipos-explicitos-cuando-necesitas-mas-control">
+    <code>
+     useState
+    </code>
+    con Tipos Explícitos (Cuando necesitas más control)
+   </h3>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Ejemplo 1: Tipo explícito para un número (redundante pero válido)</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">count</span><span class="p">,</span><span class="w"> </span><span class="nx">setCount</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;(</span><span class="mf">0</span><span class="p">);</span>
+
+<span class="c1">// Ejemplo 2: Tipos de unión para estados con valores predefinidos</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"idle"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"loading"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"success"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"error"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Definimos un tipo de unión</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">status</span><span class="p">,</span><span class="w"> </span><span class="nx">setStatus</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">Status</span><span class="p">&gt;(</span><span class="s2">"idle"</span><span class="p">);</span><span class="w"> </span><span class="c1">// Usamos el tipo de unión</span>
+
+<span class="c1">// Ejemplo 3: Estado que puede ser nulo o un objeto</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">UserProfile</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">setUser</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">UserProfile</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="c1">// Ejemplo 4: Estado inicial vacío que se llenará con un array de objetos</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">Item</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">items</span><span class="p">,</span><span class="w"> </span><span class="nx">setItems</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">Item</span><span class="err">[]</span><span class="p">&gt;([]);</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Podemos destacar de este código:
+   </p>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       <code>
+        const [count, setCount] = React.useState&lt;number&gt;(0);
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       Aquí, le estamos diciendo explícitamente a
+       <code>
+        useState
+       </code>
+       (usando
+       <code>
+        &lt;number&gt;
+       </code>
+       ) que el estado
+       <code>
+        count
+       </code>
+       será siempre de tipo
+       <code>
+        number
+       </code>
+       . Aunque TypeScript lo habría inferido de todas formas a partir de
+       <code>
+        0
+       </code>
+       , esta sintaxis es un buen recordatorio de cómo especificar tipos explícitamente. Es útil si el valor inicial pudiera ser
+       <code>
+        null
+       </code>
+       o
+       <code>
+        undefined
+       </code>
+       y quisieras forzar el tipo
+       <code>
+        number
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        type Status = "idle" | "loading" | "success" | "error";
+       </code>
+      </strong>
+      <strong>
+       <code>
+        const [status, setStatus] = React.useState&lt;Status&gt;("idle");
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       Este es un caso de uso muy potente. Hemos definido un
+       <strong>
+        tipo de unión (
+        <code>
+         Status
+        </code>
+        )
+       </strong>
+       que indica que la variable
+       <code>
+        status
+       </code>
+       solo puede tener uno de esos cuatro valores de cadena específicos:
+       <code>
+        "idle"
+       </code>
+       ,
+       <code>
+        "loading"
+       </code>
+       ,
+       <code>
+        "success"
+       </code>
+       o
+       <code>
+        "error"
+       </code>
+       .
+      </li>
+      <li>
+       Al pasar
+       <code>
+        &lt;Status&gt;
+       </code>
+       a
+       <code>
+        useState
+       </code>
+       , aseguramos que
+       <code>
+        status
+       </code>
+       siempre estará en uno de esos estados predefinidos. Si intentas llamar
+       <code>
+        setStatus("finished")
+       </code>
+       , TypeScript te dará un error, lo que evita errores de tipado o estados inesperados en tu aplicación. Es ideal para manejar el ciclo de vida de una solicitud asíncrona.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        interface UserProfile { ... }
+       </code>
+      </strong>
+      <strong>
+       <code>
+        const [user, setUser] = React.useState&lt;UserProfile | null&gt;(null);
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       En este escenario, hemos definido una
+       <code>
+        interface
+       </code>
+       (o
+       <code>
+        type
+       </code>
+       ) para
+       <code>
+        UserProfile
+       </code>
+       . El estado
+       <code>
+        user
+       </code>
+       podría ser inicialmente
+       <code>
+        null
+       </code>
+       (por ejemplo, antes de que los datos del usuario se carguen desde una API) o podría ser un objeto
+       <code>
+        UserProfile
+       </code>
+       .
+      </li>
+      <li>
+       La sintaxis
+       <code>
+        &lt;UserProfile | null&gt;
+       </code>
+       (unión de
+       <code>
+        UserProfile
+       </code>
+       y
+       <code>
+        null
+       </code>
+       ) indica claramente que el estado
+       <code>
+        user
+       </code>
+       puede ser de tipo
+       <code>
+        UserProfile
+       </code>
+       o
+       <code>
+        null
+       </code>
+       . Esto es crucial porque si solo pusieras
+       <code>
+        useState(null)
+       </code>
+       , TypeScript inferiría el tipo
+       <code>
+        any
+       </code>
+       o
+       <code>
+        null
+       </code>
+       , lo que no sería seguro.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        interface Item { ... }
+       </code>
+      </strong>
+      <strong>
+       <code>
+        const [items, setItems] = React.useState&lt;Item[]&gt;([]);
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       Aquí, definimos una
+       <code>
+        interface Item
+       </code>
+       para la estructura de los objetos individuales en un array.
+      </li>
+      <li>
+       Luego,
+       <code>
+        useState&lt;Item[]&gt;
+       </code>
+       indica que el estado
+       <code>
+        items
+       </code>
+       será un
+       <strong>
+        array de objetos
+        <code>
+         Item
+        </code>
+       </strong>
+       . Incluso si el valor inicial es un array vacío
+       <code>
+        []
+       </code>
+       , TypeScript sabe que en el futuro este array contendrá elementos que se ajustan a la interfaz
+       <code>
+        Item
+       </code>
+       . Esto es invaluable para manejar listas de datos.
+      </li>
+     </ul>
+    </li>
+   </ol>
+   <h3 id="beneficios-del-tipado-explicito-con-usestate">
+    Beneficios del Tipado Explícito con
+    <code>
+     useState
+    </code>
+    :
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Claridad de intenciones:
+     </strong>
+     Cualquier desarrollador que vea
+     <code>
+      useState&lt;Status&gt;("idle")
+     </code>
+     sabe inmediatamente qué posibles valores puede tomar
+     <code>
+      status
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Prevención de errores:
+     </strong>
+     Evita que asignes valores de tipo incorrecto al estado.
+    </li>
+    <li>
+     <strong>
+      Autocompletado y Sugerencias:
+     </strong>
+     Tu editor de código te ofrecerá autocompletado y validación basados en los tipos definidos, por ejemplo, al usar
+     <code>
+      setStatus
+     </code>
+     , te sugerirá solo los valores de la unión
+     <code>
+      Status
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Mejora la refactorización:
+     </strong>
+     Si cambias la estructura de un
+     <code>
+      UserProfile
+     </code>
+     o los valores de
+     <code>
+      Status
+     </code>
+     , TypeScript te alertará en todos los lugares donde se use ese estado.
+    </li>
+   </ul>
+   <p>
+    En resumen, mientras que la inferencia de tipos de TypeScript es muy útil, el tipado explícito con
+    <code>
+     useState
+    </code>
+    es crucial para cuando el tipo de estado es más complejo (uniones, objetos nulos, arrays de tipos específicos) o cuando quieres documentar y hacer cumplir estrictamente los posibles valores del estado. Esto conduce a aplicaciones React más robustas y fáciles de entender.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-ejemplo-con-eventos-tipados-en-react">
+    4. Ejemplo con Eventos Tipados en React
+   </h2>
+   <p>
+    Cuando trabajamos con eventos en React, como
+    <code>
+     onClick
+    </code>
+    ,
+    <code>
+     onChange
+    </code>
+    ,
+    <code>
+     onSubmit
+    </code>
+    , etc., es crucial saber qué tipo de objeto de evento se pasa a nuestras funciones manejadoras. TypeScript, junto con los tipos que nos proporciona la biblioteca
+    <code>
+     @types/react
+    </code>
+    , nos permite tipar estos eventos de forma precisa, brindando autocompletado, validación y una mejor comprensión de las propiedades disponibles en cada evento.
+   </p>
+   <h3 id="sintaxis-y-tipos-comunes-de-eventos">
+    Sintaxis y Tipos Comunes de Eventos
+   </h3>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Asegúrate de importar React si no lo has hecho globalmente</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">Form</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Manejador para el evento 'submit' de un formulario</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSubmit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">React.FormEvent</span><span class="p">&lt;</span><span class="nt">HTMLFormElement</span><span class="p">&gt;)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span><span class="w"> </span><span class="c1">// Previene el comportamiento por defecto del formulario (recargar la página)</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Formulario enviado"</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Aquí podrías enviar los datos del formulario a una API, etc.</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// Manejador para el evento 'change' de un campo de entrada (input)</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">React.ChangeEvent</span><span class="p">&lt;</span><span class="nt">HTMLInputElement</span><span class="p">&gt;)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 'e.target' es el elemento DOM que disparó el evento.</span>
+<span class="w">    </span><span class="c1">// Con React.ChangeEvent&lt;HTMLInputElement&gt;, TypeScript sabe que 'e.target' será un HTMLInputElement.</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span><span class="w"> </span><span class="c1">// Accede al valor actual del input</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">// Manejador para el evento 'click' de un botón</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleButtonClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">React.MouseEvent</span><span class="p">&lt;</span><span class="nt">HTMLButtonElement</span><span class="p">&gt;)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Botón clicado"</span><span class="p">,</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">,</span><span class="w"> </span><span class="nx">e</span><span class="p">.</span><span class="nx">clientY</span><span class="p">);</span><span class="w"> </span><span class="c1">// Podemos acceder a propiedades del evento del ratón</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">form</span><span class="w"> </span><span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSubmit</span><span class="p">}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">input</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span><span class="w"> </span><span class="na">onChange</span><span class="o">=</span><span class="p">{</span><span class="nx">handleChange</span><span class="p">}</span><span class="w"> </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Escribe algo..."</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"submit"</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleButtonClick</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="nx">Enviar</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleButtonClick</span><span class="p">}&gt;</span><span class="nx">Otro</span><span class="w"> </span><span class="nx">Botón</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Exporta el componente para poder usarlo en otras partes de la aplicación</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">Form</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="explicacion-de-los-tipos-de-eventos">
+    Explicación de los tipos de eventos:
+   </h3>
+   <p>
+    React sintetiza los eventos del navegador para proporcionar un conjunto de eventos consistentes y compatibles con todos los navegadores. TypeScript nos ayuda a trabajar con estos
+    <strong>
+     Eventos Sintéticos
+    </strong>
+    de forma segura.
+   </p>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       <code>
+        React.FormEvent&lt;HTMLFormElement&gt;
+       </code>
+       para
+       <code>
+        onSubmit
+       </code>
+       :
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         React.FormEvent
+        </code>
+       </strong>
+       : Es el tipo genérico para eventos relacionados con formularios.
+      </li>
+      <li>
+       <strong>
+        <code>
+         &lt;HTMLFormElement&gt;
+        </code>
+       </strong>
+       : Este es el tipo del
+       <strong>
+        elemento DOM
+       </strong>
+       que se espera sea el
+       <code>
+        target
+       </code>
+       del evento. En el caso de
+       <code>
+        onSubmit
+       </code>
+       , el evento siempre se dispara desde el
+       <code>
+        &lt;form&gt;
+       </code>
+       , por lo que
+       <code>
+        e.target
+       </code>
+       será de tipo
+       <code>
+        HTMLFormElement
+       </code>
+       .
+      </li>
+      <li>
+       <strong>
+        Propiedades comunes:
+       </strong>
+       Este tipo nos asegura que podemos acceder a propiedades como
+       <code>
+        e.preventDefault()
+       </code>
+       ,
+       <code>
+        e.currentTarget
+       </code>
+       , etc.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        React.ChangeEvent&lt;HTMLInputElement&gt;
+       </code>
+       para
+       <code>
+        onChange
+       </code>
+       :
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         React.ChangeEvent
+        </code>
+       </strong>
+       : Es el tipo genérico para eventos que indican un cambio en un elemento (como inputs, selects, textareas).
+      </li>
+      <li>
+       <strong>
+        <code>
+         &lt;HTMLInputElement&gt;
+        </code>
+       </strong>
+       : Aquí, especificamos que el
+       <code>
+        target
+       </code>
+       del evento
+       <code>
+        onChange
+       </code>
+       será un
+       <code>
+        &lt;input&gt;
+       </code>
+       HTML. Esto es crucial porque le dice a TypeScript que
+       <code>
+        e.target
+       </code>
+       tendrá propiedades específicas de un
+       <code>
+        HTMLInputElement
+       </code>
+       , como
+       <code>
+        value
+       </code>
+       (para su contenido),
+       <code>
+        checked
+       </code>
+       (para checkboxes), etc. Si fuera un
+       <code>
+        &lt;select&gt;
+       </code>
+       , usaríamos
+       <code>
+        HTMLSelectElement
+       </code>
+       .
+      </li>
+      <li>
+       <strong>
+        Acceso a
+        <code>
+         e.target.value
+        </code>
+       </strong>
+       : Gracias a esta tipificación, cuando escribes
+       <code>
+        e.target.
+       </code>
+       , tu editor de código te sugerirá
+       <code>
+        value
+       </code>
+       ,
+       <code>
+        checked
+       </code>
+       ,
+       <code>
+        name
+       </code>
+       , etc., y sabrá que
+       <code>
+        e.target.value
+       </code>
+       es un
+       <code>
+        string
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        React.MouseEvent&lt;HTMLButtonElement&gt;
+       </code>
+       para
+       <code>
+        onClick
+       </code>
+       :
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         React.MouseEvent
+        </code>
+       </strong>
+       : Es el tipo genérico para eventos del ratón (clics, doble clics, movimientos del ratón).
+      </li>
+      <li>
+       <strong>
+        <code>
+         &lt;HTMLButtonElement&gt;
+        </code>
+       </strong>
+       : Indica que el elemento DOM que dispara el evento de ratón es un
+       <code>
+        &lt;button&gt;
+       </code>
+       . Esto nos permite acceder a propiedades específicas del botón si fuera necesario, aunque a menudo solo nos interesan las propiedades del evento del ratón en sí.
+      </li>
+      <li>
+       <strong>
+        Propiedades comunes:
+       </strong>
+       Con este tipo, TypeScript sabe que puedes acceder a propiedades como
+       <code>
+        e.clientX
+       </code>
+       ,
+       <code>
+        e.clientY
+       </code>
+       (coordenadas del ratón),
+       <code>
+        e.altKey
+       </code>
+       ,
+       <code>
+        e.shiftKey
+       </code>
+       (para modificadores de teclado),
+       <code>
+        e.button
+       </code>
+       (qué botón del ratón se presionó), etc.
+      </li>
+     </ul>
+    </li>
+   </ol>
+   <h3 id="beneficios-de-tipar-los-eventos-en-react-con-typescript">
+    Beneficios de Tipar los Eventos en React con TypeScript:
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Autocompletado y Seguridad:
+     </strong>
+     Al tipar el evento, tu IDE puede sugerirte las propiedades correctas disponibles para ese tipo de evento y para el
+     <code>
+      target
+     </code>
+     del DOM. Esto reduce drásticamente los errores tipográficos y los errores en tiempo de ejecución.
+    </li>
+    <li>
+     <strong>
+      Claridad del Código:
+     </strong>
+     Cuando otro desarrollador ve el código, la firma de la función
+     <code>
+      handleSubmit
+     </code>
+     o
+     <code>
+      handleChange
+     </code>
+     le indica inmediatamente qué tipo de evento se espera y qué elemento DOM lo disparará.
+    </li>
+    <li>
+     <strong>
+      Mantenimiento Mejorado:
+     </strong>
+     Si las APIs de DOM o React cambian ligeramente, TypeScript te ayudará a identificar dónde necesitas actualizar tu código.
+    </li>
+    <li>
+     <strong>
+      Refactorización Segura:
+     </strong>
+     Si necesitas cambiar cómo manejas un evento, TypeScript te ayudará a asegurar que sigues usando las propiedades correctas.
+    </li>
+   </ul>
+   <p>
+    Utilizar estos tipos de eventos específicos de React es una práctica recomendada en TypeScript para garantizar que tus manejadores de eventos sean robustos, legibles y menos propensos a errores.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-ejemplo-con-useref-y-tipado-explicito">
+    5. Ejemplo con
+    <code>
+     useRef
+    </code>
+    y Tipado Explícito
+   </h2>
+   <p>
+    El hook
+    <code>
+     useRef
+    </code>
+    es una herramienta poderosa en React que nos permite crear referencias a elementos DOM o a valores mutables que persisten entre renderizados sin causar una nueva renderización. Cuando lo combinamos con TypeScript, podemos tipar explícitamente el tipo de referencia que esperamos, lo que mejora la seguridad, el autocompletado y la legibilidad de nuestro código.
+   </p>
+   <h3 id="antes-javascript-o-typescript-con-inferencia-implicita-para-any">
+    Antes (JavaScript - o TypeScript con inferencia implícita para
+    <code>
+     any
+    </code>
+    )
+   </h3>
+   <p>
+    En JavaScript, o si no especificamos el tipo en TypeScript,
+    <code>
+     useRef
+    </code>
+    podría inferir un tipo menos específico o
+    <code>
+     any
+    </code>
+    , lo que nos quita las ventajas del tipado:
+   </p>
+   <div class="highlight language-jsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// En JavaScript o TypeScript sin tipado explícito</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">InputFocusJS</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">inputRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span><span class="w"> </span><span class="c1">// 'inputRef.current' podría ser de tipo any o null</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">focusInput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Si inputRef.current es any, perdemos el autocompletado para .focus()</span>
+<span class="w">    </span><span class="c1">// y no hay garantía de que .focus() exista.</span>
+<span class="w">    </span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="o">?</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">input</span><span class="w"> </span><span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">inputRef</span><span class="p">}</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">focusInput</span><span class="p">}&gt;</span><span class="nx">Focalizar</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Sin tipado explícito,
+    <code>
+     inputRef.current
+    </code>
+    podría ser
+    <code>
+     any
+    </code>
+    , lo que significa que TypeScript no nos ofrecería autocompletado para métodos como
+    <code>
+     .focus()
+    </code>
+    y no nos alertaría si intentáramos llamar a un método que no existe en un elemento HTMLInputElement. Esto abre la puerta a errores en tiempo de ejecución.
+   </p>
+   <h3 id="despues-typescript-con-tipado-explicito">
+    Después (TypeScript con Tipado Explícito)
+   </h3>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Asegúrate de importar React si no lo has hecho globalmente</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">InputFocus</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 1. Tipado explícito para HTMLInputElement</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">inputRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">&lt;</span><span class="nt">HTMLInputElement</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">focusInput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 2. Acceso seguro a .current y método .focus()</span>
+<span class="w">    </span><span class="nx">inputRef</span><span class="p">.</span><span class="nx">current</span><span class="o">?</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">{</span><span class="cm">/* 3. Asignación del ref al elemento DOM */</span><span class="p">}</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">input</span><span class="w"> </span><span class="na">ref</span><span class="o">=</span><span class="p">{</span><span class="nx">inputRef</span><span class="p">}</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">focusInput</span><span class="p">}&gt;</span><span class="nx">Focalizar</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Exporta el componente para poder usarlo en otras partes de la aplicación</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">InputFocus</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="explicacion-del-tipado-con-useref">
+    Explicación del tipado con
+    <code>
+     useRef
+    </code>
+    :
+   </h3>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       <code>
+        const inputRef = React.useRef&lt;HTMLInputElement&gt;(null);
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         React.useRef
+        </code>
+       </strong>
+       : Es el hook que crea una referencia mutable.
+      </li>
+      <li>
+       <strong>
+        <code>
+         &lt;HTMLInputElement&gt;
+        </code>
+       </strong>
+       : Este es el tipo más importante aquí. Le estamos diciendo a TypeScript que la propiedad
+       <code>
+        current
+       </code>
+       de
+       <code>
+        inputRef
+       </code>
+       <strong>
+        eventualmente contendrá una referencia a un elemento DOM de tipo
+        <code>
+         &lt;input&gt;
+        </code>
+       </strong>
+       . La interfaz global
+       <code>
+        HTMLInputElement
+       </code>
+       está disponible en TypeScript gracias a las librerías de tipos del DOM (que
+       <code>
+        @types/react-dom
+       </code>
+       suele incluir).
+      </li>
+      <li>
+       <strong>
+        <code>
+         (null)
+        </code>
+       </strong>
+       : El valor inicial de
+       <code>
+        current
+       </code>
+       es
+       <code>
+        null
+       </code>
+       . Es común inicializar
+       <code>
+        useRef
+       </code>
+       con
+       <code>
+        null
+       </code>
+       cuando estamos haciendo referencia a elementos DOM, ya que la referencia no se establecerá hasta que el componente se monte y React asigne el elemento al
+       <code>
+        ref
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        inputRef.current?.focus();
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         inputRef.current
+        </code>
+       </strong>
+       : Accede al valor actual de la referencia. Gracias al tipado
+       <code>
+        &lt;HTMLInputElement&gt;
+       </code>
+       , TypeScript sabe que
+       <code>
+        inputRef.current
+       </code>
+       será de tipo
+       <code>
+        HTMLInputElement | null
+       </code>
+       .
+      </li>
+      <li>
+       <strong>
+        <code>
+         ?.
+        </code>
+        (Encadenamiento opcional)
+       </strong>
+       : Es fundamental aquí. Dado que
+       <code>
+        inputRef.current
+       </code>
+       puede ser
+       <code>
+        null
+       </code>
+       (especialmente antes de que el componente se monte, o si la referencia nunca se asigna), el operador
+       <code>
+        ?.
+       </code>
+       asegura que
+       <code>
+        .focus()
+       </code>
+       solo se llamará si
+       <code>
+        inputRef.current
+       </code>
+       no es
+       <code>
+        null
+       </code>
+       ni
+       <code>
+        undefined
+       </code>
+       . Esto previene errores en tiempo de ejecución.
+      </li>
+      <li>
+       <strong>
+        <code>
+         .focus()
+        </code>
+       </strong>
+       : TypeScript sabe que un
+       <code>
+        HTMLInputElement
+       </code>
+       tiene un método
+       <code>
+        .focus()
+       </code>
+       , por lo que te ofrecerá autocompletado y validará su uso.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        &lt;input ref={inputRef} type="text" /&gt;
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       Aquí es donde conectamos la referencia
+       <code>
+        inputRef
+       </code>
+       con el elemento DOM real en nuestro JSX. Cuando React renderiza este
+       <code>
+        &lt;input&gt;
+       </code>
+       , asignará el elemento DOM subyacente a
+       <code>
+        inputRef.current
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+   </ol>
+   <h3 id="otros-casos-de-uso-de-useref-con-tipado">
+    Otros casos de uso de
+    <code>
+     useRef
+    </code>
+    con tipado:
+   </h3>
+   <p>
+    <code>
+     useRef
+    </code>
+    no solo se usa para elementos DOM. También puede almacenar cualquier valor mutable.
+   </p>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Valores mutables genéricos:
+      </strong>
+      <div class="highlight language-tsx">
+       <pre><span></span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">counterRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;(</span><span class="mf">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// Almacena un número mutable</span>
+<span class="w">    </span><span class="c1">// counterRef.current++</span>
+<span class="w">    </span>
+</pre>
+      </div>
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Temporizadores:
+      </strong>
+      <div class="highlight language-tsx">
+       <pre><span></span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">intervalRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">&lt;</span><span class="nt">NodeJS</span><span class="p">.</span><span class="na">Timeout</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span><span class="w"> </span><span class="c1">// Referencia a un ID de temporizador</span>
+<span class="w">    </span><span class="c1">// intervalRef.current = setInterval(...)</span>
+<span class="w">    </span>
+</pre>
+      </div>
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Instancias de clase de librerías externas:
+      </strong>
+      <div class="highlight language-tsx">
+       <pre><span></span><span class="w">    </span><span class="kd">interface</span><span class="w"> </span><span class="nx">ChartInstance</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">render</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">      </span><span class="nx">destroy</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">chartRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useRef</span><span class="p">&lt;</span><span class="nt">ChartInstance</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span>
+</pre>
+      </div>
+     </p>
+    </li>
+   </ul>
+   <h3 id="beneficios-del-tipado-explicito-con-useref">
+    Beneficios del Tipado Explícito con
+    <code>
+     useRef
+    </code>
+    :
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Seguridad y Prevención de Errores:
+     </strong>
+     Evita llamar a métodos o acceder a propiedades que no existen en el tipo de elemento referenciado, lo que reduce los errores en tiempo de ejecución.
+    </li>
+    <li>
+     <strong>
+      Autocompletado y Sugerencias Inteligentes:
+     </strong>
+     Tu editor de código te ofrecerá las propiedades y métodos correctos disponibles en
+     <code>
+      inputRef.current
+     </code>
+     (o cualquier otro tipo que hayas especificado).
+    </li>
+    <li>
+     <strong>
+      Claridad del Código:
+     </strong>
+     Documenta qué tipo de elemento o valor se espera que contenga la referencia, lo que facilita la comprensión del código para otros desarrolladores.
+    </li>
+    <li>
+     <strong>
+      Mantenimiento Mejorado:
+     </strong>
+     Si decides cambiar el tipo de elemento al que hace referencia
+     <code>
+      useRef
+     </code>
+     (por ejemplo, de
+     <code>
+      input
+     </code>
+     a
+     <code>
+      textarea
+     </code>
+     ), TypeScript te ayudará a identificar dónde necesitas actualizar el código.
+    </li>
+   </ul>
+   <p>
+    En resumen, tipar
+    <code>
+     useRef
+    </code>
+    explícitamente con TypeScript es una práctica muy recomendada, especialmente cuando se trabaja con elementos DOM. Proporciona una capa adicional de robustez y claridad, haciendo que tu código sea más predecible y fácil de mantener.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-ejemplo-con-validacion-de-datos-de-api-usando-zod">
+    6. Ejemplo con Validación de Datos de API (Usando Zod)
+   </h2>
+   <p>
+    Al trabajar con APIs externas, es fundamental validar los datos que recibimos. Aunque TypeScript nos da seguridad en tiempo de desarrollo, no puede garantizar que los datos que llegan por la red se ajusten a nuestros tipos. Para esto, necesitamos librerías de validación en tiempo de ejecución.
+    <strong>
+     Zod
+    </strong>
+    es una excelente opción que combina una potente validación en tiempo de ejecución con una integración perfecta con TypeScript, permitiéndonos inferir tipos directamente desde nuestros esquemas de validación.
+   </p>
+   <h3 id="el-problema-de-la-confianza-en-los-datos-de-la-red">
+    El Problema de la Confianza en los Datos de la Red
+   </h3>
+   <p>
+    Imagina que defines un tipo
+    <code>
+     User
+    </code>
+    en TypeScript:
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Este tipo le dice a TypeScript cómo DEBERÍA ser un usuario,</span>
+<span class="c1">// pero no valida los datos que llegan de la red.</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Si tu API te envía un objeto como
+    <code>
+     { id: "1", name: 123, email: null }
+    </code>
+    , TypeScript en tiempo de compilación no te alertará, porque el problema ocurre en tiempo de ejecución cuando los datos son recibidos. Aquí es donde Zod brilla.
+   </p>
+   <h3 id="despues-typescript-con-zod-para-validacion-y-tipado-inferido">
+    Después (TypeScript con Zod para Validación y Tipado Inferido)
+   </h3>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"zod"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Importamos Zod</span>
+
+<span class="c1">// 1. Definición del Esquema de Validación con Zod</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">UserSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">positive</span><span class="p">(),</span><span class="w"> </span><span class="c1">// 'id' debe ser un número entero y positivo</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="s2">"El nombre no puede estar vacío"</span><span class="p">),</span><span class="w"> </span><span class="c1">// 'name' debe ser un string no vacío</span>
+<span class="w">  </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">email</span><span class="p">(</span><span class="s2">"Formato de email inválido"</span><span class="p">).</span><span class="nx">optional</span><span class="p">(),</span><span class="w"> </span><span class="c1">// 'email' es opcional y debe ser un email válido</span>
+<span class="w">  </span><span class="nx">isActive</span><span class="o">:</span><span class="w"> </span><span class="kt">z.boolean</span><span class="p">().</span><span class="k">default</span><span class="p">(</span><span class="kc">true</span><span class="p">),</span><span class="w"> </span><span class="c1">// 'isActive' es un booleano, por defecto true</span>
+<span class="p">});</span>
+
+<span class="c1">// 2. Inferencia del Tipo de TypeScript a partir del Esquema Zod</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">infer</span><span class="p">&lt;</span><span class="nt">typeof</span><span class="w"> </span><span class="na">UserSchema</span><span class="p">&gt;;</span>
+
+<span class="c1">// Ejemplo de uso para tipado en otras partes del código (como props o estado)</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">UserCardProps</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="p">;</span><span class="w"> </span><span class="c1">// Ahora sabemos que 'user' se ajusta a UserSchema</span>
+<span class="p">}</span>
+
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">fetchAndValidateUser</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="p">&lt;</span><span class="nt">User</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="s2">"/api/user-profile"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="sb">`Error al obtener usuario: </span><span class="si">${</span><span class="nx">res</span><span class="p">.</span><span class="nx">statusText</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">rawData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 3. Validación en tiempo de ejecución</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">validatedUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">UserSchema</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">rawData</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Datos de usuario validados:"</span><span class="p">,</span><span class="w"> </span><span class="nx">validatedUser</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">validatedUser</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 4. Manejo de errores de validación</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">ZodError</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Error de validación de datos de usuario:"</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">.</span><span class="nx">errors</span><span class="p">);</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"Datos de usuario recibidos inválidos."</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="nx">error</span><span class="p">;</span><span class="w"> </span><span class="c1">// Re-lanzar otros errores inesperados</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Ejemplo de cómo llamar a la función (en un componente React, por ejemplo)</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">UserDisplay</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">setUser</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">User</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">isLoading</span><span class="p">,</span><span class="w"> </span><span class="nx">setIsLoading</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">React</span><span class="p">.</span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">setIsLoading</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">fetchAndValidateUser</span><span class="p">()</span>
+<span class="w">      </span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setUser</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span>
+<span class="w">      </span><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">))</span>
+<span class="w">      </span><span class="p">.</span><span class="k">finally</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setIsLoading</span><span class="p">(</span><span class="kc">false</span><span class="p">));</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[]);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">isLoading</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">usuario</span><span class="p">...&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="ne">Error</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span><span class="nx">No</span><span class="w"> </span><span class="nx">hay</span><span class="w"> </span><span class="nx">datos</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">usuario</span><span class="p">.&lt;/</span><span class="nt">div</span><span class="p">&gt;;</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;</span><span class="nx">Perfil</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Usuario</span><span class="p">&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">ID</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">id</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Nombre</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">email</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Email</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">email</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span><span class="w"> </span><span class="p">{</span><span class="cm">/* Renderiza email solo si existe */</span><span class="p">}</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Activo</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">isActive</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"Sí"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">"No"</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">UserDisplay</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="explicacion-del-tipado-y-validacion-con-zod">
+    Explicación del tipado y validación con Zod:
+   </h3>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       Definición del Esquema de Validación con Zod (
+       <code>
+        UserSchema
+       </code>
+       )
+      </strong>
+      :
+      <div class="highlight language-tsx">
+       <pre><span></span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">UserSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">positive</span><span class="p">(),</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="s2">"El nombre no puede estar vacío"</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">email</span><span class="p">(</span><span class="s2">"Formato de email inválido"</span><span class="p">).</span><span class="nx">optional</span><span class="p">(),</span>
+<span class="w">      </span><span class="nx">isActive</span><span class="o">:</span><span class="w"> </span><span class="kt">z.boolean</span><span class="p">().</span><span class="k">default</span><span class="p">(</span><span class="kc">true</span><span class="p">),</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span>
+</pre>
+      </div>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         z.object({...})
+        </code>
+       </strong>
+       : Define que esperamos un objeto.
+      </li>
+      <li>
+       <strong>
+        <code>
+         z.number().int().positive()
+        </code>
+       </strong>
+       :
+       <code>
+        id
+       </code>
+       debe ser un
+       <code>
+        number
+       </code>
+       , un entero (
+       <code>
+        int()
+       </code>
+       ) y mayor que cero (
+       <code>
+        positive()
+       </code>
+       ).
+      </li>
+      <li>
+       <strong>
+        <code>
+         z.string().min(1, "...")
+        </code>
+       </strong>
+       :
+       <code>
+        name
+       </code>
+       debe ser un
+       <code>
+        string
+       </code>
+       y tener al menos un carácter.
+      </li>
+      <li>
+       <strong>
+        <code>
+         z.string().email("...").optional()
+        </code>
+       </strong>
+       :
+       <code>
+        email
+       </code>
+       es un
+       <code>
+        string
+       </code>
+       que debe tener formato de email y es opcional (
+       <code>
+        optional()
+       </code>
+       ), lo que significa que puede estar presente o ausente.
+      </li>
+      <li>
+       <strong>
+        <code>
+         z.boolean().default(true)
+        </code>
+       </strong>
+       :
+       <code>
+        isActive
+       </code>
+       es un
+       <code>
+        boolean
+       </code>
+       y, si no se proporciona en los datos, Zod le asignará
+       <code>
+        true
+       </code>
+       por defecto.
+      </li>
+      <li>
+       <strong>
+        Métodos en cadena
+       </strong>
+       : Zod permite encadenar métodos para añadir validaciones complejas de forma muy legible.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Inferencia del Tipo de TypeScript (
+       <code>
+        type User = z.infer&lt;typeof UserSchema&gt;;
+       </code>
+       )
+      </strong>
+      :
+     </p>
+     <ul>
+      <li>
+       Esta línea es mágica.
+       <code>
+        z.infer&lt;typeof UserSchema&gt;
+       </code>
+       le dice a TypeScript que
+       <strong>
+        infiera el tipo
+       </strong>
+       de la constante
+       <code>
+        UserSchema
+       </code>
+       .
+      </li>
+      <li>
+       El resultado es un tipo TypeScript (
+       <code>
+        User
+       </code>
+       ) que coincide exactamente con la estructura definida en
+       <code>
+        UserSchema
+       </code>
+       . Por ejemplo,
+       <code>
+        User
+       </code>
+       será
+       <code>
+        { id: number, name: string, email?: string, isActive: boolean }
+       </code>
+       .
+      </li>
+      <li>
+       Esto elimina la duplicación: no tienes que definir tu tipo y luego un esquema de validación por separado. Zod hace que tu esquema de validación sea la
+       <strong>
+        única fuente de verdad
+       </strong>
+       para la forma de tus datos.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Validación en tiempo de ejecución (
+       <code>
+        UserSchema.parse(rawData);
+       </code>
+       )
+      </strong>
+      :
+     </p>
+     <ul>
+      <li>
+       Cuando recibes
+       <code>
+        rawData
+       </code>
+       de la API (que puede tener cualquier forma), llamas a
+       <code>
+        UserSchema.parse(rawData)
+       </code>
+       .
+      </li>
+      <li>
+       Si
+       <code>
+        rawData
+       </code>
+       se ajusta perfectamente al esquema,
+       <code>
+        parse()
+       </code>
+       devolverá un objeto con el tipo
+       <code>
+        User
+       </code>
+       inferido. A partir de este punto, puedes tratar
+       <code>
+        validatedUser
+       </code>
+       con total seguridad de tipo.
+      </li>
+      <li>
+       Si
+       <code>
+        rawData
+       </code>
+       no coincide con el esquema (por ejemplo,
+       <code>
+        id
+       </code>
+       es un string,
+       <code>
+        name
+       </code>
+       está vacío, o
+       <code>
+        email
+       </code>
+       no tiene formato válido),
+       <code>
+        parse()
+       </code>
+       lanzará un
+       <code>
+        z.ZodError
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Manejo de errores de validación (
+       <code>
+        catch (error)
+       </code>
+       )
+      </strong>
+      :
+     </p>
+     <ul>
+      <li>
+       Es crucial envolver la llamada a
+       <code>
+        parse()
+       </code>
+       en un bloque
+       <code>
+        try...catch
+       </code>
+       para manejar los errores de validación.
+      </li>
+      <li>
+       Puedes verificar si el error es una instancia de
+       <code>
+        z.ZodError
+       </code>
+       para acceder a una lista detallada de los problemas de validación (
+       <code>
+        error.errors
+       </code>
+       ). Esto es invaluable para mostrar mensajes de error útiles al usuario o para depurar.
+      </li>
+     </ul>
+    </li>
+   </ol>
+   <h3 id="beneficios-de-usar-zod-con-typescript-para-la-validacion-de-api">
+    Beneficios de usar Zod con TypeScript para la validación de API:
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Seguridad Extrema:
+     </strong>
+     Garantiza que los datos con los que trabajas en tu aplicación se ajustan a la forma que esperas, tanto en tiempo de compilación (TypeScript) como en tiempo de ejecución (Zod).
+    </li>
+    <li>
+     <strong>
+      Single Source of Truth (Fuente Única de Verdad):
+     </strong>
+     Defines la forma de tus datos una sola vez en el esquema Zod, y tanto la validación como el tipado de TypeScript se derivan de ahí. Esto reduce la duplicación y las posibilidades de desincronización entre tu tipo y tu lógica de validación.
+    </li>
+    <li>
+     <strong>
+      Excelente DX (Developer Experience):
+     </strong>
+     <ul>
+      <li>
+       <strong>
+        Autocompletado:
+       </strong>
+       Obtienes autocompletado para los métodos de validación de Zod mientras defines tus esquemas.
+      </li>
+      <li>
+       <strong>
+        Tipado Inferido:
+       </strong>
+       TypeScript te proporciona autocompletado y verificación de tipos para tus objetos validados
+       <code>
+        User
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Mensajes de Error Claros:
+     </strong>
+     Zod genera errores de validación detallados que facilitan la depuración y la creación de interfaces de usuario robustas.
+    </li>
+    <li>
+     <strong>
+      Reduce Bugs:
+     </strong>
+     Al validar los datos de entrada, evitas que datos inesperados causen fallos en cascada en tu aplicación.
+    </li>
+   </ul>
+   <p>
+    Integrar Zod (o librerías similares como Yup, io-ts, Superstruct) en tu flujo de trabajo de TypeScript es una práctica muy recomendada para construir aplicaciones React robustas y fiables que interactúan con APIs externas.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-ejemplo-con-uniones-discriminadas-discriminated-unions">
+    7. Ejemplo con Uniones Discriminadas (Discriminated Unions)
+   </h2>
+   <p>
+    Cuando un objeto puede tener diferentes "formas" o estructuras dependiendo del valor de una propiedad específica, estamos frente a un escenario ideal para usar
+    <strong>
+     uniones discriminadas
+    </strong>
+    en TypeScript. Este patrón es increíblemente útil para modelar estados que cambian a lo largo del tiempo, como el ciclo de vida de una solicitud asíncrona (idle, loading, success, error) o diferentes tipos de eventos.
+   </p>
+   <p>
+    La clave de una unión discriminada es una propiedad común (el "discriminador") que tiene un tipo literal de cadena o numérico único en cada miembro de la unión. TypeScript puede usar este discriminador para estrechar (narrow) el tipo del objeto, permitiéndonos acceder a propiedades específicas de forma segura.
+   </p>
+   <h3 id="el-problema-sin-uniones-discriminadas-y-por-que-las-necesitamos">
+    El Problema sin Uniones Discriminadas (y por qué las necesitamos)
+   </h3>
+   <p>
+    Imagina que intentas modelar el estado de carga de datos sin este patrón. Podrías terminar con algo así:
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Una forma menos segura de modelar el estado</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">InsecureLoadState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"idle"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"loading"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"error"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"success"</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">error?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// Opcional, pero TypeScript no sabe cuándo es realmente necesario</span>
+<span class="w">  </span><span class="nx">data?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span><span class="w"> </span><span class="c1">// Opcional, pero TypeScript no sabe cuándo es realmente necesario</span>
+<span class="p">}</span>
+
+<span class="c1">// ... en un componente</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">InsecureLoader</span><span class="p">(</span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="kt">InsecureLoadState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"error"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// TypeScript te permitiría acceder a state.error aquí,</span>
+<span class="w">    </span><span class="c1">// pero también si status fuera "idle", lo cual es incorrecto lógicamente.</span>
+<span class="w">    </span><span class="c1">// También tendrías que verificar 'state.error !== undefined' en tiempo de ejecución.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ne">Error</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;;</span><span class="w"> </span><span class="c1">// Posiblemente 'undefined'</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Aquí,
+    <code>
+     error
+    </code>
+    y
+    <code>
+     data
+    </code>
+    son propiedades opcionales. TypeScript no sabe que
+    <code>
+     error
+    </code>
+    <em>
+     solo
+    </em>
+    debe existir cuando
+    <code>
+     status
+    </code>
+    es
+    <code>
+     "error"
+    </code>
+    , o que
+    <code>
+     data
+    </code>
+    <em>
+     solo
+    </em>
+    existe cuando
+    <code>
+     status
+    </code>
+    es
+    <code>
+     "success"
+    </code>
+    . Esto podría llevar a errores en tiempo de ejecución donde intentas acceder a
+    <code>
+     state.error
+    </code>
+    cuando
+    <code>
+     status
+    </code>
+    es
+    <code>
+     "loading"
+    </code>
+    , resultando en
+    <code>
+     undefined
+    </code>
+    .
+   </p>
+   <h3 id="despues-typescript-con-uniones-discriminadas">
+    Después (TypeScript con Uniones Discriminadas)
+   </h3>
+   <p>
+    Aquí, cada estado es una forma distinta del tipo
+    <code>
+     LoadState
+    </code>
+    , y la propiedad
+    <code>
+     status
+    </code>
+    actúa como nuestro "discriminador".
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Necesario para JSX</span>
+
+<span class="c1">// 1. Definición de la Unión Discriminada</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">LoadState</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"idle"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Estado inicial, no hay datos ni errores</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"loading"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Datos siendo cargados</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"error"</span><span class="p">;</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Hubo un error, con un mensaje de error</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">;</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// Carga exitosa, con los datos</span>
+
+<span class="c1">// 2. Componente que utiliza la Unión Discriminada</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">Loader</span><span class="p">({</span><span class="w"> </span><span class="nx">state</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="kt">LoadState</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Recibe el estado como prop</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">"idle"</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s1">'20px'</span><span class="p">,</span><span class="w"> </span><span class="nx">border</span><span class="o">:</span><span class="w"> </span><span class="s1">'1px solid #ccc'</span><span class="p">,</span><span class="w"> </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="s1">'5px'</span><span class="w"> </span><span class="p">}}&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Esperando</span><span class="w"> </span><span class="nx">acción</span><span class="w"> </span><span class="nx">para</span><span class="w"> </span><span class="nx">cargar</span><span class="w"> </span><span class="nx">datos</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">);</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">"loading"</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s1">'20px'</span><span class="p">,</span><span class="w"> </span><span class="nx">border</span><span class="o">:</span><span class="w"> </span><span class="s1">'1px solid #ccc'</span><span class="p">,</span><span class="w"> </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="s1">'5px'</span><span class="p">,</span><span class="w"> </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#e0f7fa'</span><span class="w"> </span><span class="p">}}&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">datos</span><span class="p">,</span><span class="w"> </span><span class="nx">por</span><span class="w"> </span><span class="nx">favor</span><span class="w"> </span><span class="nx">espere</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"spinner"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="cm">/* Un spinner de carga visual */</span><span class="p">}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">);</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">"error"</span><span class="o">:</span>
+<span class="w">      </span><span class="c1">// ¡Aquí es donde brilla! TypeScript sabe que 'state' es de tipo '{ status: "error"; error: string }'</span>
+<span class="w">      </span><span class="c1">// y que 'state.error' existe y es un string.</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s1">'20px'</span><span class="p">,</span><span class="w"> </span><span class="nx">border</span><span class="o">:</span><span class="w"> </span><span class="s1">'1px solid red'</span><span class="p">,</span><span class="w"> </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="s1">'5px'</span><span class="p">,</span><span class="w"> </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#ffebee'</span><span class="p">,</span><span class="w"> </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'red'</span><span class="w"> </span><span class="p">}}&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ne">Error</span><span class="w"> </span><span class="nx">al</span><span class="w"> </span><span class="nx">cargar</span><span class="o">:</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;{</span><span class="nx">state</span><span class="p">.</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">strong</span><span class="p">&gt;&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Por</span><span class="w"> </span><span class="nx">favor</span><span class="p">,</span><span class="w"> </span><span class="nx">inténtelo</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">nuevo</span><span class="p">.&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">);</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">"success"</span><span class="o">:</span>
+<span class="w">      </span><span class="c1">// TypeScript sabe que 'state' es de tipo '{ status: "success"; data: string[] }'</span>
+<span class="w">      </span><span class="c1">// y que 'state.data' existe y es un array de strings.</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s1">'20px'</span><span class="p">,</span><span class="w"> </span><span class="nx">border</span><span class="o">:</span><span class="w"> </span><span class="s1">'1px solid green'</span><span class="p">,</span><span class="w"> </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="s1">'5px'</span><span class="p">,</span><span class="w"> </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#e8f5e9'</span><span class="w"> </span><span class="p">}}&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h4</span><span class="p">&gt;</span><span class="nx">Datos</span><span class="w"> </span><span class="nx">cargados</span><span class="w"> </span><span class="nx">exitosamente</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">h4</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">item</span><span class="p">,</span><span class="w"> </span><span class="nx">index</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">li</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">index</span><span class="p">}&gt;{</span><span class="nx">item</span><span class="p">}&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">))}</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">No</span><span class="w"> </span><span class="nx">se</span><span class="w"> </span><span class="nx">encontraron</span><span class="w"> </span><span class="nx">elementos</span><span class="p">.&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// TypeScript te obligaría a tener un 'default' si no cubre todos los casos</span>
+<span class="w">    </span><span class="c1">// o si el discriminador no es un tipo literal de string/number.</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Ejemplo de cómo usar el componente con diferentes estados</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">AppDiscriminatedUnion</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loadState</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoadState</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">React</span><span class="p">.</span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">LoadState</span><span class="p">&gt;({</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"idle"</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">setLoadState</span><span class="p">({</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"loading"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Simula una llamada a la API</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="p">&lt;</span><span class="nt">string</span><span class="err">[]</span><span class="p">&gt;((</span><span class="nx">resolve</span><span class="p">,</span><span class="w"> </span><span class="nx">reject</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setTimeout</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="nx">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span><span class="w"> </span><span class="c1">// 70% de éxito</span>
+<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">resolve</span><span class="p">([</span><span class="s2">"Item 1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Item 2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Item 3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Item 4"</span><span class="p">]);</span>
+<span class="w">          </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">reject</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"Fallo en la red o el servidor"</span><span class="p">));</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span><span class="w"> </span><span class="mf">1500</span><span class="p">);</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">      </span><span class="nx">setLoadState</span><span class="p">({</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"success"</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">response</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setLoadState</span><span class="p">({</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"error"</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">err.message</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">fontFamily</span><span class="o">:</span><span class="w"> </span><span class="s1">'Arial, sans-serif'</span><span class="p">,</span><span class="w"> </span><span class="nx">maxWidth</span><span class="o">:</span><span class="w"> </span><span class="s1">'600px'</span><span class="p">,</span><span class="w"> </span><span class="nx">margin</span><span class="o">:</span><span class="w"> </span><span class="s1">'20px auto'</span><span class="p">,</span><span class="w"> </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s1">'20px'</span><span class="p">,</span><span class="w"> </span><span class="nx">border</span><span class="o">:</span><span class="w"> </span><span class="s1">'1px solid #eee'</span><span class="p">,</span><span class="w"> </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="s1">'8px'</span><span class="p">,</span><span class="w"> </span><span class="nx">boxShadow</span><span class="o">:</span><span class="w"> </span><span class="s1">'0 2px 4px rgba(0,0,0,0.1)'</span><span class="w"> </span><span class="p">}}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Estado</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Carga</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Datos</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">button</span>
+<span class="w">        </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">fetchData</span><span class="p">}</span>
+<span class="w">        </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loadState</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"loading"</span><span class="p">}</span>
+<span class="w">        </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">padding</span><span class="o">:</span><span class="w"> </span><span class="s1">'10px 20px'</span><span class="p">,</span><span class="w"> </span><span class="nx">fontSize</span><span class="o">:</span><span class="w"> </span><span class="s1">'16px'</span><span class="p">,</span><span class="w"> </span><span class="nx">cursor</span><span class="o">:</span><span class="w"> </span><span class="s1">'pointer'</span><span class="p">,</span><span class="w"> </span><span class="nx">backgroundColor</span><span class="o">:</span><span class="w"> </span><span class="s1">'#007bff'</span><span class="p">,</span><span class="w"> </span><span class="nx">color</span><span class="o">:</span><span class="w"> </span><span class="s1">'white'</span><span class="p">,</span><span class="w"> </span><span class="nx">border</span><span class="o">:</span><span class="w"> </span><span class="s1">'none'</span><span class="p">,</span><span class="w"> </span><span class="nx">borderRadius</span><span class="o">:</span><span class="w"> </span><span class="s1">'5px'</span><span class="p">,</span><span class="w"> </span><span class="nx">marginBottom</span><span class="o">:</span><span class="w"> </span><span class="s1">'20px'</span><span class="w"> </span><span class="p">}}</span>
+<span class="w">      </span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">{</span><span class="nx">loadState</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"loading"</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"Cargando..."</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">"Cargar Datos"</span><span class="p">}</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Loader</span><span class="w"> </span><span class="na">state</span><span class="o">=</span><span class="p">{</span><span class="nx">loadState</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="cm">/* Estilos para el spinner (opcional) */</span><span class="p">}</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">style</span><span class="w"> </span><span class="na">jsx</span><span class="p">&gt;{</span><span class="sb">`</span>
+<span class="sb">        .spinner {</span>
+<span class="sb">          border: 4px solid rgba(0, 0, 0, 0.1);</span>
+<span class="sb">          width: 24px;</span>
+<span class="sb">          height: 24px;</span>
+<span class="sb">          border-radius: 50%;</span>
+<span class="sb">          border-left-color: #007bff;</span>
+<span class="sb">          animation: spin 1s ease infinite;</span>
+<span class="sb">          margin: 10px auto 0;</span>
+<span class="sb">        }</span>
+<span class="sb">        @keyframes spin {</span>
+<span class="sb">          0% { transform: rotate(0deg); }</span>
+<span class="sb">          100% { transform: rotate(360deg); }</span>
+<span class="sb">        }</span>
+<span class="sb">      `</span><span class="p">}&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">AppDiscriminatedUnion</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    En este código, se visualiza el estado de un componente React que gestiona la carga de datos utilizando uniones discriminadas en TypeScript, mostrando mensajes de "Esperando acción", "Cargando...", "Error: Fallo en la red o el servidor" o "Datos cargados exitosamente", con un spinner en el estado de carga y una lista de ítems si la carga fue exitosa.
+`
+   </p>
+   <h3 id="explicacion-de-las-uniones-discriminadas">
+    Explicación de las Uniones Discriminadas:
+   </h3>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       Definición de la Unión Discriminada (
+       <code>
+        type LoadState = ...
+       </code>
+       )
+      </strong>
+      :
+     </p>
+     <ul>
+      <li>
+       Hemos definido
+       <code>
+        LoadState
+       </code>
+       como una unión de cuatro tipos de objetos diferentes.
+      </li>
+      <li>
+       Cada objeto tiene una propiedad
+       <code>
+        status
+       </code>
+       con un
+       <strong>
+        valor literal de cadena único
+       </strong>
+       (
+       <code>
+        "idle"
+       </code>
+       ,
+       <code>
+        "loading"
+       </code>
+       ,
+       <code>
+        "error"
+       </code>
+       ,
+       <code>
+        "success"
+       </code>
+       ). Esta es nuestra propiedad
+       <strong>
+        discriminadora
+       </strong>
+       .
+      </li>
+      <li>
+       <strong>
+        <code>
+         { status: "idle" }
+        </code>
+       </strong>
+       : Cuando el estado es
+       <code>
+        idle
+       </code>
+       , el objeto solo tiene la propiedad
+       <code>
+        status
+       </code>
+       . No hay datos ni errores.
+      </li>
+      <li>
+       <strong>
+        <code>
+         { status: "loading" }
+        </code>
+       </strong>
+       : Similar al anterior, solo indica que la carga está en progreso.
+      </li>
+      <li>
+       <strong>
+        <code>
+         { status: "error"; error: string }
+        </code>
+       </strong>
+       : Crucialmente, cuando
+       <code>
+        status
+       </code>
+       es
+       <code>
+        "error"
+       </code>
+       , el objeto
+       <strong>
+        debe
+       </strong>
+       tener una propiedad
+       <code>
+        error
+       </code>
+       de tipo
+       <code>
+        string
+       </code>
+       . No es opcional aquí.
+      </li>
+      <li>
+       <strong>
+        <code>
+         { status: "success"; data: string[] }
+        </code>
+       </strong>
+       : Y cuando
+       <code>
+        status
+       </code>
+       es
+       <code>
+        "success"
+       </code>
+       , el objeto
+       <strong>
+        debe
+       </strong>
+       tener una propiedad
+       <code>
+        data
+       </code>
+       que es un array de strings.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Uso del Discriminador en el
+       <code>
+        switch
+       </code>
+       (
+       <code>
+        switch (state.status)
+       </code>
+       )
+      </strong>
+      :
+     </p>
+     <ul>
+      <li>
+       Dentro del componente
+       <code>
+        Loader
+       </code>
+       , usamos una sentencia
+       <code>
+        switch
+       </code>
+       sobre
+       <code>
+        state.status
+       </code>
+       .
+      </li>
+      <li>
+       Cuando TypeScript ve
+       <code>
+        case "error":
+       </code>
+       , sabe que dentro de ese bloque, la variable
+       <code>
+        state
+       </code>
+       <strong>
+        ya no es
+        <code>
+         LoadState
+        </code>
+        genérico
+       </strong>
+       , sino que ha sido
+       <strong>
+        estrechada (narrowed)
+       </strong>
+       al tipo específico
+       <code>
+        { status: "error"; error: string }
+       </code>
+       .
+      </li>
+      <li>
+       Gracias a esto, podemos acceder a
+       <code>
+        state.error
+       </code>
+       <strong>
+        sin ninguna verificación adicional de nulidad o existencia
+       </strong>
+       , porque TypeScript nos garantiza que
+       <code>
+        error
+       </code>
+       estará presente y será un
+       <code>
+        string
+       </code>
+       en ese contexto.
+      </li>
+      <li>
+       Lo mismo ocurre con
+       <code>
+        case "success":
+       </code>
+       , donde
+       <code>
+        state
+       </code>
+       se estrecha a
+       <code>
+        { status: "success"; data: string[] }
+       </code>
+       , permitiéndonos acceder a
+       <code>
+        state.data
+       </code>
+       de forma segura.
+      </li>
+     </ul>
+    </li>
+   </ol>
+   <h3 id="beneficios-de-las-uniones-discriminadas">
+    Beneficios de las Uniones Discriminadas:
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Seguridad de Tipos Superior:
+     </strong>
+     Elimina la posibilidad de errores en tiempo de ejecución causados por intentar acceder a propiedades que no existen en un determinado estado. TypeScript te fuerza a manejar todos los casos posibles y te da seguridad sobre las propiedades disponibles.
+    </li>
+    <li>
+     <strong>
+      Código Autodocumentado:
+     </strong>
+     La definición de
+     <code>
+      LoadState
+     </code>
+     es muy clara y expresa las diferentes formas que puede tomar el estado, sirviendo como una excelente documentación.
+    </li>
+    <li>
+     <strong>
+      Autocompletado Inteligente:
+     </strong>
+     Tu IDE (como VS Code) te ofrecerá las propiedades correctas para cada caso. Por ejemplo, después de
+     <code>
+      case "error":
+     </code>
+     , al escribir
+     <code>
+      state.
+     </code>
+     , solo verás
+     <code>
+      status
+     </code>
+     y
+     <code>
+      error
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Mejora la Refactorización:
+     </strong>
+     Si decides añadir un nuevo estado (ej.
+     <code>
+      "retrying"
+     </code>
+     ), TypeScript te forzará a actualizar todos los
+     <code>
+      switch
+     </code>
+     o
+     <code>
+      if/else if
+     </code>
+     que usen
+     <code>
+      LoadState
+     </code>
+     , asegurando que cubras el nuevo caso.
+    </li>
+    <li>
+     <strong>
+      Exhaustividad:
+     </strong>
+     Con un
+     <code>
+      switch
+     </code>
+     bien estructurado, TypeScript puede ayudarte a asegurar que has manejado
+     <em>
+      todos
+     </em>
+     los posibles casos de la unión, o te avisará si falta alguno.
+    </li>
+   </ul>
+   <p>
+    Las uniones discriminadas son un patrón fundamental para manejar estados complejos y lógicos condicionales en aplicaciones TypeScript, brindando una claridad y robustez que transforman la forma en que escribimos código.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-importacion-y-tipado-de-assets-ejemplo-para-vite-y-css-modules">
+    8. Importación y Tipado de Assets (Ejemplo para Vite y CSS Modules)
+   </h2>
+   <p>
+    En un entorno de desarrollo web moderno (como el que ofrece Vite, Webpack o Rollup), no solo importamos módulos JavaScript/TypeScript, sino también assets como imágenes (
+    <code>
+     .svg
+    </code>
+    ,
+    <code>
+     .png
+    </code>
+    ), archivos de estilo (
+    <code>
+     .css
+    </code>
+    ,
+    <code>
+     .scss
+    </code>
+    ), fuentes, etc. Por defecto, TypeScript solo entiende módulos
+    <code>
+     .ts
+    </code>
+    y
+    <code>
+     .tsx
+    </code>
+    . Para que TypeScript sepa cómo manejar estas importaciones de assets y nos brinde seguridad de tipos (y autocompletado), necesitamos declarar sus módulos.
+   </p>
+   <p>
+    Este proceso es especialmente relevante para:
+1.
+    <strong>
+     Imágenes/Archivos estáticos
+    </strong>
+    : Cuando los importas para obtener su URL.
+2.
+    <strong>
+     CSS Modules
+    </strong>
+    : Para tipar el objeto de clases CSS exportado.
+   </p>
+   <h3 id="el-problema-sin-declaraciones-de-modulos">
+    El Problema sin Declaraciones de Módulos
+   </h3>
+   <p>
+    Si intentamos importar un archivo
+    <code>
+     .svg
+    </code>
+    o un
+    <code>
+     .module.css
+    </code>
+    sin las declaraciones de módulo adecuadas, TypeScript nos dará un error similar a este:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>Cannot find module './my-icon.svg' or its corresponding type declarations.
+</pre>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>Cannot find module './Button.module.css' or its corresponding type declarations.
+</pre>
+   </div>
+   <p>
+    Esto ocurre porque TypeScript no tiene idea de qué "forma" o tipo de datos exporta un archivo
+    <code>
+     .svg
+    </code>
+    o
+    <code>
+     .module.css
+    </code>
+    cuando se importa como un módulo.
+   </p>
+   <h3 id="despues-declaracion-de-modulos-y-uso">
+    Después (Declaración de Módulos y Uso)
+   </h3>
+   <p>
+    Para resolver esto, creamos un archivo de definición de tipos (
+    <code>
+     .d.ts
+    </code>
+    ) donde le decimos a TypeScript cómo tratar estas importaciones.
+   </p>
+   <h4 id="1-crear-el-archivo-de-declaracion-de-tipos">
+    1. Crear el Archivo de Declaración de Tipos
+   </h4>
+   <p>
+    Crea un archivo llamado
+    <code>
+     src/types/assets.d.ts
+    </code>
+    (o
+    <code>
+     src/vite-env.d.ts
+    </code>
+    si ya tienes uno generado por Vite) con el siguiente contenido:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/types/assets.d.ts o vite-env.d.ts</span>
+
+<span class="c1">// Declara cómo TypeScript debe manejar la importación de archivos .svg</span>
+<span class="kr">declare</span><span class="w"> </span><span class="nx">module</span><span class="w"> </span><span class="s2">"*.svg"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Cuando importamos un SVG (ej. `import MyIcon from './my-icon.svg';`)</span>
+<span class="w">  </span><span class="c1">// Vite, Webpack, etc., a menudo devuelven la URL del asset como un string.</span>
+<span class="w">  </span><span class="c1">// Por lo tanto, declaramos que el módulo exporta un `string` por defecto.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">src</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">src</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Declara cómo TypeScript debe manejar la importación de CSS Modules</span>
+<span class="kr">declare</span><span class="w"> </span><span class="nx">module</span><span class="w"> </span><span class="s2">"*.module.css"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// CSS Modules exporta un objeto donde las claves son los nombres de las clases CSS</span>
+<span class="w">  </span><span class="c1">// y los valores son los nombres de las clases generados y ofuscados.</span>
+<span class="w">  </span><span class="c1">// Ej: `import styles from './Button.module.css';`</span>
+<span class="w">  </span><span class="c1">// `styles` será un objeto donde cada propiedad es un string.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">classes</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">classes</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Opcional: Declarar otros tipos de imágenes si los importas directamente</span>
+<span class="kr">declare</span><span class="w"> </span><span class="nx">module</span><span class="w"> </span><span class="s2">"*.png"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">src</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">src</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">declare</span><span class="w"> </span><span class="nx">module</span><span class="w"> </span><span class="s2">"*.jpeg"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">src</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">src</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Explicación de las declaraciones:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       declare module "*.svg"
+      </code>
+     </strong>
+     : Esta línea es una "declaración de módulo ambiente" (
+     <code>
+      ambient module declaration
+     </code>
+     ). Le dice a TypeScript: "Para cualquier importación que termine con
+     <code>
+      .svg
+     </code>
+     ..."
+     <ul>
+      <li>
+       <code>
+        const src: string;
+       </code>
+       : "...el valor por defecto exportado será una constante de tipo
+       <code>
+        string
+       </code>
+       (que representará la URL del archivo SVG)."
+      </li>
+      <li>
+       <code>
+        export default src;
+       </code>
+       : "...y esta constante es la exportación por defecto del módulo."
+      </li>
+      <li>
+       Esto es lo que los bundlers como Vite o Webpack hacen por defecto cuando importas un asset: te dan su URL pública.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      <code>
+       declare module "*.module.css"
+      </code>
+     </strong>
+     : Esto es para CSS Modules.
+     <ul>
+      <li>
+       <code>
+        const classes: { readonly [key: string]: string };
+       </code>
+       : Un CSS Module exporta un objeto. Las claves de este objeto son los nombres de las clases CSS que definiste en tu archivo
+       <code>
+        .css
+       </code>
+       (ej.
+       <code>
+        myButton
+       </code>
+       ,
+       <code>
+        myContainer
+       </code>
+       ), y los valores son los nombres de clases ofuscados que se generan en tiempo de compilación (ej.
+       <code>
+        _myButton_abc12_def34
+       </code>
+       ).
+      </li>
+      <li>
+       <code>
+        readonly
+       </code>
+       se añade para indicar que este objeto de clases no debe ser modificado.
+      </li>
+      <li>
+       <code>
+        export default classes;
+       </code>
+       : Este objeto es la exportación por defecto.
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <h4 id="2-asegurate-de-que-tsconfigjson-incluya-tu-archivo-de-tipos">
+    2. Asegúrate de que
+    <code>
+     tsconfig.json
+    </code>
+    incluya tu archivo de tipos
+   </h4>
+   <p>
+    Tu
+    <code>
+     tsconfig.json
+    </code>
+    debe estar configurado para incluir los archivos
+    <code>
+     .d.ts
+    </code>
+    . La sección
+    <code>
+     include
+    </code>
+    debería cubrir
+    <code>
+     src
+    </code>
+    , lo cual es el caso en la configuración básica que mostramos al principio.
+   </p>
+   <div class="highlight language-json">
+    <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... otras opciones ...</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">]</span><span class="w"> </span><span class="c1">// Asegura que TypeScript lea los archivos en 'src', incluyendo 'src/types/*.d.ts'</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <h4 id="3-ejemplo-de-uso-en-un-componente-react-typescript">
+    3. Ejemplo de Uso en un Componente React (TypeScript)
+   </h4>
+   <p>
+    Ahora, con las declaraciones de módulo en su lugar, puedes importar y usar estos assets con seguridad de tipos:
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">MyIcon</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./assets/react.svg'</span><span class="p">;</span><span class="w"> </span><span class="c1">// 1. Importando un SVG</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">styles</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./Button.module.css'</span><span class="p">;</span><span class="w"> </span><span class="c1">// 2. Importando un CSS Module</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">MyComponent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// TypeScript sabe que 'MyIcon' es un string (la URL del SVG)</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">MyIcon</span><span class="p">);</span><span class="w"> </span><span class="c1">// Salida: "/assets/react.svg" (o similar)</span>
+
+<span class="w">  </span><span class="c1">// TypeScript sabe que 'styles' es un objeto con propiedades string</span>
+<span class="w">  </span><span class="c1">// y te dará autocompletado para 'styles.myButton', etc.</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">styles</span><span class="p">.</span><span class="nx">myButton</span><span class="p">);</span><span class="w"> </span><span class="c1">// Salida: "_myButton_abc12_def34" (o similar)</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">container</span><span class="p">}&gt;</span><span class="w"> </span><span class="p">{</span><span class="cm">/* Usando una clase del CSS Module */</span><span class="p">}</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">MyIcon</span><span class="p">}</span><span class="w"> </span><span class="na">alt</span><span class="o">=</span><span class="s">"React Logo"</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">logo</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;</span><span class="w"> </span><span class="p">{</span><span class="cm">/* Usando la URL del SVG */</span><span class="p">}</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">myButton</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="nx">Hacer</span><span class="w"> </span><span class="nx">Click</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Esto</span><span class="w"> </span><span class="nx">es</span><span class="w"> </span><span class="nx">un</span><span class="w"> </span><span class="nx">componente</span><span class="w"> </span><span class="nx">que</span><span class="w"> </span><span class="nx">usa</span><span class="w"> </span><span class="nx">assets</span><span class="w"> </span><span class="nx">tipados</span><span class="p">.&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">MyComponent</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    En este código, se importan y utilizan tanto un archivo SVG como un módulo CSS dentro de un componente React. Se declara la importación del archivo SVG como una cadena que contiene su URL, y el módulo CSS como un objeto
+    <code>
+     styles
+    </code>
+    que permite acceder a las clases CSS definidas en el archivo del módulo, asegurando que TypeScript proporcione seguridad de tipos y autocompletado para estas importaciones de assets.
+`
+   </p>
+   <h3 id="beneficios-de-tipar-las-importaciones-de-assets">
+    Beneficios de Tipar las Importaciones de Assets:
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      No más errores "Cannot find module":
+     </strong>
+     Resuelve los errores de TypeScript que ocurren al importar archivos no-JS/TS.
+    </li>
+    <li>
+     <strong>
+      Seguridad de Tipos:
+     </strong>
+     TypeScript sabe qué tipo de dato esperar al importar un SVG (una
+     <code>
+      string
+     </code>
+     ) o un CSS Module (un objeto de
+     <code>
+      string
+     </code>
+     s), evitando errores al usar estas importaciones.
+    </li>
+    <li>
+     <strong>
+      Autocompletado:
+     </strong>
+     Tu IDE te ofrecerá autocompletado para las propiedades del objeto
+     <code>
+      styles
+     </code>
+     de un CSS Module, lo que mejora la experiencia de desarrollo.
+    </li>
+    <li>
+     <strong>
+      Claridad del Código:
+     </strong>
+     La intención de la importación es más clara al ver que TypeScript la reconoce correctamente.
+    </li>
+    <li>
+     <strong>
+      Mantenimiento Mejorado:
+     </strong>
+     Si el bundler o las convenciones de importación de assets cambian, estas declaraciones son el lugar central para actualizarlas.
+    </li>
+   </ul>
+   <p>
+    Esta configuración es esencial para proyectos React con TypeScript que utilizan bundlers modernos, asegurando una experiencia de desarrollo fluida y tipada de extremo a extremo, incluso para los archivos estáticos.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-path-aliases-alias-de-rutas-de-importacion">
+    9. Path Aliases (Alias de Rutas de Importación)
+   </h2>
+   <p>
+    A medida que un proyecto de React crece, la estructura de carpetas puede volverse profunda. Esto a menudo lleva a rutas de importación largas y anidadas, como
+    <code>
+     ../../../components/common/Button
+    </code>
+    . Los
+    <strong>
+     Path Aliases
+    </strong>
+    (Alias de Rutas) nos permiten crear atajos para estas rutas, haciendo que las importaciones sean más cortas, limpias y fáciles de refactorizar.
+   </p>
+   <p>
+    Un alias común es
+    <code>
+     @
+    </code>
+    , que generalmente apunta a la carpeta
+    <code>
+     src
+    </code>
+    de nuestro proyecto, permitiéndonos escribir
+    <code>
+     import Button from "@/components/Button";
+    </code>
+    en lugar de una ruta relativa compleja.
+   </p>
+   <h3 id="el-problema-de-las-rutas-relativas-largas">
+    El Problema de las Rutas Relativas Largas
+   </h3>
+   <p>
+    Sin alias, navegar por un proyecto grande puede ser engorroso:
+   </p>
+   <div class="highlight language-tsx">
+    <pre><span></span><span class="c1">// src/pages/dashboard/views/overview/widgets/TotalSales.tsx</span>
+
+<span class="c1">// Rutas relativas largas y propensas a errores al mover archivos</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">Button</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../../../../components/ui/Button'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">calculateStats</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../../../utils/dataHelpers'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">UserProfile</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../../../types/api'</span><span class="p">;</span>
+
+<span class="c1">// ... el resto del componente</span>
+</pre>
+   </div>
+   <p>
+    Estas rutas son difíciles de leer, más propensas a errores si movemos archivos y menos robustas al refactorizar.
+   </p>
+   <h3 id="despues-configuracion-y-uso-con-path-aliases">
+    Después (Configuración y Uso con Path Aliases)
+   </h3>
+   <p>
+    Para implementar path aliases, necesitamos configurarlos en dos lugares principales:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      TypeScript (
+      <code>
+       tsconfig.json
+      </code>
+      )
+     </strong>
+     : Para que TypeScript (y tu IDE) entienda los alias y pueda resolver los tipos y ofrecer autocompletado.
+    </li>
+    <li>
+     <strong>
+      El Bundler (
+      <code>
+       vite.config.ts
+      </code>
+      o
+      <code>
+       webpack.config.js
+      </code>
+      )
+     </strong>
+     : Para que el bundler sepa cómo resolver las rutas en tiempo de compilación.
+    </li>
+   </ol>
+   <h4 id="1-configuracion-de-typescript-tsconfigjson">
+    1. Configuración de TypeScript (
+    <code>
+     tsconfig.json
+    </code>
+    )
+   </h4>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tsconfig.json</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... otras opciones de compilador ...</span>
+<span class="w">    </span><span class="nt">"baseUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"."</span><span class="p">,</span><span class="w"> </span><span class="c1">// Indica la base para la resolución de módulos no relativos.</span>
+<span class="w">                    </span><span class="c1">// '.' significa la raíz del proyecto donde está tsconfig.json.</span>
+<span class="w">    </span><span class="nt">"paths"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Define los mapeos de alias.</span>
+<span class="w">      </span><span class="c1">// "@/*" significa "cualquier cosa que empiece con @"</span>
+<span class="w">      </span><span class="c1">// y "[", "src/*" ]" significa "mapearlo a la carpeta 'src' y lo que siga".</span>
+<span class="w">      </span><span class="nt">"@/*"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src/*"</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="c1">// Es importante asegurarse de que 'moduleResolution' sea compatible.</span>
+<span class="w">    </span><span class="c1">// 'Bundler' o 'Node' suelen funcionar bien.</span>
+<span class="w">    </span><span class="nt">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Bundler"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"jsx"</span><span class="p">:</span><span class="w"> </span><span class="s2">"react-jsx"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"strict"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lib"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"ES2022"</span><span class="p">,</span><span class="w"> </span><span class="s2">"DOM"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ES2022"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ESNext"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">]</span><span class="w"> </span><span class="c1">// Asegura que TypeScript procese los archivos en 'src'</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Explicación de
+     <code>
+      tsconfig.json
+     </code>
+     :
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       "baseUrl": "."
+      </code>
+     </strong>
+     : Esta opción es crucial. Le dice a TypeScript dónde empezar a buscar archivos cuando se encuentra con una ruta de módulo no relativa (como un alias).
+     <code>
+      .
+     </code>
+     significa la raíz del proyecto donde se encuentra
+     <code>
+      tsconfig.json
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       "paths": { "@/*": ["src/*"] }
+      </code>
+     </strong>
+     : Aquí definimos el mapeo del alias:
+     <ul>
+      <li>
+       <code>
+        "@/*"
+       </code>
+       : Significa que cualquier importación que comience con
+       <code>
+        @/
+       </code>
+       será reconocida como un alias. El
+       <code>
+        *
+       </code>
+       es un comodín.
+      </li>
+      <li>
+       <code>
+        ["src/*"]
+       </code>
+       : Indica que el contenido del comodín (
+       <code>
+        *
+       </code>
+       ) debe resolverse dentro de la carpeta
+       <code>
+        src
+       </code>
+       . Así,
+       <code>
+        @/components/Button
+       </code>
+       se convierte en
+       <code>
+        src/components/Button
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      <code>
+       "moduleResolution": "Bundler"
+      </code>
+     </strong>
+     : Es importante que esta opción esté configurada de manera compatible para que TypeScript y tu IDE puedan resolver los alias correctamente.
+     <code>
+      Bundler
+     </code>
+     es una buena opción para Vite.
+    </li>
+   </ul>
+   <h4 id="2-configuracion-del-bundler-ejemplo-con-vite-en-viteconfigts">
+    2. Configuración del Bundler (Ejemplo con Vite en
+    <code>
+     vite.config.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// vite.config.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"node:path"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Importa el módulo 'path' para trabajar con rutas de archivo</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"vite"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Importa la función de configuración de Vite</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">react</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@vitejs/plugin-react"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Si usas el plugin de React</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">react</span><span class="p">()],</span><span class="w"> </span><span class="c1">// Asegúrate de incluir tus plugins</span>
+<span class="w">  </span><span class="nx">resolve</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">alias</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Define el alias para Vite.</span>
+<span class="w">      </span><span class="c1">// "@": resuelve a la ruta absoluta de la carpeta 'src'.</span>
+<span class="w">      </span><span class="c1">// path.resolve(__dirname, "src") construye la ruta absoluta.</span>
+<span class="w">      </span><span class="s2">"@"</span><span class="o">:</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span><span class="w"> </span><span class="s2">"src"</span><span class="p">),</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Explicación de
+     <code>
+      vite.config.ts
+     </code>
+     :
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       import path from "node:path";
+      </code>
+     </strong>
+     : Necesitamos el módulo
+     <code>
+      path
+     </code>
+     de Node.js para construir rutas absolutas de forma robusta a través de diferentes sistemas operativos.
+    </li>
+    <li>
+     <strong>
+      <code>
+       path.resolve(__dirname, "src")
+      </code>
+     </strong>
+     :
+     <ul>
+      <li>
+       <code>
+        __dirname
+       </code>
+       es una variable global de Node.js que representa la ruta del directorio del archivo actual (
+       <code>
+        vite.config.ts
+       </code>
+       ).
+      </li>
+      <li>
+       <code>
+        path.resolve()
+       </code>
+       une
+       <code>
+        __dirname
+       </code>
+       con
+       <code>
+        "src"
+       </code>
+       para crear una ruta absoluta completa a tu carpeta
+       <code>
+        src
+       </code>
+       (ej.
+       <code>
+        /Users/tuusuario/proyectoreact/src
+       </code>
+       ). Vite necesita rutas absolutas para resolver los alias correctamente.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      <code>
+       alias: { "@": path.resolve(__dirname, "src") }
+      </code>
+     </strong>
+     : Aquí le dices a Vite que cada vez que vea una importación que empieza con
+     <code>
+      @
+     </code>
+     , debe mapearla a la ruta absoluta de tu carpeta
+     <code>
+      src
+     </code>
+     .
+    </li>
+   </ul>
+   <h4 id="3-uso-en-el-codigo-componentes-react">
+    3. Uso en el Código (Componentes React)
+   </h4>
+   <p>
+    Una vez configurado, puedes usar tus alias en cualquier lugar de tu proyecto:
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/App.tsx o cualquier otro componente</span>
+
+<span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="c1">// ¡Mucho más limpio y fácil de leer!</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">Button</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/components/Button"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">UserProfile</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/types/api"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Asumiendo que UserProfile está en src/types/api.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">MyIcon</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/assets/logo.svg"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Asumiendo que logo.svg está en src/assets/logo.svg</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">fetchData</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/utils/api"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Asumiendo que api.ts está en src/utils/api.ts</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="kt">UserProfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Alice"</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// Usando el tipo importado</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">fetchData</span><span class="p">(</span><span class="s2">"/some-endpoint"</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Botón clicado"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Mi</span><span class="w"> </span><span class="nx">Aplicación</span><span class="w"> </span><span class="nx">con</span><span class="w"> </span><span class="nx">Alias</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Rutas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">MyIcon</span><span class="p">}</span><span class="w"> </span><span class="na">alt</span><span class="o">=</span><span class="s">"Logo"</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="s1">'100px'</span><span class="p">,</span><span class="w"> </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="s1">'100px'</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">Button</span><span class="w"> </span><span class="na">label</span><span class="o">=</span><span class="s">"Haz Click"</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleClick</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Usuario</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    En este código se importa y utiliza un archivo SVG como el logotipo, un componente
+    <code>
+     Button
+    </code>
+    y una función
+    <code>
+     fetchData
+    </code>
+    de los directorios
+    <code>
+     assets
+    </code>
+    ,
+    <code>
+     components
+    </code>
+    y
+    <code>
+     utils
+    </code>
+    respectivamente, empleando path aliases para simplificar las rutas de importación.
+`
+   </p>
+   <h3 id="beneficios-de-usar-path-aliases">
+    Beneficios de usar Path Aliases:
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Importaciones Más Claras y Legibles:
+     </strong>
+     Las rutas se vuelven más cortas y fáciles de entender, mejorando la legibilidad del código.
+    </li>
+    <li>
+     <strong>
+      Mejora la Refactorización:
+     </strong>
+     Si mueves un archivo de componente de
+     <code>
+      src/components/ui/Button
+     </code>
+     a
+     <code>
+      src/components/common/Button
+     </code>
+     , no necesitas actualizar las rutas relativas en todos los archivos que lo importan. Simplemente sigues usando
+     <code>
+      import Button from "@/components/common/Button";
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Consistencia:
+     </strong>
+     Fomenta un estilo de importación consistente en todo el proyecto.
+    </li>
+    <li>
+     <strong>
+      Evita Errores de Rutas Relativas:
+     </strong>
+     Reduce la probabilidad de cometer errores al calcular el número correcto de
+     <code>
+      ../
+     </code>
+     en rutas profundas.
+    </li>
+    <li>
+     <strong>
+      Mejora la Experiencia del Desarrollador (DX):
+     </strong>
+     Tu IDE puede saltar directamente al archivo correcto cuando haces clic en la importación con alias, y el autocompletado sigue funcionando perfectamente.
+    </li>
+   </ul>
+   <p>
+    La configuración de path aliases es una pequeña inversión inicial que genera grandes dividendos en la mantenibilidad y la experiencia de desarrollo de proyectos grandes con TypeScript y React.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-resumen">
+    10. Resumen
+   </h2>
+   <ul>
+    <li>
+     Instalar
+     <code>
+      typescript
+     </code>
+     y
+     <code>
+      @types/react
+     </code>
+     .
+    </li>
+    <li>
+     Renombrar
+     <code>
+      .jsx
+     </code>
+     →
+     <code>
+      .tsx
+     </code>
+     .
+    </li>
+    <li>
+     Definir
+     <code>
+      tsconfig.json
+     </code>
+     .
+    </li>
+    <li>
+     Tipar props, estados, eventos y refs.
+    </li>
+    <li>
+     Usar librerías de validación como Zod para datos externos.
+    </li>
+    <li>
+     Configurar alias y assets.
+    </li>
+   </ul>
+   <p>
+    Con estos pasos, un proyecto React con JS queda migrado a TypeScript de forma progresiva.
+   </p>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

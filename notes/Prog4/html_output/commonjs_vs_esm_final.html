@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   commonjs_vs_esm
+  </title>
+ </head>
+ <body>
+  <h1 id="importacion-de-modulos-en-typescript-con-vite">
+   🚀 Importación de Módulos en TypeScript con Vite
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-configuracion-esencial-de-typescript-tsconfigjson">
+      1. 🛠️ Configuración Esencial de TypeScript (tsconfig.json)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-configuracion-de-alias-en-vite-viteconfigts">
+      2. ⚡ Configuración de Alias en Vite (vite.config.ts)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-las-diferentes-caras-de-import">
+      3. 📚 Las Diferentes Caras de import
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-recomendaciones-clave-para-un-codigo-impecable">
+      4. 💡 Recomendaciones Clave para un Código Impecable
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-manos-a-la-obra-ejercicios-practicos">
+      5. 🎯 ¡Manos a la Obra! Ejercicios Prácticos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-resumen">
+      6. 🧠 Resumen
+     </a>
+    </li>
+   </ul>
+  </div>
+  <p>
+   En esta guía, desglosaremos cómo importar módulos de manera efectiva en tus proyectos TypeScript, especialmente cuando trabajas con la increíble velocidad de Vite. Prepárate para escribir código más limpio, organizado y eficiente.
+  </p>
+  <div class="chapter-container">
+   <h2 id="1-configuracion-esencial-de-typescript-tsconfigjson">
+    1. 🛠️ Configuración Esencial de TypeScript (
+    <code>
+     tsconfig.json
+    </code>
+    )
+   </h2>
+   <p>
+    Para que TypeScript y Vite trabajen en armonía, necesitamos decirle a TypeScript cómo manejar los módulos. Abre tu archivo
+    <code>
+     tsconfig.json
+    </code>
+    y asegúrate de que tenga estas configuraciones clave:
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ES2020"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ESNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bundler"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"esModuleInterop"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"allowSyntheticDefaultImports"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"baseUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"."</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"paths"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"@/*"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src/*"</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"resolveJsonModule"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"noEmit"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">]</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="desglose-de-los-puntos-mas-importantes">
+    ✨ Desglose de los puntos más importantes
+   </h3>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       <code>
+        "module": "ESNext"
+       </code>
+      </strong>
+      : Esto es crucial. Le dice a TypeScript que use la sintaxis moderna de módulos de ECMAScript (ESM), que es la forma preferida y más eficiente de trabajar en el ecosistema actual de JavaScript y TypeScript. Piensa en ello como el "lenguaje universal" de los módulos hoy en día.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        "moduleResolution": "bundler"
+       </code>
+      </strong>
+      : Esta opción le indica a TypeScript que la resolución de módulos será manejada por un
+      <em>
+       bundler
+      </em>
+      (como Vite, que usa Rollup internamente). Es la forma más eficiente para que TypeScript entienda cómo el
+      <em>
+       bundler
+      </em>
+      encontrará tus archivos.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       <code>
+        "esModuleInterop": true
+       </code>
+      </strong>
+      y
+      <strong>
+       <code>
+        "allowSyntheticDefaultImports": true
+       </code>
+      </strong>
+      : Estas dos opciones trabajan juntas para que puedas importar bibliotecas escritas en CommonJS (un sistema de módulos más antiguo, común en Node.js) como si fueran módulos ES. ¡Esto te da mucha flexibilidad!
+     </p>
+    </li>
+    <li>
+     <strong>
+      <code>
+       "paths": { "@/*": ["src/*"] }
+      </code>
+     </strong>
+     : ¡Aquí está la magia de los alias! En lugar de escribir rutas relativas largas y complicadas como
+     <code>
+      ./../../utils/myUtils
+     </code>
+     , puedes usar
+     <code>
+      @/utils/myUtils
+     </code>
+     . ¡Tu código se verá mucho más limpio y fácil de mantener!
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-configuracion-de-alias-en-vite-viteconfigts">
+    2. ⚡ Configuración de Alias en Vite (
+    <code>
+     vite.config.ts
+    </code>
+    )
+   </h2>
+   <p>
+    Para que Vite entienda nuestros alias de
+    <code>
+     paths
+    </code>
+    definidos en
+    <code>
+     tsconfig.json
+    </code>
+    , también necesitamos configurarlos en su archivo de configuración:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// vite.config.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"vite"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"node:path"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Módulo nativo de Node.js para trabajar con rutas de archivos</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">resolve</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">alias</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Configuramos el alias "@" para que apunte a la carpeta "src"</span>
+<span class="w">      </span><span class="s2">"@"</span><span class="o">:</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span><span class="w"> </span><span class="s2">"src"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     ¿Cómo se ve esto en acción?
+    </strong>
+   </p>
+   <p>
+    Imagina que tienes un archivo
+    <code>
+     util.ts
+    </code>
+    dentro de
+    <code>
+     src/utils
+    </code>
+    . Antes, quizás lo importabas así:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// src/components/MyComponent.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">util</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"../../utils/util"</span><span class="p">;</span><span class="w"> </span><span class="c1">// ¡Uff, cuántos puntos y barras!</span>
+</pre>
+   </div>
+   <p>
+    ¡Ahora, con el alias, es mucho más elegante!
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// src/components/MyComponent.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">util</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@/utils/util"</span><span class="p">;</span><span class="w"> </span><span class="c1">// ¡Mucho más limpio y fácil de leer!</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-las-diferentes-caras-de-import">
+    3. 📚 Las Diferentes Caras de
+    <code>
+     import
+    </code>
+   </h2>
+   <p>
+    La palabra clave
+    <code>
+     import
+    </code>
+    puede usarse de varias maneras, cada una con su propósito.
+   </p>
+   <h3 id="31-importacion-por-omision-la-mas-comun-para-un-solo-elemento-principal">
+    3.1. Importación por omisión: La más común para un solo elemento principal
+   </h3>
+   <p>
+    Cuando un módulo tiene una
+    <strong>
+     exportación por defecto
+    </strong>
+    , significa que hay un "elemento principal" que se espera que uses de ese archivo. Solo puede haber uno por módulo.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 math.ts</span>
+<span class="c1">// Esta es la exportación por defecto de este módulo</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">sumar</span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 📁 main.ts</span>
+<span class="c1">// Importamos la función por defecto y le podemos dar el nombre que queramos (aquí 'sumar')</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">sumar</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./math"</span><span class="p">;</span><span class="w"> </span><span class="c1">// La ruta es relativa al archivo actual</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">sumar</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">));</span><span class="w"> </span><span class="c1">// Salida: 5</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="32-importacion-con-nombre-para-elementos-especificos">
+    3.2. Importación con Nombre: Para elementos específicos
+   </h3>
+   <p>
+    Si un módulo exporta varias cosas, puedes elegir importar solo las que necesitas usando sus nombres exactos.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 strings.ts</span>
+<span class="c1">// Exportamos funciones con nombres específicos</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">upper</span><span class="p">(</span><span class="nx">s</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">lower</span><span class="p">(</span><span class="nx">s</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">PI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.14159</span><span class="p">;</span><span class="w"> </span><span class="c1">// También podemos exportar constantes</span>
+
+<span class="c1">// 📁 main.ts</span>
+<span class="c1">// Importamos solo las funciones 'upper' y 'lower'</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">upper</span><span class="p">,</span><span class="w"> </span><span class="nx">lower</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./strings"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">upper</span><span class="p">(</span><span class="s2">"hola"</span><span class="p">));</span><span class="w"> </span><span class="c1">// Salida: HOLA</span>
+
+<span class="c1">// Podemos renombrar un import con 'as' si hay conflicto de nombres o queremos un nombre más corto</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">PI</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">MyPiValue</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./strings"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">MyPiValue</span><span class="p">);</span><span class="w"> </span><span class="c1">// Salida: 3.14159</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="33-importar-todo-como-un-objeto-cuando-quieres-agrupar-utilidades">
+    3.3. Importar todo como un objeto: Cuando quieres agrupar utilidades
+   </h3>
+   <p>
+    Si un módulo exporta muchas cosas con nombre y quieres acceder a ellas bajo un solo "paraguas", puedes importarlas todas como un objeto.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 utils.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">PI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.14</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">area</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">r</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">circumference</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">r</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// 📁 main.ts</span>
+<span class="c1">// Importamos todo lo exportado por 'utils.ts' y lo ponemos bajo el objeto 'utils'</span>
+<span class="k">import</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">utils</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./utils"</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">utils</span><span class="p">.</span><span class="nx">area</span><span class="p">(</span><span class="mf">5</span><span class="p">));</span><span class="w">          </span><span class="c1">// Salida: 78.5</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">utils</span><span class="p">.</span><span class="nx">circumference</span><span class="p">(</span><span class="mf">5</span><span class="p">));</span><span class="w"> </span><span class="c1">// Salida: 31.400000000000002</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="34-import-combinado-lo-mejor-de-ambos-mundos">
+    3.4. Import combinado: Lo mejor de ambos mundos
+   </h3>
+   <p>
+    Puedes importar la exportación por defecto
+    <em>
+     y
+    </em>
+    exportaciones con nombre del mismo módulo en una sola línea.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 logger.ts</span>
+<span class="c1">// Exportación por defecto</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="c1">// Exportación con nombre</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">LEVEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"INFO"</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">DEBUG_MODE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+
+<span class="c1">// 📁 main.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">log</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">LEVEL</span><span class="p">,</span><span class="w"> </span><span class="nx">DEBUG_MODE</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./logger"</span><span class="p">;</span>
+<span class="nx">log</span><span class="p">(</span><span class="sb">`Nivel: </span><span class="si">${</span><span class="nx">LEVEL</span><span class="si">}</span><span class="sb">, Modo Debug: </span><span class="si">${</span><span class="nx">DEBUG_MODE</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span><span class="w"> </span><span class="c1">// Salida: Nivel: INFO, Modo Debug: true</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="35-import-solo-por-efectos-cuando-la-carga-del-modulo-ya-hace-algo">
+    3.5.
+    <code>
+     import
+    </code>
+    solo por efectos: Cuando la carga del módulo ya hace algo
+   </h3>
+   <p>
+    A veces, un módulo no exporta nada, pero su simple carga ejecuta algún código (por ejemplo, configura variables globales, registra un
+    <em>
+     polyfill
+    </em>
+    o inicia una conexión).
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 setup.ts</span>
+<span class="c1">// Este módulo no exporta nada, pero su ejecución tiene un "efecto secundario"</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"🚀 Aplicación: Inicializando configuración global..."</span><span class="p">);</span>
+
+<span class="c1">// 📁 main.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="s2">"./setup"</span><span class="p">;</span><span class="w"> </span><span class="c1">// Simplemente carga y ejecuta el código de setup.ts</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"¡Todo listo!"</span><span class="p">);</span>
+
+<span class="c1">// Salida esperada:</span>
+<span class="c1">// 🚀 Aplicación: Inicializando configuración global...</span>
+<span class="c1">// ¡Todo listo!</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="36-importacion-dinamica-carga-modulos-solo-cuando-los-necesitas">
+    3.6. Importación Dinámica: Carga módulos solo cuando los necesitas
+   </h3>
+   <p>
+    Esta es una característica poderosa que te permite cargar módulos de forma asíncrona, solo cuando son necesarios. Es ideal para optimizar el rendimiento de tu aplicación (ej. cargar componentes de una SPA solo cuando el usuario navega a ellos).
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 math.ts (mismo de antes)</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">sumar</span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 📁 main.ts</span>
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">cargarYUsarModulo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Intentando cargar el módulo 'math'..."</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// El 'import()' devuelve una Promise que se resuelve con el módulo</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">mod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="k">import</span><span class="p">(</span><span class="s2">"./math"</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Módulo 'math' cargado."</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`La suma de 4 y 5 es: </span><span class="si">${</span><span class="nx">mod</span><span class="p">.</span><span class="k">default</span><span class="p">(</span><span class="mf">4</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span><span class="w"> </span><span class="c1">// Accedemos a la exportación por defecto</span>
+<span class="p">}</span>
+
+<span class="c1">// Llamamos a la función para cargar el módulo dinámicamente</span>
+<span class="nx">cargarYUsarModulo</span><span class="p">();</span>
+
+<span class="c1">// Salida esperada:</span>
+<span class="c1">// Intentando cargar el módulo 'math'...</span>
+<span class="c1">// Módulo 'math' cargado.</span>
+<span class="c1">// La suma de 4 y 5 es: 9</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="37-import-solo-de-tipos-exclusivo-de-typescript-para-optimizacion">
+    3.7.
+    <code>
+     import
+    </code>
+    solo de tipos: Exclusivo de TypeScript para optimización
+   </h3>
+   <p>
+    Cuando solo necesitas usar una interfaz o un tipo de otro archivo, pero no su implementación en tiempo de ejecución. Usar
+    <code>
+     import type
+    </code>
+    le dice a TypeScript que este import debe ser eliminado completamente cuando el código se compile a JavaScript, ¡lo que ayuda a mantener tu código JS más pequeño!
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 types.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Usuario</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Rol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"admin"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"editor"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"viewer"</span><span class="p">;</span>
+
+<span class="c1">// 📁 main.ts</span>
+<span class="c1">// Usamos 'import type' porque solo necesitamos las definiciones de tipo, no código JS ejecutable.</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Usuario</span><span class="p">,</span><span class="w"> </span><span class="nx">Rol</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./types"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">u</span><span class="o">:</span><span class="w"> </span><span class="kt">Usuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="p">,</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s2">"Ana"</span><span class="w"> </span><span class="p">};</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">rolActual</span><span class="o">:</span><span class="w"> </span><span class="kt">Rol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">;</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Usuario: </span><span class="si">${</span><span class="nx">u</span><span class="p">.</span><span class="nx">nombre</span><span class="si">}</span><span class="sb">, Rol: </span><span class="si">${</span><span class="nx">rolActual</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span><span class="w"> </span><span class="c1">// Salida: Usuario: Ana, Rol: admin</span>
+
+<span class="c1">// ¡Importante! 'import type' no se transpila a JS.</span>
+<span class="c1">// Si revisas el JS compilado de main.ts, verás que esta línea ha desaparecido.</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="38-importacion-estilo-commonjs-import-require-para-librerias-legacy">
+    3.8. Importación estilo CommonJS (
+    <code>
+     import = require
+    </code>
+    ): Para librerías
+    <em>
+     legacy
+    </em>
+   </h3>
+   <p>
+    Esta sintaxis es una forma de interoperabilidad específica de TypeScript para importar módulos CommonJS (el sistema de módulos que Node.js usaba tradicionalmente) que no se exportan bien con las opciones
+    <code>
+     esModuleInterop
+    </code>
+    o
+    <code>
+     allowSyntheticDefaultImports
+    </code>
+    .
+    <strong>
+     Úsala solo como último recurso para librerías muy antiguas.
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 📁 main.ts</span>
+<span class="c1">// Usamos 'import = require' para importar el módulo nativo 'fs' (File System) de Node.js,</span>
+<span class="c1">// que históricamente usa CommonJS.</span>
+<span class="c1">// Nota: En un proyecto frontend con Vite, 'fs' no estaría disponible directamente en el navegador.</span>
+<span class="c1">// Este es un ejemplo para ilustrar la sintaxis.</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">fs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s2">"fs"</span><span class="p">);</span>
+
+<span class="c1">// Podemos usar las funciones de fs como si fueran un objeto normal</span>
+<span class="c1">// fs.readFileSync(...);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Módulo 'fs' importado usando CommonJS style."</span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-recomendaciones-clave-para-un-codigo-impecable">
+    4. 💡 Recomendaciones Clave para un Código Impecable
+   </h2>
+   <p>
+    Para mantener tu código limpio, eficiente y fácil de entender, sigue estas buenas prácticas:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Prioriza ESM (
+      <code>
+       ESNext
+      </code>
+      )
+     </strong>
+     : Siempre que sea posible, usa la sintaxis moderna de
+     <code>
+      import
+     </code>
+     y
+     <code>
+      export
+     </code>
+     de ES Modules. Es el estándar actual y el que mejor se integra con herramientas modernas como Vite.
+    </li>
+    <li>
+     <strong>
+      ¡Alias al Rescate (
+      <code>
+       paths
+      </code>
+      )!
+     </strong>
+     : Aprovecha los alias en
+     <code>
+      tsconfig.json
+     </code>
+     y
+     <code>
+      vite.config.ts
+     </code>
+     . Transforman rutas largas y propensas a errores en atajos limpios y descriptivos. Tu carpeta
+     <code>
+      src
+     </code>
+     te lo agradecerá.
+    </li>
+    <li>
+     <strong>
+      <code>
+       import type
+      </code>
+      para Tipos Puros
+     </strong>
+     : Cuando solo necesites la definición de una interfaz o un tipo, usa
+     <code>
+      import type
+     </code>
+     . TypeScript lo eliminará al compilar, reduciendo el tamaño de tu JavaScript final y mejorando el rendimiento.
+    </li>
+    <li>
+     <strong>
+      <code>
+       import = require
+      </code>
+      solo para la Retaguardia
+     </strong>
+     : Reserva la sintaxis
+     <code>
+      import = require
+     </code>
+     para esas raras ocasiones en que una biblioteca antigua de CommonJS no se importa correctamente con las opciones de interoperabilidad estándar. Es una herramienta de compatibilidad, no una práctica diaria.
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-manos-a-la-obra-ejercicios-practicos">
+    5. 🎯 ¡Manos a la Obra! Ejercicios Prácticos
+   </h2>
+   <p>
+    Crea un nuevo proyecto Vite con TypeScript y resuelve estos ejercicios.
+   </p>
+   <h3 id="ejercicio-1-modulo-de-utilidades-matematicas">
+    Ejercicio 1: Módulo de Utilidades Matemáticas
+   </h3>
+   <ol>
+    <li>
+     Crea un archivo
+     <code>
+      src/mathUtils.ts
+     </code>
+     .
+    </li>
+    <li>
+     Dentro de
+     <code>
+      mathUtils.ts
+     </code>
+     , exporta con nombre una función
+     <code>
+      sumar(a: number, b: number)
+     </code>
+     y otra
+     <code>
+      restar(a: number, b: number)
+     </code>
+     .
+    </li>
+    <li>
+     En
+     <code>
+      src/main.ts
+     </code>
+     (o cualquier otro archivo), importa
+     <strong>
+      solo la función
+      <code>
+       sumar
+      </code>
+     </strong>
+     usando la sintaxis de
+     <strong>
+      importación con nombre
+     </strong>
+     .
+    </li>
+    <li>
+     Llama a
+     <code>
+      sumar
+     </code>
+     con dos números y muestra el resultado en consola.
+    </li>
+   </ol>
+   <h3 id="ejercicio-2-modulo-de-configuracion-por-defecto">
+    Ejercicio 2: Módulo de Configuración por Defecto
+   </h3>
+   <ol>
+    <li>
+     Crea un archivo
+     <code>
+      src/config.ts
+     </code>
+     .
+    </li>
+    <li>
+     Dentro de
+     <code>
+      config.ts
+     </code>
+     , exporta por defecto un objeto con las propiedades
+     <code>
+      { appName: "MiApp", version: "1.0", debug: true }
+     </code>
+     .
+    </li>
+    <li>
+     En
+     <code>
+      src/main.ts
+     </code>
+     , importa este objeto usando la
+     <strong>
+      importación por defecto
+     </strong>
+     . Dale el nombre
+     <code>
+      appConfig
+     </code>
+     .
+    </li>
+    <li>
+     Muestra
+     <code>
+      appConfig.appName
+     </code>
+     y
+     <code>
+      appConfig.version
+     </code>
+     en consola.
+    </li>
+   </ol>
+   <h3 id="ejercicio-3-modulo-de-constantes-con-importacion-de-espacio-de-nombres">
+    Ejercicio 3: Módulo de Constantes con Importación de Espacio de Nombres
+   </h3>
+   <ol>
+    <li>
+     Crea un archivo
+     <code>
+      src/constants.ts
+     </code>
+     .
+    </li>
+    <li>
+     Dentro de
+     <code>
+      constants.ts
+     </code>
+     , exporta con nombre varias constantes:
+     <code>
+      PI = 3.14159
+     </code>
+     ,
+     <code>
+      E = 2.71828
+     </code>
+     ,
+     <code>
+      GRAVEDAD = 9.81
+     </code>
+     .
+    </li>
+    <li>
+     En
+     <code>
+      src/main.ts
+     </code>
+     , importa
+     <strong>
+      todas
+     </strong>
+     estas constantes bajo un único objeto llamado
+     <code>
+      mathConstants
+     </code>
+     usando la sintaxis
+     <code>
+      import * as
+     </code>
+     .
+    </li>
+    <li>
+     Muestra
+     <code>
+      mathConstants.PI
+     </code>
+     y
+     <code>
+      mathConstants.GRAVEDAD
+     </code>
+     en consola.
+    </li>
+   </ol>
+   <h3 id="ejercicio-4-modulo-con-efectos-secundarios">
+    Ejercicio 4: Módulo con Efectos Secundarios
+   </h3>
+   <ol>
+    <li>
+     Crea un archivo
+     <code>
+      src/initializer.ts
+     </code>
+     .
+    </li>
+    <li>
+     Dentro de
+     <code>
+      initializer.ts
+     </code>
+     , haz que muestre un mensaje en consola:
+     <code>
+      "🌐 Conectando a la base de datos..."
+     </code>
+     y
+     <code>
+      "✅ Base de datos conectada."
+     </code>
+     . No exportes nada.
+    </li>
+    <li>
+     En
+     <code>
+      src/main.ts
+     </code>
+     , importa
+     <code>
+      initializer.ts
+     </code>
+     usando la
+     <strong>
+      importación solo por efectos
+     </strong>
+     .
+    </li>
+    <li>
+     Asegúrate de que los mensajes de
+     <code>
+      initializer.ts
+     </code>
+     aparezcan en la consola cuando se ejecuta
+     <code>
+      main.ts
+     </code>
+     .
+    </li>
+   </ol>
+   <h3 id="ejercicio-5-importacion-de-tipos-puros">
+    Ejercicio 5: Importación de Tipos Puros
+   </h3>
+   <ol>
+    <li>
+     Crea un archivo
+     <code>
+      src/dataTypes.ts
+     </code>
+     .
+    </li>
+    <li>
+     Dentro de
+     <code>
+      dataTypes.ts
+     </code>
+     , define y exporta una interfaz
+     <code>
+      Product { id: number; name: string; price: number; }
+     </code>
+     .
+    </li>
+    <li>
+     En
+     <code>
+      src/main.ts
+     </code>
+     , importa
+     <strong>
+      solo el tipo
+      <code>
+       Product
+      </code>
+     </strong>
+     usando
+     <code>
+      import type
+     </code>
+     .
+    </li>
+    <li>
+     Declara una variable
+     <code>
+      myProduct
+     </code>
+     de tipo
+     <code>
+      Product
+     </code>
+     y asígnale un objeto con datos de un producto. Muestra el nombre del producto en consola.
+    </li>
+   </ol>
+   <h3 id="ejercicio-6-importacion-dinamica-asincrona">
+    Ejercicio 6: Importación Dinámica Asíncrona
+   </h3>
+   <ol>
+    <li>
+     Utiliza el módulo
+     <code>
+      src/mathUtils.ts
+     </code>
+     que creaste en el Ejercicio 1.
+    </li>
+    <li>
+     En
+     <code>
+      src/main.ts
+     </code>
+     , crea una función asíncrona llamada
+     <code>
+      performCalculations()
+     </code>
+     .
+    </li>
+    <li>
+     Dentro de
+     <code>
+      performCalculations()
+     </code>
+     , usa una
+     <strong>
+      importación dinámica
+     </strong>
+     para cargar el módulo
+     <code>
+      src/mathUtils.ts
+     </code>
+     .
+    </li>
+    <li>
+     Una vez cargado, usa la función
+     <code>
+      restar
+     </code>
+     de ese módulo con dos números y muestra el resultado en consola.
+    </li>
+    <li>
+     Llama a
+     <code>
+      performCalculations()
+     </code>
+     para ejecutarla.
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-resumen">
+    6. 🧠 Resumen
+   </h2>
+   <p>
+    Ahora tienes una comprensión sólida de cómo funcionan los módulos en TypeScript con Vite.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Vite y TypeScript
+     </strong>
+     se llevan de maravilla con los
+     <strong>
+      ES Modules (
+      <code>
+       module: ESNext
+      </code>
+      )
+     </strong>
+     .
+    </li>
+    <li>
+     Las
+     <strong>
+      alias (
+      <code>
+       paths
+      </code>
+      )
+     </strong>
+     son tus mejores amigos para un código organizado.
+    </li>
+    <li>
+     Conociste las diferentes
+     <strong>
+      sintaxis de
+      <code>
+       import
+      </code>
+     </strong>
+     : por defecto, con nombre, como objeto, combinado, por efectos, dinámica y solo de tipos.
+    </li>
+    <li>
+     Y aprendiste a usar
+     <strong>
+      <code>
+       import type
+      </code>
+     </strong>
+     para optimizar tus aplicaciones.
+    </li>
+    <li>
+     Los
+     <strong>
+      ejercicios
+     </strong>
+     te permitieron poner todo en práctica.
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   git3
+  </title>
+ </head>
+ <body>
+  <h1 id="git-flow-flujo-de-trabajo-con-ramas">
+   📘 Git Flow: flujo de trabajo con ramas
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#introduccion">
+      Introducción
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#las-ramas-de-git-flow">
+      Las ramas de Git Flow
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ejemplo-completo-proyecto-tienda-online">
+      Ejemplo completo: proyecto "Tienda Online"
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#feature-branches-desarrollar-funcionalidades">
+      Feature branches: desarrollar funcionalidades
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#release-branches-preparar-una-version">
+      Release branches: preparar una versión
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#hotfix-branches-correcciones-urgentes">
+      Hotfix branches: correcciones urgentes
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ejemplo-de-conflicto-en-git-flow">
+      Ejemplo de conflicto en Git Flow
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#convenciones-de-nombres">
+      Convenciones de nombres
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#resumen-de-comandos">
+      Resumen de comandos
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="introduccion">
+    Introducción
+   </h2>
+   <p>
+    Cuando un equipo de desarrollo trabaja sobre un mismo proyecto, necesita una forma organizada de gestionar los cambios.
+    <strong>
+     Git Flow
+    </strong>
+    es un modelo de ramificación que define qué ramas usar, cuándo crearlas y cómo integrarlas.
+   </p>
+   <p>
+    Fue propuesto por Vincent Driessen en 2010 y se convirtió en uno de los flujos de trabajo más utilizados en la industria.
+   </p>
+   <h3 id="por-que-no-alcanza-con-usar-solo-main">
+    ¿Por qué no alcanza con usar solo main?
+   </h3>
+   <p>
+    Si todos trabajan directamente sobre
+    <code>
+     main
+    </code>
+    :
+   </p>
+   <ul>
+    <li>
+     cualquier error rompe la versión estable;
+    </li>
+    <li>
+     no hay forma de desarrollar funcionalidades en paralelo sin pisarse;
+    </li>
+    <li>
+     no se puede preparar una versión de entrega mientras se sigue desarrollando.
+    </li>
+   </ul>
+   <p>
+    Git Flow resuelve estos problemas definiendo
+    <strong>
+     roles claros para cada rama
+    </strong>
+    .
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="las-ramas-de-git-flow">
+    Las ramas de Git Flow
+   </h2>
+   <p>
+    Git Flow trabaja con cinco tipos de ramas:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Rama
+      </th>
+      <th>
+       Propósito
+      </th>
+      <th>
+       Se crea desde
+      </th>
+      <th>
+       Se fusiona en
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        main
+       </code>
+      </td>
+      <td>
+       Versión estable en producción
+      </td>
+      <td>
+       —
+      </td>
+      <td>
+       —
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        develop
+       </code>
+      </td>
+      <td>
+       Rama de integración para desarrollo
+      </td>
+      <td>
+       <code>
+        main
+       </code>
+      </td>
+      <td>
+       <code>
+        main
+       </code>
+       (via release)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        feature/*
+       </code>
+      </td>
+      <td>
+       Desarrollo de una funcionalidad nueva
+      </td>
+      <td>
+       <code>
+        develop
+       </code>
+      </td>
+      <td>
+       <code>
+        develop
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        release/*
+       </code>
+      </td>
+      <td>
+       Preparación de una nueva versión
+      </td>
+      <td>
+       <code>
+        develop
+       </code>
+      </td>
+      <td>
+       <code>
+        main
+       </code>
+       y
+       <code>
+        develop
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        hotfix/*
+       </code>
+      </td>
+      <td>
+       Corrección urgente en producción
+      </td>
+      <td>
+       <code>
+        main
+       </code>
+      </td>
+      <td>
+       <code>
+        main
+       </code>
+       y
+       <code>
+        develop
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="diagrama-general">
+    Diagrama general
+   </h3>
+   <div class="mermaid">
+    #10gitGraph#10    commit id: "init"#10    branch develop#10    commit id: "setup"#10    branch feature/login#10    commit id: "login form"#10    commit id: "login validation"#10    checkout develop#10    merge feature/login#10    branch feature/carrito#10    commit id: "cart HTML"#10    commit id: "cart JS"#10    checkout develop#10    merge feature/carrito#10    branch release/1.0#10    commit id: "version 1.0"#10    commit id: "fix password"#10    checkout main#10    merge release/1.0 tag: "v1.0"#10    checkout develop#10    merge release/1.0#10    checkout main#10    branch hotfix/1.0.1#10    commit id: "fix title"#10    checkout main#10    merge hotfix/1.0.1 tag: "v1.0.1"#10    checkout develop#10    merge hotfix/1.0.1 id: "without collisions..."#10    checkout main#10    merge develop tag: "v1.1" id: "new release 1.1"#10    checkout develop#10    commit id: "continues..."#10#10
+   </div>
+   <h3 id="ramas-permanentes-vs-temporales">
+    Ramas permanentes vs temporales
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Permanentes
+     </strong>
+     :
+     <code>
+      main
+     </code>
+     y
+     <code>
+      develop
+     </code>
+     existen durante toda la vida del proyecto.
+    </li>
+    <li>
+     <strong>
+      Temporales
+     </strong>
+     :
+     <code>
+      feature
+     </code>
+     ,
+     <code>
+      release
+     </code>
+     y
+     <code>
+      hotfix
+     </code>
+     se crean, se usan y se eliminan.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ejemplo-completo-proyecto-tienda-online">
+    Ejemplo completo: proyecto "Tienda Online"
+   </h2>
+   <p>
+    Vamos a simular el desarrollo de una tienda online aplicando Git Flow paso a paso.
+   </p>
+   <h3 id="paso-0-crear-el-proyecto-e-inicializar-git-flow">
+    Paso 0: Crear el proyecto e inicializar Git Flow
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>mkdir<span class="w"> </span>tienda-online
+<span class="nb">cd</span><span class="w"> </span>tienda-online
+git<span class="w"> </span>init
+</pre>
+   </div>
+   <p>
+    Crear un archivo inicial y hacer el primer commit en
+    <code>
+     main
+    </code>
+    :
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"&lt;h1&gt;Tienda Online&lt;/h1&gt;"</span><span class="w"> </span>&gt;<span class="w"> </span>index.html
+git<span class="w"> </span>add<span class="w"> </span>index.html
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Commit inicial con página principal"</span>
+</pre>
+   </div>
+   <p>
+    Crear la rama
+    <code>
+     develop
+    </code>
+    a partir de
+    <code>
+     main
+    </code>
+    :
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>develop
+</pre>
+   </div>
+   <p>
+    Ahora tenemos las dos ramas permanentes:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>branch
+</pre>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>* develop
+  main
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="feature-branches-desarrollar-funcionalidades">
+    Feature branches: desarrollar funcionalidades
+   </h2>
+   <p>
+    Cada nueva funcionalidad se desarrolla en una rama
+    <code>
+     feature/*
+    </code>
+    que nace desde
+    <code>
+     develop
+    </code>
+    .
+   </p>
+   <h3 id="ejemplo-1-feature-login">
+    Ejemplo 1: Feature login
+   </h3>
+   <p>
+    El Programador 1 va a desarrollar el sistema de login.
+   </p>
+   <h4 id="crear-la-rama">
+    Crear la rama
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>feature/login
+</pre>
+   </div>
+   <h4 id="trabajar-en-la-funcionalidad">
+    Trabajar en la funcionalidad
+   </h4>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"&lt;form&gt;</span>
+<span class="s2">  &lt;input type='text' placeholder='Usuario'&gt;</span>
+<span class="s2">  &lt;input type='password' placeholder='Contraseña'&gt;</span>
+<span class="s2">  &lt;button&gt;Ingresar&lt;/button&gt;</span>
+<span class="s2">&lt;/form&gt;"</span><span class="w"> </span>&gt;<span class="w"> </span>login.html
+git<span class="w"> </span>add<span class="w"> </span>login.html
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Agrega formulario de login"</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Luego agrega validación:
+   </p>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"function validarLogin(user, pass) {</span>
+<span class="s2">  if (!user || !pass) {</span>
+<span class="s2">    return 'Campos obligatorios';</span>
+<span class="s2">  }</span>
+<span class="s2">  return 'OK';</span>
+<span class="s2">}"</span><span class="w"> </span>&gt;<span class="w"> </span>login.js
+git<span class="w"> </span>add<span class="w"> </span>login.js
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Agrega validación básica de login"</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="integrar-en-develop">
+    Integrar en develop
+   </h4>
+   <p>
+    Cuando la funcionalidad está lista:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>merge<span class="w"> </span>feature/login
+</pre>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>Updating abc1234..def5678
+Fast-forward
+ login.html | 5 +++++
+ login.js   | 6 ++++++
+ 2 files changed, 11 insertions(+)
+</pre>
+   </div>
+   <p>
+    Eliminar la rama (ya no se necesita):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>feature/login
+</pre>
+   </div>
+   <h3 id="ejemplo-2-feature-carrito-en-paralelo">
+    Ejemplo 2: Feature carrito (en paralelo)
+   </h3>
+   <p>
+    Mientras el Programador 1 trabajaba en login, el Programador 2 desarrolla el carrito de compras.
+   </p>
+   <h4 id="crear-la-rama_1">
+    Crear la rama
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>feature/carrito
+</pre>
+   </div>
+   <h4 id="trabajar-en-la-funcionalidad_1">
+    Trabajar en la funcionalidad
+   </h4>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"&lt;div id='carrito'&gt;</span>
+<span class="s2">  &lt;h2&gt;Tu carrito&lt;/h2&gt;</span>
+<span class="s2">  &lt;ul id='items'&gt;&lt;/ul&gt;</span>
+<span class="s2">  &lt;p&gt;Total: </span><span class="nv">$0</span><span class="s2">&lt;/p&gt;</span>
+<span class="s2">&lt;/div&gt;"</span><span class="w"> </span>&gt;<span class="w"> </span>carrito.html
+git<span class="w"> </span>add<span class="w"> </span>carrito.html
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Agrega estructura HTML del carrito"</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"let carrito = [];</span>
+
+<span class="s2">function agregarProducto(nombre, precio) {</span>
+<span class="s2">  carrito.push({ nombre, precio });</span>
+<span class="s2">}</span>
+
+<span class="s2">function calcularTotal() {</span>
+<span class="s2">  return carrito.reduce((sum, item) =&gt; sum + item.precio, 0);</span>
+<span class="s2">}"</span><span class="w"> </span>&gt;<span class="w"> </span>carrito.js
+git<span class="w"> </span>add<span class="w"> </span>carrito.js
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Agrega lógica del carrito de compras"</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="integrar-en-develop_1">
+    Integrar en develop
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>merge<span class="w"> </span>feature/carrito
+git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>feature/carrito
+</pre>
+   </div>
+   <h3 id="estado-actual-de-develop">
+    Estado actual de develop
+   </h3>
+   <p>
+    Ahora
+    <code>
+     develop
+    </code>
+    tiene todo integrado:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>index.html    (del commit inicial)
+login.html    (de feature/login)
+login.js      (de feature/login)
+carrito.html  (de feature/carrito)
+carrito.js    (de feature/carrito)
+</pre>
+   </div>
+   <p>
+    Mientras que
+    <code>
+     main
+    </code>
+    sigue solo con
+    <code>
+     index.html
+    </code>
+    .
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="release-branches-preparar-una-version">
+    Release branches: preparar una versión
+   </h2>
+   <p>
+    Cuando
+    <code>
+     develop
+    </code>
+    tiene suficientes funcionalidades para una entrega, se crea una rama
+    <code>
+     release/*
+    </code>
+    .
+   </p>
+   <h3 id="que-se-hace-en-una-release-branch">
+    ¿Qué se hace en una release branch?
+   </h3>
+   <ul>
+    <li>
+     Corregir errores menores encontrados durante la revisión.
+    </li>
+    <li>
+     Ajustar números de versión.
+    </li>
+    <li>
+     Actualizar documentación.
+    </li>
+    <li>
+     <strong>
+      No agregar funcionalidades nuevas.
+     </strong>
+    </li>
+   </ul>
+   <h3 id="ejemplo-release-10">
+    Ejemplo: Release 1.0
+   </h3>
+   <h4 id="crear-la-rama_2">
+    Crear la rama
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>release/1.0
+</pre>
+   </div>
+   <h4 id="hacer-ajustes-de-version">
+    Hacer ajustes de versión
+   </h4>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"# Tienda Online</span>
+<span class="s2">Versión: 1.0</span>
+<span class="s2">Fecha: </span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span>
+
+<span class="s2">## Funcionalidades</span>
+<span class="s2">- Página principal</span>
+<span class="s2">- Sistema de login</span>
+<span class="s2">- Carrito de compras"</span><span class="w"> </span>&gt;<span class="w"> </span>VERSION.md
+git<span class="w"> </span>add<span class="w"> </span>VERSION.md
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Agrega archivo de versión para release 1.0"</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Se detecta un bug menor en el login durante la revisión:
+   </p>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"function validarLogin(user, pass) {</span>
+<span class="s2">  if (!user || !pass) {</span>
+<span class="s2">    return 'Campos obligatorios';</span>
+<span class="s2">  }</span>
+<span class="s2">  if (pass.length &lt; 6) {</span>
+<span class="s2">    return 'La contraseña debe tener al menos 6 caracteres';</span>
+<span class="s2">  }</span>
+<span class="s2">  return 'OK';</span>
+<span class="s2">}"</span><span class="w"> </span>&gt;<span class="w"> </span>login.js
+git<span class="w"> </span>add<span class="w"> </span>login.js
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Agrega validación de largo mínimo de contraseña"</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="fusionar-en-main-y-en-develop">
+    Fusionar en main y en develop
+   </h4>
+   <p>
+    Cuando la release está lista, se fusiona en ambas ramas:
+   </p>
+   <p>
+    Primero en
+    <code>
+     main
+    </code>
+    :
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>merge<span class="w"> </span>release/1.0
+</pre>
+   </div>
+   <p>
+    Crear un tag para marcar la versión:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.0<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Versión 1.0 - Login y carrito"</span>
+</pre>
+   </div>
+   <p>
+    Luego en
+    <code>
+     develop
+    </code>
+    (para que los fixes de la release no se pierdan):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>merge<span class="w"> </span>release/1.0
+</pre>
+   </div>
+   <p>
+    Eliminar la rama:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>release/1.0
+</pre>
+   </div>
+   <h3 id="estado-despues-de-la-release">
+    Estado después de la release
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>main:     tiene todo hasta v1.0 (index, login, carrito, VERSION)
+develop:  tiene lo mismo + cualquier feature nueva que se haya empezado
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="hotfix-branches-correcciones-urgentes">
+    Hotfix branches: correcciones urgentes
+   </h2>
+   <p>
+    Un hotfix se usa cuando hay un
+    <strong>
+     bug crítico en producción
+    </strong>
+    que no puede esperar a la próxima release.
+   </p>
+   <h3 id="ejemplo-hotfix-101">
+    Ejemplo: Hotfix 1.0.1
+   </h3>
+   <p>
+    Un usuario reporta que la página principal muestra un título incorrecto en producción.
+   </p>
+   <h4 id="crear-la-rama-desde-main">
+    Crear la rama desde main
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>hotfix/1.0.1
+</pre>
+   </div>
+   <h4 id="aplicar-la-correccion">
+    Aplicar la corrección
+   </h4>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"&lt;h1&gt;Tienda Online - Tu lugar de compras&lt;/h1&gt;</span>
+<span class="s2">&lt;nav&gt;</span>
+<span class="s2">  &lt;a href='login.html'&gt;Ingresar&lt;/a&gt;</span>
+<span class="s2">  &lt;a href='carrito.html'&gt;Carrito&lt;/a&gt;</span>
+<span class="s2">&lt;/nav&gt;"</span><span class="w"> </span>&gt;<span class="w"> </span>index.html
+git<span class="w"> </span>add<span class="w"> </span>index.html
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Corrige título y agrega navegación en página principal"</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="fusionar-en-main-y-en-develop_1">
+    Fusionar en main y en develop
+   </h4>
+   <p>
+    En
+    <code>
+     main
+    </code>
+    :
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>merge<span class="w"> </span>hotfix/1.0.1
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.0.1<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Hotfix: corrección de título en página principal"</span>
+</pre>
+   </div>
+   <p>
+    En
+    <code>
+     develop
+    </code>
+    (para que el fix también esté disponible en desarrollo):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>merge<span class="w"> </span>hotfix/1.0.1
+</pre>
+   </div>
+   <p>
+    Eliminar la rama:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>hotfix/1.0.1
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ejemplo-de-conflicto-en-git-flow">
+    Ejemplo de conflicto en Git Flow
+   </h2>
+   <p>
+    Los conflictos también ocurren en Git Flow, especialmente al fusionar ramas que tocaron los mismos archivos.
+   </p>
+   <h3 id="escenario">
+    Escenario
+   </h3>
+   <p>
+    Mientras la
+    <code>
+     release/1.0
+    </code>
+    corregía
+    <code>
+     login.js
+    </code>
+    , alguien en
+    <code>
+     develop
+    </code>
+    también lo modificó en una nueva feature.
+   </p>
+   <p>
+    Al hacer
+    <code>
+     git merge release/1.0
+    </code>
+    en
+    <code>
+     develop
+    </code>
+    :
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>Auto-merging login.js
+CONFLICT (content): Merge conflict in login.js
+Automatic merge failed; fix conflicts and then commit the result.
+</pre>
+   </div>
+   <p>
+    El archivo queda así:
+   </p>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>function validarLogin(user, pass) {
+  if (!user || !pass) {
+    return 'Campos obligatorios';
+  }
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+  if (user.includes('@')) {
+    return 'No usar email como usuario';
+  }
+=======
+  if (pass.length &lt; 6) {
+    return 'La contraseña debe tener al menos 6 caracteres';
+  }
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; release/1.0
+  return 'OK';
+}
+</pre>
+    </div>
+   </div>
+   <h3 id="resolucion">
+    Resolución
+   </h3>
+   <p>
+    En este caso conviene
+    <strong>
+     conservar ambas validaciones
+    </strong>
+    :
+   </p>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">validarLogin</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">pass</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="nx">pass</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">'Campos obligatorios'</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="s1">'@'</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">'No usar email como usuario'</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">pass</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">6</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">'La contraseña debe tener al menos 6 caracteres'</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="s1">'OK'</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>add<span class="w"> </span>login.js
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Resuelve conflicto: integra validaciones de develop y release"</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="convenciones-de-nombres">
+    Convenciones de nombres
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Formato
+      </th>
+      <th>
+       Ejemplo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Feature
+      </td>
+      <td>
+       <code>
+        feature/nombre-descriptivo
+       </code>
+      </td>
+      <td>
+       <code>
+        feature/login
+       </code>
+       ,
+       <code>
+        feature/carrito
+       </code>
+       ,
+       <code>
+        feature/busqueda
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Release
+      </td>
+      <td>
+       <code>
+        release/numero-version
+       </code>
+      </td>
+      <td>
+       <code>
+        release/1.0
+       </code>
+       ,
+       <code>
+        release/2.1
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Hotfix
+      </td>
+      <td>
+       <code>
+        hotfix/numero-version
+       </code>
+      </td>
+      <td>
+       <code>
+        hotfix/1.0.1
+       </code>
+       ,
+       <code>
+        hotfix/2.1.3
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="buenos-nombres-de-feature">
+    Buenos nombres de feature
+   </h3>
+   <ul>
+    <li>
+     <code>
+      feature/login
+     </code>
+    </li>
+    <li>
+     <code>
+      feature/carrito-de-compras
+     </code>
+    </li>
+    <li>
+     <code>
+      feature/filtro-por-categoria
+     </code>
+    </li>
+   </ul>
+   <h3 id="malos-nombres-de-feature">
+    Malos nombres de feature
+   </h3>
+   <ul>
+    <li>
+     <code>
+      feature/cosas
+     </code>
+    </li>
+    <li>
+     <code>
+      feature/test
+     </code>
+    </li>
+    <li>
+     <code>
+      feature/rama-de-juan
+     </code>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="resumen-de-comandos">
+    Resumen de comandos
+   </h2>
+   <h3 id="inicializar">
+    Inicializar
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>develop<span class="w">        </span><span class="c1"># Crear develop desde main</span>
+</pre>
+   </div>
+   <h3 id="feature">
+    Feature
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>feature/X<span class="w">      </span><span class="c1"># Crear feature</span>
+<span class="c1"># ... trabajar, hacer commits ...</span>
+git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>merge<span class="w"> </span>feature/X<span class="w">          </span><span class="c1"># Integrar en develop</span>
+git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>feature/X<span class="w">      </span><span class="c1"># Eliminar feature</span>
+</pre>
+   </div>
+   <h3 id="release">
+    Release
+   </h3>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>release/X.Y<span class="w">    </span><span class="c1"># Crear release</span>
+<span class="c1"># ... ajustes finales ...</span>
+git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>merge<span class="w"> </span>release/X.Y<span class="w">        </span><span class="c1"># Fusionar en main</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>vX.Y<span class="w"> </span>-m<span class="w"> </span><span class="s2">"msg"</span><span class="w">     </span><span class="c1"># Crear tag</span>
+git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>merge<span class="w"> </span>release/X.Y<span class="w">        </span><span class="c1"># Fusionar en develop</span>
+git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>release/X.Y<span class="w">    </span><span class="c1"># Eliminar release</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="hotfix">
+    Hotfix
+   </h3>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>hotfix/X.Y.Z<span class="w">   </span><span class="c1"># Crear hotfix</span>
+<span class="c1"># ... corregir el bug ...</span>
+git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>merge<span class="w"> </span>hotfix/X.Y.Z<span class="w">       </span><span class="c1"># Fusionar en main</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>vX.Y.Z<span class="w"> </span>-m<span class="w"> </span><span class="s2">"msg"</span><span class="w">   </span><span class="c1"># Crear tag</span>
+git<span class="w"> </span>switch<span class="w"> </span>develop
+git<span class="w"> </span>merge<span class="w"> </span>hotfix/X.Y.Z<span class="w">       </span><span class="c1"># Fusionar en develop</span>
+git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>hotfix/X.Y.Z<span class="w">   </span><span class="c1"># Eliminar hotfix</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Es obligatorio usar Git Flow?
+  → No. Es una convención, no una regla de Git. Pero ayuda a mantener el orden en equipos.
+    </li>
+    <li>
+     ¿Puedo hacer commits directamente en develop?
+  → Técnicamente sí, pero Git Flow recomienda usar siempre feature branches para mantener develop estable.
+    </li>
+    <li>
+     ¿Qué pasa si hago un feature branch desde main en vez de develop?
+  → El feature no tendría los últimos cambios de desarrollo. Siempre debe nacer desde develop.
+    </li>
+    <li>
+     ¿Puedo tener varias features a la vez?
+  → Sí. Esa es precisamente la idea: cada funcionalidad en su propia rama, en paralelo.
+    </li>
+    <li>
+     ¿Cuándo elimino una rama?
+  → Después de fusionarla. Una vez integrada, la rama temporal ya cumplió su propósito.
+    </li>
+    <li>
+     ¿Qué es un tag?
+  → Es una etiqueta que marca un commit específico. Se usa para identificar versiones publicadas (v1.0, v2.0, etc.).
+    </li>
+    <li>
+     ¿El hotfix puede generar conflictos al fusionarse en develop?
+  → Sí, si develop avanzó y tocó los mismos archivos. Se resuelve como cualquier conflicto.
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Buscar todos los divs con clase 'mermaid'
+    var mermaidDivs = document.querySelectorAll('div.mermaid');
+    
+    mermaidDivs.forEach(function(div) {
+        // Obtener el contenido actual del div
+        var content = div.innerHTML;
+        
+        // Reemplazar #10 con saltos de línea reales
+        var restoredContent = content.replace(/#10/g, '\n');
+        
+        // Actualizar el contenido del div
+        div.innerHTML = restoredContent;
+    });
+});
+  </script>
+ </body>
+</html>

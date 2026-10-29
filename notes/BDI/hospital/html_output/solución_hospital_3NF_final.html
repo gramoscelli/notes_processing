@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   solución_hospital_3NF
+  </title>
+ </head>
+ <body>
+  <h1 id="identificacion-de-los-problemas">
+   Identificación de los problemas
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#recordatorio-rapido-que-exige-2fn">
+      Recordatorio rápido, ¿qué exige 2FN?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#por-que-conceptualmente-no-es-2fn-vision-de-dependencias">
+      ❓ Por qué, conceptualmente, “no es 2FN” (visión de dependencias)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#pasos-para-llegar-a-2fn-esquema-propuesto">
+      🧭 Pasos para llegar a 2FN (esquema propuesto)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#resumen">
+      ✅ Resumen
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#por-que-conceptualmente-ni-estructura-2fn-no-es-3fn-vision-de-transitividades">
+      ❓ Por qué, conceptualmente, ni estructura 2FN “no es 3FN” (visión de transitividades)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3fn-esquema-propuesto">
+      🧭 3FN: Esquema propuesto
+     </a>
+    </li>
+   </ul>
+  </div>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      Problema
+     </th>
+     <th>
+      Explicación
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      ❌ Teléfonos múltiples en una celda
+     </td>
+     <td>
+      Se deben volver filas atómicas (un teléfono por fila).
+     </td>
+    </tr>
+    <tr>
+     <td>
+      ❌ Especialidades del médico en lista
+     </td>
+     <td>
+      Deben separarse en filas (una especialidad por fila).
+     </td>
+    </tr>
+    <tr>
+     <td>
+      ❌ Síntomas listados en una sola celda
+     </td>
+     <td>
+      Un síntoma por fila para cumplir 1FN.
+     </td>
+    </tr>
+    <tr>
+     <td>
+      ❌ Prácticas solicitadas separadas por “;”
+     </td>
+     <td>
+      Una práctica por fila (tabla detalle).
+     </td>
+    </tr>
+    <tr>
+     <td>
+      ⚠️ Paciente y Médico como texto libre
+     </td>
+     <td>
+      Para 1FN
+      <strong>
+       no es obligatorio
+      </strong>
+      separar entidades, pero conviene dejar preparado el paso a 2FN/3FN.
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <blockquote>
+   <p>
+    La consigna y el fragmento de tabla “no normalizada” mantienen el
+    <strong>
+     estilo del enunciado
+    </strong>
+    que compartiste para comercio electrónico (presentación + actividades + muestra de tabla).
+   </p>
+  </blockquote>
+  <h1 id="transformacion-esperada-a-1fn">
+   Transformación esperada a
+   <strong>
+    1FN
+   </strong>
+  </h1>
+  <p>
+   Se propone mantener una tabla de
+   <strong>
+    cabecera
+   </strong>
+   y crear
+   <strong>
+    tablas de detalle
+   </strong>
+   para cada campo multivaluado. Con esto se logra que
+   <strong>
+    cada celda
+   </strong>
+   de cada tabla tenga
+   <strong>
+    un solo valor
+   </strong>
+   :
+  </p>
+  <p>
+   <strong>
+    1) Turnos
+   </strong>
+   (cabecera)
+   <code>
+    turnos(id_turno PK, paciente, telefonos_paciente* , obra_social, medico, especialidades_medico* , fecha_turno, hora_turno, consultorio, sintomas_reportados* , practicas_solicitadas* )
+   </code>
+  </p>
+  <blockquote>
+   <p>
+    <em>
+     Campos marcados con * desaparecen al mover los valores a tablas de detalle.
+    </em>
+   </p>
+  </blockquote>
+  <p>
+   <strong>
+    2) Tablas detalle (1 a N respecto de
+    <code>
+     turnos
+    </code>
+    )
+   </strong>
+  </p>
+  <ul>
+   <li>
+    <code>
+     turno_telefono(id_turno FK, telefono)
+    </code>
+    →
+    <strong>
+     (id_turno, telefono) PK
+    </strong>
+   </li>
+   <li>
+    <code>
+     turno_especialidad(id_turno FK, especialidad)
+    </code>
+    →
+    <strong>
+     (id_turno, especialidad) PK
+    </strong>
+   </li>
+   <li>
+    <code>
+     turno_sintoma(id_turno FK, sintoma)
+    </code>
+    →
+    <strong>
+     (id_turno, sintoma) PK
+    </strong>
+   </li>
+   <li>
+    <code>
+     turno_practica(id_turno FK, practica)
+    </code>
+    →
+    <strong>
+     (id_turno, practica) PK
+    </strong>
+   </li>
+  </ul>
+  <blockquote>
+   <p>
+    Con esto, todos los atributos que eran
+    <strong>
+     listas
+    </strong>
+    pasan a ser
+    <strong>
+     filas
+    </strong>
+    , cumpliendo 1FN.
+   </p>
+  </blockquote>
+  <h3 id="ddl-sugerido-para-mysql-1fn-directo">
+   DDL sugerido para MySQL – 1FN directo
+  </h3>
+  <div class="highlight language-sql">
+   <div class="collapsible-container" data-max-lines="6">
+    <pre><span></span><span class="c1">-- Cabecera</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turnos</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">paciente</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">obra_social</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">medico</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">fecha_turno</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">hora_turno</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">consultorio</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">)</span><span class="w"> </span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+
+<span class="c1">-- Detalles multivaluados</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_telefono</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">telefono</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">telefono</span><span class="p">),</span>
+<span class="w">  </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_tel_turno</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_especialidad</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">especialidad</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">especialidad</span><span class="p">),</span>
+<span class="w">  </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_esp_turno</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_sintoma</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sintoma</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">sintoma</span><span class="p">),</span>
+<span class="w">  </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_sin_turno</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_practica</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">practica</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">practica</span><span class="p">),</span>
+<span class="w">  </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_pra_turno</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span><span class="p">;</span>
+</pre>
+   </div>
+  </div>
+  <hr/>
+  <h3 id="guia-de-transformacion-de-datos">
+   Guía de transformación de datos
+  </h3>
+  <p>
+   Suponiendo que partís del dataset
+   <strong>
+    no normalizado
+   </strong>
+   (
+   <code>
+    turnos_no_normalizada.sql
+   </code>
+   ) que ya generamos:
+  </p>
+  <p>
+   <strong>
+    1. Cargar cabecera
+    <code>
+     turnos
+    </code>
+    (sin los campos multivaluados):
+   </strong>
+  </p>
+  <div class="highlight language-sql">
+   <pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">turnos</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">paciente</span><span class="p">,</span><span class="w"> </span><span class="n">obra_social</span><span class="p">,</span><span class="w"> </span><span class="n">medico</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_turno</span><span class="p">,</span><span class="w"> </span><span class="n">hora_turno</span><span class="p">,</span><span class="w"> </span><span class="n">consultorio</span><span class="p">)</span>
+<span class="k">SELECT</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">paciente</span><span class="p">,</span><span class="w"> </span><span class="n">obra_social</span><span class="p">,</span><span class="w"> </span><span class="n">medico</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_turno</span><span class="p">,</span><span class="w"> </span><span class="n">hora_turno</span><span class="p">,</span><span class="w"> </span><span class="n">consultorio</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">turnos_origen</span><span class="p">;</span><span class="w"> </span><span class="c1">-- la tabla original importada (no 1FN)</span>
+</pre>
+  </div>
+  <p>
+   <strong>
+    2. Explosión de teléfonos a
+    <code>
+     turno_telefono
+    </code>
+   </strong>
+   (Separados por
+   <code>
+    " / "
+   </code>
+   en la fuente)
+  </p>
+  <div class="highlight language-sql">
+   <pre><span></span><span class="c1">-- Ejemplo genérico usando una tabla auxiliar de números o función split definida por el docente.</span>
+<span class="c1">-- Alternativa manual en prácticas: exportar, dividir y reimportar.</span>
+</pre>
+  </div>
+  <p>
+   <strong>
+    3. Explosión de especialidades a
+    <code>
+     turno_especialidad
+    </code>
+   </strong>
+   (Separadas por coma en la fuente)
+  </p>
+  <p>
+   <strong>
+    4. Explosión de síntomas a
+    <code>
+     turno_sintoma
+    </code>
+   </strong>
+   (Separados por coma en la fuente)
+  </p>
+  <p>
+   <strong>
+    5. Explosión de prácticas a
+    <code>
+     turno_practica
+    </code>
+   </strong>
+   (Separadas por
+   <code>
+    ;
+   </code>
+   en la fuente)
+  </p>
+  <blockquote>
+   <p>
+    Nota didáctica: MySQL no trae un
+    <code>
+     SPLIT()
+    </code>
+    nativo que devuelva filas; se puede:
+   </p>
+   <ul>
+    <li>
+     Usar
+     <strong>
+      CTEs + números
+     </strong>
+     (0–N) y
+     <code>
+      SUBSTRING_INDEX
+     </code>
+     para particionar,
+    </li>
+    <li>
+     Apoyarse en
+     <strong>
+      procedimientos almacenados
+     </strong>
+     ,
+    </li>
+    <li>
+     O resolver con
+     <strong>
+      ETL rápido
+     </strong>
+     (CSV → planilla → reimportar).
+    </li>
+   </ul>
+  </blockquote>
+  <hr/>
+  <h1 id="2fn">
+   🚦 2FN
+  </h1>
+  <div class="chapter-container">
+   <h2 id="recordatorio-rapido-que-exige-2fn">
+    Recordatorio rápido, ¿qué exige 2FN?
+   </h2>
+   <p>
+    Una tabla está en
+    <strong>
+     Segunda Forma Normal (2FN)
+    </strong>
+    si:
+   </p>
+   <ol>
+    <li>
+     Está en
+     <strong>
+      1FN
+     </strong>
+     , y
+    </li>
+    <li>
+     <strong>
+      No hay dependencias parciales
+     </strong>
+     : ningún atributo no clave depende de
+     <strong>
+      una parte
+     </strong>
+     de una
+     <strong>
+      clave candidata compuesta
+     </strong>
+     .
+    </li>
+   </ol>
+   <blockquote>
+    <p>
+     Importante didáctico: si usás un
+     <strong>
+      ID artificial
+     </strong>
+     (surrogate key) como clave primaria de una tabla (p. ej.
+     <code>
+      id_turno
+     </code>
+     ),
+     <strong>
+      2FN se cumple “vacíamente”
+     </strong>
+     en esa tabla porque la clave no es compuesta. Aun así, pueden quedar
+     <strong>
+      anomalías
+     </strong>
+     por atributos que dependen de otras entidades (paciente, médico, obra social…). Por eso conviene
+     <strong>
+      revisar las dependencias lógicas
+     </strong>
+     y separar entidades.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="por-que-conceptualmente-no-es-2fn-vision-de-dependencias">
+    ❓ Por qué, conceptualmente, “no es 2FN” (visión de dependencias)
+   </h2>
+   <p>
+    Tomemos la tabla
+    <strong>
+     <code>
+      turnos
+     </code>
+    </strong>
+    (cabecera) que tenés en 1FN:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>turnos(id_turno PK, paciente, obra_social, medico, fecha_turno, hora_turno, consultorio)
+</pre>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Dependencias lógicas esperables
+      </strong>
+      :
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       paciente → obra_social
+      </code>
+      (la obra social está asociada a la persona, no al turno puntual).
+     </p>
+    </li>
+    <li>
+     <code>
+      medico → {especialidades}
+     </code>
+     (las especialidades son propiedad del médico, no del turno).
+    </li>
+    <li>
+     <code>
+      consultorio
+     </code>
+     suele depender de la
+     <strong>
+      asignación
+     </strong>
+     del médico/agenda (no estrictamente del turno).
+    </li>
+    <li>
+     <p>
+      Si considerás una
+      <strong>
+       clave candidata natural compuesta
+      </strong>
+      para
+      <code>
+       turnos
+      </code>
+      , por ejemplo
+      <strong>
+       K = (paciente, fecha_turno, hora_turno)
+      </strong>
+      (o con consultorio), entonces:
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       obra_social
+      </code>
+      depende
+      <strong>
+       solo de
+       <code>
+        paciente
+       </code>
+      </strong>
+      ,
+      <strong>
+       no de toda la clave
+      </strong>
+      →
+      <strong>
+       dependencia parcial
+      </strong>
+      →
+      <strong>
+       viola 2FN
+      </strong>
+      .
+     </p>
+    </li>
+    <li>
+     Aunque en tu DDL 1FN la PK sea
+     <code>
+      id_turno
+     </code>
+     (clave simple), la
+     <strong>
+      estructura sigue cargando atributos que pertenecen a otras entidades
+     </strong>
+     ; si cambiás a una clave compuesta natural (recurso didáctico típico para enseñar 2FN), se ve claro dónde están las dependencias parciales.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="pasos-para-llegar-a-2fn-esquema-propuesto">
+    🧭 Pasos para llegar a 2FN (esquema propuesto)
+   </h2>
+   <blockquote>
+    <p>
+     Objetivo: separar los atributos que dependen de
+     <strong>
+      subconjuntos
+     </strong>
+     de una clave candidata compuesta (o, más simple,
+     <strong>
+      de otras entidades
+     </strong>
+     ), y dejar en
+     <code>
+      turnos
+     </code>
+     solo lo que
+     <strong>
+      depende del turno
+     </strong>
+     .
+    </p>
+   </blockquote>
+   <h3 id="paso-1-identificar-claves-candidatas-y-dependencias">
+    Paso 1 — Identificar claves candidatas y dependencias
+   </h3>
+   <ul>
+    <li>
+     Clave candidata natural (ejemplo):
+     <strong>
+      (paciente, fecha_turno, hora_turno)
+     </strong>
+     .
+    </li>
+    <li>
+     <p>
+      Dependencias parciales típicas:
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       paciente → obra_social
+      </code>
+     </p>
+    </li>
+    <li>
+     <code>
+      medico → especialidades
+     </code>
+    </li>
+    <li>
+     (Opcional)
+     <code>
+      consultorio
+     </code>
+     puede modelarse como entidad si lo asigna agenda.
+    </li>
+   </ul>
+   <h3 id="paso-2-extraer-pacientes-y-su-obra-social">
+    Paso 2 — Extraer
+    <strong>
+     Pacientes
+    </strong>
+    y su
+    <strong>
+     Obra Social
+    </strong>
+   </h3>
+   <p>
+    Crear entidad
+    <strong>
+     <code>
+      pacientes
+     </code>
+    </strong>
+    y relacionarla con
+    <strong>
+     <code>
+      obras_sociales
+     </code>
+    </strong>
+    (con vigencia si aplica).
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">pacientes</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_paciente</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">obras_sociales</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_obra</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span>
+<span class="p">);</span>
+
+<span class="c1">-- Si cada paciente tiene una sola obra social actual:</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">pacientes</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="n">id_obra</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span><span class="w"> </span>
+<span class="w">  </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_paciente_obra</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_obra</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">obras_sociales</span><span class="p">(</span><span class="n">id_obra</span><span class="p">);</span>
+
+<span class="c1">-- Si querés historial/vigencia:</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">paciente_obra_social</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_paciente</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_obra</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">fecha_inicio</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">fecha_fin</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">,</span><span class="w"> </span><span class="n">id_obra</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_inicio</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">pacientes</span><span class="p">(</span><span class="n">id_paciente</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_obra</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">obras_sociales</span><span class="p">(</span><span class="n">id_obra</span><span class="p">)</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     Resultado:
+     <code>
+      obra_social
+     </code>
+     <strong>
+      sale de
+      <code>
+       turnos
+      </code>
+     </strong>
+     . Ya no depende (parcialmente) de una clave compuesta del turno, sino de
+     <strong>
+      paciente
+     </strong>
+     .
+    </p>
+   </blockquote>
+   <h3 id="paso-3-extraer-medicos-y-sus-especialidades">
+    Paso 3 — Extraer
+    <strong>
+     Médicos
+    </strong>
+    y sus
+    <strong>
+     Especialidades
+    </strong>
+   </h3>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">medicos</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_medico</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">especialidades</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_especialidad</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">medico_especialidad</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_medico</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_especialidad</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_medico</span><span class="p">,</span><span class="w"> </span><span class="n">id_especialidad</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_medico</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">medicos</span><span class="p">(</span><span class="n">id_medico</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_especialidad</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">especialidades</span><span class="p">(</span><span class="n">id_especialidad</span><span class="p">)</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     Resultado: las
+     <strong>
+      especialidades
+     </strong>
+     dejan de “pegarse” al turno.
+     <strong>
+      Dependen del médico
+     </strong>
+     , no de la clave del turno.
+    </p>
+   </blockquote>
+   <h3 id="paso-4-opcional-recomendable-consultorios-como-entidad">
+    Paso 4 — (Opcional recomendable)
+    <strong>
+     Consultorios
+    </strong>
+    como entidad
+   </h3>
+   <div class="highlight language-sql">
+    <pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">consultorios</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_consultorio</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">codigo</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span>
+<span class="p">);</span>
+</pre>
+   </div>
+   <blockquote>
+    <p>
+     Si el consultorio es un catálogo (C1, C2, …), conviene FK. Si depende de la agenda del médico, la relación se modela en el
+     <strong>
+      slot
+     </strong>
+     de agenda (ver paso 6, opcional).
+    </p>
+   </blockquote>
+   <h3 id="paso-5-redefinir-turnos-apuntando-a-las-entidades">
+    Paso 5 — Redefinir
+    <strong>
+     Turnos
+    </strong>
+    apuntando a las entidades
+   </h3>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turnos</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_paciente</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_medico</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">fecha_turno</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">hora_turno</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_consultorio</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">pacientes</span><span class="p">(</span><span class="n">id_paciente</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_medico</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">medicos</span><span class="p">(</span><span class="n">id_medico</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_consultorio</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">consultorios</span><span class="p">(</span><span class="n">id_consultorio</span><span class="p">)</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     Ahora, en
+     <code>
+      turnos
+     </code>
+     <strong>
+      solo queda lo que depende del evento turno
+     </strong>
+     .
+    </li>
+    <li>
+     Si quisieras demostrar 2FN con clave compuesta natural, podrías definir una
+     <strong>
+      UNIQUE
+     </strong>
+     sobre
+     <code>
+      (id_medico, fecha_turno, hora_turno)
+     </code>
+     para forzar unicidad de agenda, pero manteniendo
+     <code>
+      id_turno
+     </code>
+     como PK:
+    </li>
+   </ul>
+   <div class="highlight language-sql">
+    <pre><span></span><span class="w">  </span><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turnos</span>
+<span class="w">  </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">uq_agenda</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">id_medico</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_turno</span><span class="p">,</span><span class="w"> </span><span class="n">hora_turno</span><span class="p">);</span>
+<span class="w">  </span>
+</pre>
+   </div>
+   <h3 id="paso-6-mantener-los-detalles-1-a-n-del-turno-ya-en-2fn">
+    Paso 6 — Mantener los detalles 1 a N del turno (ya en 2FN)
+   </h3>
+   <p>
+    Tus tablas detalle (todas con
+    <strong>
+     PK compuesta
+    </strong>
+    y
+    <strong>
+     sin atributos no clave
+    </strong>
+    ) ya cumplen 2FN:
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">-- Teléfonos del paciente ya deberían migrar a pacientes/paciente_telefono (mejor aún para 3FN)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">paciente_telefono</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_paciente</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">telefono</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">,</span><span class="w"> </span><span class="n">telefono</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">pacientes</span><span class="p">(</span><span class="n">id_paciente</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- Síntomas y Prácticas del turno</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_sintoma</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sintoma</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">sintoma</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">practicas</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_practica</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_practica</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_practica</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">id_practica</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_practica</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">practicas</span><span class="p">(</span><span class="n">id_practica</span><span class="p">)</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     Observá que en tablas de detalle como
+     <code>
+      turno_practica(id_turno, id_practica)
+     </code>
+     <strong>
+      no hay otros atributos no clave
+     </strong>
+     →
+     <strong>
+      no existen dependencias parciales
+     </strong>
+     → 2FN ok.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="resumen">
+    ✅ Resumen
+   </h2>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Antes (1FN)
+      </strong>
+      :
+      <code>
+       turnos
+      </code>
+      guardaba
+      <code>
+       obra_social
+      </code>
+      y (lógicamente) las
+      <code>
+       especialidades
+      </code>
+      del médico estaban mezcladas con el turno.
+  Si mirás la
+      <strong>
+       clave natural compuesta
+      </strong>
+      (p. ej.
+      <code>
+       (paciente, fecha_turno, hora_turno)
+      </code>
+      ),
+      <code>
+       obra_social
+      </code>
+      depende
+      <strong>
+       solo de paciente
+      </strong>
+      →
+      <strong>
+       dependencia parcial
+      </strong>
+      →
+      <strong>
+       viola 2FN
+      </strong>
+      .
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Después (2FN)
+      </strong>
+      : separaste
+      <strong>
+       pacientes
+      </strong>
+      ,
+      <strong>
+       médicos
+      </strong>
+      ,
+      <strong>
+       obras_sociales
+      </strong>
+      ,
+      <strong>
+       especialidades
+      </strong>
+      ,
+      <strong>
+       consultorios
+      </strong>
+      .
+      <code>
+       turnos
+      </code>
+      referencia esas entidades por
+      <strong>
+       FK
+      </strong>
+      y conserva solo atributos que
+      <strong>
+       dependen del turno
+      </strong>
+      .
+  Las tablas detalle del turno no tienen columnas adicionales que dependan “parcialmente” de su PK compuesta →
+      <strong>
+       2FN cumplida
+      </strong>
+      .
+     </p>
+    </li>
+   </ul>
+   <hr/>
+   <p>
+    ¡Vamos con 3FN! Acá tenés
+    <strong>
+     qué exige 3FN
+    </strong>
+    ,
+    <strong>
+     por qué el esquema en 2FN todavía no está en 3FN
+    </strong>
+    (en sentido práctico), y
+    <strong>
+     los pasos concretos para llevarlo a 3FN
+    </strong>
+    en el caso del hospital.
+   </p>
+   <hr/>
+   <h1 id="recordatorio-rapido-que-exige-3fn">
+    🚦 Recordatorio rápido: ¿Qué exige 3FN?
+   </h1>
+   <p>
+    Una tabla está en
+    <strong>
+     Tercera Forma Normal (3FN)
+    </strong>
+    si:
+   </p>
+   <ol>
+    <li>
+     Está en
+     <strong>
+      2FN
+     </strong>
+     , y
+    </li>
+    <li>
+     <strong>
+      No hay dependencias transitivas
+     </strong>
+     de atributos no clave hacia la clave: es decir,
+     <strong>
+      ningún atributo no clave depende de otro atributo no clave
+     </strong>
+     .
+    </li>
+   </ol>
+   <blockquote>
+    <p>
+     Eslogan didáctico:
+     <em>
+      “Cada atributo no clave debe depender
+     </em>
+     <em>
+      solo
+     </em>
+     <em>
+      de la clave, de toda la clave y de
+     </em>
+     <em>
+      nada más que la clave
+     </em>
+     <em>
+      .”
+     </em>
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="por-que-conceptualmente-ni-estructura-2fn-no-es-3fn-vision-de-transitividades">
+    ❓ Por qué, conceptualmente, ni estructura 2FN “no es 3FN” (visión de transitividades)
+   </h2>
+   <p>
+    Aun habiendo llevado el modelo a 2FN (separando entidades y quitando dependencias parciales), suelen quedar
+    <strong>
+     atributos no clave
+    </strong>
+    que
+    <strong>
+     determinan
+    </strong>
+    a otros dentro de la misma tabla o que
+    <strong>
+     deberían vivir en catálogos
+    </strong>
+    . Ejemplos típicos en el dominio:
+   </p>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Pacientes
+      </strong>
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       paciente → obra_social
+      </code>
+      (ya separada en 2FN) pero además:
+     </p>
+    </li>
+    <li>
+     <code>
+      obra_social → nombre_obra
+     </code>
+     → si guardás
+     <code>
+      nombre_obra
+     </code>
+     en
+     <code>
+      pacientes
+     </code>
+     , habría
+     <strong>
+      transitiva
+     </strong>
+     .
+    </li>
+    <li>
+     <p>
+      Si manejás
+      <strong>
+       planes
+      </strong>
+      :
+      <code>
+       obra_social, plan → copago, cobertura
+      </code>
+      → no deben estar duplicados en
+      <code>
+       turnos
+      </code>
+      .
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Médicos
+      </strong>
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       medico → matricula
+      </code>
+      (identificador único del médico). Si repetís
+      <code>
+       matricula
+      </code>
+      en otras tablas, generás transitivas/duplicación.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Consultorios
+      </strong>
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       consultorio → piso, sector
+      </code>
+      → si
+      <code>
+       turnos
+      </code>
+      tuviera
+      <code>
+       piso
+      </code>
+      /
+      <code>
+       sector
+      </code>
+      , serían
+      <strong>
+       transitivas
+      </strong>
+      vía
+      <code>
+       consultorio
+      </code>
+      .
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Prácticas
+      </strong>
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       practica → nombre_practica, precio_base, tipo
+      </code>
+      → si en
+      <code>
+       turno_practica
+      </code>
+      guardás
+      <code>
+       precio_base
+      </code>
+      /
+      <code>
+       tipo
+      </code>
+      , generás
+      <strong>
+       transitivas
+      </strong>
+      con el ID de práctica.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Especialidades
+      </strong>
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       especialidad → nombre_especialidad
+      </code>
+      → debe normalizarse como catálogo, no repetirse como texto libre una y otra vez.
+     </p>
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Conclusión
+    </strong>
+    : Para 3FN, debés
+    <strong>
+     migrar atributos derivados/categóricos
+    </strong>
+    a sus
+    <strong>
+     tablas de referencia
+    </strong>
+    y mantener en las relaciones
+    <strong>
+     solo claves
+    </strong>
+    (FK) y
+    <strong>
+     atributos propios
+    </strong>
+    del hecho (ej: del turno).
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3fn-esquema-propuesto">
+    🧭 3FN: Esquema propuesto
+   </h2>
+   <blockquote>
+    <p>
+     Partimos del diseño en 2FN que ya tenés:
+     <code>
+      turnos
+     </code>
+     ,
+     <code>
+      pacientes
+     </code>
+     ,
+     <code>
+      medicos
+     </code>
+     ,
+     <code>
+      consultorios
+     </code>
+     ,
+     <code>
+      obras_sociales
+     </code>
+     ,
+     <code>
+      especialidades
+     </code>
+     ,
+     <code>
+      medico_especialidad
+     </code>
+     ,
+     <code>
+      practicas
+     </code>
+     ,
+     <code>
+      turno_practica
+     </code>
+     ,
+     <code>
+      turno_sintoma
+     </code>
+     ,
+     <code>
+      paciente_telefono
+     </code>
+     , etc.
+    </p>
+   </blockquote>
+   <h3 id="paso-1-asegurar-catalogos-y-claves-sustitutas-unicas">
+    Paso 1 — Asegurar
+    <strong>
+     catálogos
+    </strong>
+    y
+    <strong>
+     claves sustitutas
+    </strong>
+    únicas
+   </h3>
+   <p>
+    Crear/confirmar catálogos con
+    <strong>
+     claves técnicas
+    </strong>
+    y
+    <strong>
+     restricciones UNIQUE
+    </strong>
+    para sus nombres:
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">-- Obras sociales y planes</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">obras_sociales</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_obra</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">planes_os</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_plan</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_obra</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">id_obra</span><span class="p">,</span><span class="w"> </span><span class="n">nombre</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_obra</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">obras_sociales</span><span class="p">(</span><span class="n">id_obra</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- Prácticas y especialidades</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">practicas</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_practica</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">tipo</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">especialidades</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_especialidad</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     <strong>
+      Por qué
+     </strong>
+     : Evitás transitivas tipo
+     <code>
+      id_practica → nombre_practica
+     </code>
+     repetido en varias tablas. El
+     <strong>
+      nombre
+     </strong>
+     vive en el catálogo.
+    </p>
+   </blockquote>
+   <h3 id="paso-2-ubicar-atributos-dependientes-del-catalogo-en-su-tabla-no-en-las-relaciones">
+    Paso 2 — Ubicar
+    <strong>
+     atributos dependientes
+    </strong>
+    del catálogo en su tabla (no en las relaciones)
+   </h3>
+   <p>
+    Ejemplos:
+   </p>
+   <ul>
+    <li>
+     Si hay
+     <strong>
+      precio base
+     </strong>
+     o
+     <strong>
+      código NBU
+     </strong>
+     de una práctica, colócalos en
+     <code>
+      practicas
+     </code>
+     o en una tabla de
+     <strong>
+      tarifario
+     </strong>
+     (ver paso 3).
+    </li>
+    <li>
+     Si hay
+     <strong>
+      piso/sector
+     </strong>
+     del consultorio, guárdalos en
+     <code>
+      consultorios
+     </code>
+     , no en
+     <code>
+      turnos
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-sql">
+    <pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">consultorios</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_consultorio</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">codigo</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">piso</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">sector</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">NULL</span>
+<span class="p">);</span>
+</pre>
+   </div>
+   <h3 id="paso-3-atributos-que-varian-por-obra-socialplan-evitar-transitivas">
+    Paso 3 — Atributos que varían por
+    <strong>
+     obra social/plan
+    </strong>
+    (evitar transitivas)
+   </h3>
+   <p>
+    Si el
+    <strong>
+     precio
+    </strong>
+    de una práctica depende del
+    <strong>
+     plan
+    </strong>
+    de obra social, no lo pongas en
+    <code>
+     turno_practica
+    </code>
+    . Creá un
+    <strong>
+     tarifario
+    </strong>
+    :
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">aranceles_plan</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_plan</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_practica</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">precio</span><span class="w"> </span><span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_plan</span><span class="p">,</span><span class="w"> </span><span class="n">id_practica</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_plan</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">planes_os</span><span class="p">(</span><span class="n">id_plan</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_practica</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">practicas</span><span class="p">(</span><span class="n">id_practica</span><span class="p">)</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     <strong>
+      Por qué
+     </strong>
+     : Si almacenás
+     <code>
+      precio
+     </code>
+     en
+     <code>
+      turno_practica
+     </code>
+     , tendrías
+     <code>
+      id_practica → precio
+     </code>
+     (o
+     <code>
+      id_plan, id_practica → precio
+     </code>
+     ) replicado por turno →
+     <strong>
+      transitiva
+     </strong>
+     respecto del turno. En 3FN,
+     <code>
+      turno_practica
+     </code>
+     solo referencia IDs; el precio se consulta con JOIN (o, si querés “congelarlo” como histórico, ver
+     <em>
+      nota histórica
+     </em>
+     al final).
+    </p>
+   </blockquote>
+   <h3 id="paso-4-consolidar-medicos-y-matriculas">
+    Paso 4 — Consolidar
+    <strong>
+     médicos
+    </strong>
+    y
+    <strong>
+     matrículas
+    </strong>
+   </h3>
+   <p>
+    Asegurate de no repetir la matrícula por fuera de
+    <code>
+     medicos
+    </code>
+    . Si querés validar unicidad:
+   </p>
+   <div class="highlight language-sql">
+    <pre><span></span><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">medicos</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="n">matricula</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span><span class="p">;</span>
+</pre>
+   </div>
+   <blockquote>
+    <p>
+     <strong>
+      Por qué
+     </strong>
+     : Evita transitivas del estilo
+     <code>
+      id_medico → matricula
+     </code>
+     repetida en otras tablas.
+    </p>
+   </blockquote>
+   <h3 id="paso-5-ligar-pacientes-con-planes-si-aplica">
+    Paso 5 — Ligar
+    <strong>
+     pacientes
+    </strong>
+    con
+    <strong>
+     planes
+    </strong>
+    (si aplica)
+   </h3>
+   <p>
+    Si cada paciente tiene un plan (o varios con vigencia), modelalo como relación:
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">paciente_plan</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_paciente</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_plan</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">fecha_inicio</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">fecha_fin</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">,</span><span class="w"> </span><span class="n">id_plan</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_inicio</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">pacientes</span><span class="p">(</span><span class="n">id_paciente</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_plan</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">planes_os</span><span class="p">(</span><span class="n">id_plan</span><span class="p">)</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     Así, en
+     <code>
+      turnos
+     </code>
+     <strong>
+      no
+     </strong>
+     guardás
+     <code>
+      obra_social
+     </code>
+     /
+     <code>
+      plan
+     </code>
+     ni
+     <code>
+      copago
+     </code>
+     directo. Consultás vía joins (o registrás solo el
+     <strong>
+      id_plan vigente
+     </strong>
+     al momento del turno para facturación, ver nota histórica).
+    </p>
+   </blockquote>
+   <h3 id="paso-6-revisar-turnos-y-tablas-puente-para-que-no-tengan-transitivas">
+    Paso 6 — Revisar
+    <strong>
+     turnos
+    </strong>
+    y
+    <strong>
+     tablas puente
+    </strong>
+    para que no tengan transitivas
+   </h3>
+   <ul>
+    <li>
+     <code>
+      turnos(id_turno, id_paciente, id_medico, fecha, hora, id_consultorio, …)
+     </code>
+     →
+     <strong>
+      solo
+     </strong>
+     datos propios del turno.
+    </li>
+    <li>
+     <code>
+      turno_practica(id_turno, id_practica)
+     </code>
+     →
+     <strong>
+      sin
+     </strong>
+     nombre_practica,
+     <strong>
+      sin
+     </strong>
+     precio.
+    </li>
+    <li>
+     <code>
+      turno_sintoma(id_turno, id_sintoma)
+     </code>
+     si catalogás síntomas; si dejás texto libre, sigue siendo 3FN mientras
+     <strong>
+      no dependa
+     </strong>
+     de otro no-clave.
+    </li>
+   </ul>
+   <p>
+    Ejemplo final (núcleo en 3FN):
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">-- Cabecera del turno (sin transitivas)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turnos</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_paciente</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_medico</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">fecha_turno</span><span class="w"> </span><span class="nb">DATE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">hora_turno</span><span class="w"> </span><span class="k">TIME</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_consultorio</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_paciente</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">pacientes</span><span class="p">(</span><span class="n">id_paciente</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_medico</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">medicos</span><span class="p">(</span><span class="n">id_medico</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_consultorio</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">consultorios</span><span class="p">(</span><span class="n">id_consultorio</span><span class="p">),</span>
+<span class="w">  </span><span class="k">UNIQUE</span><span class="w"> </span><span class="p">(</span><span class="n">id_medico</span><span class="p">,</span><span class="w"> </span><span class="n">fecha_turno</span><span class="p">,</span><span class="w"> </span><span class="n">hora_turno</span><span class="p">)</span><span class="w"> </span><span class="c1">-- opcional de agenda</span>
+<span class="p">);</span>
+
+<span class="c1">-- Síntomas (catalogados) y puente</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">sintomas</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_sintoma</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">  </span><span class="n">nombre</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">UNIQUE</span>
+<span class="p">);</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_sintoma</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_sintoma</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">id_sintoma</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_sintoma</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">sintomas</span><span class="p">(</span><span class="n">id_sintoma</span><span class="p">)</span>
+<span class="p">);</span>
+
+<span class="c1">-- Prácticas (catálogo + puente) + arancel por plan</span>
+<span class="c1">-- (ver Paso 3: aranceles_plan)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">turno_practica</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id_turno</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">id_practica</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">id_practica</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_turno</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">turnos</span><span class="p">(</span><span class="n">id_turno</span><span class="p">),</span>
+<span class="w">  </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id_practica</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">practicas</span><span class="p">(</span><span class="n">id_practica</span><span class="p">)</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="resumen-por-que-no-era-3fn-y-como-queda">
+    ✅ Resumen: “por qué no era 3FN” y cómo queda
+   </h3>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Antes (2FN)
+      </strong>
+      : Ya no había
+      <strong>
+       parciales
+      </strong>
+      , pero podían existir
+      <strong>
+       transitivas
+      </strong>
+      :
+     </p>
+    </li>
+    <li>
+     <p>
+      Repetir
+      <code>
+       nombre_obra
+      </code>
+      ,
+      <code>
+       nombre_practica
+      </code>
+      ,
+      <code>
+       piso/sector
+      </code>
+      en tablas no catálogo.
+     </p>
+    </li>
+    <li>
+     Guardar
+     <code>
+      precio
+     </code>
+     de práctica en
+     <code>
+      turno_practica
+     </code>
+     (cuando depende de
+     <code>
+      plan + práctica
+     </code>
+     ).
+    </li>
+    <li>
+     <p>
+      <strong>
+       Después (3FN)
+      </strong>
+      :
+     </p>
+    </li>
+    <li>
+     <p>
+      Los
+      <strong>
+       atributos descriptivos
+      </strong>
+      se mueven a sus
+      <strong>
+       catálogos
+      </strong>
+      (obras, planes, prácticas, especialidades, consultorios, síntomas).
+     </p>
+    </li>
+    <li>
+     Las
+     <strong>
+      relaciones
+     </strong>
+     guardan
+     <strong>
+      FKs
+     </strong>
+     y
+     <strong>
+      atributos propios
+     </strong>
+     del hecho (el turno, su fecha/hora/consultorio, el vínculo con práctica/síntoma).
+    </li>
+    <li>
+     Cero atributos no clave
+     <strong>
+      determinando
+     </strong>
+     otros dentro de la misma tabla →
+     <strong>
+      sin transitivas
+     </strong>
+     .
+    </li>
+   </ul>
+   <h3 id="consejos-de-migracion-desde-tu-2fn">
+    🛠️ Consejos de migración (desde tu 2FN)
+   </h3>
+   <ol>
+    <li>
+     Crear catálogos (
+     <code>
+      practicas
+     </code>
+     ,
+     <code>
+      especialidades
+     </code>
+     ,
+     <code>
+      sintomas
+     </code>
+     ,
+     <code>
+      consultorios
+     </code>
+     ,
+     <code>
+      planes_os
+     </code>
+     ) con
+     <strong>
+      UNIQUE
+     </strong>
+     sobre
+     <code>
+      nombre
+     </code>
+     /
+     <code>
+      codigo
+     </code>
+     .
+    </li>
+    <li>
+     Llenarlos con
+     <code>
+      INSERT … SELECT DISTINCT
+     </code>
+     .
+    </li>
+    <li>
+     Reemplazar columnas de texto en relaciones por
+     <strong>
+      FKs
+     </strong>
+     (IDs).
+    </li>
+    <li>
+     Mover
+     <code>
+      precio
+     </code>
+     /
+     <code>
+      copago
+     </code>
+     a
+     <code>
+      aranceles_plan
+     </code>
+     (o tabla histórica).
+    </li>
+    <li>
+     Quitar de
+     <code>
+      turnos
+     </code>
+     cualquier campo “derivable” del consultorio, paciente, médico o práctica.
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Validaciones rápidas
+    </strong>
+    :
+   </p>
+   <div class="highlight language-sql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">-- ¿Alguna tabla (no catálogo) tiene atributos repetidos que dependan de otro no-clave?</span>
+<span class="c1">-- Chequear dependencia práctica→nombre en turno_practica: NO debe existir nombre_practica allí.</span>
+<span class="c1">-- Chequear dependencia consultorio→piso/sector en turnos: NO deben existir en turnos.</span>
+
+<span class="c1">-- Joins de comprobación</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">id_turno</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">nombre</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">paciente</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">nombre</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">medico</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">codigo</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cons</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">turnos</span><span class="w"> </span><span class="n">t</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">pacientes</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id_paciente</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">id_paciente</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">medicos</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="n">id_medico</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">id_medico</span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">consultorios</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id_consultorio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">id_consultorio</span>
+<span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="nota-sobre-historico-de-valores-practico-vs-3fn">
+    🧾 Nota sobre “histórico” de valores (práctico vs. 3FN)
+   </h3>
+   <ul>
+    <li>
+     <p>
+      Si necesitás
+      <strong>
+       congelar el precio
+      </strong>
+      usado
+      <em>
+       en ese turno
+      </em>
+      (auditoría/facturación), podés agregar en
+      <code>
+       turno_practica
+      </code>
+      un campo
+      <code>
+       precio_facturado
+      </code>
+      .
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Esto no viola 3FN
+      </strong>
+      si interpretás que
+      <code>
+       precio_facturado
+      </code>
+      <strong>
+       depende del hecho “turno-práctica”
+      </strong>
+      , no de la práctica/plan “abstracta”.
+     </p>
+    </li>
+    <li>
+     Aun así, mantené el
+     <strong>
+      precio de referencia vigente
+     </strong>
+     en
+     <code>
+      aranceles_plan
+     </code>
+     para consultas normales.
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

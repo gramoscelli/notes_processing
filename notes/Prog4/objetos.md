@@ -701,7 +701,7 @@ estricta**, al punto  que  la  clase  B no  puede  existir si no  existe  la  cl
 
 
 ```svg
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 784 557">
+<svg xmlns="http://www.w3.org/2000/svg" width="784" height="557" viewBox="0 0 784 557">
   <defs>
     <style type="text/css"><![CDATA[
       .label { font-family: Arial, Helvetica, sans-serif; font-weight: 700; fill: #000000; }
@@ -744,6 +744,7 @@ classDiagram
 ```
 
 Observar que los puntos pueden existir aunque no exista el polígono.
+
 **Composición**
 Agregación disjunta y estricta: Las partes solo existen asociadas al compuesto (solo se accede a ellas a través del compuesto).
 

@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   ciberseguridad_DVWA_practica_4
+  </title>
+ </head>
+ <body>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#apunte-file-inclusion-lfi-rfi-concepto-demostracion-segura-en-dvwa-y-defensas">
+      Apunte: File Inclusion (LFI / RFI) — Concepto, demostración segura en DVWA y defensas
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="apunte-file-inclusion-lfi-rfi-concepto-demostracion-segura-en-dvwa-y-defensas">
+    Apunte: File Inclusion (LFI / RFI) — Concepto, demostración segura en DVWA y defensas
+   </h2>
+   <blockquote>
+    <p>
+     <strong>
+      Lectura dirigida a ustedes.
+     </strong>
+     Este apunte explica qué es la inclusión de archivos (local y remota), cómo detectar indicios desde la instalación local de DVWA sin automatizaciones, y cómo proteger aplicaciones. No contiene instrucciones operativas para explotar sistemas.
+    </p>
+   </blockquote>
+   <h3 id="1-objetivos">
+    1. Objetivos
+   </h3>
+   <ul>
+    <li>
+     Comprender las diferencias entre
+     <strong>
+      Local File Inclusion (LFI)
+     </strong>
+     y
+     <strong>
+      Remote File Inclusion (RFI)
+     </strong>
+     y sus riesgos.
+    </li>
+    <li>
+     Observar señales de inclusión de archivos desde la instalación local de DVWA (interacciones manuales en la UI).
+    </li>
+    <li>
+     Analizar logs y evidencias.
+    </li>
+    <li>
+     Implementar y evaluar mitigaciones: listas blancas de rutas, normalización y verificación de rutas, deshabilitar inclusión remota, principio de menor privilegio, controles de permisos, y evitar exposición de información sensible.
+    </li>
+    <li>
+     Redactar y entregar código corregido que elimine la posibilidad de inclusión arbitraria.
+    </li>
+   </ul>
+   <h3 id="2-que-es-file-inclusion">
+    2. ¿Qué es File Inclusion?
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      LFI (Local File Inclusion):
+     </strong>
+     la aplicación incluye archivos que existen en el sistema del servidor (logs, ficheros de configuración, etc.) usando, directa o indirectamente, un parámetro controlado por el usuario. Si no se valida la entrada, el atacante puede lograr leer, y en algunos casos ejecutar, archivos sensibles.
+    </li>
+    <li>
+     <strong>
+      RFI (Remote File Inclusion):
+     </strong>
+     la aplicación permite incluir recursos remotos (ej. por URL). Si está habilitado, un atacante puede forzar que la aplicación haga
+     <code>
+      include
+     </code>
+     /
+     <code>
+      require
+     </code>
+     de contenido remoto controlado por el atacante, llevándolo a ejecutar código arbitrario en el servidor.
+    </li>
+   </ul>
+   <p>
+    Impactos típicos:
+   </p>
+   <ul>
+    <li>
+     Exposición de archivos sensibles (contraseñas, claves, configuraciones).
+    </li>
+    <li>
+     Ejecución remota de código (RCE) si se incluyen/ejecutan contenidos maliciosos.
+    </li>
+    <li>
+     Escalada de ataque: exfiltración, pivoting, persistencia.
+    </li>
+   </ul>
+   <h3 id="3-condiciones-y-reglas-para-la-practica">
+    3. Condiciones y reglas para la práctica
+   </h3>
+   <ul>
+    <li>
+     Usar
+     <strong>
+      solo
+     </strong>
+     la instalación local de DVWA en su máquina/VM.
+    </li>
+    <li>
+     No ejecutar herramientas automáticas ni visitar recursos remotos diseñados para explotar la vulnerabilidad fuera del entorno controlado.
+    </li>
+    <li>
+     No incluir ni publicar en los informes payloads o rutas de explotación. El objetivo es
+     <strong>
+      observar
+     </strong>
+     y
+     <strong>
+      proteger
+     </strong>
+     .
+    </li>
+   </ul>
+   <h3 id="4-demostracion-segura-solo-interaccion-manual-en-la-ui-de-dvwa">
+    4. Demostración segura (solo interacción manual en la UI de DVWA)
+   </h3>
+   <blockquote>
+    <p>
+     No se muestran ni se describen payloads. Solo se explica cómo observar y registrar.
+    </p>
+   </blockquote>
+   <ol>
+    <li>
+     Abrir DVWA en el navegador (
+     <code>
+      http://localhost/dvwa
+     </code>
+     ) y acceder al módulo
+     <strong>
+      File Inclusion
+     </strong>
+     (o módulo equivalente).
+    </li>
+    <li>
+     Anotar el nivel de seguridad (Low / Medium / High).
+    </li>
+    <li>
+     Introducir mediante la UI valores inocuos (por ejemplo, nombres de archivos intencionalmente creados para la práctica dentro de la instalación local) y observar la respuesta (salida, errores, tiempos).
+    </li>
+    <li>
+     Comparar comportamientos entre niveles (¿se expone la ruta completa? ¿hay mensajes de error que revelan rutas o stack traces?).
+    </li>
+    <li>
+     Revisar logs del servidor y de la aplicación para las peticiones realizadas y registrar fragmentos como evidencia.
+    </li>
+    <li>
+     Proveer un código vulnerable y entregar una versión corregida que evite inclusión arbitraria.
+    </li>
+   </ol>
+   <h3 id="5-actividades-a-realizar">
+    5. Actividades a realizar
+   </h3>
+   <ol>
+    <li>
+     Capturas de pantalla del módulo File Inclusion en
+     <strong>
+      Low
+     </strong>
+     y en
+     <strong>
+      High
+     </strong>
+     (salida visible en la UI).
+    </li>
+    <li>
+     Fragmentos de logs relevantes (timestamp, endpoint, parámetros, código HTTP).
+    </li>
+    <li>
+     Código original (vulnerable) y versión corregida con explicación de por qué la corrección es segura.
+    </li>
+    <li>
+     Breve informe comparando el comportamiento antes/después de la corrección y análisis de riesgo residual.
+    </li>
+   </ol>
+   <h3 id="6-medidas-de-defensa-y-ejemplos-solo-codigo-defensivo">
+    6. Medidas de defensa y ejemplos (solo código defensivo)
+   </h3>
+   <h4 id="principios-generales">
+    Principios generales
+   </h4>
+   <ol>
+    <li>
+     <strong>
+      Nunca
+     </strong>
+     incluir archivos basados directamente en entrada del usuario sin validación.
+    </li>
+    <li>
+     <strong>
+      Preferir listas blancas
+     </strong>
+     de recursos permitidos (nombres o rutas predefinidas) en vez de intentar filtrar cadenas peligrosas.
+    </li>
+    <li>
+     <strong>
+      Deshabilitar
+     </strong>
+     la inclusión remota en la configuración del intérprete (p. ej.
+     <code>
+      allow_url_include = Off
+     </code>
+     en PHP).
+    </li>
+    <li>
+     <strong>
+      Normalizar y resolver rutas absolutas
+     </strong>
+     con
+     <code>
+      realpath()
+     </code>
+     o equivalentes y comprobar que están dentro de un directorio base seguro.
+    </li>
+    <li>
+     <strong>
+      Principio de menor privilegio
+     </strong>
+     : archivos sensibles (config, keys) deben tener permisos estrictos y no estar disponibles para el proceso web.
+    </li>
+    <li>
+     <strong>
+      Evitar mostrar errores/paths en producción
+     </strong>
+     ; registrar internamente sin exponer al cliente.
+    </li>
+   </ol>
+   <h4 id="a-whitelist-lista-blanca-la-solucion-preferida">
+    A) Whitelist (lista blanca) — la solución preferida
+   </h4>
+   <p>
+    Mapear nombres de recursos permitidos a rutas internas y no usar rutas arbitrarias enviadas por el cliente.
+   </p>
+   <p>
+    <strong>
+     PHP — ejemplo didáctico (lista blanca):
+    </strong>
+   </p>
+   <div class="highlight language-php">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="x">// Mapear identificadores permitidos a archivos internos</span>
+<span class="x">$pages = [</span>
+<span class="x">  'home' =&gt; '/var/www/app/pages/home.php',</span>
+<span class="x">  'about' =&gt; '/var/www/app/pages/about.php',</span>
+<span class="x">  'help' =&gt; '/var/www/app/pages/help.php'</span>
+<span class="x">];</span>
+
+<span class="x">$page = $_GET['page'] ?? 'home';</span>
+
+<span class="x">if (!array_key_exists($page, $pages)) {</span>
+<span class="x">  http_response_code(404);</span>
+<span class="x">  echo "Página no encontrada";</span>
+<span class="x">  exit;</span>
+<span class="x">}</span>
+
+<span class="x">include $pages[$page]; // inclusión controlada</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Comentario: el cliente sólo puede elegir entre entradas del mapa; nunca controla la ruta completa.
+   </p>
+   <h4 id="b-normalizacion-y-validacion-de-ruta-cuando-se-trabaja-con-rutas">
+    B) Normalización y validación de ruta (cuando se trabaja con rutas)
+   </h4>
+   <p>
+    Si se necesita permitir rutas relativas dentro de un directorio seguro, normalizar y comprobar que la ruta resultante esté contenida en el directorio base.
+   </p>
+   <p>
+    <strong>
+     Node.js — ejemplo didáctico (validación con path.normalize):
+    </strong>
+   </p>
+   <div class="highlight language-js">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'path'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">fs</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'fs'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">BASE_DIR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'/var/www/app/pages'</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">safeInclude</span><span class="p">(</span><span class="nx">requested</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">normalized</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">normalize</span><span class="p">(</span><span class="nx">requested</span><span class="p">);</span><span class="w">             </span><span class="c1">// elimina componentes redundantes</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">fullPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">BASE_DIR</span><span class="p">,</span><span class="w"> </span><span class="nx">normalized</span><span class="p">);</span><span class="w">         </span><span class="c1">// construye ruta dentro del base</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">resolved</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">fullPath</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Verificar que la ruta resuelta empiece por el BASE_DIR (evita traversal)</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">resolved</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">BASE_DIR</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">sep</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Ruta no permitida'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">resolved</span><span class="p">,</span><span class="w"> </span><span class="s1">'utf8'</span><span class="p">);</span><span class="w"> </span><span class="c1">// ejemplo: leer, no ejecutar</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Explicación: se construye la ruta absoluta y se verifica que permanezca dentro de
+    <code>
+     BASE_DIR
+    </code>
+    . Así se evita que entradas crafteadas salgan fuera del directorio autorizado.
+   </p>
+   <h4 id="c-php-configuraciones-seguras">
+    C) PHP — configuraciones seguras
+   </h4>
+   <ul>
+    <li>
+     En
+     <code>
+      php.ini
+     </code>
+     :
+    </li>
+   </ul>
+   <div class="highlight language-text">
+    <pre><span></span>  allow_url_fopen = Off
+  allow_url_include = Off
+
+</pre>
+   </div>
+   <p>
+    Estas directivas evitan que
+    <code>
+     include
+    </code>
+    /
+    <code>
+     require
+    </code>
+    traiga contenido a través de URLs remotas.
+* Evitar
+    <code>
+     include($_GET['file'])
+    </code>
+    sin control. Si se necesita incluir, usar whitelist o mapping.
+   </p>
+   <p>
+    <strong>
+     PHP — ejemplo con realpath (complementario):
+    </strong>
+   </p>
+   <div class="highlight language-php">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="x">$base = '/var/www/app/pages';</span>
+<span class="x">$file = $_GET['file'] ?? 'home.php';</span>
+<span class="x">$path = realpath($base . DIRECTORY_SEPARATOR . $file);</span>
+
+<span class="x">if ($path === false || strpos($path, realpath($base)) !== 0) {</span>
+<span class="x">  http_response_code(400);</span>
+<span class="x">  echo "Ruta inválida";</span>
+<span class="x">  exit;</span>
+<span class="x">}</span>
+
+<span class="x">include $path;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Nota:
+    <code>
+     realpath
+    </code>
+    resuelve symlinks y normaliza; la comprobación asegura que la ruta quede dentro del
+    <code>
+     base
+    </code>
+    .
+   </p>
+   <h4 id="d-evitar-ejecucion-de-contenido-incluido-separar-lectura-vs-ejecucion">
+    D) Evitar ejecución de contenido incluido — separar lectura vs ejecución
+   </h4>
+   <p>
+    Si la aplicación solo necesita mostrar el contenido de un archivo (p. ej. logs o plantillas),
+    <strong>
+     no
+    </strong>
+    incluir/ejecutar el archivo como código; en su lugar, leer su contenido y tratarlo como datos (sanitizar antes de renderizar).
+   </p>
+   <p>
+    Ejemplo conceptual:
+   </p>
+   <div class="highlight language-py">
+    <pre><span></span><span class="c1">## Python: leer y mostrar archivo como texto seguro</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">resolved_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="c1">## escapar contenido antes de mostrar en HTML</span>
+</pre>
+   </div>
+   <h4 id="e-restricciones-de-despliegue-y-permisos">
+    E) Restricciones de despliegue y permisos
+   </h4>
+   <ul>
+    <li>
+     Archivos de configuración sensibles deben tener permisos que impidan lectura por el usuario del proceso web cuando no sea necesario.
+    </li>
+    <li>
+     Ejecutar el servidor web con un usuario con privilegios limitados.
+    </li>
+    <li>
+     Aplicar mecanismos de confinamiento: chroot, contenedores, AppArmor/SELinux.
+    </li>
+   </ul>
+   <h4 id="f-desactivar-funciones-peligrosas">
+    F) Desactivar funciones peligrosas
+   </h4>
+   <p>
+    En entornos donde no se requieren funciones de shell o inclusión remota, deshabilitarlas (ej.:
+    <code>
+     disable_functions
+    </code>
+    en PHP) para reducir la superficie de ataque.
+   </p>
+   <h3 id="7-deteccion-y-que-buscar-en-los-logs">
+    7. Detección y qué buscar en los logs
+   </h3>
+   <p>
+    Señales que pueden indicar intentos o explotación:
+   </p>
+   <ul>
+    <li>
+     Peticiones con parámetros inusuales dirigidos a endpoints de inclusión (registro del parámetro
+     <code>
+      page
+     </code>
+     ,
+     <code>
+      file
+     </code>
+     ,
+     <code>
+      include
+     </code>
+     , etc.).
+    </li>
+    <li>
+     Respuestas que exponen contenido de archivos del sistema (configuración, rutas) o que devuelven grandes fragmentos de texto que no deberían estar accesibles.
+    </li>
+    <li>
+     Errores con paths absolutos o traces que revelen estructura del filesystem.
+    </li>
+    <li>
+     Picos de peticiones a endpoints de inclusión desde la misma IP o varias IPs intentando distintos parámetros.
+    </li>
+   </ul>
+   <p>
+    Ejemplo de línea de log a recopilar:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>[2025-10-29 17:05:12] GET /vulnerable.php?file=... 200 ip=192.168.56.101 user-agent=...
+</pre>
+   </div>
+   <p>
+    (Registrar los parámetros tal como aparecen y el contexto; en informes pedagógicos pueden anonimizarse).
+   </p>
+   <h3 id="8-actividades-opcionales-avanzadas">
+    8. Actividades opcionales (avanzadas)
+   </h3>
+   <ul>
+    <li>
+     Reescribir un endpoint vulnerable para usar lista blanca y/o normalización de rutas; demostrar que accesos fuera del directorio base son rechazados.
+    </li>
+    <li>
+     Revisar permisos de archivos y demostrar (conceptualmente) qué archivos podían haberse expuesto antes de la corrección.
+    </li>
+    <li>
+     Diseñar una política de despliegue que minimice riesgos:
+     <code>
+      allow_url_include=Off
+     </code>
+     , contenedores, cuentas sin privilegios, logs centralizados.
+    </li>
+    <li>
+     Implementar detecciones que alerten sobre accesos inusuales a endpoints de inclusión.
+    </li>
+   </ul>
+   <h3 id="9-preguntas-de-autoevaluacion">
+    9. Preguntas de autoevaluación
+   </h3>
+   <ol>
+    <li>
+     ¿Cuál es la diferencia principal entre LFI y RFI?
+    </li>
+    <li>
+     ¿Por qué
+     <code>
+      allow_url_include = Off
+     </code>
+     es importante en entornos PHP?
+    </li>
+    <li>
+     ¿Por qué una lista blanca es preferible a filtrar secuencias peligrosas?
+    </li>
+    <li>
+     ¿Qué comprobación se debe hacer después de usar
+     <code>
+      realpath()
+     </code>
+     y por qué?
+    </li>
+    <li>
+     ¿Qué archivos del sistema suelen ser objetivo de LFI y cómo evitar exponerlos?
+    </li>
+   </ol>
+   <h3 id="10-recursos-recomendados-seguros">
+    10. Recursos recomendados (seguros)
+   </h3>
+   <ul>
+    <li>
+     OWASP File Inclusion / Directory Traversal — explicaciones y recomendaciones.
+    </li>
+    <li>
+     Guía de configuración segura de PHP (
+     <code>
+      php.ini
+     </code>
+     ) —
+     <code>
+      allow_url_include
+     </code>
+     ,
+     <code>
+      disable_functions
+     </code>
+     .
+    </li>
+    <li>
+     Documentación de
+     <code>
+      path.normalize
+     </code>
+     /
+     <code>
+      path.resolve
+     </code>
+     (Node),
+     <code>
+      realpath()
+     </code>
+     (PHP/Python) para manejo seguro de rutas.
+    </li>
+    <li>
+     Artículos sobre permisos y confinamiento (chroot, AppArmor, SELinux).
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

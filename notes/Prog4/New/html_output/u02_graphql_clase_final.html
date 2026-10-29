@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   u02_graphql_clase
+  </title>
+ </head>
+ <body>
+  <h1 id="guion-de-clase-graphql-el-cliente-decide-la-forma-de-la-respuesta">
+   Guion de clase — GraphQL: el cliente decide la forma de la respuesta
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-apertura-contar-las-requests">
+      1. Apertura: contar las requests
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-rest-ya-tenia-respuestas-y-por-que-no-alcanzan">
+      2. REST ya tenía respuestas (y por qué no alcanzan)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-el-esquema-es-la-api">
+      3. El esquema es la API
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-resolvers-la-parte-que-ya-esta-escrita">
+      4. Resolvers: la parte que ya está escrita
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-montarlo-en-el-express-que-ya-tenemos">
+      5. Montarlo en el Express que ya tenemos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-errores-graphql-siempre-contesta-200">
+      6. Errores: GraphQL siempre contesta 200
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-el-n1-que-es-el-problema-de-graphql">
+      7. El N+1, que es el problema de GraphQL
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-la-comparacion-honesta">
+      8. La comparación honesta
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-testear-graphql">
+      9. Testear GraphQL
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-cierre-de-la-unidad">
+      10. Cierre de la unidad
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#11-comandos-de-la-demo">
+      11. Comandos de la demo
+     </a>
+    </li>
+   </ul>
+  </div>
+  <blockquote>
+   <p>
+    Notas para dictar la clase. Siguen el orden real de exposición, con lo que se dice,
+lo que va en pantalla y las preguntas que se lanzan.
+Apunte del alumno:
+    <a href="u02_graphql.md">
+     GraphQL: otra forma de exponer la misma API
+    </a>
+    .
+   </p>
+  </blockquote>
+  <hr/>
+  <div class="chapter-container">
+   <h2 id="1-apertura-contar-las-requests">
+    1. Apertura: contar las requests
+   </h2>
+   <p>
+    No empezamos con la definición de GraphQL. Empezamos con el problema, y el problema se
+mide.
+   </p>
+   <p>
+    <strong>
+     En pantalla
+    </strong>
+    , la pantalla de inicio de la app: una lista de veinte libros, y de cada
+uno se muestra
+    <strong>
+     título y autor
+    </strong>
+    . Dos líneas de texto.
+   </p>
+   <p>
+    Y lo que devuelve
+    <code>
+     GET /v1/books
+    </code>
+    :
+   </p>
+   <div class="highlight language-json">
+    <pre><span></span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"..."</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rayuela"</span><span class="p">,</span><span class="w"> </span><span class="nt">"author"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cortázar"</span><span class="p">,</span><span class="w"> </span><span class="nt">"year"</span><span class="p">:</span><span class="w"> </span><span class="mi">1963</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"isbn"</span><span class="p">:</span><span class="w"> </span><span class="s2">"..."</span><span class="p">,</span><span class="w"> </span><span class="nt">"synopsis"</span><span class="p">:</span><span class="w"> </span><span class="s2">"… 2 KB de texto …"</span><span class="p">,</span><span class="w"> </span><span class="nt">"coverUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"..."</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"publisher"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"..."</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">"stock"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">}</span>
+</pre>
+   </div>
+   <p>
+    <em>
+     Pregunta: con veinte libros por página, ¿cuántos kilobytes bajamos para pintar
+cuarenta líneas de texto?
+    </em>
+   </p>
+   <p>
+    Decenas. Y la sinopsis, que es el 90 % del peso, no se muestra en ningún lugar de esa
+pantalla. Eso se llama
+    <strong>
+     over-fetching
+    </strong>
+    .
+   </p>
+   <p>
+    Ahora la pantalla de detalle: el libro, su autor con biografía, y las reseñas con el
+nombre de cada usuario.
+   </p>
+   <p>
+    <strong>
+     En el pizarrón, y se cuenta en voz alta:
+    </strong>
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>GET /v1/books/7                 → 1 request
+GET /v1/authors/3               → 1 request
+GET /v1/books/7/reviews         → 1 request
+GET /v1/users/{id} × 10         → 10 requests
+                                 ─────────────
+                                   13 requests
+</pre>
+   </div>
+   <p>
+    Y lo peor no es el trece. Lo peor es que son
+    <strong>
+     en cascada
+    </strong>
+    : hasta que no vuelve
+    <code>
+     /books/7
+    </code>
+    no sé qué autor pedir. Las latencias no se solapan, se suman. En un 4G malo,
+trece round-trips son segundos. Eso es
+    <strong>
+     under-fetching
+    </strong>
+    .
+   </p>
+   <p>
+    <strong>
+     La frase del pizarrón:
+    </strong>
+   </p>
+   <blockquote>
+    <p>
+     El servidor decide la forma de la respuesta. Si la forma que necesita la pantalla no
+es la que el servidor decidió, el cliente paga: en bytes o en round-trips.
+    </p>
+   </blockquote>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-rest-ya-tenia-respuestas-y-por-que-no-alcanzan">
+    2. REST ya tenía respuestas (y por qué no alcanzan)
+   </h2>
+   <p>
+    Antes de vender nada, hay que ser honestos: REST tiene soluciones para esto.
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>GET /v1/books?fields=title,author           ← sparse fieldsets
+GET /v1/books/7?include=author,reviews.user ← inclusión de relaciones
+</pre>
+   </div>
+   <p>
+    Y funcionan. El problema es otro:
+   </p>
+   <ul>
+    <li>
+     Cada API inventa su propia sintaxis (
+     <code>
+      fields
+     </code>
+     ,
+     <code>
+      select
+     </code>
+     ,
+     <code>
+      only
+     </code>
+     ,
+     <code>
+      $select
+     </code>
+     …).
+    </li>
+    <li>
+     Hay que implementarla
+     <strong>
+      a mano, endpoint por endpoint
+     </strong>
+     .
+    </li>
+    <li>
+     Documentar qué combinaciones de
+     <code>
+      include
+     </code>
+     son válidas se vuelve inmanejable.
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     GraphQL no inventó la idea. Tomó esa idea y la convirtió en
+     <strong>
+      el modelo central
+     </strong>
+     , con
+un lenguaje de consulta definido y un esquema tipado que lo describe.
+    </p>
+   </blockquote>
+   <p>
+    <strong>
+     En pantalla
+    </strong>
+    , lo mismo que las trece requests, en una:
+   </p>
+   <div class="highlight language-graphql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">query</span><span class="w"> </span><span class="nf">DetalleDeLibro</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">book</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="s">"7"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">title</span>
+<span class="w">    </span><span class="n">year</span>
+<span class="w">    </span><span class="n">author</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">bio</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">reviews</span><span class="p">(</span><span class="n">first</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Una request. Una respuesta. Exactamente esos campos, ni uno más.
+   </p>
+   <p>
+    <strong>
+     Y conviene decirlo ya, antes de que se entusiasmen:
+    </strong>
+    esas trece requests
+    <strong>
+     no
+desaparecieron
+    </strong>
+    . Se mudaron al servidor. La sección 7 de hoy es sobre eso, y es la
+mitad importante de la clase.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-el-esquema-es-la-api">
+    3. El esquema es la API
+   </h2>
+   <p>
+    En GraphQL el esquema no es documentación opcional como el OpenAPI de la clase pasada:
+    <strong>
+     es
+    </strong>
+    la API. Si no está en el esquema, no se puede pedir.
+   </p>
+   <div class="highlight language-graphql">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">type</span><span class="w"> </span><span class="err">Book</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">id</span><span class="p">:</span><span class="w"> </span><span class="n">ID</span><span class="err">!</span>
+<span class="w">  </span><span class="nl">title</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="err">!</span>
+<span class="w">  </span><span class="nl">author</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="err">!</span>
+<span class="w">  </span><span class="nl">year</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="err">!</span>
+<span class="p">}</span>
+
+<span class="k">input</span><span class="w"> </span><span class="err">NewBookInput</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">title</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="err">!</span>
+<span class="w">  </span><span class="nl">author</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="err">!</span>
+<span class="w">  </span><span class="nl">year</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="err">!</span>
+<span class="p">}</span>
+
+<span class="k">type</span><span class="w"> </span><span class="err">Query</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">book</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="no">ID</span><span class="err">!</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">Book</span>
+<span class="w">  </span><span class="n">books</span><span class="p">(</span><span class="n">page</span><span class="p">:</span><span class="w"> </span><span class="no">Int</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">1</span><span class="p">,</span><span class="w"> </span><span class="n">pageSize</span><span class="p">:</span><span class="w"> </span><span class="no">Int</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="err">20</span><span class="p">,</span>
+<span class="w">        </span><span class="n">sort</span><span class="p">:</span><span class="w"> </span><span class="no">BookSort</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="n">TITLE</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">:</span><span class="w"> </span><span class="no">BookFilter</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">BookPage</span><span class="err">!</span>
+<span class="p">}</span>
+
+<span class="k">type</span><span class="w"> </span><span class="err">Mutation</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">createBook</span><span class="p">(</span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="no">NewBookInput</span><span class="err">!</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">Book</span><span class="err">!</span>
+<span class="w">  </span><span class="n">updateBook</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="no">ID</span><span class="err">!</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">:</span><span class="w"> </span><span class="no">UpdateBookInput</span><span class="err">!</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">Book</span><span class="err">!</span>
+<span class="w">  </span><span class="n">deleteBook</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="no">ID</span><span class="err">!</span><span class="p">)</span><span class="err">:</span><span class="w"> </span><span class="n">Boolean</span><span class="err">!</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="31-el-es-la-decision-de-diseno-de-cada-campo">
+    3.1 El
+    <code>
+     !
+    </code>
+    es la decisión de diseño de cada campo
+   </h3>
+   <p>
+    <em>
+     Pregunta: ¿qué significa el signo de exclamación?
+    </em>
+   </p>
+   <p>
+    "No nulo". Hasta ahí es fácil. Lo que hay que leer despacio es la tabla de listas:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Declaración
+      </th>
+      <th>
+       Significa
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        title: String
+       </code>
+      </td>
+      <td>
+       puede venir
+       <code>
+        null
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        title: String!
+       </code>
+      </td>
+      <td>
+       nunca es
+       <code>
+        null
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        items: [Book]
+       </code>
+      </td>
+      <td>
+       la lista puede ser
+       <code>
+        null
+       </code>
+       , y puede contener
+       <code>
+        null
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        items: [Book!]
+       </code>
+      </td>
+      <td>
+       la lista puede ser
+       <code>
+        null
+       </code>
+       , pero sin elementos
+       <code>
+        null
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        items: [Book!]!
+       </code>
+      </td>
+      <td>
+       ni la lista ni sus elementos son
+       <code>
+        null
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    <strong>
+     Y el peligro, que es contraintuitivo:
+    </strong>
+    si un campo
+    <code>
+     author: Author!
+    </code>
+    falla al
+resolverse, GraphQL no puede devolver
+    <code>
+     null
+    </code>
+    ahí. Así que
+    <strong>
+     propaga el null hacia
+arriba
+    </strong>
+    y anula el objeto padre entero.
+   </p>
+   <p>
+    <em>
+     Pregunta: ¿qué pasa entonces si el servicio de autores se cae y
+     <code>
+      Book.author
+     </code>
+     es
+     <code>
+      Author!
+     </code>
+     ?
+    </em>
+   </p>
+   <p>
+    Desaparece el libro de la respuesta. Y si
+    <code>
+     items: [Book!]!
+    </code>
+    , desaparece la lista. Un
+campo no-nulo que depende de un sistema externo puede borrar toda la respuesta.
+   </p>
+   <p>
+    <strong>
+     La regla práctica:
+    </strong>
+    <code>
+     !
+    </code>
+    en lo que es estructuralmente imposible que falte — ids,
+campos propios. Opcional en todo lo que viene de otro sistema.
+   </p>
+   <h3 id="32-type-y-input-son-mundos-separados">
+    3.2
+    <code>
+     type
+    </code>
+    y
+    <code>
+     input
+    </code>
+    son mundos separados
+   </h3>
+   <p>
+    No se puede usar un
+    <code>
+     type
+    </code>
+    como argumento ni un
+    <code>
+     input
+    </code>
+    como retorno. Es verboso y
+molesta al principio, pero es exactamente la distinción
+    <code>
+     Book
+    </code>
+    /
+    <code>
+     NewBook
+    </code>
+    que hicimos
+en REST:
+    <code>
+     Book
+    </code>
+    tiene
+    <code>
+     id: ID!
+    </code>
+    porque lo genera el servidor;
+    <code>
+     NewBookInput
+    </code>
+    no lo
+tiene.
+   </p>
+   <h3 id="33-lo-que-el-esquema-no-tiene">
+    3.3 Lo que el esquema NO tiene
+   </h3>
+   <p>
+    Esto es lo que quiero que noten solos.
+   </p>
+   <p>
+    <em>
+     Pregunta: ¿qué cosas de las dos clases anteriores no aparecen en ninguna parte de este
+esquema?
+    </em>
+   </p>
+   <p>
+    No hay URLs. No hay métodos HTTP. No hay status codes. Todo pasa por un solo endpoint,
+    <code>
+     POST /graphql
+    </code>
+    , y la respuesta es
+    <strong>
+     siempre
+    </strong>
+    <code>
+     200
+    </code>
+    .
+   </p>
+   <p>
+    Tiren eso al aire y déjenlo: tiene consecuencias serias para caché y para errores, y las
+vemos en 6 y en 8.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-resolvers-la-parte-que-ya-esta-escrita">
+    4. Resolvers: la parte que ya está escrita
+   </h2>
+   <p>
+    Un
+    <em>
+     resolver
+    </em>
+    es la función que sabe producir el valor de un campo. La firma es siempre
+la misma:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="p">(</span><span class="nx">parent</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="p">,</span><span class="w"> </span><span class="nx">context</span><span class="p">,</span><span class="w"> </span><span class="nx">info</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">valor</span>
+</pre>
+   </div>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Parámetro
+      </th>
+      <th>
+       Qué es
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        parent
+       </code>
+      </td>
+      <td>
+       el resultado del resolver padre (en
+       <code>
+        Query
+       </code>
+       viene
+       <code>
+        undefined
+       </code>
+       )
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        args
+       </code>
+      </td>
+      <td>
+       los argumentos,
+       <strong>
+        ya validados
+       </strong>
+       contra el esquema
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        context
+       </code>
+      </td>
+      <td>
+       lo compartido por request: usuario, servicios, loaders
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        info
+       </code>
+      </td>
+      <td>
+       el AST de la query; útil para optimizar, rara vez necesario
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Marcar
+    <code>
+     args
+    </code>
+    : no hay Zod acá. El esquema ya garantizó que
+    <code>
+     id
+    </code>
+    es un
+    <code>
+     ID!
+    </code>
+    y que
+    <code>
+     pageSize
+    </code>
+    es un
+    <code>
+     Int
+    </code>
+    . Esa validación es gratis.
+   </p>
+   <p>
+    <strong>
+     En pantalla
+    </strong>
+    , el resolver de
+    <code>
+     book
+    </code>
+    :
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">book</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">_p</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">service</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="nx">Ctx</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">book</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">service</span><span class="p">.</span><span class="nx">findById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">book</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">GraphQLError</span><span class="p">(</span><span class="s1">'Libro no encontrado'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">extensions</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">code</span><span class="o">:</span><span class="w"> </span><span class="s1">'NOT_FOUND'</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">book</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <em>
+     Pregunta: ¿cuánta lógica de negocio hay en ese resolver?
+    </em>
+   </p>
+   <p>
+    Ninguna. Llama a
+    <code>
+     service.findById
+    </code>
+    .
+    <strong>
+     El mismo
+     <code>
+      BookService
+     </code>
+     que usan las rutas REST.
+    </strong>
+   </p>
+   <p>
+    <strong>
+     La frase del pizarrón, y es la arquitectura de toda la unidad:
+    </strong>
+   </p>
+   <blockquote>
+    <p>
+     REST y GraphQL son dos capas de
+     <strong>
+      transporte
+     </strong>
+     sobre un mismo núcleo de dominio.
+    </p>
+   </blockquote>
+   <div class="highlight language-text">
+    <pre><span></span>        BooksRouter (REST) ─┐
+                            ├─→ BookService ─→ (Unidad 4: base de datos)
+      GraphQLResolvers ─────┘
+</pre>
+   </div>
+   <p>
+    Si la regla "el año no puede ser futuro" viviera en el router de Express, habría que
+duplicarla acá. Y cuando algo se duplica, una de las dos copias queda vieja. Cuando ese
+núcleo hable con una base de datos real, las dos capas van a seguir funcionando sin
+tocar una línea.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-montarlo-en-el-express-que-ya-tenemos">
+    5. Montarlo en el Express que ya tenemos
+   </h2>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>graphql<span class="w"> </span>graphql-yoga
+</pre>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">makeApp</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// GraphQL ANTES de express.json(): Yoga parsea su propio body.</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/graphql'</span><span class="p">,</span><span class="w"> </span><span class="nx">makeYoga</span><span class="p">(</span><span class="nx">service</span><span class="p">));</span>
+
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">,</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="p">(</span><span class="nx">service</span><span class="p">));</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">errorHandler</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">app</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Detenerse en ese comentario. Es el bug de los cinco minutos perdidos.
+    </strong>
+   </p>
+   <p>
+    Si
+    <code>
+     express.json()
+    </code>
+    corre primero, consume el stream del body. Yoga recibe una request
+vacía y tira un error que no dice absolutamente nada útil. Montá GraphQL antes, o
+restringí el parser con
+    <code>
+     app.use('/v1', express.json())
+    </code>
+    .
+   </p>
+   <p>
+    Y señalar lo que queda: las dos interfaces conviven en el mismo proceso, sobre el mismo
+servicio.
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>POST /v1/books   → REST
+GET  /v1/books   → REST
+POST /graphql    → GraphQL
+GET  /graphql    → GraphiQL (sólo en dev)
+</pre>
+   </div>
+   <p>
+    <strong>
+     Demo:
+    </strong>
+    abrir
+    <code>
+     http://localhost:3000/graphql
+    </code>
+    , escribir la query en GraphiQL con
+autocompletado, ejecutarla. Después
+    <strong>
+     borrar un campo
+    </strong>
+    de la query y ejecutar de nuevo,
+para que vean que la respuesta cambia de forma sin tocar el servidor. Ese es el momento
+de la clase.
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/graphql<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"query":"{ books(pageSize: 3, sort: DESC_YEAR) { items { title year } pageInfo { total } } }"}'</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Nota al margen, porque van a googlear:
+    </strong>
+    <code>
+     @apollo/server
+    </code>
+    hace lo mismo y es el
+estándar de facto en la industria. Yoga necesita menos configuración y se monta directo
+como middleware. Los conceptos — esquema, resolvers, context, loaders — son idénticos en
+los dos.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-errores-graphql-siempre-contesta-200">
+    6. Errores: GraphQL siempre contesta 200
+   </h2>
+   <p>
+    Acá GraphQL rompe con todo lo que diseñamos en las dos clases anteriores.
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"book"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"errors"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Libro no encontrado"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"book"</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">"extensions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NOT_FOUND"</span><span class="p">,</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"999"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Status de esa respuesta:
+    <strong>
+     200 OK
+    </strong>
+    .
+   </p>
+   <p>
+    <em>
+     Pregunta: ¿se acuerdan del primer error de diseño de la lista de la clase de REST?
+    </em>
+   </p>
+   <p>
+    "
+    <code>
+     200 OK
+    </code>
+    con un
+    <code>
+     error
+    </code>
+    adentro". Lo pusimos como antipatrón. Y GraphQL lo hace por
+diseño. No es una contradicción: es que GraphQL no usa HTTP como protocolo semántico,
+lo usa como transporte. Pero hay que pagar el precio y saber cuál es:
+   </p>
+   <ul>
+    <li>
+     <code>
+      res.ok
+     </code>
+     en el cliente
+     <strong>
+      no sirve
+     </strong>
+     para saber si la operación funcionó. Hay que mirar
+     <code>
+      errors
+     </code>
+     .
+    </li>
+    <li>
+     El monitoreo por status code no ve nada: todo es
+     <code>
+      200
+     </code>
+     . Hay que instrumentar a nivel
+  de resolver.
+    </li>
+    <li>
+     Una respuesta puede ser
+     <strong>
+      parcialmente exitosa
+     </strong>
+     :
+     <code>
+      data
+     </code>
+     con lo que resolvió y
+     <code>
+      errors
+     </code>
+     con lo que no. Eso no tiene ningún equivalente en REST.
+    </li>
+   </ul>
+   <h3 id="61-extensionscode-es-el-nuevo-status-code">
+    6.1
+    <code>
+     extensions.code
+    </code>
+    es el nuevo status code
+   </h3>
+   <p>
+    Como no hay status codes, el contrato de errores se define en
+    <code>
+     extensions.code
+    </code>
+    . Es el
+equivalente exacto del
+    <code>
+     type
+    </code>
+    de
+    <code>
+     problem+json
+    </code>
+    .
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">notFound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">what</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="ow">new</span><span class="w"> </span><span class="nx">GraphQLError</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">what</span><span class="si">}</span><span class="sb"> no encontrado`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">extensions</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">code</span><span class="o">:</span><span class="w"> </span><span class="s1">'NOT_FOUND'</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">businessRule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">detail</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="ow">new</span><span class="w"> </span><span class="nx">GraphQLError</span><span class="p">(</span><span class="s1">'Regla de negocio violada'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">extensions</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">code</span><span class="o">:</span><span class="w"> </span><span class="s1">'BUSINESS_RULE'</span><span class="p">,</span><span class="w"> </span><span class="nx">detail</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Mismo criterio que con
+    <code>
+     problem+json
+    </code>
+    : la lista de códigos es
+    <strong>
+     cerrada
+    </strong>
+    y es parte del
+contrato. El cliente programa contra
+    <code>
+     code
+    </code>
+    , nunca contra
+    <code>
+     message
+    </code>
+    .
+   </p>
+   <h3 id="62-y-no-filtrar-el-stack-trace">
+    6.2 Y no filtrar el stack trace
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">createYoga</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">schema</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">maskedErrors</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">maskError</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="nx">GraphQLError</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">error</span><span class="p">.</span><span class="nx">extensions</span><span class="o">?</span><span class="p">.</span><span class="nx">code</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">error</span><span class="p">;</span><span class="w">              </span><span class="c1">// errores nuestros, intencionales</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span><span class="w">        </span><span class="c1">// el resto se loguea y se enmascara</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">GraphQLError</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Yoga ya enmascara en producción, pero ser explícito acá vale: el criterio es
+    <em>
+     mis
+errores pasan, los inesperados se loguean y salen genéricos
+    </em>
+    .
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-el-n1-que-es-el-problema-de-graphql">
+    7. El N+1, que es el problema de GraphQL
+   </h2>
+   <p>
+    Esta es la sección más importante de la clase. Si se van con una sola cosa, que sea esta.
+   </p>
+   <p>
+    Agreguemos el autor como relación:
+   </p>
+   <div class="highlight language-graphql">
+    <pre><span></span><span class="k">type</span><span class="w"> </span><span class="err">Book</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nl">id</span><span class="p">:</span><span class="w"> </span><span class="n">ID</span><span class="err">!</span><span class="w"> </span><span class="nl">title</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="err">!</span><span class="w"> </span><span class="nl">author</span><span class="p">:</span><span class="w"> </span><span class="n">Author</span><span class="err">!</span><span class="w"> </span><span class="p">}</span>
+</pre>
+   </div>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">resolvers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">Book</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">book</span><span class="p">,</span><span class="w"> </span><span class="nx">_args</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">authorService</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">      </span><span class="nx">authorService</span><span class="p">.</span><span class="nx">findById</span><span class="p">(</span><span class="nx">book</span><span class="p">.</span><span class="nx">authorId</span><span class="p">)</span><span class="w">   </span><span class="c1">// ← una consulta POR LIBRO</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+</pre>
+   </div>
+   <p>
+    Y esta query, que parece inofensiva:
+   </p>
+   <div class="highlight language-graphql">
+    <pre><span></span><span class="p">{</span><span class="w"> </span><span class="n">books</span><span class="p">(</span><span class="n">pageSize</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">items</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="n">author</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</pre>
+   </div>
+   <p>
+    <em>
+     Pregunta: ¿cuántas consultas a la base de datos dispara?
+    </em>
+   </p>
+   <p>
+    Una para los cincuenta libros, y
+    <strong>
+     cincuenta
+    </strong>
+    de autor. Una por libro, aunque cuarenta
+compartan el mismo autor.
+   </p>
+   <p>
+    <strong>
+     El remate:
+    </strong>
+   </p>
+   <blockquote>
+    <p>
+     Es exactamente el N+1 de la apertura de la clase. GraphQL
+     <strong>
+      no lo eliminó
+     </strong>
+     : lo movió
+de la red del cliente al servidor, donde es más barato pero no gratis. Y ahora el
+cliente lo puede provocar sin saberlo, pidiendo un campo más.
+    </p>
+   </blockquote>
+   <h3 id="71-dataloader">
+    7.1 DataLoader
+   </h3>
+   <p>
+    Dos mecanismos:
+    <strong>
+     batching
+    </strong>
+    (juntar todas las cargas de un mismo tick del event loop
+en una consulta) y
+    <strong>
+     caching por request
+    </strong>
+    (no pedir dos veces el mismo id).
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">createLoaders</span><span class="p">(</span><span class="nx">authorService</span><span class="o">:</span><span class="w"> </span><span class="kt">AuthorService</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">authorById</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nx">DataLoader</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">Author</span><span class="o">&gt;</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">ids</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// UNA sola consulta para todos los ids del tick</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">authors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">authorService</span><span class="p">.</span><span class="nx">findByIds</span><span class="p">([...</span><span class="nx">ids</span><span class="p">]);</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">byId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Map</span><span class="p">(</span><span class="nx">authors</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">a</span><span class="p">]));</span>
+
+<span class="w">      </span><span class="c1">// CRÍTICO: devolver en el MISMO orden y largo que `ids`</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">ids</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">id</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">byId</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="sb">`Author </span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb"> no existe`</span><span class="p">));</span>
+<span class="w">    </span><span class="p">})</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// el resolver no cambia de forma, cambia de quién pide</span>
+<span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">book</span><span class="p">,</span><span class="w"> </span><span class="nx">_args</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">loaders</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">loaders</span><span class="p">.</span><span class="nx">authorById</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="nx">book</span><span class="p">.</span><span class="nx">authorId</span><span class="p">)</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Resultado: 2 consultas en lugar de 51.
+    </strong>
+    Y el resolver quedó igual de simple.
+   </p>
+   <p>
+    <strong>
+     Las dos reglas que no se pueden saltear.
+    </strong>
+    Estas dos van al pizarrón porque son dos
+bugs silenciosos:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Los loaders se crean por request
+     </strong>
+     , en el
+     <code>
+      context
+     </code>
+     . Un loader global cachearía
+   datos entre usuarios distintos: es un bug de corrección
+     <strong>
+      y
+     </strong>
+     una filtración de
+   datos.
+    </li>
+    <li>
+     <strong>
+      La función de batch devuelve el mismo largo y el mismo orden que los ids.
+     </strong>
+     DataLoader hace la correspondencia
+     <strong>
+      por posición
+     </strong>
+     . Si filtran los no encontrados,
+   los autores quedan asignados al libro equivocado, en silencio, sin ningún error.
+    </li>
+   </ol>
+   <p>
+    La segunda es de las que cuesta medio día encontrar. Por eso se devuelve un
+    <code>
+     Error
+    </code>
+    en
+la posición del que falta, nunca se acorta el array.
+   </p>
+   <h3 id="72-el-cliente-decide-el-costo-de-la-query">
+    7.2 El cliente decide el costo de la query
+   </h3>
+   <p>
+    Y queda un agujero. Un cliente puede escribir esto:
+   </p>
+   <div class="highlight language-graphql">
+    <pre><span></span><span class="p">{</span><span class="w"> </span><span class="n">books</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">items</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">author</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">books</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">items</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">author</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">books</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span><span class="w"> </span><span class="err">}</span>
+</pre>
+   </div>
+   <p>
+    <em>
+     Pregunta: ¿qué hace el servidor con eso?
+    </em>
+   </p>
+   <p>
+    Una sola request que genera millones de consultas. En REST esto
+    <strong>
+     no existe
+    </strong>
+    : cada
+endpoint tiene un costo acotado por quien lo escribió. En GraphQL el costo lo decide el
+cliente, así que hay que ponerle techo:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">createYoga</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">schema</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nx">maxDepthPlugin</span><span class="p">({</span><span class="w"> </span><span class="nx">n</span><span class="o">:</span><span class="w"> </span><span class="kt">7</span><span class="w"> </span><span class="p">}),</span>
+<span class="w">    </span><span class="nx">costLimitPlugin</span><span class="p">({</span><span class="w"> </span><span class="nx">maxCost</span><span class="o">:</span><span class="w"> </span><span class="kt">5000</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Y en producción,
+    <strong>
+     apagar la introspección
+    </strong>
+    : si no, cualquiera se descarga el esquema
+completo. (
+    <code>
+     graphiql: false
+    </code>
+    ya lo deshabilita en Yoga, pero verificalo explícitamente.)
+   </p>
+   <p>
+    <strong>
+     La frase del pizarrón:
+    </strong>
+   </p>
+   <blockquote>
+    <p>
+     Un endpoint GraphQL público sin límite de profundidad, límite de costo y rate limiting
+es un DoS esperando a que alguien lo descubra.
+    </p>
+   </blockquote>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-la-comparacion-honesta">
+    8. La comparación honesta
+   </h2>
+   <p>
+    Recién ahora, con los dos modelos completos, se puede comparar.
+    <strong>
+     En pantalla
+    </strong>
+    , y se
+lee de corrido:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Dimensión
+      </th>
+      <th>
+       REST
+      </th>
+      <th>
+       GraphQL
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Endpoints
+      </td>
+      <td>
+       muchos, uno por recurso
+      </td>
+      <td>
+       uno (
+       <code>
+        /graphql
+       </code>
+       )
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Forma de la respuesta
+      </td>
+      <td>
+       la decide el servidor
+      </td>
+      <td>
+       la decide el cliente
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Over/under-fetching
+      </td>
+      <td>
+       hay que mitigarlo a mano
+      </td>
+      <td>
+       resuelto por diseño
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Caché HTTP (navegador, CDN, proxy)
+      </td>
+      <td>
+       ✅ gratis, por URL +
+       <code>
+        ETag
+       </code>
+      </td>
+      <td>
+       ❌
+       <code>
+        POST
+       </code>
+       no se cachea
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Status codes
+      </td>
+      <td>
+       semánticos y útiles
+      </td>
+      <td>
+       siempre
+       <code>
+        200
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Tipado del contrato
+      </td>
+      <td>
+       con OpenAPI (opcional)
+      </td>
+      <td>
+       obligatorio, es el esquema
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Costo de una request
+      </td>
+      <td>
+       acotado por el endpoint
+      </td>
+      <td>
+       <strong>
+        lo decide el cliente
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Subida de archivos
+      </td>
+      <td>
+       natural (
+       <code>
+        multipart
+       </code>
+       )
+      </td>
+      <td>
+       incómoda, requiere spec aparte
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Observabilidad
+      </td>
+      <td>
+       por URL y status, directa
+      </td>
+      <td>
+       requiere instrumentar resolvers
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Versionado
+      </td>
+      <td>
+       por URL (
+       <code>
+        /v1
+       </code>
+       ,
+       <code>
+        /v2
+       </code>
+       )
+      </td>
+      <td>
+       evolución continua con
+       <code>
+        @deprecated
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    La fila de la caché es la que más subestiman. Perder la caché HTTP gratis —la del
+navegador, la del CDN, la del proxy— no es un detalle: es reemplazarla por una caché de
+aplicación que hay que construir y mantener.
+   </p>
+   <h3 id="81-evolucion-sin-versiones">
+    8.1 Evolución sin versiones
+   </h3>
+   <div class="highlight language-graphql">
+    <pre><span></span><span class="k">type</span><span class="w"> </span><span class="err">Book</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nl">title</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="err">!</span>
+<span class="w">  </span><span class="nl">year</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="err">!</span><span class="w"> </span><span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span><span class="w"> </span><span class="s">"Usar publishedAt. Se elimina en 2026-08."</span><span class="p">)</span>
+<span class="w">  </span><span class="nl">publishedAt</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="err">!</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <p>
+    GraphQL propone no versionar: agregar campos nuevos no rompe a nadie, porque los
+clientes piden explícitamente lo que quieren. Y con métricas de uso
+    <strong>
+     por campo
+    </strong>
+    se
+sabe cuándo nadie pide más
+    <code>
+     year
+    </code>
+    .
+   </p>
+   <p>
+    <em>
+     Pregunta: ¿por qué en REST no podemos hacer esto?
+    </em>
+   </p>
+   <p>
+    Porque en REST el servidor no sabe qué campos usó cada cliente: manda el objeto entero
+siempre. Es una versión más fina y más medible del
+    <code>
+     Deprecation
+    </code>
+    /
+    <code>
+     Sunset
+    </code>
+    que vimos, y
+funciona por una propiedad que REST no tiene.
+   </p>
+   <h3 id="82-cuando-elegir-cada-uno">
+    8.2 Cuándo elegir cada uno
+   </h3>
+   <p>
+    <strong>
+     REST cuando:
+    </strong>
+    la API es pública o la consume gente que no controlás; la caché HTTP
+importa; hay archivos, streaming o descargas; el equipo es chico y el dominio simple
+—un CRUD con GraphQL es más infraestructura para el mismo resultado.
+   </p>
+   <p>
+    <strong>
+     GraphQL cuando:
+    </strong>
+    hay varios clientes con necesidades distintas sobre el mismo
+dominio; el grafo de relaciones es profundo y el front arma vistas muy compuestas; el
+front itera rápido y pedir un endpoint nuevo por cada pantalla es el cuello de botella;
+mobile con conexiones malas.
+   </p>
+   <p>
+    <strong>
+     Y la opción que nadie menciona en los tutoriales:
+    </strong>
+    se pueden usar los dos, como
+hicimos hoy. Un GraphQL interno para tus propios front-ends y una API REST versionada
+para integraciones de terceros es una arquitectura común y perfectamente sana.
+   </p>
+   <blockquote>
+    <p>
+     <strong>
+      El error a evitar:
+     </strong>
+     adoptar GraphQL porque "es más moderno". No lo es, es
+     <em>
+      distinto
+     </em>
+     . Si el problema no es ninguno de esos cuatro, GraphQL agrega esquema,
+resolvers, loaders, límites de profundidad y una caché propia para resolver un
+problema que no tenías.
+    </p>
+   </blockquote>
+   <p>
+    Esta es la parte que les va a servir en una entrevista de trabajo, y la que quiero que
+recuerden: la respuesta correcta a "¿REST o GraphQL?" nunca es una de las dos sola, es
+"¿cuántos clientes distintos tenés y cuánto te importa la caché?".
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-testear-graphql">
+    9. Testear GraphQL
+   </h2>
+   <p>
+    El transporte sigue siendo HTTP, así que Supertest funciona igual que siempre:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">gql</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">app</span><span class="p">,</span><span class="w"> </span><span class="nx">query</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">variables?</span><span class="o">:</span><span class="w"> </span><span class="kt">object</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/graphql'</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'content-type'</span><span class="p">,</span><span class="w"> </span><span class="s1">'application/json'</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="w"> </span><span class="nx">query</span><span class="p">,</span><span class="w"> </span><span class="nx">variables</span><span class="w"> </span><span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    Y el test que importa:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">it</span><span class="p">(</span><span class="s1">'devuelve NOT_FOUND con código, no un 404'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">gql</span><span class="p">(</span><span class="nx">app</span><span class="p">(),</span><span class="w"> </span><span class="sb">`{ book(id: "no-existe") { title } }`</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span><span class="w">                       </span><span class="c1">// ← siempre 200</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">book</span><span class="p">).</span><span class="nx">toBeNull</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">errors</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">extensions</span><span class="p">.</span><span class="nx">code</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="s1">'NOT_FOUND'</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    Señalar ese
+    <code>
+     expect(res.status).toBe(200)
+    </code>
+    <strong>
+     dentro de un test de error
+    </strong>
+    . Parece un
+error del test. Es la diferencia de modelo escrita de forma explícita, para que nadie la
+"arregle" a
+    <code>
+     404
+    </code>
+    dentro de seis meses.
+   </p>
+   <p>
+    Y el que protege el esquema, que es el
+    <code>
+     openapi:check
+    </code>
+    de esta clase:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npx<span class="w"> </span>graphql-inspector<span class="w"> </span>diff<span class="w"> </span>schema-base.graphql<span class="w"> </span>src/graphql/schema.graphql
+</pre>
+   </div>
+   <p>
+    Falla en CI ante cualquier cambio
+    <em>
+     breaking
+    </em>
+    del esquema: quitar un campo, volver
+nullable algo que no lo era. Mismo patrón que la clase pasada, otra herramienta.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-cierre-de-la-unidad">
+    10. Cierre de la unidad
+   </h2>
+   <p>
+    Las tres clases, en una línea cada una:
+   </p>
+   <blockquote>
+    <p>
+     <strong>
+      Diseño REST
+     </strong>
+     — la API tiene un contrato: recursos, métodos con semántica, errores
+uniformes, colecciones navegables.
+     <strong>
+      OpenAPI
+     </strong>
+     — ese contrato está escrito en un archivo que se genera del código y que
+CI no deja mentir.
+     <strong>
+      GraphQL
+     </strong>
+     — el mismo dominio, expuesto con otro modelo, donde la forma de la
+respuesta la decide el cliente y el costo también.
+    </p>
+   </blockquote>
+   <p>
+    Y lo que quiero que quede del conjunto, más que cualquier herramienta:
+   </p>
+   <blockquote>
+    <p>
+     El
+     <code>
+      BookService
+     </code>
+     no cambió en ninguna de las tres clases. Cambiaron las capas de
+arriba. Eso es lo que hace que una API sobreviva a sus propias decisiones de
+transporte.
+    </p>
+   </blockquote>
+   <p>
+    En la unidad que viene, ese servicio deja de guardar libros en un array y empieza a
+hablar con una base de datos. Las dos interfaces van a seguir funcionando sin que
+toquemos ni el router ni los resolvers. Si eso pasa, la arquitectura estaba bien.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-comandos-de-la-demo">
+    11. Comandos de la demo
+   </h2>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Instalar</span>
+npm<span class="w"> </span>i<span class="w"> </span>graphql<span class="w"> </span>graphql-yoga<span class="w"> </span>dataloader
+npm<span class="w"> </span>i<span class="w"> </span>@escape.tech/graphql-armor-max-depth<span class="w"> </span>@escape.tech/graphql-armor-cost-limit
+
+<span class="c1"># Levantar: GraphiQL en el browser</span>
+npm<span class="w"> </span>run<span class="w"> </span>dev
+<span class="c1">#   → http://localhost:3000/graphql</span>
+
+<span class="c1"># La misma query, dos formas distintas (quitar campos y ver la respuesta cambiar)</span>
+curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/graphql<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"query":"{ books(pageSize: 3) { items { title } } }"}'</span>
+
+curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/graphql<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"query":"{ books(pageSize: 3, sort: DESC_YEAR) { items { title year } pageInfo { total } } }"}'</span>
+
+<span class="c1"># Un error: 200 OK con errors[] adentro. Mirar el -i.</span>
+curl<span class="w"> </span>-si<span class="w"> </span>localhost:3000/graphql<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"query":"{ book(id: \"no-existe\") { title } }"}'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+
+<span class="c1"># REST y GraphQL sobre el mismo servicio, en el mismo proceso</span>
+curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/v1/books<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'.meta'</span>
+
+<span class="c1"># El N+1: con los logs de consultas encendidos, contar las líneas</span>
+curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/graphql<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"query":"{ books(pageSize: 50) { items { title author { name } } } }"}'</span><span class="w"> </span>&gt;<span class="w"> </span>/dev/null
+<span class="c1">#   antes de DataLoader: 51 consultas | después: 2</span>
+
+<span class="c1"># El límite de profundidad rechazando la query maliciosa</span>
+curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/graphql<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"query":"{ books { items { author { books { items { author { books { items { title } } } } } } } } }"}'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'.errors[0].message'</span>
+
+<span class="c1"># Tests</span>
+npx<span class="w"> </span>vitest<span class="w"> </span>run<span class="w"> </span>tests/integration/graphql.books.test.ts
+
+<span class="c1"># El guardián del esquema</span>
+npx<span class="w"> </span>graphql-inspector<span class="w"> </span>diff<span class="w"> </span>schema-base.graphql<span class="w"> </span>src/graphql/schema.graphql
+</pre>
+    </div>
+   </div>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,6158 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   redes
+  </title>
+ </head>
+ <body>
+  <h1 id="apunte-de-redes-de-computadoras">
+   Apunte de Redes de Computadoras
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-introduccion-a-las-redes-de-computadoras">
+      1. Introducción a las Redes de Computadoras
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-topologias-y-arquitecturas-de-red">
+      2. Topologías y Arquitecturas de Red
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#23-representacion-de-redes-diagramas-basicos">
+      2.3 Representación de Redes (Diagramas Básicos)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-infraestructura-de-hardware-de-red">
+      3. Infraestructura de Hardware de Red
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-protocolos-de-red">
+      4. Protocolos de Red
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-modelo-tcpip">
+      5. Modelo TCP/IP
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-capa-de-acceso-a-red-link-layer">
+      6. Capa de Acceso a Red (Link Layer)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-capa-de-internet-network-layer">
+      7. Capa de Internet (Network Layer)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-capa-de-transporte-transport-layer">
+      8. Capa de Transporte (Transport Layer)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-capa-de-aplicacion">
+      9. Capa de Aplicación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-redes-wifi-wlan">
+      10. Redes WiFi (WLAN)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#11-nat-y-resolucion-de-nombres">
+      11. NAT y Resolución de Nombres
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#12-diagnostico-y-herramientas-de-red">
+      12. Diagnóstico y Herramientas de Red
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#13-redes-con-docker">
+      13. Redes con Docker
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#14-mini-practica-con-python-sockets">
+      14. Mini Práctica con Python (Sockets)
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="1-introduccion-a-las-redes-de-computadoras">
+    1. Introducción a las Redes de Computadoras
+   </h2>
+   <p>
+    Una
+    <strong>
+     red de computadoras
+    </strong>
+    es un conjunto de dispositivos conectados entre sí que pueden
+    <strong>
+     compartir información y recursos
+    </strong>
+    . Estas conexiones pueden hacerse mediante
+    <strong>
+     cables
+    </strong>
+    (redes cableadas) o
+    <strong>
+     ondas de radio
+    </strong>
+    (redes inalámbricas).
+   </p>
+   <p>
+    En la vida cotidiana usamos redes constantemente: cuando enviamos un mensaje por WhatsApp, vemos un video en YouTube o accedemos a una base de datos en la nube. Todo eso es posible gracias a redes y protocolos de comunicación.
+   </p>
+   <h3 id="11-por-que-existen-las-redes">
+    1.1 ¿Por qué existen las redes?
+   </h3>
+   <p>
+    Las redes existen principalmente para:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Compartir información
+     </strong>
+     : archivos, bases de datos, páginas web.
+    </li>
+    <li>
+     <strong>
+      Compartir recursos
+     </strong>
+     : impresoras, servidores, almacenamiento.
+    </li>
+    <li>
+     <strong>
+      Comunicarse
+     </strong>
+     : email, videollamadas, mensajería.
+    </li>
+    <li>
+     <strong>
+      Centralizar servicios
+     </strong>
+     : autenticación de usuarios, copias de seguridad, monitoreo.
+    </li>
+    <li>
+     <strong>
+      Interconectar sistemas
+     </strong>
+     : microservicios, APIs, IoT.
+    </li>
+   </ul>
+   <h3 id="12-conceptos-basicos">
+    1.2 Conceptos básicos
+   </h3>
+   <p>
+    Antes de avanzar, es importante conocer algunos términos que usaremos a lo largo del apunte:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Término
+      </th>
+      <th>
+       Definición
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Host
+       </strong>
+      </td>
+      <td>
+       Un dispositivo conectado a la red (PC, servidor, celular)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Nodo
+       </strong>
+      </td>
+      <td>
+       Punto de conexión dentro de la red (puede ser host o dispositivo de red)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Enlace
+       </strong>
+      </td>
+      <td>
+       Medio físico o lógico que conecta dos nodos
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Paquete
+       </strong>
+      </td>
+      <td>
+       Unidad de datos enviada en una red
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Puerto
+       </strong>
+      </td>
+      <td>
+       Número lógico que identifica servicios dentro de un dispositivo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Protocolo
+       </strong>
+      </td>
+      <td>
+       Conjunto de reglas para la comunicación entre dispositivos
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="13-tipos-de-redes-segun-alcance">
+    1.3 Tipos de redes según alcance
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Características
+      </th>
+      <th>
+       Ejemplo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        LAN
+       </strong>
+       (
+       <em>
+        Local Area Network
+       </em>
+       )
+      </td>
+      <td>
+       Red local, pequeña área
+      </td>
+      <td>
+       Oficina, casa
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        MAN
+       </strong>
+       (
+       <em>
+        Metropolitan Area Network
+       </em>
+       )
+      </td>
+      <td>
+       Red de alcance urbano
+      </td>
+      <td>
+       Red municipal
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        WAN
+       </strong>
+       (
+       <em>
+        Wide Area Network
+       </em>
+       )
+      </td>
+      <td>
+       Cobertura geográfica amplia
+      </td>
+      <td>
+       Internet
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <blockquote>
+    <p>
+     💡
+     <strong>
+      Internet es una WAN mundial
+     </strong>
+     , una red que conecta miles de redes.
+    </p>
+   </blockquote>
+   <h3 id="14-redes-cableadas-vs-inalambricas">
+    1.4 Redes cableadas vs inalámbricas
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Característica
+      </th>
+      <th>
+       Cableada (Ethernet)
+      </th>
+      <th>
+       Inalámbrica (WiFi)
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Velocidad
+      </td>
+      <td>
+       Alta y estable
+      </td>
+      <td>
+       Variable
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Estabilidad
+      </td>
+      <td>
+       Muy estable
+      </td>
+      <td>
+       Afectada por interferencias
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Seguridad
+      </td>
+      <td>
+       Alta
+      </td>
+      <td>
+       Menor (requiere cifrado WPA2/WPA3)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Movilidad
+      </td>
+      <td>
+       Baja
+      </td>
+      <td>
+       Alta
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Latencia
+      </td>
+      <td>
+       Baja
+      </td>
+      <td>
+       Media/alta
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="15-internet-intranet-y-extranet">
+    1.5 Internet, Intranet y Extranet
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Descripción
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Internet
+       </strong>
+      </td>
+      <td>
+       Red pública mundial
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Intranet
+       </strong>
+      </td>
+      <td>
+       Red privada de una organización
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Extranet
+       </strong>
+      </td>
+      <td>
+       Parte de la intranet compartida con terceros
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="16-representacion-de-una-red-simple-diagrama-ascii">
+    1.6 Representación de una red simple (diagrama ASCII)
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>                   ┌───────────────┐
+                   │   Internet    │
+                   └───────┬───────┘
+                           │
+                      ┌────┴─────┐
+                      │  Router  │
+                      └────┬─────┘
+           ┌───────────────┼─────────────┐
+     ┌─────┴────────┐┌─────┴─────┐┌──────┴─────┐
+     │ PC Escritorio││ Notebook  ││ Smartphone │
+     └──────────────┘└───────────┘└────────────┘
+</pre>
+    </div>
+   </div>
+   <h3 id="resumen-del-tema">
+    ✅ Resumen del tema
+   </h3>
+   <ul>
+    <li>
+     <p>
+      Una red conecta dispositivos.
+     </p>
+    </li>
+    <li>
+     <p>
+      Se usan para comunicar, compartir y trabajar colaborativamente.
+     </p>
+    </li>
+    <li>
+     <p>
+      Los conceptos clave iniciales son: host, nodo, enlace, paquetes y protocolos.
+     </p>
+    </li>
+    <li>
+     <p>
+      LAN = red local; WAN = red amplia como Internet.
+     </p>
+    </li>
+    <li>
+     <p>
+      WiFi es una forma de red inalámbrica dentro de una LAN.
+     </p>
+    </li>
+   </ul>
+   <h3 id="actividad-rapida">
+    🔧 Actividad rápida
+   </h3>
+   <p>
+    ¿Qué redes usás en tu vida diaria?
+   </p>
+   <p>
+    ¿Qué dispositivos en tu casa tienen acceso a Internet?
+   </p>
+   <p>
+    ¿Todos los dispositivos están conectados por cable?
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-topologias-y-arquitecturas-de-red">
+    2. Topologías y Arquitecturas de Red
+   </h2>
+   <p>
+    Las topologías describen cómo se conectan físicamente los dispositivos de una red.
+   </p>
+   <h3 id="21-topologias-fisicas">
+    2.1 Topologías físicas
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Topología
+      </th>
+      <th>
+       Diagrama
+      </th>
+      <th>
+       Ventajas
+      </th>
+      <th>
+       Desventajas
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Bus
+       </strong>
+      </td>
+      <td>
+       A ─ B ─ C ─ D
+      </td>
+      <td>
+       Simple y barata
+      </td>
+      <td>
+       Un corte afecta a todos
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Anillo
+       </strong>
+      </td>
+      <td>
+       A ○ B ○ C ○ D
+      </td>
+      <td>
+       Ordenada
+      </td>
+      <td>
+       Si se corta, se pierde comunicación
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Estrella
+       </strong>
+      </td>
+      <td>
+       central ─ A, B, C
+      </td>
+      <td>
+       Fácil de mantener
+      </td>
+      <td>
+       Depende del nodo central
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Malla
+       </strong>
+      </td>
+      <td>
+       Todos conectados entre sí
+      </td>
+      <td>
+       Alta disponibilidad
+      </td>
+      <td>
+       Costosa
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="22-arquitectura-cliente-servidor-y-peer-to-peer-p2p">
+    2.2 Arquitectura Cliente-Servidor y Peer-to-Peer (P2P)
+   </h3>
+   <p>
+    En una red, los dispositivos pueden organizarse de diferentes maneras según cómo comparten información o servicios.
+   </p>
+   <h4 id="cliente-servidor">
+    ✅ Cliente-Servidor
+   </h4>
+   <p>
+    En este modelo, uno o más equipos actúan como
+    <strong>
+     servidores
+    </strong>
+    , ofreciendo servicios a otros equipos llamados
+    <strong>
+     clientes
+    </strong>
+    .
+   </p>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>        ┌─────────────┐
+        │   Cliente   │───┐
+        └─────────────┘   │
+                          │   Solicita servicio (ej: página web)
+        ┌─────────────┐   ▼
+        │  Servidor   │
+        └─────────────┘   ▲
+                          │   Respuesta
+        ┌─────────────┐   │
+        │   Cliente   │───┘
+        └─────────────┘
+</pre>
+    </div>
+   </div>
+   <p>
+    ✔ Ventajas:
+   </p>
+   <ul>
+    <li>
+     Control centralizado
+    </li>
+    <li>
+     Mejora la administración de datos
+    </li>
+    <li>
+     Mejor seguridad
+    </li>
+   </ul>
+   <p>
+    ✘ Desventajas:
+   </p>
+   <ul>
+    <li>
+     Depende del servidor
+    </li>
+    <li>
+     Puede requerir hardware poderoso
+    </li>
+   </ul>
+   <p>
+    Ejemplos: páginas web (HTTP), servicios de base de datos (MySQL), correo electrónico.
+   </p>
+   <h3 id="peer-to-peer-p2p">
+    ✅ Peer-to-Peer (P2P)
+   </h3>
+   <p>
+    En este modelo
+    <strong>
+     todos los equipos son iguales
+    </strong>
+    y comparten recursos entre sí sin servidores centrales.
+   </p>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>   ┌─────────┐        ┌─────────┐
+   │  Nodo A │────────│  Nodo B │
+   └─────────┘        └─────────┘
+        │                 │
+        └───────┬─────────┘
+                │
+           ┌─────────┐
+           │  Nodo C │
+           └─────────┘
+</pre>
+    </div>
+   </div>
+   <p>
+    ✔ Ventajas:
+   </p>
+   <ul>
+    <li>
+     Fácil de implementar
+    </li>
+    <li>
+     No requiere servidor
+    </li>
+    <li>
+     Ideal para redes pequeñas
+    </li>
+   </ul>
+   <p>
+    ✘ Desventajas:
+   </p>
+   <ul>
+    <li>
+     Difícil de administrar
+    </li>
+    <li>
+     Seguridad débil
+    </li>
+    <li>
+     No escala bien
+    </li>
+   </ul>
+   <p>
+    Ejemplos: Torrent (BitTorrent), redes locales simples.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="23-representacion-de-redes-diagramas-basicos">
+    2.3 Representación de Redes (Diagramas Básicos)
+   </h2>
+   <p>
+    Las redes se representan visualmente con
+    <strong>
+     diagramas
+    </strong>
+    que muestran dispositivos y conexiones. Estos diagramas utilizan
+    <strong>
+     símbolos comunes
+    </strong>
+    como:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Símbolo
+      </th>
+      <th>
+       Representa
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       🖥️
+      </td>
+      <td>
+       PC o estación de trabajo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       📱
+      </td>
+      <td>
+       Dispositivo móvil
+      </td>
+     </tr>
+     <tr>
+      <td>
+       🌐
+      </td>
+      <td>
+       Internet
+      </td>
+     </tr>
+     <tr>
+      <td>
+       📶
+      </td>
+      <td>
+       WiFi
+      </td>
+     </tr>
+     <tr>
+      <td>
+       🔌
+      </td>
+      <td>
+       Switch
+      </td>
+     </tr>
+     <tr>
+      <td>
+       📡
+      </td>
+      <td>
+       Router
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="ejemplo-de-diagrama-de-red-domestica">
+    Ejemplo de diagrama de red doméstica:
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>                      🌐 Internet
+                           │
+                     📡 Router WiFi
+                   ┌───────┴─────────┐
+                   │                 │
+               🖥️ PC           📱 Smartphone
+                   │
+               🔌 Switch
+             ┌─────┴───────┐
+             │             │
+           🖨️ Impresora   💾 NAS
+</pre>
+    </div>
+   </div>
+   <h3 id="resumen-del-tema-2">
+    ✅ Resumen del Tema 2
+   </h3>
+   <ul>
+    <li>
+     Las topologías definen cómo se conectan los dispositivos.
+    </li>
+    <li>
+     Arquitectura Cliente-Servidor es la más usada en empresas.
+    </li>
+    <li>
+     P2P se usa en redes simples y sistemas distribuidos.
+    </li>
+    <li>
+     Los diagramas de red ayudan a planificar y entender sistemas.
+    </li>
+   </ul>
+   <h3 id="actividad-practica">
+    🔧 Actividad práctica
+   </h3>
+   <ol>
+    <li>
+     Dibujá el diagrama de red de tu casa o lugar de estudio.
+    </li>
+    <li>
+     ¿Qué arquitectura usa WhatsApp? ¿Y Google Drive?
+    </li>
+    <li>
+     ¿Por qué la topología estrella es la más usada hoy?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-infraestructura-de-hardware-de-red">
+    3. Infraestructura de Hardware de Red
+   </h2>
+   <p>
+    Para que una red funcione no alcanza con cables o WiFi: necesitamos
+    <strong>
+     dispositivos de red
+    </strong>
+    que permitan enviar datos, reenviarlos y dirigirlos correctamente. En esta sección vamos a conocer los equipos más importantes de cualquier red moderna.
+   </p>
+   <h3 id="31-tarjeta-de-red-nic">
+    3.1 Tarjeta de Red (NIC)
+   </h3>
+   <p>
+    La
+    <strong>
+     NIC
+    </strong>
+    (
+    <em>
+     Network Interface Card
+    </em>
+    ) es el componente que permite que un dispositivo se conecte a una red.
+   </p>
+   <ul>
+    <li>
+     Puede ser
+     <strong>
+      Ethernet
+     </strong>
+     (cableada) o
+     <strong>
+      WiFi
+     </strong>
+     (inalámbrica).
+    </li>
+    <li>
+     Cada NIC tiene una dirección única llamada
+     <strong>
+      MAC
+     </strong>
+     .
+    </li>
+    <li>
+     Hoy vienen integradas en la mayoría de las placas madre.
+    </li>
+   </ul>
+   <div class="highlight language-text">
+    <pre><span></span>Ejemplo de MAC: 00:1A:92:AF:23:8B
+</pre>
+   </div>
+   <h3 id="32-hub-switch-y-router-cual-es-la-diferencia">
+    3.2 Hub, Switch y Router — ¿Cuál es la diferencia?
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Dispositivo
+      </th>
+      <th>
+       Capa
+      </th>
+      <th>
+       Función
+      </th>
+      <th>
+       Inteligencia
+      </th>
+      <th>
+       ¿Se usa hoy?
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Hub
+       </strong>
+      </td>
+      <td>
+       Física (OSI 1)
+      </td>
+      <td>
+       Repite señales a todos
+      </td>
+      <td>
+       ❌ No distingue equipos
+      </td>
+      <td>
+       Casi obsoleto
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Switch
+       </strong>
+      </td>
+      <td>
+       Enlace (OSI 2)
+      </td>
+      <td>
+       Reenvía datos dentro de la LAN usando MAC
+      </td>
+      <td>
+       ✅ Media
+      </td>
+      <td>
+       ✅ Muy usado
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Router
+       </strong>
+      </td>
+      <td>
+       Red (OSI 3)
+      </td>
+      <td>
+       Conecta redes diferentes e Internet
+      </td>
+      <td>
+       ✅✅ Alta
+      </td>
+      <td>
+       ✅ Imprescindible
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="que-hace-un-switch">
+    ¿Qué hace un Switch?
+   </h4>
+   <p>
+    El switch
+    <strong>
+     recibe tramas Ethernet
+    </strong>
+    y las envía solo al dispositivo correcto dentro de una red local (LAN), usando una tabla interna.
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>PC A ──┐
+       │       ┌─────────┐
+PC B ──┼─────▶│  Switch  │───────▶ Impresora
+       │       └─────────┘
+PC C ──┘
+</pre>
+   </div>
+   <h4 id="que-hace-un-router">
+    ¿Qué hace un Router?
+   </h4>
+   <p>
+    El router permite
+    <strong>
+     salir de la red local
+    </strong>
+    hacia otras redes o Internet, usando
+    <strong>
+     direcciones IP
+    </strong>
+    .
+   </p>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>          LAN                  WAN
+┌───────────────┐          ┌───────────────┐
+│  Red Hogar    │--------&gt; │    Internet   │
+└───────────────┘          └───────────────┘
+         ▲
+         │
+    ┌─────────┐
+    │ Router  │
+    └─────────┘
+</pre>
+    </div>
+   </div>
+   <h3 id="33-modem">
+    3.3 Módem
+   </h3>
+   <p>
+    El módem es el dispositivo que convierte la señal de tu proveedor de Internet (ISP) para que pueda ser entendida por el router.
+   </p>
+   <ul>
+    <li>
+     Si el servicio es
+     <strong>
+      ADSL
+     </strong>
+     , usa línea telefónica.
+    </li>
+    <li>
+     Si es
+     <strong>
+      cable
+     </strong>
+     , usa coaxial.
+    </li>
+    <li>
+     Si es
+     <strong>
+      fibra óptica
+     </strong>
+     , puede venir con ONT (Terminal Óptica).
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     Hoy muchos equipos hogareños son
+     <strong>
+      Módem + Router + WiFi en uno solo
+     </strong>
+     (los que entrega el ISP).
+    </p>
+   </blockquote>
+   <h3 id="34-access-point-ap">
+    3.4 Access Point (AP)
+   </h3>
+   <p>
+    Un
+    <strong>
+     Punto de Acceso
+    </strong>
+    permite conectar dispositivos
+    <strong>
+     por WiFi
+    </strong>
+    dentro de una red local.
+   </p>
+   <ul>
+    <li>
+     Se usa mucho en oficinas y escuelas para ampliar la cobertura.
+    </li>
+    <li>
+     No enruta tráfico; solo conecta de forma inalámbrica.
+    </li>
+   </ul>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>  ┌─────────┐
+  │ Switch  │──────┐
+  └─────────┘      │
+                   ▼
+             📶 Access Point
+                   │
+     ┌─────────────┴─────────────┐
+     📱 Smartphone      💻 Notebook
+</pre>
+    </div>
+   </div>
+   <h3 id="35-firewall">
+    3.5 Firewall
+   </h3>
+   <p>
+    Un
+    <strong>
+     firewall
+    </strong>
+    controla qué tráfico entra o sale de una red.
+   </p>
+   <p>
+    Tipos:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Hardware
+     </strong>
+     (generalmente en empresas)
+    </li>
+    <li>
+     <strong>
+      Software
+     </strong>
+     (firewall de Linux, Windows Defender, UFW)
+    </li>
+   </ul>
+   <p>
+    Funciones:
+   </p>
+   <ul>
+    <li>
+     Filtrar puertos
+    </li>
+    <li>
+     Bloquear IPs maliciosas
+    </li>
+    <li>
+     Evitar accesos no autorizados
+    </li>
+   </ul>
+   <h3 id="36-tabla-comparativa-rapida">
+    3.6 Tabla comparativa rápida
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Equipo
+      </th>
+      <th>
+       Función principal
+      </th>
+      <th>
+       ¿Trabaja con IP?
+      </th>
+      <th>
+       ¿Trabaja con MAC?
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       NIC
+      </td>
+      <td>
+       Conectar a red
+      </td>
+      <td>
+       ❌
+      </td>
+      <td>
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Hub
+      </td>
+      <td>
+       Repetir señal
+      </td>
+      <td>
+       ❌
+      </td>
+      <td>
+       ❌
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Switch
+      </td>
+      <td>
+       Conmutar dentro de LAN
+      </td>
+      <td>
+       ❌
+      </td>
+      <td>
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Router
+      </td>
+      <td>
+       Enrutar entre redes
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       AP
+      </td>
+      <td>
+       Conexión WiFi
+      </td>
+      <td>
+       ❌
+      </td>
+      <td>
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Firewall
+      </td>
+      <td>
+       Seguridad
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       ✅
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="resumen-del-tema-3">
+    ✅ Resumen del Tema 3
+   </h4>
+   <ul>
+    <li>
+     Los switches conectan dispositivos dentro de una LAN.
+    </li>
+    <li>
+     Los routers conectan redes entre sí (por ejemplo, LAN con Internet).
+    </li>
+    <li>
+     El firewall protege el tráfico.
+    </li>
+    <li>
+     El Access Point conecta por WiFi.
+    </li>
+   </ul>
+   <h4 id="ejercicio-rapido">
+    🔧 Ejercicio rápido
+   </h4>
+   <ol>
+    <li>
+     ¿Qué dispositivo permite salir a Internet?
+    </li>
+    <li>
+     ¿Cuál es la diferencia entre switch y router?
+    </li>
+    <li>
+     ¿Podés tener WiFi sin un Access Point?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-protocolos-de-red">
+    4. Protocolos de Red
+   </h2>
+   <p>
+    En una red, los dispositivos deben “ponerse de acuerdo” para comunicarse. Ese acuerdo se define mediante
+    <strong>
+     protocolos
+    </strong>
+    .
+   </p>
+   <p>
+    Un
+    <strong>
+     protocolo de red
+    </strong>
+    es un conjunto de
+    <strong>
+     reglas y formatos
+    </strong>
+    que permiten que dos dispositivos se entiendan al intercambiar datos, sin importar su sistema operativo o fabricante.
+   </p>
+   <h3 id="41-que-es-un-protocolo">
+    4.1 ¿Qué es un protocolo?
+   </h3>
+   <p>
+    Un protocolo define:
+   </p>
+   <ul>
+    <li>
+     Cómo se inicia una comunicación
+    </li>
+    <li>
+     Cómo se estructuran los datos
+    </li>
+    <li>
+     Qué hacer si hay errores
+    </li>
+    <li>
+     Cómo finaliza la comunicación
+    </li>
+   </ul>
+   <p>
+    Ejemplos de protocolos:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Protocolo
+      </th>
+      <th>
+       Función
+      </th>
+      <th>
+       Capa TCP/IP
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       HTTP
+      </td>
+      <td>
+       Navegación web
+      </td>
+      <td>
+       Aplicación
+      </td>
+     </tr>
+     <tr>
+      <td>
+       DNS
+      </td>
+      <td>
+       Resolución de nombres
+      </td>
+      <td>
+       Aplicación
+      </td>
+     </tr>
+     <tr>
+      <td>
+       SSH
+      </td>
+      <td>
+       Acceso remoto seguro
+      </td>
+      <td>
+       Aplicación
+      </td>
+     </tr>
+     <tr>
+      <td>
+       TCP
+      </td>
+      <td>
+       Comunicación confiable
+      </td>
+      <td>
+       Transporte
+      </td>
+     </tr>
+     <tr>
+      <td>
+       UDP
+      </td>
+      <td>
+       Comunicación rápida
+      </td>
+      <td>
+       Transporte
+      </td>
+     </tr>
+     <tr>
+      <td>
+       IP
+      </td>
+      <td>
+       Direccionamiento y entrega
+      </td>
+      <td>
+       Internet
+      </td>
+     </tr>
+     <tr>
+      <td>
+       ARP
+      </td>
+      <td>
+       Resolver IP → MAC
+      </td>
+      <td>
+       Acceso a red
+      </td>
+     </tr>
+     <tr>
+      <td>
+       ICMP
+      </td>
+      <td>
+       Diagnóstico de red
+      </td>
+      <td>
+       Internet
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="42-encapsulamiento-de-datos">
+    4.2 Encapsulamiento de Datos
+   </h3>
+   <p>
+    Cuando los datos viajan por una red,
+    <strong>
+     cada capa agrega información extra
+    </strong>
+    para poder enviarlos correctamente. Ese proceso se llama
+    <strong>
+     encapsulamiento
+    </strong>
+    .
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Aplicación
+      </th>
+      <th>
+       Datos
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Transporte
+      </td>
+      <td>
+       Segmento (TCP/UDP)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Internet
+      </td>
+      <td>
+       Paquete (IP)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Acceso a red
+      </td>
+      <td>
+       Trama (Ethernet)
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    📦
+    <strong>
+     Metáfora:
+    </strong>
+    Es como enviar un paquete por correo:
+primero lo envolvés (capa de datos), le agregás dirección (IP), luego etiqueta de envío (MAC), etc.
+   </p>
+   <h4 id="ejemplo-de-encapsulamiento-simplificado">
+    Ejemplo de encapsulamiento simplificado
+   </h4>
+   <h3 id="43-unidades-de-datos-por-capa">
+    4.3 Unidades de datos por capa
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Capa TCP/IP
+      </th>
+      <th>
+       Unidad de datos
+      </th>
+      <th>
+       Dirección
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Aplicación
+      </td>
+      <td>
+       Datos
+      </td>
+      <td>
+       N/A
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Transporte
+      </td>
+      <td>
+       Segmento
+      </td>
+      <td>
+       Puerto
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Internet
+      </td>
+      <td>
+       Paquete
+      </td>
+      <td>
+       IP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Acceso a red
+      </td>
+      <td>
+       Trama
+      </td>
+      <td>
+       MAC
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="44-estandares-en-redes">
+    4.4 Estándares en redes
+   </h3>
+   <p>
+    Internet funciona gracias a organismos que definen estándares:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Organización
+      </th>
+      <th>
+       Función
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        IETF
+       </strong>
+      </td>
+      <td>
+       Estándares de Internet (define TCP/IP)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        IEEE
+       </strong>
+      </td>
+      <td>
+       Protocolos como Ethernet y WiFi (802.x)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        ISO
+       </strong>
+      </td>
+      <td>
+       Modelo OSI y normativas
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        ICANN
+       </strong>
+      </td>
+      <td>
+       Administración de nombres de dominio
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="resumen-del-tema-4">
+    ✅ Resumen del Tema 4
+   </h4>
+   <ul>
+    <li>
+     Un protocolo es un conjunto de reglas para comunicarse.
+    </li>
+    <li>
+     Cada capa del modelo TCP/IP agrega encabezados →
+     <strong>
+      encapsulamiento
+     </strong>
+     .
+    </li>
+    <li>
+     Protocolos importantes: IP, TCP, UDP, ARP, DNS, HTTP, SSH.
+    </li>
+    <li>
+     IETF e IEEE son claves en el mundo de las redes.
+    </li>
+   </ul>
+   <h4 id="actividad">
+    🔧 Actividad
+   </h4>
+   <ol>
+    <li>
+     ¿Qué pasaría si no existieran protocolos?
+    </li>
+    <li>
+     ¿Por qué creés que existen distintos protocolos en vez de uno solo?
+    </li>
+    <li>
+     ¿Quién define cómo funciona TCP/IP?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-modelo-tcpip">
+    5. Modelo TCP/IP
+   </h2>
+   <p>
+    El modelo TCP/IP es la base de las comunicaciones en Internet. Define
+    <strong>
+     cómo deben transmitirse los datos
+    </strong>
+    entre computadoras. Está compuesto por
+    <strong>
+     4 capas
+    </strong>
+    , cada una con funciones específicas.
+   </p>
+   <h3 id="51-que-es-el-modelo-tcpip">
+    5.1 ¿Qué es el modelo TCP/IP?
+   </h3>
+   <p>
+    Es un conjunto de protocolos creados por el Departamento de Defensa de EE.UU. en los años 70 para permitir comunicaciones
+    <strong>
+     confiables
+    </strong>
+    entre redes distintas.
+    <br/>
+    Hoy es el
+    <strong>
+     modelo oficial de Internet
+    </strong>
+    .
+   </p>
+   <h3 id="52-capas-del-modelo-tcpip">
+    5.2 Capas del modelo TCP/IP
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Capa
+      </th>
+      <th>
+       Función principal
+      </th>
+      <th>
+       Ejemplos de protocolos
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Aplicación
+       </strong>
+      </td>
+      <td>
+       Interacción con el usuario
+      </td>
+      <td>
+       HTTP, DNS, SSH, FTP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Transporte
+       </strong>
+      </td>
+      <td>
+       Comunicación extremo a extremo
+      </td>
+      <td>
+       TCP, UDP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Internet
+       </strong>
+      </td>
+      <td>
+       Direccionamiento y ruteo
+      </td>
+      <td>
+       IP, ICMP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Acceso a Red
+       </strong>
+      </td>
+      <td>
+       Comunicación con el hardware
+      </td>
+      <td>
+       Ethernet, WiFi, ARP
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="diagrama-general">
+    Diagrama general
+   </h4>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>┌───────────────────────┐ 
+│   Datos de Usuario    │ ← Aplicación (HTTP, DNS, SSH)
+├───────────────────────┤ 
+│   Segmentos           │ ← Transporte (TCP, UDP)
+├───────────────────────┤ 
+│   Paquetes            │ ← Internet (IP)
+├───────────────────────┤ 
+│   Tramas              │ ← Acceso a red (Ethernet)
+└───────────────────────┘
+</pre>
+    </div>
+   </div>
+   <h3 id="53-comparacion-con-el-modelo-osi">
+    5.3 Comparación con el modelo OSI
+   </h3>
+   <p>
+    Aunque
+    <strong>
+     TCP/IP es el modelo usado en la práctica
+    </strong>
+    , muchas personas mencionan el
+    <strong>
+     modelo OSI
+    </strong>
+    (teórico, de 7 capas). Esta tabla muestra la equivalencia aproximada:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Modelo OSI (teórico, 7 capas)
+      </th>
+      <th>
+       Modelo TCP/IP (real, 4 capas)
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       7. Aplicación
+      </td>
+      <td>
+       <strong>
+        Aplicación
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       6. Presentación
+      </td>
+      <td>
+       <strong>
+        Aplicación
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       5. Sesión
+      </td>
+      <td>
+       <strong>
+        Aplicación
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       4. Transporte
+      </td>
+      <td>
+       <strong>
+        Transporte
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       3. Red
+      </td>
+      <td>
+       <strong>
+        Internet
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       2. Enlace de datos
+      </td>
+      <td>
+       <strong>
+        Acceso a red
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       1. Física
+      </td>
+      <td>
+       <strong>
+        Acceso a red
+       </strong>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="54-flujo-de-datos-entre-capas">
+    5.4 Flujo de datos entre capas
+   </h3>
+   <p>
+    Cuando un usuario envía datos:
+   </p>
+   <ol>
+    <li>
+     La información baja desde la
+     <strong>
+      Aplicación
+     </strong>
+     hasta el hardware (
+     <strong>
+      Acceso a Red
+     </strong>
+     ).
+    </li>
+    <li>
+     Se transmite por la red física.
+    </li>
+    <li>
+     En el destino, los datos suben capa por capa hasta llegar a la aplicación.
+    </li>
+   </ol>
+   <div class="highlight language-text">
+    <pre><span></span>Origen                        Destino
+---------                     ----------
+Aplicación  ──────────────▶   Aplicación
+Transporte ───────────────▶   Transporte
+Internet   ───────────────▶   Internet
+Acceso red ───────────────▶   Acceso red
+</pre>
+   </div>
+   <h3 id="55-ejemplo-real-enviar-un-mensaje-por-whatsapp-web">
+    5.5 Ejemplo real: Enviar un mensaje por WhatsApp Web
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Capa TCP/IP
+      </th>
+      <th>
+       ¿Qué pasa en esta capa?
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Aplicación
+      </td>
+      <td>
+       WhatsApp usa HTTP/HTTPS
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Transporte
+      </td>
+      <td>
+       Se abre conexión TCP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Internet
+      </td>
+      <td>
+       Se enruta el paquete con IP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Acceso a red
+      </td>
+      <td>
+       Se envía por WiFi o Ethernet
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="resumen-del-tema-5">
+    ✅ Resumen del Tema 5
+   </h4>
+   <ul>
+    <li>
+     TCP/IP es el modelo real usado hoy en redes.
+    </li>
+    <li>
+     Tiene 4 capas y organiza cómo viajan los datos.
+    </li>
+    <li>
+     Cada capa tiene protocolos específicos.
+    </li>
+    <li>
+     Funciona de forma modular: cada capa resuelve un problema distinto.
+    </li>
+   </ul>
+   <h4 id="preguntas-rapidas">
+    🔧 Preguntas rápidas
+   </h4>
+   <ol>
+    <li>
+     ¿Cuál es la capa responsable de las direcciones IP?
+    </li>
+    <li>
+     ¿Qué capa permite enviar datos por Internet?
+    </li>
+    <li>
+     ¿En qué capa están HTTP y DNS?
+    </li>
+    <li>
+     ¿Qué modelo es práctico y cuál es teórico: TCP/IP u OSI?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-capa-de-acceso-a-red-link-layer">
+    6. Capa de Acceso a Red (Link Layer)
+   </h2>
+   <p>
+    La
+    <strong>
+     Capa de Acceso a Red
+    </strong>
+    es la más cercana al hardware. Se encarga de
+    <strong>
+     enviar datos entre dispositivos dentro de la misma red local (LAN)
+    </strong>
+    usando direcciones
+    <strong>
+     MAC
+    </strong>
+    y tramas
+    <strong>
+     Ethernet
+    </strong>
+    o
+    <strong>
+     WiFi
+    </strong>
+    .
+   </p>
+   <h3 id="61-direccion-mac">
+    6.1 Dirección MAC
+   </h3>
+   <p>
+    Cada dispositivo de red tiene una dirección física única llamada
+    <strong>
+     MAC
+    </strong>
+    (
+    <em>
+     Media Access Control
+    </em>
+    ).
+    <br/>
+    Ejemplo:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>3C:A6:F6:12:BC:8E
+</pre>
+   </div>
+   <p>
+    📌 Características:
+- Tiene
+    <strong>
+     48 bits
+    </strong>
+    (6 pares hexadecimales).
+- Es
+    <strong>
+     única en el mundo
+    </strong>
+    , asignada por el fabricante.
+- Se usa
+    <strong>
+     dentro de la red local
+    </strong>
+    , no en Internet.
+- No cambia (en teoría).
+   </p>
+   <h4 id="ejemplo-ver-direccion-mac-en-linux">
+    📌 Ejemplo: Ver dirección MAC en Linux
+   </h4>
+   <p>
+    Podemos ver las interfaces de red del sistema desde linux con:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>link<span class="w"> </span>show
+</pre>
+   </div>
+   <p>
+    O desde la consola PowerShell de Windows con:
+   </p>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetAdapter</span>
+</pre>
+   </div>
+   <p>
+    Salida típica:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>2: enp0s3: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 ...
+    link/ether 08:00:27:4a:59:3b brd ff:ff:ff:ff:ff:ff
+</pre>
+   </div>
+   <p>
+    ➡
+    <code>
+     08:00:27:4a:59:3b
+    </code>
+    es la
+    <strong>
+     dirección MAC
+    </strong>
+    .
+   </p>
+   <h3 id="62-tramas-ethernet">
+    6.2 Tramas Ethernet
+   </h3>
+   <p>
+    En esta capa los datos viajan encapsulados en
+    <strong>
+     tramas
+    </strong>
+    :
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>┌────────┬────────┬────────┬──────────────┬─────────┐
+│ MAC OR │ MAC DES│  Tipo  │    Datos     │   FCS   │
+└────────┴────────┴────────┴──────────────┴─────────┘
+</pre>
+   </div>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Campo
+      </th>
+      <th>
+       Descripción
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       MAC ORIGEN
+      </td>
+      <td>
+       Dirección MAC del dispositivo que envía
+      </td>
+     </tr>
+     <tr>
+      <td>
+       MAC DESTINO
+      </td>
+      <td>
+       A quién se envía
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Tipo
+      </td>
+      <td>
+       Define el contenido (ej: IPv4 = 0x0800)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Datos
+      </td>
+      <td>
+       Información a enviar
+      </td>
+     </tr>
+     <tr>
+      <td>
+       FCS
+      </td>
+      <td>
+       Control de errores
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="63-protocolo-arp-address-resolution-protocol">
+    6.3 Protocolo ARP (Address Resolution Protocol)
+   </h3>
+   <p>
+    Las computadoras necesitan saber
+    <strong>
+     qué MAC corresponde a qué IP
+    </strong>
+    dentro de la red.
+Para eso existe
+    <strong>
+     ARP
+    </strong>
+    .
+   </p>
+   <p>
+    Ejemplo:
+   </p>
+   <blockquote>
+    <p>
+     "Quiero enviar a la IP 192.168.0.5. ¿Cuál es su MAC?"
+    </p>
+   </blockquote>
+   <div class="highlight language-text">
+    <pre><span></span>PC A: "¿Quién tiene 192.168.0.5?" → Broadcast
+PC B: "Yo, mi MAC es AA:BB:CC:DD:EE:FF"
+</pre>
+   </div>
+   <p>
+    Cada PC guarda esta información en una
+    <strong>
+     tabla ARP
+    </strong>
+    para no preguntar siempre.
+   </p>
+   <h4 id="comandos-utiles-en-linux-arp">
+    🔧 Comandos útiles en Linux (ARP)
+   </h4>
+   <p>
+    Ver la tabla AR (linux):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>neigh
+</pre>
+   </div>
+   <p>
+    o (linux):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>arp<span class="w"> </span>-n
+</pre>
+   </div>
+   <p>
+    Ejemplo de salida:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>192.168.0.10 dev enp0s3 lladdr 8c:85:90:12:4f:aa REACHABLE
+</pre>
+   </div>
+   <p>
+    Desde PowerShell (Windows) el comando es:
+   </p>
+   <div class="highlight language-Powershell">
+    <pre><span></span><span class="nb">Get-NetNeighbor</span>
+</pre>
+   </div>
+   <p>
+    Ejemplo de salida:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>ifIndex IPAddress      LinkLayerAddress  State       PolicyStore
+------- ---------      ----------------  -----       ------------
+12      192.168.1.1    00-14-22-01-23-45 Reachable   ActiveStore
+12      192.168.1.15   3C-52-82-9A-4B-11 Stale       ActiveStore
+</pre>
+   </div>
+   <h3 id="64-mtu-y-fragmentacion">
+    6.4 MTU y fragmentación
+   </h3>
+   <p>
+    La
+    <strong>
+     MTU
+    </strong>
+    (
+    <em>
+     Maximum Transmission Unit
+    </em>
+    ) define el
+    <strong>
+     máximo tamaño
+    </strong>
+    de datos que puede enviarse en una trama.
+   </p>
+   <ul>
+    <li>
+     En Ethernet normalmente es
+     <strong>
+      1500 bytes
+     </strong>
+     .
+    </li>
+    <li>
+     Si se envía más, se
+     <strong>
+      fragmenta
+     </strong>
+     .
+    </li>
+   </ul>
+   <p>
+    Ver MTU en Linux:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>link<span class="w"> </span>show
+</pre>
+   </div>
+   <p>
+    Ver MTU en Windows (Powershell):
+   </p>
+   <div class="highlight language-Powershell">
+    <pre><span></span><span class="nb">Get-NetIPInterface</span>
+</pre>
+   </div>
+   <h3 id="resumen-del-tema-6">
+    ✅ Resumen del Tema 6
+   </h3>
+   <ul>
+    <li>
+     La capa de acceso usa
+     <strong>
+      MAC
+     </strong>
+     y
+     <strong>
+      tramas
+     </strong>
+     para enviar datos localmente.
+    </li>
+    <li>
+     <strong>
+      ARP
+     </strong>
+     vincula direcciones IP ↔ MAC.
+    </li>
+    <li>
+     Podés ver interfaces y MAC con
+     <code>
+      ip link show
+     </code>
+     .
+    </li>
+    <li>
+     <code>
+      ip neigh
+     </code>
+     muestra la tabla ARP.
+    </li>
+   </ul>
+   <h3 id="practica-linux-1-hands-on">
+    🔧 Práctica Linux #1 (hands-on)
+   </h3>
+   <ol>
+    <li>
+     Listar interfaces de red:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>link<span class="w"> </span>show
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Obtener tu MAC:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>addr<span class="w"> </span>show
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Ver la tabla ARP:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>neigh
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     Limpiar la tabla ARP:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>sudo<span class="w"> </span>ip<span class="w"> </span>neigh<span class="w"> </span>flush<span class="w"> </span>all
+</pre>
+   </div>
+   <ol start="5">
+    <li>
+     Probar reconexión al reenviar tráfico:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span>google.com
+</pre>
+   </div>
+   <h3 id="practica-windows-1-redes-hands-on">
+    💻 Práctica Windows #1 — Redes (Hands-on)
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Listar interfaces de red:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetAdapter</span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     <strong>
+      Obtener la dirección MAC:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetAdapter</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">Name</span><span class="p">,</span> <span class="n">MacAddress</span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     <strong>
+      Ver la tabla ARP (vecinos de red):
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetNeighbor</span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     <strong>
+      Limpiar la tabla ARP:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetNeighbor</span> <span class="p">|</span> <span class="nb">Remove-NetNeighbor</span> <span class="n">-Confirm</span><span class="p">:</span><span class="nv">$false</span>
+</pre>
+   </div>
+   <ol start="5">
+    <li>
+     <strong>
+      Probar la reconexión reenviando tráfico:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Test-Connection</span> <span class="n">google</span><span class="p">.</span><span class="n">com</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-capa-de-internet-network-layer">
+    7. Capa de Internet (Network Layer)
+   </h2>
+   <p>
+    La
+    <strong>
+     Capa de Internet
+    </strong>
+    es responsable de
+    <strong>
+     direccionar y enrutar paquetes
+    </strong>
+    desde el origen hasta el destino, incluso si están en redes diferentes. Su protocolo principal es
+    <strong>
+     IP (Internet Protocol)
+    </strong>
+    .
+   </p>
+   <h3 id="71-direccion-ip">
+    7.1 Dirección IP
+   </h3>
+   <p>
+    Una
+    <strong>
+     dirección IP
+    </strong>
+    identifica de forma lógica a un dispositivo dentro de una red. Existen dos versiones activas:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Versión
+      </th>
+      <th>
+       Formato
+      </th>
+      <th>
+       Ejemplo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        IPv4
+       </strong>
+      </td>
+      <td>
+       32 bits (4 números)
+      </td>
+      <td>
+       192.168.0.15
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        IPv6
+       </strong>
+      </td>
+      <td>
+       128 bits (hexadecimal)
+      </td>
+      <td>
+       2001:db8::ff00:42:8329
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Nos enfocaremos primero en
+    <strong>
+     IPv4
+    </strong>
+    , ya que sigue siendo la más usada.
+   </p>
+   <h3 id="72-ipv4-como-funciona">
+    7.2 IPv4: cómo funciona
+   </h3>
+   <p>
+    Una dirección IPv4 está formada por 4 números (octetos) entre 0 y 255:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>192.168.1.10
+</pre>
+   </div>
+   <p>
+    Cada IP tiene
+    <strong>
+     dos partes
+    </strong>
+    :
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Parte
+      </th>
+      <th>
+       Función
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Red
+       </strong>
+      </td>
+      <td>
+       Identifica la red
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Host
+       </strong>
+      </td>
+      <td>
+       Identifica el dispositivo dentro de esa red
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Ejemplo:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Red
+      </th>
+      <th>
+       Host
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       192.168.1
+      </td>
+      <td>
+       .10
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="73-mascara-de-subred-subnet-mask">
+    7.3 Máscara de Subred (Subnet Mask)
+   </h3>
+   <p>
+    La
+    <strong>
+     máscara
+    </strong>
+    indica
+    <strong>
+     cuántos bits corresponden a la red
+    </strong>
+    y cuántos al host.
+   </p>
+   <p>
+    Ejemplo típico:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       IP
+      </th>
+      <th>
+       Máscara
+      </th>
+      <th>
+       Red
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       192.168.1.10
+      </td>
+      <td>
+       255.255.255.0
+      </td>
+      <td>
+       Red
+       <code>
+        /24
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    📌
+    <code>
+     /24
+    </code>
+    significa que los
+    <strong>
+     primeros 24 bits
+    </strong>
+    son de red.
+   </p>
+   <h3 id="74-tipos-de-ip">
+    7.4 Tipos de IP
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Ejemplo
+      </th>
+      <th>
+       Uso
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Privada
+       </strong>
+      </td>
+      <td>
+       192.168.0.5
+      </td>
+      <td>
+       Dentro de LAN
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Pública
+       </strong>
+      </td>
+      <td>
+       181.44.56.10
+      </td>
+      <td>
+       Visible desde Internet
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Loopback
+       </strong>
+      </td>
+      <td>
+       127.0.0.1
+      </td>
+      <td>
+       Localhost (máquina propia)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        APIPA
+       </strong>
+      </td>
+      <td>
+       169.254.x.x
+      </td>
+      <td>
+       Sin DHCP (error)
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Rangos privados oficiales:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>10.0.0.0      – 10.255.255.255
+172.16.0.0    – 172.31.255.255
+192.168.0.0   – 192.168.255.255
+</pre>
+   </div>
+   <h3 id="75-gateway-puerta-de-enlace">
+    7.5 Gateway (Puerta de Enlace)
+   </h3>
+   <p>
+    El
+    <strong>
+     gateway
+    </strong>
+    es la dirección IP
+    <strong>
+     del router
+    </strong>
+    .
+Es el dispositivo que permite
+    <strong>
+     salir de la red local
+    </strong>
+    hacia otras redes o Internet.
+   </p>
+   <p>
+    Ejemplo:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>PC: 192.168.1.20
+Gateway: 192.168.1.1  ← Router
+</pre>
+   </div>
+   <h3 id="76-icmp-ping-y-traceroute">
+    7.6 ICMP (ping y traceroute)
+   </h3>
+   <p>
+    <strong>
+     ICMP
+    </strong>
+    es un protocolo usado para
+    <strong>
+     diagnóstico de red
+    </strong>
+    .
+   </p>
+   <p>
+    Comando para verificar conectividad:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span><span class="m">8</span>.8.8.8
+</pre>
+   </div>
+   <p>
+    Comando para ver el recorrido de los paquetes:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>traceroute<span class="w"> </span>google.com<span class="w">     </span><span class="c1"># Linux</span>
+tracert<span class="w"> </span>google.com<span class="w">        </span><span class="c1"># Windows</span>
+</pre>
+   </div>
+   <h3 id="77-ipv6-introduccion">
+    7.7 IPv6 (introducción)
+   </h3>
+   <p>
+    IPv6 nació porque IPv4
+    <strong>
+     se quedó sin direcciones
+    </strong>
+    . Usa direcciones más largas.
+   </p>
+   <p>
+    Ejemplo de IPv6:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>2001:0db8:85a3:0000:0000:8a2e:0370:7334
+</pre>
+   </div>
+   <p>
+    Se acorta así:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>2001:db8:85a3::8a2e:370:7334
+</pre>
+   </div>
+   <p>
+    Ventajas:
+✅ Más direcciones
+✅ Soporte nativo para seguridad (IPSec)
+✅ Mejor routing
+   </p>
+   <h3 id="resumen-del-tema-7">
+    ✅ Resumen del Tema 7
+   </h3>
+   <ul>
+    <li>
+     IP identifica dispositivos lógicamente.
+    </li>
+    <li>
+     IPv4 sigue siendo muy usado; IPv6 viene creciendo.
+    </li>
+    <li>
+     Gateway permite salir de la red local.
+    </li>
+    <li>
+     ICMP sirve para diagnosticar conectividad.
+    </li>
+    <li>
+     Ping y traceroute son herramientas clave.
+    </li>
+   </ul>
+   <h3 id="practica-linux-2">
+    🔧 Práctica Linux #2
+   </h3>
+   <ol>
+    <li>
+     Ver tu dirección IP:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>addr<span class="w"> </span>show
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Ver tabla de rutas:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>route
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Probar conexión con Google:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>.8.8.8
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     Ver recorrido de paquetes:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>traceroute<span class="w"> </span>google.com
+</pre>
+   </div>
+   <ol start="5">
+    <li>
+     Ver IPv6 local:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>-6<span class="w"> </span>addr
+</pre>
+   </div>
+   <h3 id="practica-windows-2-redes-hands-on">
+    💻 Práctica Windows #2 — Redes (Hands-on)
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Ver tu dirección IP:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetIPAddress</span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     <strong>
+      Ver la tabla de rutas:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetRoute</span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     <strong>
+      Probar conexión con Google:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Test-Connection</span> <span class="n">8</span><span class="p">.</span><span class="n">8</span><span class="p">.</span><span class="n">8</span><span class="p">.</span><span class="n">8</span> <span class="n">-Count</span> <span class="n">4</span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     <strong>
+      Ver el recorrido de paquetes (traceroute):
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">tracert</span> <span class="n">google</span><span class="p">.</span><span class="n">com</span>
+</pre>
+   </div>
+   <ol start="5">
+    <li>
+     <strong>
+      Ver direcciones IPv6 locales:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetIPAddress</span> <span class="n">-AddressFamily</span> <span class="n">IPv6</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-capa-de-transporte-transport-layer">
+    8. Capa de Transporte (Transport Layer)
+   </h2>
+   <p>
+    La
+    <strong>
+     capa de transporte
+    </strong>
+    permite que dos aplicaciones se comuniquen entre sí a través de la red, sin importar qué dispositivos intermedios haya. En esta capa aparecen dos protocolos clave:
+    <strong>
+     TCP
+    </strong>
+    y
+    <strong>
+     UDP
+    </strong>
+    .
+   </p>
+   <h3 id="81-que-hace-la-capa-de-transporte">
+    8.1 ¿Qué hace la capa de transporte?
+   </h3>
+   <ul>
+    <li>
+     Establece
+     <strong>
+      comunicación extremo a extremo
+     </strong>
+    </li>
+    <li>
+     Usa
+     <strong>
+      puertos
+     </strong>
+     para direccionar programas
+    </li>
+    <li>
+     Puede asegurar que los datos lleguen completos (TCP) o priorizar velocidad (UDP)
+    </li>
+    <li>
+     Divide datos grandes en
+     <strong>
+      segmentos
+     </strong>
+    </li>
+   </ul>
+   <h3 id="82-puertos-como-se-identifican-las-aplicaciones">
+    8.2 Puertos: ¿cómo se identifican las aplicaciones?
+   </h3>
+   <p>
+    Un
+    <strong>
+     puerto
+    </strong>
+    es un número que representa una aplicación en ejecución.
+    <br/>
+    Por ejemplo:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Servicio
+      </th>
+      <th>
+       Puerto
+      </th>
+      <th>
+       Protocolo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       HTTP
+      </td>
+      <td>
+       80
+      </td>
+      <td>
+       TCP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       HTTPS
+      </td>
+      <td>
+       443
+      </td>
+      <td>
+       TCP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       SSH
+      </td>
+      <td>
+       22
+      </td>
+      <td>
+       TCP
+      </td>
+     </tr>
+     <tr>
+      <td>
+       DNS
+      </td>
+      <td>
+       53
+      </td>
+      <td>
+       UDP
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <blockquote>
+    <p>
+     📌 Una dirección de red completa es:
+     <code>
+      IP + Puerto
+     </code>
+     <br/>
+     Ejemplo:
+     <code>
+      192.168.0.20:22
+     </code>
+     → SSH
+    </p>
+   </blockquote>
+   <h3 id="83-protocolo-tcp-confiable">
+    8.3 Protocolo TCP – Confiable
+   </h3>
+   <p>
+    TCP (
+    <em>
+     Transmission Control Protocol
+    </em>
+    ) garantiza que los datos lleguen completos y en orden.
+   </p>
+   <p>
+    Características:
+✅ Confiable
+    <br/>
+    ✅ Detecta errores
+    <br/>
+    ✅ Reenvía paquetes perdidos
+    <br/>
+    ❌ Más lento que UDP
+   </p>
+   <p>
+    Establece una conexión con
+    <strong>
+     "Three-way Handshake"
+    </strong>
+    :
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>Cliente → SYN → Servidor
+Cliente ← SYN/ACK ← Servidor
+Cliente → ACK → Servidor
+</pre>
+   </div>
+   <h3 id="84-protocolo-udp-rapido">
+    8.4 Protocolo UDP – Rápido
+   </h3>
+   <p>
+    UDP (
+    <em>
+     User Datagram Protocol
+    </em>
+    )
+    <strong>
+     no garantiza
+    </strong>
+    entrega confiable. Se usa cuando importa la velocidad.
+   </p>
+   <p>
+    Características:
+✅ Rápido
+✅ Menor latencia
+❌ Sin control de errores
+❌ Puede perder paquetes
+   </p>
+   <p>
+    Ejemplos de uso:
+   </p>
+   <ul>
+    <li>
+     Streaming (YouTube, Twitch)
+    </li>
+    <li>
+     Juegos online
+    </li>
+    <li>
+     Videollamadas
+    </li>
+   </ul>
+   <h3 id="85-diferencias-entre-tcp-y-udp">
+    8.5 Diferencias entre TCP y UDP
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Característica
+      </th>
+      <th>
+       TCP
+      </th>
+      <th>
+       UDP
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Confiable
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       ❌
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Velocidad
+      </td>
+      <td>
+       Media
+      </td>
+      <td>
+       Alta
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Orden de datos
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       ❌
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Streaming
+      </td>
+      <td>
+       ❌
+      </td>
+      <td>
+       ✅
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Web/SSH
+      </td>
+      <td>
+       ✅
+      </td>
+      <td>
+       ❌
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="practica-linux-3-explorando-puertos-y-conexiones">
+    🔧 Práctica Linux #3 – Explorando puertos y conexiones
+   </h4>
+   <p>
+    Ver puertos abiertos en tu máquina:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ss<span class="w"> </span>-tulnp
+</pre>
+   </div>
+   <p>
+    Probar servidor UDP con Netcat:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>nc<span class="w"> </span>-u<span class="w"> </span>-l<span class="w"> </span><span class="m">5000</span>
+</pre>
+   </div>
+   <p>
+    Probar servidor TCP simple:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>nc<span class="w"> </span>-l<span class="w"> </span><span class="m">4000</span>
+</pre>
+   </div>
+   <p>
+    Desde otra terminal, enviar datos:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"hola red"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>nc<span class="w"> </span>localhost<span class="w"> </span><span class="m">4000</span>
+</pre>
+   </div>
+   <h4 id="resumen-del-tema-8">
+    ✅ Resumen del Tema 8
+   </h4>
+   <ul>
+    <li>
+     La capa de transporte conecta
+     <strong>
+      aplicación con aplicación
+     </strong>
+     .
+    </li>
+    <li>
+     Los puertos permiten identificar programas.
+    </li>
+    <li>
+     TCP = confiable; UDP = rápido.
+    </li>
+    <li>
+     Herramientas útiles:
+     <code>
+      ss
+     </code>
+     ,
+     <code>
+      nc
+     </code>
+     .
+    </li>
+   </ul>
+   <h4 id="ejercicio-rapido_1">
+    🔧 Ejercicio rápido
+   </h4>
+   <ol>
+    <li>
+     ¿Qué puerto usa HTTP?
+    </li>
+    <li>
+     ¿Qué es más rápido para streaming: TCP o UDP?
+    </li>
+    <li>
+     ¿Qué comando muestra conexiones de red?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-capa-de-aplicacion">
+    9. Capa de Aplicación
+   </h2>
+   <p>
+    La
+    <strong>
+     capa de aplicación
+    </strong>
+    es la más cercana al usuario.
+    <br/>
+    Aquí viven los
+    <strong>
+     protocolos que permiten usar Internet
+    </strong>
+    : navegar, enviar correos, acceder por consola remota o resolver nombres de dominio.
+   </p>
+   <p>
+    Su función es
+    <strong>
+     proporcionar servicios a las aplicaciones
+    </strong>
+    (navegador, cliente SSH, etc.) usando los protocolos de transporte TCP o UDP.
+   </p>
+   <h3 id="91-http-y-https">
+    9.1 HTTP y HTTPS
+   </h3>
+   <p>
+    <strong>
+     HTTP (HyperText Transfer Protocol)
+    </strong>
+    permite la transferencia de páginas web.
+   </p>
+   <ul>
+    <li>
+     Usa el puerto
+     <strong>
+      80
+     </strong>
+     (TCP)
+    </li>
+    <li>
+     Cliente: navegador web
+    </li>
+    <li>
+     Servidor: Apache, Nginx, etc.
+    </li>
+   </ul>
+   <div class="highlight language-text">
+    <pre><span></span>Navegador → Solicita recurso (GET /index.html)
+Servidor  → Devuelve página web
+</pre>
+   </div>
+   <p>
+    <strong>
+     HTTPS
+    </strong>
+    es la versión segura, que usa
+    <strong>
+     TLS/SSL
+    </strong>
+    para cifrar los datos.
+Usa el puerto
+    <strong>
+     443 (TCP)
+    </strong>
+    .
+   </p>
+   <p>
+    Ver cabeceras de una página con
+    <code>
+     curl
+    </code>
+    :
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>curl<span class="w"> </span>-I<span class="w"> </span>https://www.utn.edu.ar
+</pre>
+   </div>
+   <h3 id="92-dns-domain-name-system">
+    9.2 DNS (Domain Name System)
+   </h3>
+   <p>
+    DNS traduce
+    <strong>
+     nombres de dominio
+    </strong>
+    en direcciones IP.
+   </p>
+   <p>
+    Ejemplo:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>www.google.com → 142.250.64.110
+</pre>
+   </div>
+   <ul>
+    <li>
+     Puerto
+     <strong>
+      53 (UDP/TCP)
+     </strong>
+    </li>
+    <li>
+     Servidores DNS comunes: 8.8.8.8 (Google), 1.1.1.1 (Cloudflare)
+    </li>
+   </ul>
+   <p>
+    Ver resolución DNS (Linux):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>dig<span class="w"> </span>www.google.com
+</pre>
+   </div>
+   <p>
+    o
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>host<span class="w"> </span>www.google.com
+</pre>
+   </div>
+   <p>
+    En Windows:
+   </p>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Resolve-DnsName</span> <span class="n">www</span><span class="p">.</span><span class="n">google</span><span class="p">.</span><span class="n">com</span>
+</pre>
+   </div>
+   <h3 id="93-ssh-secure-shell">
+    9.3 SSH (Secure Shell)
+   </h3>
+   <p>
+    <strong>
+     SSH
+    </strong>
+    permite conectarse a otra computadora de forma segura (encriptada) mediante una terminal.
+   </p>
+   <ul>
+    <li>
+     Puerto
+     <strong>
+      22 (TCP)
+     </strong>
+    </li>
+    <li>
+     Sustituye al antiguo Telnet
+    </li>
+   </ul>
+   <p>
+    Ejemplo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ssh<span class="w"> </span>usuario@192.168.0.10
+</pre>
+   </div>
+   <p>
+    Copiar archivos mediante SSH:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>scp<span class="w"> </span>archivo.txt<span class="w"> </span>usuario@192.168.0.10:/home/usuario/
+</pre>
+   </div>
+   <h3 id="94-dhcp-dynamic-host-configuration-protocol">
+    9.4 DHCP (Dynamic Host Configuration Protocol)
+   </h3>
+   <p>
+    <strong>
+     DHCP
+    </strong>
+    asigna automáticamente direcciones IP a los dispositivos al conectarse a la red.
+   </p>
+   <p>
+    Flujo básico:
+   </p>
+   <ol>
+    <li>
+     Cliente: “¿Alguien puede darme una IP?”
+    </li>
+    <li>
+     Servidor DHCP: “Sí, tomá 192.168.1.50”
+    </li>
+    <li>
+     Cliente la acepta y la configura.
+    </li>
+   </ol>
+   <h4 id="practica-linux-4">
+    🔧 Práctica Linux #4
+   </h4>
+   <ol>
+    <li>
+     Ver cabeceras de una web:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>curl<span class="w"> </span>-I<span class="w"> </span>https://www.google.com
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Resolver un dominio:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>dig<span class="w"> </span>openai.com
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Verificar IP actual:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>ip<span class="w"> </span>addr
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     Probar conexión SSH (si hay un servidor disponible):
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>ssh<span class="w"> </span>usuario@host
+<span class="w">   </span>
+</pre>
+   </div>
+   <h4 id="practica-windows-4-redes-hands-on">
+    💻 Práctica Windows #4 — Redes (Hands-on)
+   </h4>
+   <ol>
+    <li>
+     <strong>
+      Ver cabeceras de una web:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Invoke-WebRequest</span> <span class="n">-Uri</span> <span class="s2">"https://www.google.com"</span> <span class="n">-Method</span> <span class="n">Head</span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     <strong>
+      Resolver un dominio:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Resolve-DnsName</span> <span class="n">openai</span><span class="p">.</span><span class="n">com</span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     <strong>
+      Verificar IP actual:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetIPAddress</span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     <strong>
+      Probar conexión SSH (si hay un servidor disponible):
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">ssh</span> <span class="n">usuario</span><span class="nv">@host</span>
+</pre>
+   </div>
+   <h4 id="resumen-del-tema-9">
+    ✅ Resumen del Tema 9
+   </h4>
+   <ul>
+    <li>
+     HTTP/HTTPS: navegación web.
+    </li>
+    <li>
+     DNS: convierte nombres en IP.
+    </li>
+    <li>
+     SSH: conexión segura por terminal.
+    </li>
+    <li>
+     DHCP: asigna IP automáticamente.
+    </li>
+   </ul>
+   <h4 id="ejercicio-rapido_2">
+    🔧 Ejercicio rápido
+   </h4>
+   <ol>
+    <li>
+     ¿Qué puerto usa SSH?
+    </li>
+    <li>
+     ¿Qué hace DNS?
+    </li>
+    <li>
+     ¿Cuál es la diferencia entre HTTP y HTTPS?
+    </li>
+    <li>
+     ¿Qué comando permite resolver un dominio en Linux?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-redes-wifi-wlan">
+    10. Redes WiFi (WLAN)
+   </h2>
+   <p>
+    Las
+    <strong>
+     redes WiFi
+    </strong>
+    permiten conectar dispositivos sin cables mediante ondas de radio.
+    <br/>
+    Su nombre técnico es
+    <strong>
+     WLAN (Wireless Local Area Network)
+    </strong>
+    .
+   </p>
+   <h3 id="101-conceptos-basicos">
+    10.1 Conceptos básicos
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      SSID (Service Set Identifier):
+     </strong>
+     nombre de la red.
+    </li>
+    <li>
+     <strong>
+      Banda de frecuencia:
+     </strong>
+     el rango general de frecuencia de radio utilizado (2.4 GHz o 5 GHz).
+    </li>
+    <li>
+     <strong>
+      Canal:
+     </strong>
+     una subdivisión específica dentro de una banda de frecuencia. Los canales permiten que múltiples redes WiFi coexistan en la misma banda sin interferir entre sí directamente.
+    </li>
+    <li>
+     <strong>
+      BSSID:
+     </strong>
+     dirección MAC del punto de acceso.
+    </li>
+    <li>
+     <strong>
+      Estándares IEEE 802.11:
+     </strong>
+     definen la velocidad y alcance de las redes WiFi.
+    </li>
+   </ul>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Estándar
+      </th>
+      <th>
+       Frecuencia
+      </th>
+      <th>
+       Velocidad máx.
+      </th>
+      <th>
+       Año
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       802.11b
+      </td>
+      <td>
+       2.4 GHz
+      </td>
+      <td>
+       11 Mbps
+      </td>
+      <td>
+       1999
+      </td>
+     </tr>
+     <tr>
+      <td>
+       802.11g
+      </td>
+      <td>
+       2.4 GHz
+      </td>
+      <td>
+       54 Mbps
+      </td>
+      <td>
+       2003
+      </td>
+     </tr>
+     <tr>
+      <td>
+       802.11n
+      </td>
+      <td>
+       2.4/5 GHz
+      </td>
+      <td>
+       600 Mbps
+      </td>
+      <td>
+       2009
+      </td>
+     </tr>
+     <tr>
+      <td>
+       802.11ac
+      </td>
+      <td>
+       5 GHz
+      </td>
+      <td>
+       1.3 Gbps
+      </td>
+      <td>
+       2014
+      </td>
+     </tr>
+     <tr>
+      <td>
+       802.11ax (WiFi 6)
+      </td>
+      <td>
+       2.4/5 GHz
+      </td>
+      <td>
+       9.6 Gbps
+      </td>
+      <td>
+       2019
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="102-como-funciona-una-red-wifi">
+    10.2 Cómo funciona una red WiFi
+   </h3>
+   <p>
+    Un
+    <strong>
+     punto de acceso (Access Point)
+    </strong>
+    actúa como “switch inalámbrico”.
+    <br/>
+    Cada dispositivo se asocia a ese AP y usa ondas de radio para transmitir datos.
+   </p>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>             🌐 Internet
+                  │
+            ┌───────────────┐
+            │   Router/AP   │
+            └───────┬───────┘
+                    │  WiFi
+      ┌─────────────┼─────────────┐
+      │             │             │
+   📱 Celular     💻 Notebook   🖥️ PC con WiFi
+</pre>
+    </div>
+   </div>
+   <p>
+    El router convierte las señales
+    <strong>
+     inalámbricas (WiFi)
+    </strong>
+    en
+    <strong>
+     cableadas (Ethernet)
+    </strong>
+    para llegar a Internet.
+   </p>
+   <h3 id="103-seguridad-wifi">
+    10.3 Seguridad WiFi
+   </h3>
+   <p>
+    Las redes WiFi deben estar
+    <strong>
+     cifradas
+    </strong>
+    para evitar accesos no autorizados.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Seguridad
+      </th>
+      <th>
+       Estado actual
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        WEP
+       </strong>
+      </td>
+      <td>
+       Muy débil
+      </td>
+      <td>
+       Obsoleto
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        WPA
+       </strong>
+      </td>
+      <td>
+       Mejor, pero vulnerable
+      </td>
+      <td>
+       Desaconsejado
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        WPA2
+       </strong>
+      </td>
+      <td>
+       Estándar actual
+      </td>
+      <td>
+       Seguro si se usa AES
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        WPA3
+       </strong>
+      </td>
+      <td>
+       Nueva generación
+      </td>
+      <td>
+       Recomendado
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Consejos:
+   </p>
+   <ul>
+    <li>
+     Usar contraseñas largas y no triviales.
+    </li>
+    <li>
+     Desactivar WPS.
+    </li>
+    <li>
+     Actualizar el firmware del router.
+    </li>
+   </ul>
+   <h3 id="104-interferencia-y-cobertura">
+    10.4 Interferencia y cobertura
+   </h3>
+   <p>
+    Factores que afectan el rendimiento:
+   </p>
+   <ul>
+    <li>
+     Paredes gruesas
+    </li>
+    <li>
+     Microondas y teléfonos inalámbricos
+    </li>
+    <li>
+     Otros routers cercanos en el mismo canal
+    </li>
+   </ul>
+   <p>
+    Ver redes cercanas (Linux):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>nmcli<span class="w"> </span>dev<span class="w"> </span>wifi<span class="w"> </span>list
+</pre>
+   </div>
+   <p>
+    Ver detalles de tu conexión:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>iwconfig
+</pre>
+   </div>
+   <h3 id="practica-windows-5-redes-wi-fi-hands-on">
+    💻 Práctica Windows #5 — Redes Wi-Fi (Hands-on)
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Ver redes Wi-Fi cercanas:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">netsh</span> <span class="n">wlan</span> <span class="n">show</span> <span class="n">networks</span> <span class="n">mode</span><span class="p">=</span><span class="n">bssid</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <em>
+      Muestra todas las redes inalámbricas detectadas, junto con SSID, tipo de autenticación y nivel de señal.
+     </em>
+    </li>
+   </ul>
+   <ol start="2">
+    <li>
+     <strong>
+      Ver detalles de tu conexión actual:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">netsh</span> <span class="n">wlan</span> <span class="n">show</span> <span class="n">interfaces</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <em>
+      Muestra información detallada sobre la interfaz Wi-Fi activa, incluyendo SSID conectado, dirección MAC, canal, velocidad, y más.
+     </em>
+    </li>
+   </ul>
+   <h4 id="practica-linux-5">
+    🔧 Práctica Linux #5
+   </h4>
+   <ol>
+    <li>
+     Listar redes disponibles:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>nmcli<span class="w"> </span>dev<span class="w"> </span>wifi
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Ver el SSID y BSSID actuales:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>iwgetid
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Mostrar información de señal:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>iwconfig<span class="w"> </span>wlan0
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     Ver IP asignada por WiFi:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>ip<span class="w"> </span>addr<span class="w"> </span>show<span class="w"> </span>wlan0
+<span class="w">   </span>
+</pre>
+   </div>
+   <h4 id="practica-windows-5-opcional-redes-wi-fi">
+    💻 Práctica Windows #5 (opcional) — Redes Wi-Fi
+   </h4>
+   <ol>
+    <li>
+     <strong>
+      Listar redes Wi-Fi disponibles:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">netsh</span> <span class="n">wlan</span> <span class="n">show</span> <span class="n">networks</span> <span class="n">mode</span><span class="p">=</span><span class="n">bssid</span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     <strong>
+      Ver el SSID y BSSID actuales:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">netsh</span> <span class="n">wlan</span> <span class="n">show</span> <span class="n">interfaces</span> <span class="p">|</span> <span class="nb">Select-String</span> <span class="s2">"SSID"</span><span class="p">,</span><span class="s2">"BSSID"</span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     <strong>
+      Mostrar información de la señal y velocidad:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">netsh</span> <span class="n">wlan</span> <span class="n">show</span> <span class="n">interfaces</span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     <strong>
+      Ver la IP asignada por Wi-Fi:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetIPAddress</span> <span class="n">-InterfaceAlias</span> <span class="s2">"Wi-Fi"</span>
+</pre>
+   </div>
+   <h4 id="resumen-del-tema-10">
+    ✅ Resumen del Tema 10
+   </h4>
+   <ul>
+    <li>
+     WiFi = comunicación inalámbrica dentro de una LAN.
+    </li>
+    <li>
+     SSID es el nombre de la red; WPA2/WPA3, los estándares de seguridad.
+    </li>
+    <li>
+     La calidad depende del canal y la potencia de señal.
+    </li>
+    <li>
+     Comandos útiles:
+     <code>
+      nmcli
+     </code>
+     ,
+     <code>
+      iwconfig
+     </code>
+     ,
+     <code>
+      iwgetid
+     </code>
+     .
+    </li>
+   </ul>
+   <h4 id="actividad-breve">
+    🔧 Actividad breve
+   </h4>
+   <ol>
+    <li>
+     ¿Qué diferencia hay entre un router y un Access Point?
+    </li>
+    <li>
+     ¿Por qué conviene usar WPA3?
+    </li>
+    <li>
+     ¿Qué comando muestra la intensidad de la señal?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-nat-y-resolucion-de-nombres">
+    11. NAT y Resolución de Nombres
+   </h2>
+   <p>
+    En una red local (LAN), los dispositivos suelen tener
+    <strong>
+     direcciones IP privadas
+    </strong>
+    , que no son válidas en Internet.
+    <br/>
+    El mecanismo que permite que estos equipos accedan a Internet se llama
+    <strong>
+     NAT (Network Address Translation)
+    </strong>
+    .
+   </p>
+   <h3 id="111-que-es-nat">
+    11.1 ¿Qué es NAT?
+   </h3>
+   <p>
+    <strong>
+     NAT
+    </strong>
+    traduce direcciones
+    <strong>
+     privadas ↔ públicas
+    </strong>
+    para que varios equipos puedan compartir una sola IP pública (la del router).
+   </p>
+   <p>
+    Ejemplo:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Dispositivo
+      </th>
+      <th>
+       IP privada
+      </th>
+      <th>
+       IP pública (salida)
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       PC1
+      </td>
+      <td>
+       192.168.1.10
+      </td>
+      <td>
+       190.17.8.44
+      </td>
+     </tr>
+     <tr>
+      <td>
+       PC2
+      </td>
+      <td>
+       192.168.1.11
+      </td>
+      <td>
+       190.17.8.44
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Notebook
+      </td>
+      <td>
+       192.168.1.12
+      </td>
+      <td>
+       190.17.8.44
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Todos salen a Internet usando
+    <strong>
+     la misma IP pública
+    </strong>
+    gracias al router.
+   </p>
+   <h4 id="diagrama-nat-traduccion-de-direcciones">
+    Diagrama NAT (traducción de direcciones)
+   </h4>
+   <div class="highlight language-text">
+    <pre><span></span>LAN (Privada)                     WAN (Internet)
+                           ┌─────────────────────────────┐
+PC1 192.168.1.10 ─┐        │   IP pública: 190.17.8.44   │
+PC2 192.168.1.11 ─┼──▶ 🧭 │   NAT (Router)              │
+PC3 192.168.1.12 ─┘        │   Traduce IPs               │
+                           └─────────────────────────────┘
+</pre>
+   </div>
+   <h3 id="112-tipos-de-nat">
+    11.2 Tipos de NAT
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Descripción
+      </th>
+      <th>
+       Uso
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        SNAT (Source NAT)
+       </strong>
+      </td>
+      <td>
+       Traduce IP de origen (salida a Internet)
+      </td>
+      <td>
+       Hogares
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        DNAT (Destination NAT)
+       </strong>
+      </td>
+      <td>
+       Traduce IP de destino (entrada desde Internet)
+      </td>
+      <td>
+       Servidores
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        PAT (Port Address Translation)
+       </strong>
+      </td>
+      <td>
+       Traduce IP y puerto
+      </td>
+      <td>
+       Uso más común
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h4 id="ejemplo-de-pat">
+    Ejemplo de PAT
+   </h4>
+   <p>
+    El router recuerda qué puerto usó cada dispositivo:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       IP privada
+      </th>
+      <th>
+       Puerto local
+      </th>
+      <th>
+       IP pública
+      </th>
+      <th>
+       Puerto público
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       192.168.1.10
+      </td>
+      <td>
+       50000
+      </td>
+      <td>
+       190.17.8.44
+      </td>
+      <td>
+       30001
+      </td>
+     </tr>
+     <tr>
+      <td>
+       192.168.1.11
+      </td>
+      <td>
+       50001
+      </td>
+      <td>
+       190.17.8.44
+      </td>
+      <td>
+       30002
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Así, cuando vuelven los paquetes, el router sabe a quién corresponden.
+   </p>
+   <h3 id="113-resolucion-de-nombres-dns">
+    11.3 Resolución de Nombres (DNS)
+   </h3>
+   <p>
+    Cuando escribimos un dominio en el navegador, el sistema necesita saber
+    <strong>
+     qué IP
+    </strong>
+    tiene ese nombre.
+Esto lo hace el
+    <strong>
+     DNS
+    </strong>
+    , que ya vimos en la capa de aplicación.
+   </p>
+   <p>
+    Flujo típico:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>1. PC pregunta: "¿Cuál es la IP de openai.com?"
+2. Servidor DNS responde: "104.18.12.110"
+3. El navegador se conecta a esa IP.
+</pre>
+   </div>
+   <p>
+    Ver qué DNS usa tu sistema (Linux):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>cat<span class="w"> </span>/etc/resolv.conf
+</pre>
+   </div>
+   <p>
+    Para ver los servidores DNS configurados en tu sistema Windows:
+   </p>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-DnsClientServerAddress</span>
+</pre>
+   </div>
+   <h4 id="ejemplo-practico-con-nat-docker">
+    🔧 Ejemplo práctico con NAT (Docker)
+   </h4>
+   <p>
+    Podemos simular NAT fácilmente con contenedores Docker.
+   </p>
+   <p>
+    Listar redes:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>ls
+</pre>
+   </div>
+   <p>
+    Inspeccionar la red
+    <em>
+     bridge
+    </em>
+    (que usa NAT por defecto):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>inspect<span class="w"> </span>bridge
+</pre>
+   </div>
+   <p>
+    Verás que las IP privadas (172.x.x.x) se traducen al salir a Internet a través del host.
+   </p>
+   <h4 id="resumen-del-tema-11">
+    ✅ Resumen del Tema 11
+   </h4>
+   <ul>
+    <li>
+     NAT traduce IP privadas a públicas.
+    </li>
+    <li>
+     Permite que muchos dispositivos compartan una sola IP.
+    </li>
+    <li>
+     DNS traduce nombres a direcciones IP.
+    </li>
+    <li>
+     PAT es el tipo de NAT más común.
+    </li>
+    <li>
+     En Docker también se usa NAT internamente.
+    </li>
+   </ul>
+   <h4 id="actividad-breve_1">
+    🔧 Actividad breve
+   </h4>
+   <ol>
+    <li>
+     ¿Qué función cumple el NAT en un router doméstico?
+    </li>
+    <li>
+     ¿Cuál es la diferencia entre SNAT y DNAT?
+    </li>
+    <li>
+     ¿Qué comando te permite ver qué DNS está usando tu PC?
+    </li>
+    <li>
+     ¿Qué relación hay entre Docker y NAT?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="12-diagnostico-y-herramientas-de-red">
+    12. Diagnóstico y Herramientas de Red
+   </h2>
+   <p>
+    Cuando algo falla en una red, los administradores necesitan
+    <strong>
+     ver qué ocurre realmente
+    </strong>
+    con los paquetes que entran y salen.
+    <br/>
+    Existen herramientas que permiten diagnosticar, analizar y medir el tráfico.
+   </p>
+   <h3 id="121-resolucion-de-problemas-de-red">
+    12.1 Resolución de problemas de red
+   </h3>
+   <p>
+    Los pasos más comunes para diagnosticar fallos son:
+   </p>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       Verificar la conexión física
+      </strong>
+      - ¿El cable está conectado?
+   - ¿La interfaz WiFi está activa?
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Comprobar la configuración IP
+      </strong>
+     </p>
+    </li>
+   </ol>
+   <p>
+    Linux:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>addr<span class="w"> </span>
+</pre>
+   </div>
+   <p>
+    Windows (PowerShell):
+   </p>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetIPAddress</span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     <strong>
+      Verificar conectividad local
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span><span class="m">192</span>.168.1.1
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     <strong>
+      Verificar salida a Internet
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span><span class="m">8</span>.8.8.8
+</pre>
+   </div>
+   <ol start="5">
+    <li>
+     <strong>
+      Verificar resolución de nombres
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span>google.com
+</pre>
+   </div>
+   <ol start="6">
+    <li>
+     <strong>
+      Ver rutas de salida
+     </strong>
+    </li>
+   </ol>
+   <p>
+    Linux:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>ip<span class="w"> </span>route
+</pre>
+   </div>
+   <p>
+    Windows (PowerShell):
+   </p>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Get-NetRoute</span>
+</pre>
+   </div>
+   <h3 id="122-analizador-de-trafico-wireshark">
+    12.2 Analizador de tráfico: Wireshark
+   </h3>
+   <p>
+    <strong>
+     Wireshark
+    </strong>
+    es una herramienta gráfica que permite
+    <strong>
+     capturar y analizar paquetes
+    </strong>
+    que pasan por una interfaz de red. La podés descargar desde
+    <a href="https://www.wireshark.org/download.html">
+     el sitio oficial de Wireshark
+    </a>
+    .
+   </p>
+   <p>
+    Muestra cada paquete con:
+   </p>
+   <ul>
+    <li>
+     Protocolo (IP, TCP, DNS, etc.)
+    </li>
+    <li>
+     IP origen/destino
+    </li>
+    <li>
+     Puerto
+    </li>
+    <li>
+     Tiempo y tamaño
+    </li>
+   </ul>
+   <p>
+    Ejemplo de uso:
+   </p>
+   <ol>
+    <li>
+     Abrir Wireshark
+    </li>
+    <li>
+     Seleccionar la interfaz (por ejemplo,
+     <code>
+      wlan0
+     </code>
+     )
+    </li>
+    <li>
+     Filtrar por protocolo:
+    </li>
+   </ol>
+   <ul>
+    <li>
+     <code>
+      icmp
+     </code>
+     → solo pings
+    </li>
+    <li>
+     <code>
+      tcp.port == 80
+     </code>
+     → solo HTTP
+    </li>
+    <li>
+     <code>
+      ip.addr == 8.8.8.8
+     </code>
+     → tráfico con Google DNS
+    </li>
+   </ul>
+   <p>
+    💡 Tip: Podés usarlo en modo “offline” cargando un archivo
+    <code>
+     .pcap
+    </code>
+    .
+   </p>
+   <h3 id="123-captura-de-trafico-en-consola-tcpdump-linux">
+    12.3 Captura de tráfico en consola: tcpdump (Linux)
+   </h3>
+   <p>
+    Si no tenés entorno gráfico, podés usar
+    <strong>
+     tcpdump
+    </strong>
+    , una versión por terminal.
+   </p>
+   <p>
+    Ejemplo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>any<span class="w"> </span>icmp
+</pre>
+   </div>
+   <p>
+    Captura todo el tráfico ICMP (pings).
+Para detenerlo:
+    <code>
+     Ctrl + C
+    </code>
+   </p>
+   <p>
+    Guardar la captura en un archivo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>wlan0<span class="w"> </span>-w<span class="w"> </span>captura.pcap
+</pre>
+   </div>
+   <p>
+    Luego podés abrirla en Wireshark.
+   </p>
+   <h3 id="123-captura-de-trafico-en-windows-sin-entorno-grafico">
+    12.3 Captura de tráfico en Windows (sin entorno gráfico)
+   </h3>
+   <p>
+    Si no tenés entorno gráfico, podés usar
+    <strong>
+     tshark
+    </strong>
+    , la versión por consola de Wireshark.
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Capturar tráfico ICMP (pings):
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">tshark</span> <span class="n">-i</span> <span class="n">1</span> <span class="n">icmp</span>
+</pre>
+   </div>
+   <p>
+    🔹
+    <em>
+     Captura todo el tráfico ICMP en la interfaz número 1 (podés listar las interfaces con
+     <code>
+      tshark -D
+     </code>
+     ).
+    </em>
+    🔹 Para detener la captura:
+    <code>
+     Ctrl + C
+    </code>
+   </p>
+   <ol start="2">
+    <li>
+     <strong>
+      Guardar la captura en un archivo:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">tshark</span> <span class="n">-i</span> <span class="n">Wi-Fi</span> <span class="n">-w</span> <span class="n">captura</span><span class="p">.</span><span class="n">pcap</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <em>
+      Guarda los paquetes en formato
+      <code>
+       .pcap
+      </code>
+      , compatible con Wireshark.
+     </em>
+    </li>
+   </ul>
+   <ol start="3">
+    <li>
+     <strong>
+      Ver las interfaces disponibles:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">tshark</span> <span class="n">-D</span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     <strong>
+      Abrir la captura en Wireshark (modo gráfico):
+     </strong>
+    </li>
+   </ol>
+   <ul>
+    <li>
+     Iniciar Wireshark y abrir el archivo
+     <code>
+      captura.pcap
+     </code>
+     .
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     💡
+     <strong>
+      Nota:
+     </strong>
+     <code>
+      tshark
+     </code>
+     se instala junto con Wireshark y puede ejecutarse desde PowerShell o CMD.
+    </p>
+   </blockquote>
+   <h3 id="124-otras-herramientas-utiles">
+    12.4 Otras herramientas útiles
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Herramienta
+      </th>
+      <th>
+       Función
+      </th>
+      <th>
+       Ejemplo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        ping
+       </strong>
+      </td>
+      <td>
+       Verifica conectividad
+      </td>
+      <td>
+       <code>
+        ping 8.8.8.8
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        traceroute
+       </strong>
+      </td>
+      <td>
+       Rastrea la ruta de un paquete
+      </td>
+      <td>
+       <code>
+        traceroute openai.com
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        netstat / ss
+       </strong>
+      </td>
+      <td>
+       Muestra puertos abiertos
+      </td>
+      <td>
+       <code>
+        ss -tulnp
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        dig / host
+       </strong>
+      </td>
+      <td>
+       Consultas DNS
+      </td>
+      <td>
+       <code>
+        dig google.com
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        nmap
+       </strong>
+      </td>
+      <td>
+       Escanea equipos y puertos
+      </td>
+      <td>
+       <code>
+        nmap 192.168.1.0/24
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <blockquote>
+    <p>
+     ⚠️ Usa
+     <code>
+      nmap
+     </code>
+     solo en entornos propios o de práctica. Escanear redes ajenas puede ser ilegal.
+    </p>
+   </blockquote>
+   <h4 id="practica-linux-6">
+    🔧 Práctica Linux #6
+   </h4>
+   <ol>
+    <li>
+     Verificar conectividad:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span>google.com
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Analizar tráfico ICMP:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>any<span class="w"> </span>icmp
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Capturar tráfico HTTP:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>sudo<span class="w"> </span>tcpdump<span class="w"> </span>-i<span class="w"> </span>wlan0<span class="w"> </span>port<span class="w"> </span><span class="m">80</span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     Filtrar tráfico DNS en Wireshark:
+    </li>
+   </ol>
+   <div class="highlight language-text">
+    <pre><span></span>udp.port == 53
+</pre>
+   </div>
+   <h4 id="practica-windows-6-analisis-de-red-hands-on">
+    💻 Práctica Windows #6 — Análisis de Red (Hands-on)
+   </h4>
+   <ol>
+    <li>
+     <strong>
+      Verificar conectividad:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="nb">Test-Connection</span> <span class="n">google</span><span class="p">.</span><span class="n">com</span> <span class="n">-Count</span> <span class="n">4</span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     <strong>
+      Analizar tráfico ICMP:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">tshark</span> <span class="n">-i</span> <span class="n">1</span> <span class="n">icmp</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <em>
+      Captura paquetes ICMP (pings) en la interfaz número 1. Detener con
+      <code>
+       Ctrl + C
+      </code>
+      .
+     </em>
+     <em>
+      (Listar interfaces con
+      <code>
+       tshark -D
+      </code>
+      .)
+     </em>
+    </li>
+   </ul>
+   <ol start="3">
+    <li>
+     <strong>
+      Capturar tráfico HTTP:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-powershell">
+    <pre><span></span><span class="n">tshark</span> <span class="n">-i</span> <span class="n">Wi-Fi</span> <span class="o">-f</span> <span class="s2">"tcp port 80"</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <em>
+      Muestra o guarda paquetes HTTP. Podés reemplazar
+      <code>
+       "Wi-Fi"
+      </code>
+      por el nombre o número de la interfaz.
+     </em>
+    </li>
+   </ul>
+   <ol start="4">
+    <li>
+     <strong>
+      Filtrar tráfico DNS en Wireshark:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-text">
+    <pre><span></span>udp.port == 53
+</pre>
+   </div>
+   <ul>
+    <li>
+     <em>
+      Usá este filtro dentro de Wireshark o TShark para mostrar solo tráfico DNS.
+     </em>
+    </li>
+   </ul>
+   <h4 id="resumen-del-tema-12">
+    ✅ Resumen del Tema 12
+   </h4>
+   <ul>
+    <li>
+     Wireshark = análisis gráfico de red.
+    </li>
+    <li>
+     tcpdump = captura de paquetes en consola.
+    </li>
+    <li>
+     Comandos como ping, traceroute y ss ayudan a diagnosticar.
+    </li>
+    <li>
+     Siempre probar primero desde lo local hacia lo externo.
+    </li>
+   </ul>
+   <h4 id="actividad-breve_2">
+    🔧 Actividad breve
+   </h4>
+   <ol>
+    <li>
+     ¿Qué diferencia hay entre Wireshark y tcpdump?
+    </li>
+    <li>
+     ¿Qué comando te permite ver si tu PC llega a Internet?
+    </li>
+    <li>
+     ¿Qué puerto usa DNS para sus consultas?
+    </li>
+    <li>
+     ¿Qué precaución deberías tener al usar nmap?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="13-redes-con-docker">
+    13. Redes con Docker
+   </h2>
+   <p>
+    Docker no solo aísla procesos y sistemas de archivos, también crea
+    <strong>
+     redes virtuales
+    </strong>
+    para conectar contenedores entre sí o con Internet.
+    <br/>
+    Comprender su funcionamiento es esencial para quienes desarrollan aplicaciones distribuidas.
+   </p>
+   <h3 id="131-concepto-de-red-virtual">
+    13.1 Concepto de red virtual
+   </h3>
+   <p>
+    Cuando instalás Docker, automáticamente se crean varias
+    <strong>
+     redes internas
+    </strong>
+    .
+    <br/>
+    Cada contenedor conectado a una red virtual tiene una
+    <strong>
+     IP privada
+    </strong>
+    , como si fuera una mini-LAN dentro del host.
+   </p>
+   <p>
+    Ver redes disponibles:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>ls
+</pre>
+   </div>
+   <p>
+    Ejemplo de salida:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>NETWORK ID     NAME      DRIVER    SCOPE
+b11c8d81c1a2   bridge    bridge    local
+74b2e1fefb64   host      host      local
+a8ff31a3d9f1   none      null      local
+</pre>
+   </div>
+   <h3 id="132-tipos-de-redes-docker">
+    13.2 Tipos de redes Docker
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Nombre
+      </th>
+      <th>
+       Descripción
+      </th>
+      <th>
+       Dirección IP
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        bridge
+       </strong>
+      </td>
+      <td>
+       Red por defecto. Conecta contenedores entre sí y al host mediante NAT.
+      </td>
+      <td>
+       172.x.x.x
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        host
+       </strong>
+      </td>
+      <td>
+       El contenedor usa la red del host directamente (sin aislamiento).
+      </td>
+      <td>
+       IP del host
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        none
+       </strong>
+      </td>
+      <td>
+       Sin red asignada (aislamiento total).
+      </td>
+      <td>
+       —
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        user-defined
+       </strong>
+      </td>
+      <td>
+       Red personalizada creada por el usuario.
+      </td>
+      <td>
+       Configurable
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="133-inspeccionar-una-red">
+    13.3 Inspeccionar una red
+   </h3>
+   <p>
+    Podemos ver detalles de una red (como las IPs internas de los contenedores):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>inspect<span class="w"> </span>bridge
+</pre>
+   </div>
+   <p>
+    Ejemplo de salida abreviada:
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">"Containers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"a4b32c..."</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"Name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"web"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"IPv4Address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"172.17.0.2/16"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"b7d91a..."</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"Name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"db"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"IPv4Address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"172.17.0.3/16"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="134-crear-una-red-personalizada">
+    13.4 Crear una red personalizada
+   </h3>
+   <p>
+    Podemos crear una red propia para aislar un conjunto de contenedores:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>create<span class="w"> </span>mi_red
+</pre>
+   </div>
+   <p>
+    Luego, al crear los contenedores:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>servidor<span class="w"> </span>--network<span class="w"> </span>mi_red<span class="w"> </span>nginx
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>cliente<span class="w"> </span>--network<span class="w"> </span>mi_red<span class="w"> </span>alpine<span class="w"> </span>sleep<span class="w"> </span>infinity
+</pre>
+   </div>
+   <p>
+    Dentro del contenedor
+    <code>
+     cliente
+    </code>
+    , podés hacer ping al otro:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>cliente<span class="w"> </span>ping<span class="w"> </span>servidor
+</pre>
+   </div>
+   <blockquote>
+    <p>
+     ✅ Docker resuelve automáticamente los nombres por DNS dentro de la red (¡no hace falta usar IPs!).
+    </p>
+   </blockquote>
+   <h3 id="135-como-docker-usa-nat">
+    13.5 Cómo Docker usa NAT
+   </h3>
+   <p>
+    Las redes tipo
+    <code>
+     bridge
+    </code>
+    usan
+    <strong>
+     NAT
+    </strong>
+    para salir a Internet:
+los contenedores tienen IPs privadas (172.x.x.x), pero Docker traduce la salida a la IP pública del host.
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>[ Contenedor 172.17.0.2 ] ──▶ [ Host NAT ] ──▶ 🌐 Internet
+</pre>
+   </div>
+   <h3 id="136-comunicacion-entre-redes">
+    13.6 Comunicación entre redes
+   </h3>
+   <ul>
+    <li>
+     Los contenedores dentro de
+     <strong>
+      la misma red Docker
+     </strong>
+     pueden comunicarse por nombre.
+    </li>
+    <li>
+     Los de
+     <strong>
+      redes distintas
+     </strong>
+     no, salvo que se cree una conexión manual (
+     <code>
+      docker network connect
+     </code>
+     ).
+    </li>
+   </ul>
+   <p>
+    Ejemplo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>connect<span class="w"> </span>mi_red<span class="w"> </span>servidor2
+</pre>
+   </div>
+   <h4 id="practica-docker-1">
+    🔧 Práctica Docker #1
+   </h4>
+   <ol>
+    <li>
+     Ver redes existentes:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>ls
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Crear red personalizada:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>create<span class="w"> </span>red_app
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Lanzar contenedores conectados:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>api<span class="w"> </span>--network<span class="w"> </span>red_app<span class="w"> </span>nginx
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--name<span class="w"> </span>cliente<span class="w"> </span>--network<span class="w"> </span>red_app<span class="w"> </span>alpine<span class="w"> </span>sh
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     Probar conectividad:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>ping<span class="w"> </span>api
+</pre>
+   </div>
+   <ol start="5">
+    <li>
+     Ver direcciones IP:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>network<span class="w"> </span>inspect<span class="w"> </span>red_app
+</pre>
+   </div>
+   <h4 id="resumen-del-tema-13">
+    ✅ Resumen del Tema 13
+   </h4>
+   <ul>
+    <li>
+     Docker crea redes virtuales para sus contenedores.
+    </li>
+    <li>
+     <code>
+      bridge
+     </code>
+     es la red por defecto (usa NAT).
+    </li>
+    <li>
+     Se pueden crear redes personalizadas para aislar aplicaciones.
+    </li>
+    <li>
+     Los contenedores dentro de la misma red pueden comunicarse por nombre.
+    </li>
+   </ul>
+   <h4 id="actividad-breve_3">
+    🔧 Actividad breve
+   </h4>
+   <ol>
+    <li>
+     ¿Qué diferencia hay entre red
+     <em>
+      bridge
+     </em>
+     y
+     <em>
+      host
+     </em>
+     ?
+    </li>
+    <li>
+     ¿Qué hace Docker cuando un contenedor “sale” a Internet?
+    </li>
+    <li>
+     ¿Por qué conviene crear redes personalizadas?
+    </li>
+    <li>
+     ¿Qué comando permite inspeccionar una red?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="14-mini-practica-con-python-sockets">
+    14. Mini Práctica con Python (Sockets)
+   </h2>
+   <p>
+    Los
+    <strong>
+     sockets
+    </strong>
+    permiten a dos programas comunicarse entre sí a través de una red.
+    <br/>
+    Podemos crear clientes y servidores que usen
+    <strong>
+     TCP (confiable)
+    </strong>
+    o
+    <strong>
+     UDP (rápido)
+    </strong>
+    , igual que los protocolos del modelo TCP/IP.
+   </p>
+   <h3 id="141-concepto-de-socket">
+    14.1 Concepto de socket
+   </h3>
+   <p>
+    Un
+    <strong>
+     socket
+    </strong>
+    es un punto de comunicación identificado por una
+    <strong>
+     dirección IP
+    </strong>
+    y un
+    <strong>
+     puerto
+    </strong>
+    .
+   </p>
+   <p>
+    Ejemplo:
+    <br/>
+    <code>
+     192.168.1.20:5000
+    </code>
+    → Socket TCP en la PC con IP 192.168.1.20 escuchando en el puerto 5000.
+   </p>
+   <h3 id="142-servidor-tcp-en-python">
+    14.2 Servidor TCP en Python
+   </h3>
+   <p>
+    Crea un archivo llamado
+    <code>
+     servidor_tcp.py
+    </code>
+    con el siguiente contenido:
+   </p>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+<span class="c1">## Crear socket TCP (SOCK_STREAM)</span>
+<span class="n">servidor</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">servidor</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">"0.0.0.0"</span><span class="p">,</span> <span class="mi">5000</span><span class="p">))</span>   <span class="c1">## Escuchar en todas las interfaces</span>
+<span class="n">servidor</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Servidor TCP escuchando en puerto 5000..."</span><span class="p">)</span>
+
+<span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">servidor</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Conexión establecida desde </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Mensaje recibido:"</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="sa">b</span><span class="s2">"OK - recibido"</span><span class="p">)</span>
+
+<span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Ejecutalo con:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>python3<span class="w"> </span>servidor_tcp.py
+</pre>
+   </div>
+   <h3 id="143-cliente-tcp-en-python">
+    14.3 Cliente TCP en Python
+   </h3>
+   <p>
+    En otra terminal o equipo, creá
+    <code>
+     cliente_tcp.py
+    </code>
+    :
+   </p>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+<span class="n">cliente</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+<span class="n">cliente</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">"127.0.0.1"</span><span class="p">,</span> <span class="mi">5000</span><span class="p">))</span>
+
+<span class="n">mensaje</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">"Escribí un mensaje: "</span><span class="p">)</span>
+<span class="n">cliente</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">mensaje</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+
+<span class="n">respuesta</span> <span class="o">=</span> <span class="n">cliente</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Servidor respondió:"</span><span class="p">,</span> <span class="n">respuesta</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+<span class="n">cliente</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Probá enviando mensajes entre ambos.
+Si todo sale bien, verás en el servidor cada mensaje que llega.
+   </p>
+   <h3 id="144-comunicacion-udp-en-python">
+    14.4 Comunicación UDP en Python
+   </h3>
+   <p>
+    UDP no establece conexión: simplemente envía datagramas.
+   </p>
+   <h4 id="servidor-udp-servidor_udppy">
+    Servidor UDP (
+    <code>
+     servidor_udp.py
+    </code>
+    )
+   </h4>
+   <div class="highlight language-python">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+<span class="n">servidor</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+<span class="n">servidor</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">"0.0.0.0"</span><span class="p">,</span> <span class="mi">6000</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Servidor UDP escuchando en puerto 6000..."</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">servidor</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Mensaje de </span><span class="si">{</span><span class="n">addr</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">servidor</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="sa">b</span><span class="s2">"Recibido UDP"</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="cliente-udp-cliente_udppy">
+    Cliente UDP (
+    <code>
+     cliente_udp.py
+    </code>
+    )
+   </h4>
+   <div class="highlight language-python">
+    <pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+<span class="n">cliente</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+<span class="n">cliente</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="sa">b</span><span class="s2">"Hola desde UDP"</span><span class="p">,</span> <span class="p">(</span><span class="s2">"127.0.0.1"</span><span class="p">,</span> <span class="mi">6000</span><span class="p">))</span>
+
+<span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">cliente</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Respuesta:"</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+</pre>
+   </div>
+   <h3 id="145-observa-los-paquetes-en-wireshark">
+    14.5 Observá los paquetes en Wireshark
+   </h3>
+   <p>
+    Mientras ejecutás los programas:
+   </p>
+   <ul>
+    <li>
+     Filtrá por
+     <code>
+      tcp.port == 5000
+     </code>
+     o
+     <code>
+      udp.port == 6000
+     </code>
+    </li>
+    <li>
+     Vas a ver las tramas con tus mensajes
+    </li>
+   </ul>
+   <p>
+    Esto te permitirá visualizar
+    <strong>
+     cómo viajan los datos en tiempo real
+    </strong>
+    .
+   </p>
+   <h4 id="resumen-del-tema-14">
+    ✅ Resumen del Tema 14
+   </h4>
+   <ul>
+    <li>
+     Un
+     <strong>
+      socket
+     </strong>
+     combina una IP y un puerto.
+    </li>
+    <li>
+     TCP requiere conexión; UDP solo envía datagramas.
+    </li>
+    <li>
+     Con Python podés crear tus propios clientes y servidores.
+    </li>
+    <li>
+     Wireshark permite analizar los paquetes generados.
+    </li>
+   </ul>
+   <h4 id="actividad-practica_1">
+    🔧 Actividad práctica
+   </h4>
+   <ol>
+    <li>
+     Ejecutá el servidor TCP y el cliente TCP.
+    </li>
+    <li>
+     Capturá el tráfico con Wireshark.
+    </li>
+    <li>
+     Repetí con UDP y compará la diferencia.
+    </li>
+    <li>
+     ¿Qué pasa si cerrás el servidor y el cliente intenta enviar datos?
+    </li>
+   </ol>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

@@ -5,84 +5,508 @@
 * Aplicar `keyof`, *indexed access*, *template literal types*, `infer`.
 
 ### 1) Teoría mínima
+#### 1.1 `keyof`, Indexed Access y Lookup Types: Inspeccionando Tipos
 
-#### 1.1 `keyof`, *Indexed Access* y *Lookup types*
+*TypeScript* proporciona un conjunto de operadores que nos permiten "inspeccionar" la estructura de otros tipos. Esto es fundamental para crear utilidades genéricas y seguras que puedan operar sobre objetos sin conocer sus propiedades de antemano.
 
-* `keyof T` produce una **unión de las claves** de `T`.
-* `T[K]` accede al **tipo del miembro** `K` de `T` (donde `K extends keyof T`).
-* Anidado: `T[K1][K2]`.
+*   **`keyof`: Obteniendo las Llaves del Tipo**
 
-```ts
-type User = { id: string; age: number; created: Date }
-type Keys = keyof User            // "id" | "age" | "created"
-type Age = User["age"]           // number
+    El operador `keyof` toma un tipo de objeto `T` y produce un nuevo tipo que es una **unión de strings literales** de todas sus claves (propiedades) públicas. Piensa en él como si pidieras el "menú de propiedades" disponibles en un tipo.
+
+```typescript
+type User = {
+  id: string;
+  age: number;
+  created: Date;
+};
+
+// `keyof User` inspecciona el tipo `User` y devuelve una unión de sus claves.
+type UserKeys = keyof User; // El tipo resultante es: "id" | "age" | "created"
 ```
 
-#### 1.2 *Mapped Types* (mapeo de claves)
+*   **`T[K]`: Consultando el Tipo de una Propiedad (Indexed Access Types)**
 
-* Plantillas de transformación de tipos:
+    Una vez que tienes la "llave" de una propiedad, puedes usar la sintaxis de corchetes `T[K]` para "buscar" y obtener el **tipo** de esa propiedad específica. A esto se le conoce como *Indexed Access Type* o *Lookup Type*.
 
-  ```ts
-  type ReadonlyT<T> = { readonly [K in keyof T]: T[K] }
-  type PartialT<T> = { [K in keyof T]?: T[K] }
-  ```
-* **Modificadores** de mapeo:
+```typescript
+// Usamos una de las claves de `User` (un string literal) para consultar su tipo.
+type AgeType = User["age"];     // El tipo resultante es `number`
+type IdType = User["id"];       // El tipo resultante es `string`
+```
 
-  * `+readonly` / `-readonly` agregan o quitan `readonly`.
-  * `+?` / `-?` agregan o quitan opcionalidad.
-* **Key remapping**: renombra o filtra claves usando `as`.
+*   **Poniéndolo Todo Junto: El Patrón en Acción**
 
-  ```ts
-  type OnlyStrings<T> = { [K in keyof T as T[K] extends string ? K : never]: T[K] }
-  ```
+    La verdadera magia ocurre cuando combinas `keyof` y `T[K]` para crear funciones genéricas seguras. El uso más común es para una función que accede a una propiedad de un objeto de forma segura.
 
-#### 1.3 *Conditional Types*
+```typescript
+/**
+ * Esta función genérica toma un objeto `obj` (de tipo `T`) y una clave `key` (de tipo `K`).
+  *
+  * La restricción `K extends keyof T` es crucial:
+  * Asegura que el argumento `key` SÓLO pueda ser una de las claves válidas del objeto `obj`.
+  *
+  * El tipo de retorno `T[K]` garantiza que el tipo de salida coincida
+  * perfectamente con el tipo de la propiedad que se está accediendo.
+  */
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
 
-* Forma general: `T extends U ? X : Y`.
-* **Distribución**: si `T` es genérico desnudo en el lado izquierdo, el condicional se aplica a cada miembro de la unión.
+// --- Viéndolo funcionar ---
+const user: User = {
+  id: "user-123",
+  age: 30,
+  created: new Date(),
+};
 
-  ```ts
-  type ToArray<T> = T extends any ? T[] : never
-  type A = ToArray<string | number> // string[] | number[]
-  ```
-* Utilidades internas basadas en condicionales: `Exclude`, `Extract`, `NonNullable`, etc.
+// `age` es de tipo `number` porque TypeScript infiere que T[K] es User["age"], que es `number`.
+const age = getProperty(user, "age");
 
-#### 1.4 `infer` (inferencia dentro de tipos)
+// `created` es de tipo `Date`.
+const creationDate = getProperty(user, "created");
 
-* Permite **capturar** subtipos en condicionales.
+// const invalid = getProperty(user, "email"); // ❌ Error: Argument of type '"email"' is not 
+                                              // assignable to parameter of type 'keyof User'.
+```
 
-  ```ts
-  type Return<T> = T extends (...args: any) => infer R ? R : never
-  type UnwrapPromise<T> = T extends Promise<infer U> ? U : T
-  ```
 
-#### 1.5 *Template Literal Types*
+#### 1.2 Mapped Types: Creando Nuevos Tipos a Partir de Otros
 
-* Composición de strings tipados y **patrones** con `infer`.
+Piensa en los *Mapped Types* como un bucle `for...in` que opera sobre los **tipos** en lugar de sobre los valores. Te permiten tomar un tipo existente y, de forma programática, crear un nuevo tipo aplicando transformaciones a cada una de sus propiedades. Son como una "fábrica" para generar nuevos tipos.
 
-  ```ts
-  type Route<P extends string> = `/api/${P}`
-  type Upper<S extends string> = Capitalize<S>
-  type Split2<S extends string> = S extends `${infer A}-${infer B}` ? [A, B] : [S]
-  ```
+**La Anatomía de un Mapped Type**
 
-#### 1.6 *Key Remapping* avanzado
+La sintaxis básica es una plantilla que itera sobre las claves de otro tipo.
 
-* Cambiar nombres o **filtrar** claves:
+```typescript
+// La sintaxis `[K in keyof T]` se puede leer como:
+// "Para cada clave `K` en el tipo `T`..."
+type Mapped<T> = {
+  [K in keyof T]: T[K] // "...la nueva propiedad `K` tendrá el tipo del valor original `T[K]`"
+};
+```
 
-  ```ts
-  type PrefixKeys<T, P extends string> = { [K in keyof T as `${P}${Extract<K, string>}`]: T[K] }
-  type RemoveUnderscore<T> = { [K in keyof T as K extends `_${string}` ? never : K]: T[K] }
-  ```
+Los famosos tipos de utilidad `Readonly<T>` y `Partial<T>` son implementaciones perfectas de este patrón:
 
-#### 1.7 *Utility Types* (panorama)
+```typescript
+// `Readonly<T>`: Añade el modificador `readonly` a cada propiedad.
+type Readonly<T> = {
+  readonly [K in keyof T]: T[K];
+};
 
-* **Estándar**: `Partial`, `Required`, `Readonly`, `Pick`, `Omit`, `Record`, `Exclude`, `Extract`, `NonNullable`, `ReturnType`, `Parameters`, `ConstructorParameters`, `InstanceType`, `ThisType`.
-* **Idea**: podés recrearlos con *mapped* y *conditional* para comprender su semántica.
+// `Partial<T>`: Hace que cada propiedad sea opcional con `?`.
+type Partial<T> = {
+  [K in keyof T]?: T[K];
+};
 
-> En la práctica combinaremos todas estas piezas para crear **utilidades de tipos reutilizables** y validar su comportamiento con “tests de tipos”.
+type User = { name: string; age: number };
+type ReadonlyUser = Readonly<User>; // { readonly name: string; readonly age: number; }
+type PartialUser = Partial<User>;   // { name?: string; age?: number; }
+```
+
+**Modificadores de Mapeo: Añadiendo o Quitando `readonly` y `?`**
+
+Puedes controlar explícitamente si una propiedad debe ser opcional o de solo lectura usando los prefijos `+` (añadir) y `-` (quitar). Si no se usa prefijo, `+` es el valor por defecto.
+
+```typescript
+// `Required<T>` es lo opuesto a `Partial<T>`. Quita el `?` de cada propiedad.
+type Required<T> = {
+  // El modificador `-?` elimina la opcionalidad.
+  [K in keyof T]-?: T[K];
+};
+
+type PartialUser = { name?: string; age?: number };
+type RequiredUser = Required<PartialUser>; // { name: string; age: number; }
+```
+
+**Re-mapeo de Claves con `as`: Filtrando y Renombrando Propiedades**
+
+Esta es la parte más poderosa. Usando la cláusula `as` dentro de un *Mapped Type*, puedes cambiar el **nombre de las claves** o incluso **filtrarlas** por completo.
+
+La técnica de filtrado se basa en un tipo condicional: si la condición se cumple, mantienes la clave; si no, la "descartas" devolviendo `never`.
+
+**Ejemplo: Crear un tipo que solo contenga las propiedades de tipo `string`**
+
+```typescript
+type UserWithMixedTypes = {
+  name: string;
+  age: number;
+  email: string;
+  isActive: boolean;
+};
+
+// Este Mapped Type filtra las claves.
+type StringPropertiesOnly<T> = {
+  // `as T[K] extends string ? K : never` es la clave del filtrado.
+  // Se lee como:
+  // "Para cada clave `K` en `T`..."
+  // "...si el tipo del valor `T[K]` es un `string`..."
+  // "...entonces (`?`) usa `K` como el nombre de la nueva clave..."
+  // "...de lo contrario (`:`), descarta esta clave (`never`)."
+  [K in keyof T as T[K] extends string ? K : never]: T[K];
+};
+
+// `FilteredUser` solo contendrá las propiedades `name` y `email`.
+type FilteredUser = StringPropertiesOnly<UserWithMixedTypes>;
+// El tipo resultante es: { name: string; email: string; }
+```
+
+#### 1.3 Conditional Types: El Operador Ternario para Tipos
+
+Piensa en los tipos condicionales como el operador ternario de JavaScript (`condicion ? valorSiVerdadero : valorSiFalso`), pero para el sistema de tipos. Te permiten crear un tipo que cambia basándose en si otro tipo cumple una cierta condición.
+
+**La Forma General: `T extends U ? X : Y`**
+
+La sintaxis se lee de la siguiente manera:
+*"Si el tipo `T` es asignable al tipo `U`, entonces el tipo resultante es `X`; de lo contrario, el tipo resultante es `Y`."*
+
+```typescript
+// Un ejemplo simple para ilustrar la lógica.
+type EsUnString<T> = T extends string ? "Sí, es un string" : "No, no es un string";
+
+type Caso1 = EsUnString<string>; // El tipo resultante es "Sí, es un string"
+type Caso2 = EsUnString<number>; // El tipo resultante es "No, no es un string"
+```
+
+**La Magia de la Distribución sobre Uniones**
+
+Aquí es donde los tipos condicionales realmente brillan. Si el tipo a la izquierda de `extends` (en nuestro caso, `T`) es una **variable de tipo genérica "desnuda"** (es decir, no está envuelta en otro tipo como `T[]` o `{ prop: T }`) y le pasas una **unión**, el tipo condicional se **distribuye** sobre cada miembro de esa unión.
+
+En otras palabras, la operación se aplica a cada miembro de la unión por separado, y los resultados se vuelven a unir en una nueva unión.
+
+```typescript
+// `T` es un genérico "desnudo".
+type AArray<T> = T extends any ? T[] : never;
+
+// Cuando pasamos `string | number` a `AArray`, TypeScript lo descompone:
+// 1. Aplica `AArray` a `string` -> `string[]`
+// 2. Aplica `AArray` a `number` -> `number[]`
+// 3. Recombina los resultados en una nueva unión.
+type Resultado = AArray<string | number>; // El tipo resultante es: string[] | number[]
+```
+
+Para evitar este comportamiento de distribución, puedes "envolver" el genérico en ambos lados de `extends`:
+```typescript
+type AArraySinDistribuir<T> = [T] extends [any] ? T[] : never;
+type ResultadoSinDistribuir = AArraySinDistribuir<string | number>; // El tipo es: (string | number)[]
+```
+
+**Extrayendo Tipos con `infer`**
+
+La palabra clave `infer` se puede usar dentro de los tipos condicionales para "declarar" una nueva variable de tipo que captura una parte del tipo que se está comprobando. Es una herramienta increíblemente poderosa para "extraer" tipos anidados.
+
+```typescript
+// `ReturnType<T>` es una utilidad nativa que extrae el tipo de retorno de una función.
+// Así es como funciona por dentro:
+type MiReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
+// Se lee como: "Si `T` tiene la forma de una función,
+// INFIERE su tipo de retorno en una nueva variable `R`, y usa `R` como resultado".
+
+type MiFuncion = () => string;
+type TipoDeRetorno = MiReturnType<MiFuncion>; // El tipo resultante es `string`
+```
+
+**La Base de las Utilidades Nativas**
+
+Muchos de los tipos de utilidad más útiles de *TypeScript* están construidos con tipos condicionales.
+
+*   **`Exclude<T, U>`**: De la unión `T`, excluye los miembros que son asignables a `U`.
+```typescript
+// Definición interna:
+// type Exclude<T, U> = T extends U ? never : T;
+type Letras = "a" | "b" | "c";
+type LetrasSinA = Exclude<Letras, "a">; // El tipo es "b" | "c"
+```
+*   **`Extract<T, U>`**: De la unión `T`, extrae solo los miembros que son asignables a `U`.
+*   **`NonNullable<T>`**: Excluye `null` y `undefined` de `T`.
+¡Por supuesto! La palabra clave `infer` es como una herramienta de "deconstrucción" para los tipos. Desbloquea patrones de programación de tipos muy avanzados.
+
+
+
+#### 1.4 `infer`: Capturando Tipos Dentro de Otros Tipos
+
+La palabra clave `infer` es una herramienta avanzada que se usa exclusivamente dentro de los tipos condicionales (`T extends U ? X : Y`). Su propósito es **"inferir" o "capturar"** una parte del tipo que estás comprobando y almacenarla en una nueva variable de tipo temporal.
+
+Piensa en ello como una expresión regular que, además de verificar si un string coincide con un patrón, también te permite **capturar y extraer partes de ese string**.
+
+**La Sintaxis: `... infer R ...`**
+
+Cuando usas `infer R`, le estás diciendo a *TypeScript*: "Si el tipo que estoy comprobando coincide con esta estructura, por favor, toma la parte del tipo que está en la posición de `R` y ponla en una nueva variable de tipo llamada `R` que pueda usar en la rama 'verdadera' de mi condicional".
+
+**Ejemplo 1: Extrayendo el Tipo de Retorno de una Función**
+
+Este es el caso de uso canónico. Queremos crear una utilidad `ReturnType<T>` que pueda tomar un tipo de función y devolvernos solo su tipo de retorno.
+
+```typescript
+// `T extends (...args: any) => infer R` es el patrón que queremos hacer coincidir.
+// Se lee como: "Si `T` es una función..."
+// `... infer R`: "...infiere su tipo de retorno y ponlo en una variable `R`."
+// `? R`: "Si coincide, el resultado de este tipo condicional es `R`."
+// `: never`: "Si no coincide, el resultado es `never`."
+type Return<T> = T extends (...args: any) => infer R ? R : never;
+
+// --- Viéndolo en acción ---
+type MiFuncion = (nombre: string, edad: number) => boolean;
+
+// TypeScript hace coincidir `MiFuncion` con el patrón:
+// (...args: any) => infer R  =>  (nombre: string, edad: number) => boolean
+// Y captura `boolean` en la variable `R`.
+type ElTipoDeRetorno = Return<MiFuncion>; // El tipo resultante es `boolean`
+```
+
+**Ejemplo 2: Desenvolviendo el Tipo de una Promesa**
+
+Otro patrón muy común es querer obtener el tipo del valor que una `Promise` resolverá.
+
+```typescript
+// `T extends Promise<infer U>` es el patrón.
+// Se lee como: "Si `T` es una `Promise`..."
+// `... infer U`: "...infiere el tipo genérico con el que fue creada y ponlo en `U`."
+// `? U`: "Si coincide, el resultado es `U`."
+// `: T`: "Si no coincide (no es una promesa), simplemente devuelve el tipo original `T`."
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
+// --- Viéndolo en acción ---
+type PromesaDeString = Promise<string>;
+type PromesaDeNumero = Promise<number>;
+type UnNumeroSimple = number;
+
+// `U` se infiere como `string`.
+type ValorResuelto1 = UnwrapPromise<PromesaDeString>; // El tipo es `string`
+
+// `U` se infiere como `number`.
+type ValorResuelto2 = UnwrapPromise<PromesaDeNumero>; // El tipo es `number`
+
+// No coincide con el patrón `Promise<...>`.
+type ValorResuelto3 = UnwrapPromise<UnNumeroSimple>; // El tipo es `number` (la rama "falsa")
+```
+
+#### 1.5 Template Literal Types: Manipulando Strings en el Sistema de Tipos
+
+Los *Template Literal Types* llevan el poder de las plantillas de string de JavaScript (las que usan backticks ` `` `) directamente al sistema de tipos. Esto te permite crear tipos de string dinámicos, complejos y extremadamente específicos, lo que abre la puerta a patrones de validación muy avanzados.
+
+**1. Componiendo Tipos de String**
+
+En su forma más básica, puedes usarlos para construir nuevos tipos de string literal combinando otros tipos.
+
+```typescript
+// Este tipo genérico toma un string `P` y lo concatena dentro de un patrón.
+type Route<P extends string> = `/api/v1/${P}`;
+
+// Al usarlo, creamos un tipo de string literal específico y seguro.
+type UserRoute = Route<"users">; // El tipo es exactamente "/api/v1/users"
+type ProductRoute = Route<"products">; // El tipo es exactamente "/api/v1/products"
+
+// const invalidRoute: UserRoute = "/api/v1/products"; // ❌ Error: Los tipos no coinciden.
+```
+
+**2. Manipulando Strings con Utilidades Nativas**
+
+*TypeScript* incluye un conjunto de tipos de utilidad para realizar transformaciones comunes en los strings, como cambiar a mayúsculas o minúsculas.
+
+*   `Capitalize<S>`: Pone en mayúscula el primer carácter.
+*   `Uppercase<S>`: Pone todo el string en mayúsculas.
+*   `Lowercase<S>`: Pone todo el string en minúsculas.
+*   `Uncapitalize<S>`: Pone en minúscula el primer carácter.
+
+```typescript
+type Saludo = "hello world";
+
+type SaludoCapitalizado = Capitalize<Saludo>; // El tipo es "Hello world"
+type SaludoEnMayusculas = Uppercase<Saludo>; // El tipo es "HELLO WORLD"
+```
+
+**3. Extrayendo Patrones con `infer`**
+
+Aquí es donde reside el verdadero poder. Puedes combinar los *Template Literal Types* con los tipos condicionales (`extends`) y la palabra clave `infer` para **deconstruir y capturar partes de un tipo de string**.
+
+Piensa en ello como una expresión regular para el sistema de tipos.
+
+**Ejemplo: Dividir un tipo de string por un guion**
+
+```typescript
+/**
+ * Este tipo intenta dividir un string `S` en dos partes usando un guion como separador.
+ *
+ * La lógica `S extends `${infer A}-${infer B}`` se lee como:
+ * "Si el tipo `S` coincide con el patrón de 'un_texto-otro_texto'..."
+ *
+ * `infer A`: "...captura la parte antes del guion en una nueva variable de tipo `A`."
+ * `infer B`: "...y captura la parte después del guion en una nueva variable de tipo `B`."
+ *
+ * `? [A, B]`: "Si coincide, el resultado es una tupla con las dos partes capturadas."
+ * `: [S]`: "Si no coincide, el resultado es una tupla con el string original."
+ */
+type SplitByDash<S extends string> = S extends `${infer A}-${infer B}` ? [A, B] : [S];
+
+// --- Viéndolo en acción ---
+type Result1 = SplitByDash<"user-profile">; // El tipo es ["user", "profile"]
+type Result2 = SplitByDash<"dashboard">;    // El tipo es ["dashboard"] (no coincide el patrón)
+type Result3 = SplitByDash<"id-name-role">; // El tipo es ["id", "name-role"] (solo divide en el primer guion)
+```
+
+¡Excelente! El re-mapeo de claves con `as` es la culminación de varias características avanzadas de *TypeScript* (Mapped Types, Conditional Types, Template Literals). Es una herramienta increíblemente poderosa para transformar la "forma" de los tipos de objeto.
+
+#### 1.6 Key Remapping Avanzado con `as`
+
+El re-mapeo de claves, habilitado por la cláusula `as` dentro de un *Mapped Type*, te da control total sobre las claves del nuevo tipo que estás creando. Te permite realizar dos operaciones principales: **renombrar** claves existentes o **filtrarlas** para eliminarlas por completo.
+
+##### 1.6.1 Renombrar Claves
+
+Puedes usar `as` junto con *Template Literal Types* para generar nuevos nombres de clave de forma programática.
+
+**Ejemplo: Crear un tipo que añade un prefijo a todas las claves**
+
+Imagina que quieres tomar un tipo `User` y crear un nuevo tipo donde cada propiedad esté prefijada con `user_` (por ejemplo, `name` se convierte en `user_name`).
+
+```typescript
+/**
+ * Este tipo genérico toma un tipo `T` y un prefijo `P` (un string).
+ * Luego, crea un nuevo tipo donde cada clave `K` de `T` es renombrada.
+ */
+type PrefixKeys<T, P extends string> = {
+  // `as `${P}${Extract<K, string>}`` es la cláusula de renombrado.
+  // Se lee como: "Para cada clave `K` en `T`, el nuevo nombre de la clave será..."
+  // "...el prefijo `P` seguido del nombre de la clave `K`."
+  //
+  // (Nota: `Extract<K, string>` es una medida de seguridad para asegurar que solo
+  // trabajamos con claves de tipo string, ya que `keyof` puede incluir numbers o symbols).
+  [K in keyof T as `${P}${Extract<K, string>}`]: T[K];
+};
+
+// --- Viéndolo en acción ---
+type User = {
+  name: string;
+  id: number;
+};
+
+// Creamos un nuevo tipo usando `PrefixKeys`.
+type PrefixedUser = PrefixKeys<User, "user_">;
+
+// El tipo resultante de `PrefixedUser` es:
+// {
+//   user_name: string;
+//   user_id: number;
+// }
+```
+
+##### 1.6.2 Filtrar Claves
+
+El verdadero poder del re-mapeo se revela cuando lo combinas con tipos condicionales. Al mapear una clave a `never`, le dices a *TypeScript* que **descarte esa clave por completo** del tipo resultante.
+
+**Ejemplo: Crear un tipo que elimina todas las propiedades que comienzan con un guion bajo**
+
+Este es un caso de uso común para crear un tipo "público" a partir de un tipo que contiene propiedades "privadas" (convencionalmente prefijadas con `_`).
+
+```typescript
+/**
+ * Este tipo genérico toma un tipo `T` y elimina cualquier clave que
+ * comience con un guion bajo.
+ */
+type RemoveUnderscoreProperties<T> = {
+  // La cláusula `as` ahora contiene un tipo condicional para filtrar.
+  // Se lee como: "Para cada clave `K` en `T`..."
+  // "...si `K` coincide con el patrón de un string que empieza por `_` (`_${string}`)..."
+  // "...entonces (`?`) descarta esta clave (`never`)..."
+  // "...de lo contrario (`:`), mantén el nombre original de la clave (`K`)."
+  [K in keyof T as K extends `_${string}` ? never : K]: T[K];
+};
+
+// --- Viéndolo en acción ---
+type UserWithInternalProperties = {
+  id: string;
+  name: string;
+  _passwordHash: string; // Propiedad "privada" que queremos eliminar.
+  _sessionToken: string; // Otra propiedad "privada".
+};
+
+// Aplicamos el filtro para obtener solo la vista pública del usuario.
+type PublicUser = RemoveUnderscoreProperties<UserWithInternalProperties>;
+
+// El tipo resultante de `PublicUser` es:
+// {
+//   id: string;
+//   name: string;
+// }
+// Las propiedades `_passwordHash` y `_sessionToken` han sido eliminadas.
+```
+
+#### 1.7 Utility Types: La Caja de Herramientas de TypeScript
+
+*TypeScript* viene con una "caja de herramientas" de tipos genéricos predefinidos, llamados *Utility Types*, diseñados para realizar transformaciones de tipos comunes. En lugar de reescribir la misma lógica de *Mapped* o *Conditional Types* una y otra vez, puedes usar estas utilidades para que tu código sea más conciso y expresivo.
+
+A continuación, se presenta un panorama de los más importantes, agrupados por su función:
+
+##### 1. Modificadores de Propiedades de Objetos
+
+Estos tipos cambian la naturaleza de las propiedades de un tipo de objeto.
+
+*   **`Partial<T>`**: Hace que todas las propiedades de `T` sean opcionales (`?`).
+*   **`Required<T>`**: Hace que todas las propiedades de `T` sean requeridas (elimina `?`).
+*   **`Readonly<T>`**: Hace que todas las propiedades de `T` sean de solo lectura (`readonly`).
+*   **`Record<K, T>`**: Crea un tipo de objeto con un conjunto de claves `K` (generalmente una unión de strings) donde cada clave tiene el tipo `T`.
+
+```typescript
+type User = { name: string; age?: number };
+
+type PartialUser = Partial<User>; // { name?: string; age?: number; }
+type RequiredUser = Required<User>; // { name: string; age: number; }
+```
+
+##### 2. Subconjuntos de Propiedades de Objetos
+
+Estos tipos te permiten crear nuevos tipos seleccionando u omitiendo propiedades de otro.
+
+*   **`Pick<T, K>`**: Crea un tipo seleccionando solo un subconjunto de claves `K` del tipo `T`.
+*   **`Omit<T, K>`**: Crea un tipo omitiendo un subconjunto de claves `K` del tipo `T`.
+
+```typescript
+type User = { id: string; name: string; email: string };
+
+type UserWithIdAndName = Pick<User, "id" | "name">; // { id: string; name: string; }
+type UserWithoutEmail = Omit<User, "email">;      // { id: string; name: string; }
+```
+
+##### 3. Manipulación de Uniones
+
+Estos tipos operan sobre tipos de unión, permitiéndote filtrarlos.
+
+*   **`Exclude<T, U>`**: De la unión `T`, excluye todos los miembros que son asignables a `U`.
+*   **`Extract<T, U>`**: De la unión `T`, extrae solo los miembros que son asignables a `U`.
+*   **`NonNullable<T>`**: Excluye `null` y `undefined` del tipo `T`.
+
+```typescript
+type Status = "success" | "loading" | "error" | null;
+
+type NetworkStatus = Exclude<Status, "error" | null>;      // "success" | "loading"
+type NullableStatus = Extract<Status, "error" | null>;     // "error" | null
+type DefiniteStatus = NonNullable<Status>;                 // "success" | "loading" | "error"
+```
+
+##### 4. Introspección de Funciones y Clases
+
+Estos tipos te permiten extraer "meta-información" de los tipos de funciones y constructores.
+
+*   **`Parameters<T>`**: Extrae los tipos de los parámetros de una función `T` como una tupla.
+*   **`ReturnType<T>`**: Extrae el tipo de retorno de una función `T`.
+*   **`InstanceType<T>`**: Extrae el tipo de la instancia de una clase constructora `T`.
+
+```typescript
+type MiFuncion = (id: number, name: string) => boolean;
+
+type MisParametros = Parameters<MiFuncion>; // [number, string]
+type MiTipoDeRetorno = ReturnType<MiFuncion>; // boolean
+```
 
 ---
+
+**El Camino hacia la Maestría**
+
+La idea fundamental es que **puedes recrear la mayoría de estas utilidades** usando las herramientas que hemos visto (*Mapped Types*, *Conditional Types*, `keyof`, `infer`, etc.). Hacerlo es el mejor ejercicio para comprender profundamente su semántica y cómo funciona el sistema de tipos de *TypeScript*.
+
+> En la práctica, combinaremos todas estas piezas para crear nuestras propias **utilidades de tipos reutilizables** y específicas para nuestro dominio. Esto nos permite construir APIs de tipos robustas, seguras y auto-documentadas, validando su comportamiento con técnicas de "tests de tipos" para garantizar que nuestras transformaciones complejas siempre funcionen como se espera.
+
+
 
 ### 2) Práctica
 
@@ -233,611 +657,4 @@ npm run typecheck
 npm run dev -- src/04-utility-demo.ts
 npm run dev -- src/04-conditional-infer.ts
 npm run dev -- src/04-template-remap.ts
-```
-
-## Módulos, resolución, *barrels*, `exports` y declaraciones `.d.ts`
-
-**Objetivos**
-
-* Entender resolución de módulos, *barrels*, *module augmentation* y tipados de terceros.
-
-### 1) Teoría
-
-#### 1.1 ES Modules vs CommonJS
-
-* **ESM** (moderno): `import/export`. Mejor *tree-shaking* y compatibilidad con bundlers. En Node, se activa con `"type": "module"` en `package.json`.
-* **CJS** (histórico): `require/module.exports`. Aún común en ecosistema.
-* Librerías serias suelen publicar **ambos formatos**.
-
-#### 1.2 Campos clave en `package.json`
-
-* `type`: `"module"` (ESM por defecto) o `"commonjs"`.
-* `main`: punto de entrada legado para CJS.
-* `module`: punto de entrada ESM (usado por algunos bundlers; opcional si usás `exports`).
-* `exports` (recomendado): define **mapa** de entradas por entorno:
-
-  ```json
-  {
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      },
-      "./utils": {
-        "types": "./dist/utils.d.ts",
-        "import": "./dist/utils.js",
-        "require": "./dist/utils.cjs"
-      }
-    }
-  }
-  ```
-* `types`/`typings`: archivo `.d.ts` principal (si no usás `exports.types`).
-* `files`: controla qué se publica (p. ej., `dist/`, `README.md`, `LICENSE`).
-* `sideEffects`: `false` habilita mejor *tree-shaking* **si** tus módulos no tienen efectos colaterales.
-
-#### 1.3 Resolución de módulos en TS
-
-* `moduleResolution`: `Bundler` (recomendado con Vite/tsup), `NodeNext` (Node ESM/CJS), o `Node` (legacy).
-* `baseUrl`/`paths`: alias de importación (no confundir con `exports`).
-
-  ```json
-  {
-    "compilerOptions": {
-      "baseUrl": ".",
-      "paths": { "@lib/*": ["src/*"] }
-    }
-  }
-  ```
-
-  > Los alias **no** cambian el runtime; bundlers o tsconfig-paths deben resolverlos.
-
-#### 1.4 *Barrels* (archivos `index.ts`)
-
-* Re-exportan símbolos desde un "paquete" interno para simplificar imports.
-* Preferí **`export type`** para re-exportar **solo tipos** y evitar importaciones en runtime.
-* Cuidado con **ciclos** de imports al encadenar muchos *barrels*.
-
-#### 1.5 Declaraciones `.d.ts`
-
-* Se generan automáticamente con `tsc` (`"declaration": true`) o con bundlers (p. ej., `tsup --dts`).
-* **Ambient declarations**: agregan tipos sin importar un módulo concreto.
-
-  ```ts
-  // global.d.ts
-  declare global { interface Window { appVersion?: string } }
-  export {} // convierte el archivo en módulo y aplica las globals
-  ```
-* **Module declarations**: tipar módulos JS sin tipos:
-
-  ```ts
-  // types/untyped-lib.d.ts
-  declare module "untyped-lib" { export function greet(n: string): string }
-  ```
-* **Module augmentation**: extender tipos existentes de una lib:
-
-  ```ts
-  // types/fastify.d.ts
-  declare module "fastify" { interface FastifyRequest { userId?: string } }
-  ```
-
-#### 1.6 `import type` / `export type`
-
-* Eliminan importaciones **solo de tipos** en JS emitido, reduciendo sobrecarga y ciclos.
-
-#### 1.7 Estrategias de publicación
-
-* Monopackage simple: compilar a `dist/` con ESM/CJS + d.ts.
-* Verificá **consumo dual** (ESM y CJS) y los tipos en un proyecto *consumer*.
-* Publicación real: `npm publish` (usar `npm pack` y `files` para previsualizar el contenido).
-
----
-
-### 2) Práctica con npm
-
-> Carpeta `lib/` (librería) y carpeta `consumer/` (proyecto de prueba). Asumimos `tsup` instalado.
-
-#### 2.1 Estructura
-
-```
-lib/
-  src/
-    index.ts
-    utils.ts
-  tsconfig.json
-  package.json
-consumer/
-  src/demo.ts
-  tsconfig.json
-  package.json
-```
-
-#### 2.2 Configuración de la librería (`lib/`)
-
-**`lib/tsconfig.json`**
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "declaration": true,
-    "emitDeclarationOnly": false,
-    "outDir": "dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": { "@lib/*": ["src/*"] }
-  },
-  "include": ["src", "types"]
-}
-```
-
-**`lib/package.json`** (fragmento)
-
-```json
-{
-  "name": "@demo/ts-lib",
-  "version": "0.1.0",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./dist/utils.js",
-      "require": "./dist/utils.cjs"
-    }
-  },
-  "files": ["dist", "README.md", "LICENSE"],
-  "sideEffects": false,
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "build": "tsup src/index.ts src/utils.ts --format esm,cjs --dts --sourcemap",
-    "clean": "rimraf dist"
-  },
-  "devDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.5.0",
-    "rimraf": "^5.0.0"
-  }
-}
-```
-
-**`lib/src/utils.ts`**
-
-```ts
-export type NonEmpty<T extends string> = T extends "" ? never : T
-export function greet<T extends string>(name: NonEmpty<T>) {
-  return `Hello, ${name}!`
-}
-export const sum = (a: number, b: number) => a + b
-```
-
-**`lib/src/index.ts`**
-
-```ts
-export { greet, sum } from "./utils"
-export type { NonEmpty } from "./utils" // export type evita emitir import en JS
-```
-
-**Augmentación opcional** (`lib/types/fastify.d.ts`)
-
-```ts
-declare module "fastify" { interface FastifyRequest { userId?: string } }
-```
-
-**Build**
-
-```bash
-cd lib
-npm run typecheck
-npm run build
-```
-
-#### 2.3 Publicación local y consumo
-
-**Crear paquete y consumirlo**
-
-```bash
-cd lib
-npm pack                   # genera @demo-ts-lib-0.1.0.tgz
-cd ../consumer
-npm init -y
-npm i -D typescript ts-node
-npm i ../lib/@demo-ts-lib-0.1.0.tgz
-```
-
-**`consumer/tsconfig.json`**
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true
-  },
-  "include": ["src"]
-}
-```
-
-**`consumer/src/demo.ts`**
-
-```ts
-import { greet, sum, type NonEmpty } from "@demo/ts-lib"
-
-const n: NonEmpty<"Ada"> = "Ada"
-console.log(greet(n))
-console.log(sum(2, 3))
-```
-
-**Ejecución**
-
-```bash
-npx ts-node src/demo.ts
-```
-
-> Probá también importar subruta: `import { greet } from "@demo/ts-lib/utils"`.
-
-#### 2.4 Aliases vs `exports`
-
-* Si usás `paths` (`@lib/*`) dentro de **lib**, configurá el bundler o usa `tsconfig-paths` para runtime.
-* El **consumer** no ve tus `paths`; expone rutas estables vía `exports`.
-
-#### 2.5 Buenas prácticas
-
-* `export type` / `import type` para evitar emisiones innecesarias.
-* `files` + `sideEffects: false` para paquetes limpios y *tree-shakeables*.
-* Verificá el **contenido del tarball**: `npm pack --dry-run`.
-* Evitá ciclos en *barrels*; si aparecen, rompe el ciclo o convierte re-exports a `import type`.
-
----
-
-### 3) Ejercicios opcionales
-
-1. Agregá un subpath `"./math"` en `exports` que exponga solo `sum` con sus `.d.ts`.
-2. Creá una declaración de módulo para una lib JS ficticia `"legacy-date"` con `parseDate(s: string): Date` y usala en `consumer`.
-3. Añadí `sideEffects: false` y verificá que no haya inicializaciones globales en tus módulos.
-4. Cambiá `moduleResolution` a `NodeNext` y comprobá diferencias de resolución con `package.json` `type`.
-5. Configurá `files` para incluir únicamente `dist/` y verificá el resultado de `npm pack --dry-run`.
-
----
-
-### 4) Comandos útiles
-
-```bash
-# en lib
-npm run clean && npm run build
-npm pack --dry-run
-
-# en consumer
-npx ts-node src/demo.ts
-```
-
-## Asincronía, validación y mini API (ruta backend opcional)
-
-**Objetivos**
-
-* Tipar `Promise`, `async/await`, resultados `Result` y validación de datos.
-
-> Objetivo: dominar `async/await`, modelar errores con tipos, validar entrada/salida con Zod y exponer una **mini API** tipada en Fastify.
-
----
-
-### 1) Teoría
-
-#### 1.1 Promesas y `async/await`
-
-* Una función `async` **siempre** retorna `Promise<T>` (donde `T` es el tipo del `return`).
-* `await` suspende hasta que la promesa se resuelva o rechace.
-* Buenas prácticas: usar `try/catch/finally` para **limpieza de recursos** y mapeo de errores.
-
-```ts
-async function leer(): Promise<string> {
-  // ...
-  return "ok" // Promise<string>
-}
-```
-
-#### 1.2 Tipado de errores
-
-* El canal de error de una `Promise` es **no tipado**. En TS, `catch (e)` es `unknown`.
-* Preferí **modelar errores** en el tipo de retorno (`Result`/`Either`) o normalizar `unknown` a un error propio.
-
-```ts
-function toError(e: unknown): Error {
-  return e instanceof Error ? e : new Error(String(e))
-}
-```
-
-#### 1.3 Concurrencia
-
-* `Promise.all`: falla rápido si una falla (rechazo corto).
-* `Promise.allSettled`: nunca lanza; reporta estados.
-* `Promise.race`: primero en resolver/rechazar.
-* **No confundir** concurrencia (varias promesas en curso) con paralelismo (varios núcleos).
-
-#### 1.4 Timeouts y cancelación
-
-* `AbortController` + `fetch` (Node ≥18) para cancelación.
-* `Promise.race` para implementar *timeouts* de alto nivel.
-
-#### 1.5 Validación como contrato
-
-* Esquemas (Zod) para **entrada** (`req.body`, `params`, `query`) y **salida** (`response`).
-* Tipos inferidos de los esquemas → **tipado end-to-end**.
-
-#### 1.6 Endpoints tipados en Fastify
-
-* `fastify-type-provider-zod` conecta Zod con Fastify: valida y **tipa** `req` y `reply`.
-* Manejo centralizado de errores; respuestas con **uniones discriminadas** (p. ej., `{ ok: true, data } | { ok: false, error }`).
-
----
-
-### 2) Práctica
-
-#### 2.1 Instalación
-
-```bash
-npm i fastify zod
-npm i -D tsx fastify-type-provider-zod
-```
-
-**Scripts** (`package.json`):
-
-```json
-{
-  "scripts": {
-    "serve": "tsx watch src/server.ts",
-    "typecheck": "tsc --noEmit",
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/server.js"
-  }
-}
-```
-
-#### 2.2 Utilidades de asincronía (`src/lib/async.ts`)
-
-```ts
-export class TimeoutError extends Error { constructor(msg = "Timeout") { super(msg) } }
-
-export async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
-  let t: NodeJS.Timeout
-  const timeout = new Promise<never>((_, rej) => (t = setTimeout(() => rej(new TimeoutError()), ms)))
-  try { return await Promise.race([p, timeout]) } finally { clearTimeout(t!) }
-}
-
-export function toError(e: unknown): Error { return e instanceof Error ? e : new Error(String(e)) }
-```
-
-#### 2.3 Esquemas de dominio (`src/schemas.ts`)
-
-```ts
-import { z } from "zod"
-
-export const Item = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(1),
-  price: z.number().nonnegative()
-})
-export const NewItem = Item.omit({ id: true })
-export const IdParam = z.object({ id: z.string().uuid() })
-
-export type TItem = z.infer<typeof Item>
-export type TNewItem = z.infer<typeof NewItem>
-```
-
-#### 2.4 Repositorio en memoria (`src/lib/repo.ts`)
-
-```ts
-import type { TItem, TNewItem } from "../schemas"
-
-export class ItemRepo {
-  #m = new Map<string, TItem>()
-  list(): TItem[] { return [...this.#m.values()] }
-  get(id: string) { return this.#m.get(id) }
-  create(data: TNewItem): TItem {
-    const id = crypto.randomUUID()
-    const item = { id, ...data }
-    this.#m.set(id, item)
-    return item
-  }
-  update(id: string, data: TNewItem): TItem | undefined {
-    if (!this.#m.has(id)) return undefined
-    const item = { id, ...data }
-    this.#m.set(id, item)
-    return item
-  }
-  remove(id: string) { return this.#m.delete(id) }
-}
-```
-
-#### 2.5 Rutas (`src/routes/items.ts`)
-
-```ts
-import { z } from "zod"
-import { Item, NewItem, IdParam } from "../schemas"
-import type { FastifyPluginAsync } from "fastify"
-
-const ItemsRoutes: FastifyPluginAsync = async (app) => {
-  app.get("/items", { schema: { response: { 200: z.array(Item) } } }, async () => {
-    return app.repo.list()
-  })
-
-  app.get("/items/:id", { schema: { params: IdParam, response: { 200: Item } } }, async (req, reply) => {
-    const item = app.repo.get(req.params.id)
-    if (!item) return reply.code(404).send()
-    return item
-  })
-
-  app.post("/items", { schema: { body: NewItem, response: { 201: Item } } }, async (req, reply) => {
-    const created = app.repo.create(req.body)
-    return reply.code(201).send(created)
-  })
-
-  app.put("/items/:id", { schema: { params: IdParam, body: NewItem, response: { 200: Item } } }, async (req, reply) => {
-    const updated = app.repo.update(req.params.id, req.body)
-    if (!updated) return reply.code(404).send()
-    return updated
-  })
-
-  app.delete("/items/:id", { schema: { params: IdParam } }, async (req, reply) => {
-    const ok = app.repo.remove(req.params.id)
-    return reply.code(ok ? 204 : 404).send()
-  })
-}
-
-export default ItemsRoutes
-```
-
-#### 2.6 Servidor (`src/server.ts`)
-
-```ts
-import Fastify from "fastify"
-import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
-import ItemsRoutes from "./routes/items"
-import { ItemRepo } from "./lib/repo"
-import { toError } from "./lib/async"
-
-declare module "fastify" {
-  interface FastifyInstance { repo: ItemRepo }
-}
-
-const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>()
-app.setValidatorCompiler(validatorCompiler)
-app.setSerializerCompiler(serializerCompiler)
-app.decorate("repo", new ItemRepo())
-
-app.get("/health", async () => ({ ok: true }))
-app.register(ItemsRoutes)
-
-app.setErrorHandler((err, _req, reply) => {
-  const e = toError(err)
-  app.log.error(e)
-  reply.code(500).send({ ok: false, error: e.message })
-})
-
-const port = Number(process.env.PORT ?? 3000)
-app.listen({ port, host: "0.0.0.0" }).catch((e) => {
-  app.log.error(e); process.exit(1)
-})
-```
-
-#### 2.7 Cliente con cancelación (`src/client.ts`)
-
-```ts
-import { withTimeout, toError } from "./lib/async"
-
-export async function getJson<T>(url: string, ms = 3000): Promise<T> {
-  const ctrl = new AbortController()
-  const p = (async () => {
-    const res = await fetch(url, { signal: ctrl.signal })
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return (await res.json()) as T
-  })()
-  try { return await withTimeout(p, ms) } catch (e) { ctrl.abort(); throw toError(e) }
-}
-
-// Demo: getJson<{ ok: boolean }>("http://localhost:3000/health").then(console.log)
-```
-
----
-
-### 3) Mini–katas (entregables)
-
-1. Agregá `GET /search?minPrice&maxPrice` con validación de `querystring` (Zod) y retorno `200: Item[]`.
-2. Añadí un **middleware** que mida duración de cada request y la registre en el logger.
-3. Implementá `getJson` con `retry` exponencial (máx. 3 intentos) manteniendo tipos del genérico `T`.
-4. Tipá un resultado discriminado `{ ok: true; data: T } | { ok: false; error: string }` y usalo en `client.ts`.
-5. Extraé el contrato de `/items` a un archivo de tipos y usalo tanto en el servidor como en el cliente (*compile-time contract*).
-
----
-
-### 4) Comandos útiles
-
-```bash
-npm run serve         # desarrollo con recarga
-npm run typecheck     # verificación de tipos
-npm run build && npm start
-curl -s http://localhost:3000/health | jq
-```
-
-
-## Apéndices
-
-### A. `tsconfig.json` mínimo estricto
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "outDir": "dist"
-  },
-  "include": ["src"]
-}
-```
-
-### B. Plantilla de `package.json` (scripts clave)
-
-```json
-{
-  "type": "module",
-  "scripts": {
-    "dev": "ts-node src/index.ts",
-    "watch": "tsc -w",
-    "typecheck": "tsc --noEmit",
-    "build": "tsup src/index.ts --format cjs,esm --dts --sourcemap",
-    "start": "node dist/index.js",
-    "clean": "rimraf dist",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
-    "format": "prettier -w .",
-    "format:check": "prettier -c .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:cov": "vitest run --coverage",
-    "serve": "tsx watch src/server.ts",
-    "ci": "npm run typecheck && npm run lint && npm run test && npm run build",
-    "prepublishOnly": "npm run typecheck && npm run build"
-  },
-  "lint-staged": {
-    "**/*.{ts,tsx}": ["prettier -w", "eslint --fix"]
-  }
-}
-```
-
-### C. Estructura sugerida de carpetas
-
-```
-├─ src/
-│  ├─ lib/
-│  ├─ server.ts
-│  ├─ index.ts
-│  ├─ 01-types.ts
-│  ├─ 02-modelado.ts
-│  └─ 04-generics.ts
-├─ tests/
-│  └─ server.test.ts
-├─ dist/
-├─ tsconfig.json
-├─ package.json
-└─ README.md
 ```

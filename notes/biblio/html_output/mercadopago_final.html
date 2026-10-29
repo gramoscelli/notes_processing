@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   mercadopago
+  </title>
+ </head>
+ <body>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#backend-node-express-ts">
+      📦 Backend (Node + Express + TS)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#frontend-react-vite-ts">
+      💻 Frontend (React + Vite + TS)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#variante-checkout-pro-redirectpopup-minimos-cambios">
+      📐 Variante Checkout Pro (redirect/popup) – mínimos cambios
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#lista-de-verificacion">
+      ✅ Lista de verificación
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="backend-node-express-ts">
+    📦 Backend (Node + Express + TS)
+   </h2>
+   <p>
+    A continuación tenés un boilerplate mínimo en
+    <strong>
+     TypeScript
+    </strong>
+    para backend (Node + Express) y frontend (React + Vite) integrando
+    <strong>
+     Mercado Pago
+    </strong>
+    con Bricks (Wallet).
+   </p>
+   <h3 id="1-dependencias">
+    1) Dependencias
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>express<span class="w"> </span>cors<span class="w"> </span>mercadopago<span class="w"> </span>dotenv
+npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>typescript<span class="w"> </span>ts-node-dev<span class="w"> </span>@types/node<span class="w"> </span>@types/express<span class="w"> </span>@types/cors
+</pre>
+   </div>
+   <h3 id="2-tsconfigjson">
+    2)
+    <code>
+     tsconfig.json
+    </code>
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ES2020"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lib"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"ES2020"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ESNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NodeNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"esModuleInterop"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"forceConsistentCasingInFileNames"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"strict"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"outDir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"resolveJsonModule"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">]</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="3-scripts-en-packagejson">
+    3) Scripts en
+    <code>
+     package.json
+    </code>
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"module"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node-dev --respawn --transpile-only src/server.ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node dist/server.js"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="4-env">
+    4)
+    <code>
+     .env
+    </code>
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>MP_ACCESS_TOKEN=APP_USR-XXXXXXXXXXXXXXXXXXXXXXXXX
+PORT=3001
+ALLOWED_ORIGINS=http://localhost:5173,https://tu-sitio.com
+PUBLIC_BASE_URL=https://tu-api.com
+</pre>
+   </div>
+   <blockquote>
+    <p>
+     <code>
+      MP_ACCESS_TOKEN
+     </code>
+     es
+     <strong>
+      secreto
+     </strong>
+     (sólo backend).
+     <code>
+      PUBLIC_BASE_URL
+     </code>
+     lo usamos para
+     <code>
+      notification_url
+     </code>
+     si no tenés un parámetro custom.
+    </p>
+   </blockquote>
+   <h3 id="5-srctypesdts-opcional-para-tipar-requests">
+    5)
+    <code>
+     src/types.d.ts
+    </code>
+    (opcional para tipar requests)
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">CreatePreferenceItem</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">quantity</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">unit_price</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">CreatePreferenceBody</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="kt">CreatePreferenceItem</span><span class="p">[];</span>
+<span class="w">  </span><span class="nx">payer?</span><span class="o">:</span><span class="w"> </span><span class="kt">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">unknown</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">notificationUrl?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">MPWebhookBody</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">action?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="kr">type</span><span class="nx">?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w">      </span><span class="c1">// "payment", etc.</span>
+<span class="w">  </span><span class="nx">data</span><span class="o">?:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="nx">topic?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w">     </span><span class="c1">// algunos envían topic</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="6-srcserverts">
+    6)
+    <code>
+     src/server.ts
+    </code>
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">express</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">Response</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"express"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">cors</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"cors"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="s2">"dotenv/config"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">mercadopago</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"mercadopago"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">CreatePreferenceBody</span><span class="p">,</span><span class="w"> </span><span class="nx">MPWebhookBody</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./types"</span><span class="p">;</span>
+
+<span class="c1">// --- Config básica ---</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+
+<span class="c1">// CORS seguro (permití múltiples orígenes separados por coma en .env)</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">allowed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ALLOWED_ORIGINS</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s2">""</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s2">","</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">s</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">s</span><span class="p">.</span><span class="nx">trim</span><span class="p">()).</span><span class="nx">filter</span><span class="p">(</span><span class="nb">Boolean</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">cors</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">origin</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span><span class="w"> </span><span class="nx">cb</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">origin</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">allowed</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">allowed</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">origin</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">cb</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">cb</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"Origen no permitido por CORS"</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}));</span>
+
+<span class="c1">// SDK MP (Access Token de servidor)</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">accessToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">MP_ACCESS_TOKEN</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">accessToken</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"Falta MP_ACCESS_TOKEN en .env"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">mercadopago</span><span class="p">.</span><span class="nx">configure</span><span class="p">({</span><span class="w"> </span><span class="nx">access_token</span><span class="o">:</span><span class="w"> </span><span class="kt">accessToken</span><span class="w"> </span><span class="p">});</span>
+
+<span class="c1">// Healthcheck</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/health"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">_req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">}));</span>
+
+<span class="c1">// Crear preferencia</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/create-preference"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="o">:</span><span class="w"> </span><span class="kt">Request</span><span class="o">&lt;</span><span class="nx">unknown</span><span class="p">,</span><span class="w"> </span><span class="nx">unknown</span><span class="p">,</span><span class="w"> </span><span class="nx">CreatePreferenceBody</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="o">:</span><span class="w"> </span><span class="kt">Response</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">items</span><span class="p">,</span><span class="w"> </span><span class="nx">payer</span><span class="p">,</span><span class="w"> </span><span class="nx">notificationUrl</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">items</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">items</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">items</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"items requeridos"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Validación mínima y normalización del precio/cantidad en servidor</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">normalizedItems</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">items</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">i</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">      </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">String</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">title</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">quantity</span><span class="o">:</span><span class="w"> </span><span class="kt">Number</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">quantity</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">unit_price</span><span class="o">:</span><span class="w"> </span><span class="kt">Number</span><span class="p">(</span><span class="nx">i</span><span class="p">.</span><span class="nx">unit_price</span><span class="p">),</span>
+<span class="w">      </span><span class="nx">currency_id</span><span class="o">:</span><span class="w"> </span><span class="s2">"ARS"</span>
+<span class="w">    </span><span class="p">}));</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">baseNotification</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">notificationUrl</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PUBLIC_BASE_URL</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s2">""</span><span class="si">}</span><span class="sb">/webhooks/mercadopago`</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">preference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="kt">normalizedItems</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">payer</span><span class="p">,</span><span class="w"> </span><span class="c1">// opcional</span>
+<span class="w">      </span><span class="nx">back_urls</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">success</span><span class="o">:</span><span class="w"> </span><span class="s2">"https://tu-sitio.com/pago/exito"</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">failure</span><span class="o">:</span><span class="w"> </span><span class="s2">"https://tu-sitio.com/pago/error"</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">pending</span><span class="o">:</span><span class="w"> </span><span class="s2">"https://tu-sitio.com/pago/pendiente"</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nx">auto_return</span><span class="o">:</span><span class="w"> </span><span class="s2">"approved"</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">notification_url</span><span class="o">:</span><span class="w"> </span><span class="kt">baseNotification</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">mercadopago</span><span class="p">.</span><span class="nx">preferences</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">preference</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">result.body.id</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"create-preference error:"</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">500</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"No se pudo crear la preferencia"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// Webhook: Mercado Pago -&gt; tu servidor</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/webhooks/mercadopago"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="o">:</span><span class="w"> </span><span class="kt">Request</span><span class="o">&lt;</span><span class="nx">unknown</span><span class="p">,</span><span class="w"> </span><span class="nx">unknown</span><span class="p">,</span><span class="w"> </span><span class="nx">MPWebhookBody</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="o">:</span><span class="w"> </span><span class="kt">Response</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="w">    </span><span class="c1">// MP puede enviar {type: 'payment', data: {id}} o {topic: 'merchant_order', data: {id}}</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">eventType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">body</span><span class="p">.</span><span class="kr">type</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">body</span><span class="p">.</span><span class="nx">topic</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="o">?</span><span class="p">.</span><span class="nx">id</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">body</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">eventType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s2">"Webhook sin tipo:"</span><span class="p">,</span><span class="w"> </span><span class="nx">body</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">eventType</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"payment"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">paymentResp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">mercadopago</span><span class="p">.</span><span class="nx">payment</span><span class="p">.</span><span class="nx">findById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">payment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">paymentResp</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+<span class="w">      </span><span class="c1">// TODO: actualizar DB/orden según payment.status (approved/pending/rejected)</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"PAYMENT STATUS:"</span><span class="p">,</span><span class="w"> </span><span class="nx">payment</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span><span class="w"> </span><span class="s2">"ID:"</span><span class="p">,</span><span class="w"> </span><span class="nx">payment</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">eventType</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"merchant_order"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">orderResp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">mercadopago</span><span class="p">.</span><span class="nx">merchant_orders</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">orderResp</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+<span class="w">      </span><span class="c1">// TODO: consolidar pagos desde order.payments[*].status si preferís</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"MERCHANT_ORDER:"</span><span class="p">,</span><span class="w"> </span><span class="nx">order</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">order</span><span class="p">.</span><span class="nx">payments</span><span class="o">?</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">p</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">p</span><span class="p">.</span><span class="nx">status</span><span class="p">));</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Otros eventos (chargebacks, etc.) pueden llegar</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Webhook no manejado:"</span><span class="p">,</span><span class="w"> </span><span class="nx">body</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Webhook error:"</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">500</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Number</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mf">3001</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">port</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`API escuchando en http://localhost:</span><span class="si">${</span><span class="nx">port</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="frontend-react-vite-ts">
+    💻 Frontend (React + Vite + TS)
+   </h2>
+   <h3 id="1-crear-proyecto-y-dependencias">
+    1) Crear proyecto y dependencias
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>create<span class="w"> </span>vite@latest<span class="w"> </span>mp-react<span class="w"> </span>--<span class="w"> </span>--template<span class="w"> </span>react-ts
+<span class="nb">cd</span><span class="w"> </span>mp-react
+npm<span class="w"> </span>i<span class="w"> </span>@mercadopago/sdk-react
+</pre>
+   </div>
+   <h3 id="2-env-del-frontend-vite">
+    2)
+    <code>
+     .env
+    </code>
+    del frontend (Vite)
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>VITE_MP_PUBLIC_KEY=TEST-XXXXXXXXXXXXXXXXXXXXXXXX
+VITE_API_URL=http://localhost:3001
+</pre>
+   </div>
+   <h3 id="3-srcapptsx">
+    3)
+    <code>
+     src/App.tsx
+    </code>
+   </h3>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useEffect</span><span class="p">,</span><span class="w"> </span><span class="nx">useState</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"react"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">initMercadoPago</span><span class="p">,</span><span class="w"> </span><span class="nx">Wallet</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@mercadopago/sdk-react"</span><span class="p">;</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">CreatePrefResponse</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">preferenceId</span><span class="p">,</span><span class="w"> </span><span class="nx">setPreferenceId</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VITE_API_URL</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">pubKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">import</span><span class="p">.</span><span class="nx">meta</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VITE_MP_PUBLIC_KEY</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">pubKey</span><span class="p">)</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s2">"Falta VITE_MP_PUBLIC_KEY en .env"</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">initMercadoPago</span><span class="p">(</span><span class="nx">pubKey</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">locale</span><span class="o">:</span><span class="w"> </span><span class="s2">"es-AR"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[]);</span>
+
+<span class="w">  </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">crearPreferencia</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">/create-preference`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"Content-Type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">JSON.stringify</span><span class="p">({</span>
+<span class="w">        </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s2">"Curso TS"</span><span class="p">,</span><span class="w"> </span><span class="nx">quantity</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="p">,</span><span class="w"> </span><span class="nx">unit_price</span><span class="o">:</span><span class="w"> </span><span class="kt">10000</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">        </span><span class="nx">notificationUrl</span><span class="o">:</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">/webhooks/mercadopago`</span>
+<span class="w">      </span><span class="p">})</span>
+<span class="w">    </span><span class="p">});</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">resp</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Error creando preferencia"</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">resp</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">CreatePrefResponse</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">setPreferenceId</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">maxWidth</span><span class="o">:</span><span class="w"> </span><span class="kt">520</span><span class="p">,</span><span class="w"> </span><span class="nx">margin</span><span class="o">:</span><span class="w"> </span><span class="s2">"2rem auto"</span><span class="p">,</span><span class="w"> </span><span class="nx">fontFamily</span><span class="o">:</span><span class="w"> </span><span class="s2">"system-ui, sans-serif"</span><span class="w"> </span><span class="p">}}&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Pago</span><span class="w"> </span><span class="nx">con</span><span class="w"> </span><span class="nx">Mercado</span><span class="w"> </span><span class="nx">Pago</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Flujo</span><span class="w"> </span><span class="nx">mínimo</span><span class="w"> </span><span class="nx">con</span><span class="w"> </span><span class="nx">Wallet</span><span class="w"> </span><span class="nx">Brick</span><span class="w"> </span><span class="p">(</span><span class="nx">redirect</span><span class="o">/</span><span class="nx">modal</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">MP</span><span class="p">).&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">crearPreferencia</span><span class="p">}&gt;</span><span class="nx">Generar</span><span class="w"> </span><span class="nx">preferencia</span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">preferenceId</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">marginTop</span><span class="o">:</span><span class="w"> </span><span class="kt">16</span><span class="w"> </span><span class="p">}}&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">Wallet</span><span class="w"> </span><span class="na">initialization</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">preferenceId</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="4-consejos-rapidos">
+    4) Consejos rápidos
+   </h3>
+   <ul>
+    <li>
+     En producción, configurá CORS del backend con tu dominio.
+    </li>
+    <li>
+     No expongas
+     <strong>
+      Access Token
+     </strong>
+     en el front (usá
+     <strong>
+      Public Key
+     </strong>
+     ).
+    </li>
+    <li>
+     Guardá el estado de la orden en tu DB y
+     <strong>
+      confiá en el webhook
+     </strong>
+     para marcar como pagado.
+    </li>
+    <li>
+     Probá approved/pending/rejected con
+     <strong>
+      tarjetas de prueba
+     </strong>
+     .
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="variante-checkout-pro-redirectpopup-minimos-cambios">
+    📐 Variante Checkout Pro (redirect/popup) – mínimos cambios
+   </h2>
+   <p>
+    En el endpoint
+    <code>
+     create-preference
+    </code>
+    , además de
+    <code>
+     id
+    </code>
+    , podés leer
+    <code>
+     result.body.init_point
+    </code>
+    y redirigir desde el front:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// backend</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">init_point</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span><span class="w"> </span><span class="c1">// devolvé ambos si querés</span>
+</pre>
+   </div>
+   <div class="highlight language-tsx">
+    <pre><span></span><span class="c1">// frontend</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">init_point</span><span class="p">;</span><span class="w"> </span><span class="c1">// o abrir popup según la doc</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="lista-de-verificacion">
+    ✅ Lista de verificación
+   </h2>
+   <ul>
+    <li>
+     [ ] Credenciales:
+     <code>
+      MP_ACCESS_TOKEN
+     </code>
+     (server) y
+     <code>
+      VITE_MP_PUBLIC_KEY
+     </code>
+     (client)
+    </li>
+    <li>
+     [ ] CORS apuntando a tu dominio real
+    </li>
+    <li>
+     [ ] URL pública del webhook accesible desde MP (usar ngrok en local)
+    </li>
+    <li>
+     [ ] Persistencia de órdenes + actualización por webhook
+    </li>
+    <li>
+     [ ] Pruebas con tarjetas/usuarios de test
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

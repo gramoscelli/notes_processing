@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   u02_openapi
+  </title>
+ </head>
+ <body>
+  <h1 id="documentar-la-api-con-openapi-31-y-swagger-ui-typescript-express-zod">
+   Documentar la API con OpenAPI 3.1 y Swagger UI (TypeScript + Express + Zod)
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-por-que-un-contrato-escrito">
+      1. Por qué un contrato escrito
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-anatomia-de-un-documento-openapi">
+      2. Anatomía de un documento OpenAPI
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-describir-la-api-de-libros">
+      3. Describir la API de libros
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-componentes-no-repetirse">
+      4. Componentes: no repetirse
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-servir-swagger-ui-desde-express">
+      5. Servir Swagger UI desde Express
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-una-sola-fuente-de-verdad-generar-openapi-desde-zod">
+      6. Una sola fuente de verdad: generar OpenAPI desde Zod
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-tests-de-contrato">
+      7. Tests de contrato
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-evolucion-del-documento">
+      8. Evolución del documento
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="1-por-que-un-contrato-escrito">
+    1. Por qué un contrato escrito
+   </h2>
+   <p>
+    La documentación en un
+    <code>
+     README
+    </code>
+    o en un Google Doc tiene un problema estructural:
+    <strong>
+     nada la obliga a ser verdad
+    </strong>
+    . Se escribe una vez, el código cambia, y queda mintiendo.
+   </p>
+   <p>
+    OpenAPI es distinto porque es
+    <strong>
+     legible por máquinas
+    </strong>
+    . Un documento OpenAPI no es documentación: es un artefacto ejecutable del que se derivan cosas.
+   </p>
+   <div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;">
+    <svg aria-roledescription="flowchart-v2" class="flowchart" data-viewbox="0 0 404.84375 590" height="590" id="mermaid-svg-0" role="graphics-document document" style="width: 404.84375px; height: 590px; max-width: 100%; background-color: transparent;" viewBox="0 0 404.84375 590" width="404.84375" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+     <g>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="5" refy="5" viewBox="0 0 10 10">
+       <path class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z" style="stroke-width: 1; stroke-dasharray: 1, 0;">
+       </path>
+      </marker>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="4.5" refy="5" viewBox="0 0 10 10">
+       <path class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z" style="stroke-width: 1; stroke-dasharray: 1, 0;">
+       </path>
+      </marker>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="10.5" orient="auto" refx="11.5" refy="7" viewBox="0 0 11.5 14">
+       <path class="arrowMarkerPath" d="M 0 0 L 11.5 7 L 0 14 z" style="stroke-width: 0; stroke-dasharray: 1, 0;">
+       </path>
+      </marker>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="11.5" orient="auto" refx="1" refy="7" viewBox="0 0 11.5 14">
+       <polygon class="arrowMarkerPath" points="0,7 11.5,14 11.5,0" style="stroke-width: 0; stroke-dasharray: 1, 0;">
+       </polygon>
+      </marker>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="11" refy="5" viewBox="0 0 10 10">
+       <circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;">
+       </circle>
+      </marker>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5" viewBox="0 0 10 10">
+       <circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;">
+       </circle>
+      </marker>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="12.25" refy="5" viewBox="0 0 10 10">
+       <circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;">
+       </circle>
+      </marker>
+      <marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="-2" refy="5" viewBox="0 0 10 10">
+       <circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;">
+       </circle>
+      </marker>
+      <marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="12" refy="5.2" viewBox="0 0 11 11">
+       <path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;">
+       </path>
+      </marker>
+      <marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5.2" viewBox="0 0 11 11">
+       <path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;">
+       </path>
+      </marker>
+      <marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="17.7" refy="7.5" viewBox="0 0 15 15">
+       <path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5;">
+       </path>
+      </marker>
+      <marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="-3.5" refy="7.5" viewBox="0 0 15 15">
+       <path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5; stroke-dasharray: 1, 0;">
+       </path>
+      </marker>
+      <g class="root">
+       <g class="clusters">
+       </g>
+       <g class="edgePaths">
+        <path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M93.799,268L108.79,229.167C123.782,190.333,153.766,112.667,175.966,73.833C198.167,35,212.583,35,219.792,35L227,35" data-edge="true" data-et="edge" data-id="L_OAS_UI_0" data-look="classic" data-points="W3sieCI6OTMuNzk4NTU3NjkyMzA3NywieSI6MjY4fSx7IngiOjE4My43NSwieSI6MzV9LHsieCI6MjMxLCJ5IjozNX1d" id="my-svg-L_OAS_UI_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";">
+        </path>
+        <path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M100.748,268L114.581,246.5C128.415,225,156.083,182,174.604,160.5C193.125,139,202.5,139,207.188,139L211.875,139" data-edge="true" data-et="edge" data-id="L_OAS_CLI_0" data-look="classic" data-points="W3sieCI6MTAwLjc0NzU5NjE1Mzg0NjE2LCJ5IjoyNjh9LHsieCI6MTgzLjc1LCJ5IjoxMzl9LHsieCI6MjE1Ljg3NSwieSI6MTM5fV0=" id="my-svg-L_OAS_CLI_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";">
+        </path>
+        <path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M135.493,268L143.536,263.833C151.579,259.667,167.664,251.333,181.361,247.167C195.057,243,206.365,243,212.018,243L217.672,243" data-edge="true" data-et="edge" data-id="L_OAS_MOCK_0" data-look="classic" data-points="W3sieCI6MTM1LjQ5Mjc4ODQ2MTUzODQ1LCJ5IjoyNjh9LHsieCI6MTgzLjc1LCJ5IjoyNDN9LHsieCI6MjIxLjY3MTg3NSwieSI6MjQzfV0=" id="my-svg-L_OAS_MOCK_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";">
+        </path>
+        <path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M135.493,322L143.536,326.167C151.579,330.333,167.664,338.667,179.728,342.833C191.792,347,199.833,347,203.854,347L207.875,347" data-edge="true" data-et="edge" data-id="L_OAS_TEST_0" data-look="classic" data-points="W3sieCI6MTM1LjQ5Mjc4ODQ2MTUzODQ1LCJ5IjozMjJ9LHsieCI6MTgzLjc1LCJ5IjozNDd9LHsieCI6MjExLjg3NSwieSI6MzQ3fV0=" id="my-svg-L_OAS_TEST_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";">
+        </path>
+        <path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M100.748,322L114.581,343.5C128.415,365,156.083,408,173.416,429.5C190.75,451,197.75,451,201.25,451L204.75,451" data-edge="true" data-et="edge" data-id="L_OAS_DIFF_0" data-look="classic" data-points="W3sieCI6MTAwLjc0NzU5NjE1Mzg0NjE2LCJ5IjozMjJ9LHsieCI6MTgzLjc1LCJ5Ijo0NTF9LHsieCI6MjA4Ljc1LCJ5Ijo0NTF9XQ==" id="my-svg-L_OAS_DIFF_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";">
+        </path>
+        <path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M93.799,322L108.79,360.833C123.782,399.667,153.766,477.333,175.151,516.167C196.536,555,209.323,555,215.716,555L222.109,555" data-edge="true" data-et="edge" data-id="L_OAS_GW_0" data-look="classic" data-points="W3sieCI6OTMuNzk4NTU3NjkyMzA3NywieSI6MzIyfSx7IngiOjE4My43NSwieSI6NTU1fSx7IngiOjIyNi4xMDkzNzUsInkiOjU1NX1d" id="my-svg-L_OAS_GW_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";">
+        </path>
+       </g>
+       <g class="edgeLabels">
+        <g class="edgeLabel">
+         <g class="label" data-id="L_OAS_UI_0" transform="translate(0, 0)">
+          <foreignobject height="0" style="overflow: visible;" width="0">
+           <div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="edgeLabel">
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="edgeLabel">
+         <g class="label" data-id="L_OAS_CLI_0" transform="translate(0, 0)">
+          <foreignobject height="0" style="overflow: visible;" width="0">
+           <div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="edgeLabel">
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="edgeLabel">
+         <g class="label" data-id="L_OAS_MOCK_0" transform="translate(0, 0)">
+          <foreignobject height="0" style="overflow: visible;" width="0">
+           <div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="edgeLabel">
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="edgeLabel">
+         <g class="label" data-id="L_OAS_TEST_0" transform="translate(0, 0)">
+          <foreignobject height="0" style="overflow: visible;" width="0">
+           <div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="edgeLabel">
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="edgeLabel">
+         <g class="label" data-id="L_OAS_DIFF_0" transform="translate(0, 0)">
+          <foreignobject height="0" style="overflow: visible;" width="0">
+           <div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="edgeLabel">
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="edgeLabel">
+         <g class="label" data-id="L_OAS_GW_0" transform="translate(0, 0)">
+          <foreignobject height="0" style="overflow: visible;" width="0">
+           <div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="edgeLabel">
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+       </g>
+       <g class="nodes">
+        <g class="node default" data-look="classic" id="my-svg-flowchart-OAS-0" transform="translate(83.375, 295)">
+         <rect class="basic label-container" height="54" style="" width="150.75" x="-75.375" y="-27">
+         </rect>
+         <g class="label" style="" transform="translate(-45.375, -12)">
+          <rect>
+          </rect>
+          <foreignobject height="24" style="overflow: visible;" width="90.75">
+           <div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="nodeLabel">
+             <p>
+              openapi.json
+             </p>
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="node default" data-look="classic" id="my-svg-flowchart-UI-1" transform="translate(302.796875, 35)">
+         <rect class="basic label-container" height="54" style="" width="143.59375" x="-71.796875" y="-27">
+         </rect>
+         <g class="label" style="" transform="translate(-41.796875, -12)">
+          <rect>
+          </rect>
+          <foreignobject height="24" style="overflow: visible;" width="83.59375">
+           <div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="nodeLabel">
+             <p>
+              Swagger UI
+             </p>
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="node default" data-look="classic" id="my-svg-flowchart-CLI-3" transform="translate(302.796875, 139)">
+         <rect class="basic label-container" height="54" style="" width="173.84375" x="-86.921875" y="-27">
+         </rect>
+         <g class="label" style="" transform="translate(-56.921875, -12)">
+          <rect>
+          </rect>
+          <foreignobject height="24" style="overflow: visible;" width="113.84375">
+           <div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="nodeLabel">
+             <p>
+              Clientes tipados
+             </p>
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="node default" data-look="classic" id="my-svg-flowchart-MOCK-5" transform="translate(302.796875, 243)">
+         <rect class="basic label-container" height="54" style="" width="162.25" x="-81.125" y="-27">
+         </rect>
+         <g class="label" style="" transform="translate(-51.125, -12)">
+          <rect>
+          </rect>
+          <foreignobject height="24" style="overflow: visible;" width="102.25">
+           <div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="nodeLabel">
+             <p>
+              Servidor mock
+             </p>
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="node default" data-look="classic" id="my-svg-flowchart-TEST-7" transform="translate(302.796875, 347)">
+         <rect class="basic label-container" height="54" style="" width="181.84375" x="-90.921875" y="-27">
+         </rect>
+         <g class="label" style="" transform="translate(-60.921875, -12)">
+          <rect>
+          </rect>
+          <foreignobject height="24" style="overflow: visible;" width="121.84375">
+           <div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="nodeLabel">
+             <p>
+              Tests de contrato
+             </p>
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="node default" data-look="classic" id="my-svg-flowchart-DIFF-9" transform="translate(302.796875, 451)">
+         <rect class="basic label-container" height="54" style="" width="188.09375" x="-94.046875" y="-27">
+         </rect>
+         <g class="label" style="" transform="translate(-64.046875, -12)">
+          <rect>
+          </rect>
+          <foreignobject height="24" style="overflow: visible;" width="128.09375">
+           <div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="nodeLabel">
+             <p>
+              Breaking changes
+             </p>
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+        <g class="node default" data-look="classic" id="my-svg-flowchart-GW-11" transform="translate(302.796875, 555)">
+         <rect class="basic label-container" height="54" style="" width="153.375" x="-76.6875" y="-27">
+         </rect>
+         <g class="label" style="" transform="translate(-46.6875, -12)">
+          <rect>
+          </rect>
+          <foreignobject height="24" style="overflow: visible;" width="93.375">
+           <div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml">
+            <span class="nodeLabel">
+             <p>
+              API Gateway
+             </p>
+            </span>
+           </div>
+          </foreignobject>
+         </g>
+        </g>
+       </g>
+      </g>
+     </g>
+     <defs>
+      <filter height="130%" id="my-svg-drop-shadow" width="130%">
+       <fedropshadow dx="4" dy="4" flood-color="#000000" flood-opacity="0.06" stddeviation="0">
+       </fedropshadow>
+      </filter>
+     </defs>
+     <defs>
+      <filter height="150%" id="my-svg-drop-shadow-small" width="150%">
+       <fedropshadow dx="2" dy="2" flood-color="#000000" flood-opacity="0.06" stddeviation="0">
+       </fedropshadow>
+      </filter>
+     </defs>
+    </svg>
+   </div>
+   <p>
+    Con más detalle:
+    <strong>
+     clientes tipados
+    </strong>
+    en TypeScript, Java o Python; un
+    <strong>
+     servidor
+mock
+    </strong>
+    para que el front arranque antes que el back;
+    <strong>
+     detección de breaking
+changes
+    </strong>
+    en CI; y la
+    <strong>
+     configuración del API Gateway
+    </strong>
+    si hay uno adelante.
+   </p>
+   <p>
+    Concretamente, en un equipo de cursada esto significa:
+   </p>
+   <ul>
+    <li>
+     El grupo que hace el front
+     <strong>
+      empieza antes
+     </strong>
+     de que el back esté listo, contra un mock generado del documento.
+    </li>
+    <li>
+     Nadie pregunta "¿qué devuelve este endpoint?": lo abre en Swagger UI y lo prueba.
+    </li>
+    <li>
+     Si el back cambia una respuesta sin avisar,
+     <strong>
+      un test lo detecta
+     </strong>
+     .
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     <strong>
+      OpenAPI vs Swagger.
+     </strong>
+     "Swagger" era el nombre original de la especificación hasta la versión 2.0. Desde la 3.0 la especificación se llama
+     <strong>
+      OpenAPI
+     </strong>
+     y
+     <em>
+      Swagger
+     </em>
+     quedó como el nombre de las herramientas (Swagger UI, Swagger Editor). Usamos
+     <strong>
+      OpenAPI 3.1
+     </strong>
+     , que es la versión actual y la primera que es 100% compatible con JSON Schema — cosa que importa mucho en la sección 6.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-anatomia-de-un-documento-openapi">
+    2. Anatomía de un documento OpenAPI
+   </h2>
+   <p>
+    Un documento OpenAPI es un YAML o JSON con cinco secciones de nivel superior que importan:
+   </p>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">openapi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.1.0</span><span class="w">          </span><span class="c1"># versión de la ESPECIFICACIÓN</span>
+
+<span class="nt">info</span><span class="p">:</span><span class="w">                   </span><span class="c1"># metadatos de la API</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API de Libros</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0</span><span class="w">        </span><span class="c1"># versión de TU API (semver)</span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API de ejemplo de Programación IV.</span>
+
+<span class="nt">servers</span><span class="p">:</span><span class="w">                </span><span class="c1"># dónde vive</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:3000</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Desarrollo</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://api.ejemplo.edu.ar</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Producción</span>
+
+<span class="nt">paths</span><span class="p">:</span><span class="w">                  </span><span class="c1"># los endpoints</span>
+<span class="w">  </span><span class="nt">/v1/books</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">get</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="w"> </span><span class="nv">...</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">post</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="w"> </span><span class="nv">...</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="nt">components</span><span class="p">:</span><span class="w">             </span><span class="c1"># piezas reutilizables</span>
+<span class="w">  </span><span class="nt">schemas</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="w"> </span><span class="nv">...</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">parameters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="w"> </span><span class="nv">...</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">responses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="w"> </span><span class="nv">...</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">securitySchemes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="w"> </span><span class="nv">...</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     <strong>
+      Dos versiones distintas.
+     </strong>
+     <code>
+      openapi: 3.1.0
+     </code>
+     es la versión del formato del documento.
+     <code>
+      info.version: 1.0.0
+     </code>
+     es la versión de tu API. Son independientes y confundirlas es un clásico.
+    </p>
+   </blockquote>
+   <h3 id="21-la-unidad-minima-una-operacion">
+    2.1 La unidad mínima: una operación
+   </h3>
+   <p>
+    Cada combinación de
+    <strong>
+     path + método
+    </strong>
+    es una
+    <em>
+     operación
+    </em>
+    :
+   </p>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">/v1/books/{id}</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">get</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getBookById</span><span class="w">      </span><span class="c1"># ← identificador único; genera el nombre de función</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Obtiene un libro por id</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Books</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">          </span><span class="nt">in</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">path</span>
+<span class="w">          </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">            </span><span class="c1"># en path, SIEMPRE required</span>
+<span class="w">          </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> format</span><span class="p">:</span><span class="w"> </span><span class="nv">uuid</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">        </span><span class="s">'200'</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">El libro solicitado</span>
+<span class="w">          </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">application/json</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/BookEnvelope'</span>
+<span class="w">        </span><span class="s">'404'</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/NotFound'</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       operationId
+      </code>
+     </strong>
+     debe ser único en todo el documento. Los generadores de clientes lo usan como nombre de método:
+     <code>
+      api.getBookById('7')
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       tags
+      </code>
+     </strong>
+     agrupa operaciones en Swagger UI. Un tag por recurso.
+    </li>
+    <li>
+     Los
+     <strong>
+      <code>
+       parameters
+      </code>
+     </strong>
+     pueden ir
+     <code>
+      in: path
+     </code>
+     ,
+     <code>
+      in: query
+     </code>
+     ,
+     <code>
+      in: header
+     </code>
+     o
+     <code>
+      in: cookie
+     </code>
+     .
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-describir-la-api-de-libros">
+    3. Describir la API de libros
+   </h2>
+   <p>
+    Arrancamos escribiendo el documento a mano para entender la estructura. En la sección 6 lo generamos desde el código.
+   </p>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># openapi.yaml</span>
+<span class="nt">openapi</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.1.0</span>
+<span class="nt">info</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">API de Libros</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+
+<span class="nt">servers</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://localhost:3000</span>
+
+<span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Books</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Gestión del catálogo de libros</span>
+
+<span class="nt">paths</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">/v1/books</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">get</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">listBooks</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lista libros con paginación, orden y filtros</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Books</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">page</span><span class="p p-Indicator">,</span><span class="nt">     in</span><span class="p">:</span><span class="w"> </span><span class="nv">query</span><span class="p p-Indicator">,</span><span class="nt"> schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="p p-Indicator">,</span><span class="nt"> minimum</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> default</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">pageSize</span><span class="p p-Indicator">,</span><span class="nt"> in</span><span class="p">:</span><span class="w"> </span><span class="nv">query</span><span class="p p-Indicator">,</span><span class="nt"> schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="p p-Indicator">,</span><span class="nt"> minimum</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> maximum</span><span class="p">:</span><span class="w"> </span><span class="nv">100</span><span class="p p-Indicator">,</span><span class="nt"> default</span><span class="p">:</span><span class="w"> </span><span class="nv">20</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sort</span>
+<span class="w">          </span><span class="nt">in</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">query</span>
+<span class="w">          </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">enum</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">title</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">year</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">author</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-title</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-year</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">-author</span><span class="p p-Indicator">]</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">title</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">author</span><span class="p p-Indicator">,</span><span class="nt">   in</span><span class="p">:</span><span class="w"> </span><span class="nv">query</span><span class="p p-Indicator">,</span><span class="nt"> schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">yearFrom</span><span class="p p-Indicator">,</span><span class="nt"> in</span><span class="p">:</span><span class="w"> </span><span class="nv">query</span><span class="p p-Indicator">,</span><span class="nt"> schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">yearTo</span><span class="p p-Indicator">,</span><span class="nt">   in</span><span class="p">:</span><span class="w"> </span><span class="nv">query</span><span class="p p-Indicator">,</span><span class="nt"> schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">q</span><span class="p p-Indicator">,</span><span class="nt">        in</span><span class="p">:</span><span class="w"> </span><span class="nv">query</span><span class="p p-Indicator">,</span><span class="nt"> description</span><span class="p">:</span><span class="w"> </span><span class="nv">Búsqueda libre</span><span class="p p-Indicator">,</span><span class="nt"> schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">        </span><span class="s">'200'</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Página de resultados</span>
+<span class="w">          </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">application/json</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/BookPage'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="s">'400'</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">$ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/ValidationError'</span>
+
+<span class="w">    </span><span class="nt">post</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">createBook</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Crea un libro</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Books</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">requestBody</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application/json</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/NewBook'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">        </span><span class="s">'201'</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Libro creado</span>
+<span class="w">          </span><span class="nt">headers</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">Location</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">URL del recurso creado</span>
+<span class="w">              </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">application/json</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/BookEnvelope'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="s">'400'</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/ValidationError'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="s">'422'</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/BusinessRule'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">/v1/books/{id}</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">        </span><span class="nt">in</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">path</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> format</span><span class="p">:</span><span class="w"> </span><span class="nv">uuid</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">get</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">getBookById</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Obtiene un libro</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Books</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">        </span><span class="s">'200'</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">El libro</span>
+<span class="w">          </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">application/json</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/BookEnvelope'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="s">'404'</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/NotFound'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">patch</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">updateBook</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Modifica parcialmente un libro</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Books</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">requestBody</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">application/json</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/BookPatch'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">        </span><span class="s">'200'</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Libro actualizado</span>
+<span class="w">          </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">application/json</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/BookEnvelope'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="s">'404'</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/NotFound'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="s">'422'</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/BusinessRule'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">delete</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">operationId</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deleteBook</span>
+<span class="w">      </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Elimina un libro</span>
+<span class="w">      </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Books</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">        </span><span class="s">'204'</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> description</span><span class="p">:</span><span class="w"> </span><span class="nv">Eliminado</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="s">'404'</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/responses/NotFound'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Observá que
+    <code>
+     parameters
+    </code>
+    está declarado
+    <strong>
+     a nivel del path
+    </strong>
+    , no de cada operación:
+    <code>
+     {id}
+    </code>
+    aplica a
+    <code>
+     get
+    </code>
+    ,
+    <code>
+     patch
+    </code>
+    y
+    <code>
+     delete
+    </code>
+    por igual. Repetirlo tres veces es el error que convierte un documento en algo imposible de mantener.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-componentes-no-repetirse">
+    4. Componentes: no repetirse
+   </h2>
+   <p>
+    <code>
+     components
+    </code>
+    es donde vive todo lo reutilizable. La regla práctica:
+    <strong>
+     si algo aparece dos veces, va a components
+    </strong>
+    .
+   </p>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">components</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">schemas</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">Book</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">id</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">title</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">author</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">year</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w">     </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> format</span><span class="p">:</span><span class="w"> </span><span class="nv">uuid</span><span class="p p-Indicator">,</span><span class="nt"> readOnly</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> minLength</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> examples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'Rayuela'</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> minLength</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="nt"> examples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">'Julio</span><span class="nv"> </span><span class="s">Cortázar'</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">year</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="p p-Indicator">,</span><span class="nt"> maximum</span><span class="p">:</span><span class="w"> </span><span class="nv">2026</span><span class="p p-Indicator">,</span><span class="nt"> examples</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1963</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">NewBook</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">title</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">author</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">year</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> minLength</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> minLength</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">year</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">BookPatch</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">minProperties</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">          </span><span class="c1"># un PATCH vacío no tiene sentido</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> minLength</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">author</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> minLength</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">year</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">BookEnvelope</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">data</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/Book'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">PageMeta</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">page</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pageSize</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">total</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">totalPages</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">page</span><span class="p">:</span><span class="w">       </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">pageSize</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">total</span><span class="p">:</span><span class="w">      </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">totalPages</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">PageLinks</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">self</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">first</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">prev</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'null'</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># 3.1: tipo nullable como unión</span>
+<span class="w">        </span><span class="nt">next</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">'null'</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">last</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">BookPage</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">data</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">meta</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">data</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">array</span><span class="p p-Indicator">,</span><span class="nt"> items</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/Book'</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">meta</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/PageMeta'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">links</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/PageLinks'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">    </span><span class="nt">Problem</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Error según RFC 9457</span>
+<span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">type</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">title</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">status</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">properties</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w">     </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> format</span><span class="p">:</span><span class="w"> </span><span class="nv">uri</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w">    </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">status</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">integer</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">detail</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">errors</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">          </span><span class="nt">additionalProperties</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">array</span>
+<span class="w">            </span><span class="nt">items</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="w">  </span><span class="nt">responses</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">ValidationError</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">La solicitud no pasó la validación</span>
+<span class="w">      </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">application/problem+json</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/Problem'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">BusinessRule</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Regla de negocio violada</span>
+<span class="w">      </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">application/problem+json</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/Problem'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">NotFound</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Recurso no encontrado</span>
+<span class="w">      </span><span class="nt">content</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">application/problem+json</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> $ref</span><span class="p">:</span><span class="w"> </span><span class="s">'#/components/schemas/Problem'</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Tres detalles que son específicos de
+    <strong>
+     3.1
+    </strong>
+    y que no funcionaban en 3.0:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Concepto
+      </th>
+      <th>
+       3.0
+      </th>
+      <th>
+       3.1
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Nullable
+      </td>
+      <td>
+       <code>
+        nullable: true
+       </code>
+      </td>
+      <td>
+       <code>
+        type: [string, 'null']
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Ejemplos en un schema
+      </td>
+      <td>
+       <code>
+        example: 'x'
+       </code>
+       (uno)
+      </td>
+      <td>
+       <code>
+        examples: ['x', 'y']
+       </code>
+       (array)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Compatibilidad
+      </td>
+      <td>
+       <em>
+        dialecto
+       </em>
+       propio de JSON Schema
+      </td>
+      <td>
+       <strong>
+        JSON Schema Draft 2020-12
+       </strong>
+       completo
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Esa última fila es la razón por la que todo el resto de este apunte es posible: en 3.1, un schema de OpenAPI
+    <strong>
+     es
+    </strong>
+    un JSON Schema, así que cualquier validador de JSON Schema lo entiende directo.
+   </p>
+   <h3 id="41-readonly-y-writeonly">
+    4.1
+    <code>
+     readOnly
+    </code>
+    y
+    <code>
+     writeOnly
+    </code>
+   </h3>
+   <div class="highlight language-yaml">
+    <pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w">       </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> readOnly</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">   </span><span class="c1"># aparece en respuestas, no se envía</span>
+<span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">string</span><span class="p p-Indicator">,</span><span class="nt"> writeOnly</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w">  </span><span class="c1"># se envía, nunca vuelve</span>
+</pre>
+   </div>
+   <p>
+    Esto permite describir
+    <code>
+     Book
+    </code>
+    <strong>
+     una sola vez
+    </strong>
+    en lugar de mantener
+    <code>
+     Book
+    </code>
+    y
+    <code>
+     NewBook
+    </code>
+    en paralelo: el
+    <code>
+     id
+    </code>
+    es
+    <code>
+     readOnly
+    </code>
+    , así que los generadores lo excluyen del request. Es una decisión de estilo; mantener tipos separados es más explícito y más fácil de leer para quien recién empieza, y es lo que hacemos acá.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-servir-swagger-ui-desde-express">
+    5. Servir Swagger UI desde Express
+   </h2>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>swagger-ui-express<span class="w"> </span>yaml
+npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>@types/swagger-ui-express
+</pre>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/docs/openapi.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">fs</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'node:fs'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">path</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'node:path'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">YAML</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'yaml'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">loadOpenApiDocument</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span><span class="w"> </span><span class="s1">'openapi.yaml'</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">YAML</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="nx">file</span><span class="p">,</span><span class="w"> </span><span class="s1">'utf8'</span><span class="p">));</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/app.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">swaggerUi</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'swagger-ui-express'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">loadOpenApiDocument</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./docs/openapi.js'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">makeApp</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">,</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="p">(</span><span class="nx">service</span><span class="p">));</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/health'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">_req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">}));</span>
+
+<span class="w">  </span><span class="c1">// Documentación: sólo fuera de producción, o detrás de autenticación.</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'production'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">loadOpenApiDocument</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/openapi.json'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">_req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">doc</span><span class="p">));</span>
+<span class="w">    </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/docs'</span><span class="p">,</span><span class="w"> </span><span class="nx">swaggerUi</span><span class="p">.</span><span class="nx">serve</span><span class="p">,</span><span class="w"> </span><span class="nx">swaggerUi</span><span class="p">.</span><span class="nx">setup</span><span class="p">(</span><span class="nx">doc</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">customSiteTitle</span><span class="o">:</span><span class="w"> </span><span class="s1">'API de Libros'</span>
+<span class="w">    </span><span class="p">}));</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">errorHandler</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">app</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <code>
+     npm run dev
+    </code>
+    y la documentación navegable y
+    <strong>
+     ejecutable
+    </strong>
+    queda en
+    <code>
+     http://localhost:3000/docs
+    </code>
+    .
+   </p>
+   <blockquote>
+    <p>
+     <strong>
+      Decisión de seguridad.
+     </strong>
+     Exponer el documento en producción le entrega a cualquiera el mapa completo de la API: todos los endpoints, todos los campos, todos los formatos. No es una vulnerabilidad por sí misma — una API bien hecha no depende de que sus URLs sean secretas — pero sí le ahorra trabajo de reconocimiento a un atacante. Si la API es pública, publicalo; si es interna, dejalo detrás de la misma autenticación que el resto. Volvemos sobre esto en la Unidad 7.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-una-sola-fuente-de-verdad-generar-openapi-desde-zod">
+    6. Una sola fuente de verdad: generar OpenAPI desde Zod
+   </h2>
+   <p>
+    Hasta acá tenemos
+    <strong>
+     dos
+    </strong>
+    descripciones del mismo contrato:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// src/routes/books.query.ts  → valida en runtime</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">newBookSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">max</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">())</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <div class="highlight language-yaml">
+    <pre><span></span><span class="c1"># openapi.yaml → documenta</span>
+<span class="nt">NewBook</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">title</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">author</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">year</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="w"> </span><span class="nv">...</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</pre>
+   </div>
+   <p>
+    Dos descripciones del mismo hecho se desincronizan. No es una posibilidad: es cuestión de tiempo. Alguien agrega
+    <code>
+     isbn
+    </code>
+    al schema de Zod, el endpoint lo acepta, y la documentación sigue diciendo que no existe.
+   </p>
+   <p>
+    La solución es
+    <strong>
+     derivar
+    </strong>
+    el documento de los schemas que ya validan.
+   </p>
+   <h3 id="61-con-asteasolutionszod-to-openapi">
+    6.1 Con
+    <code>
+     @asteasolutions/zod-to-openapi
+    </code>
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>@asteasolutions/zod-to-openapi
+</pre>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/schemas/book.schema.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'zod'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">extendZodWithOpenApi</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@asteasolutions/zod-to-openapi'</span><span class="p">;</span>
+
+<span class="nx">extendZodWithOpenApi</span><span class="p">(</span><span class="nx">z</span><span class="p">);</span><span class="w">   </span><span class="c1">// agrega el método .openapi() a Zod</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">BookSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w">     </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">uuid</span><span class="p">().</span><span class="nx">openapi</span><span class="p">({</span><span class="w"> </span><span class="nx">example</span><span class="o">:</span><span class="w"> </span><span class="s1">'3f1a...'</span><span class="w"> </span><span class="p">}),</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w">  </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">openapi</span><span class="p">({</span><span class="w"> </span><span class="nx">example</span><span class="o">:</span><span class="w"> </span><span class="s1">'Rayuela'</span><span class="w"> </span><span class="p">}),</span>
+<span class="w">  </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">openapi</span><span class="p">({</span><span class="w"> </span><span class="nx">example</span><span class="o">:</span><span class="w"> </span><span class="s1">'Julio Cortázar'</span><span class="w"> </span><span class="p">}),</span>
+<span class="w">  </span><span class="nx">year</span><span class="o">:</span><span class="w">   </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">openapi</span><span class="p">({</span><span class="w"> </span><span class="nx">example</span><span class="o">:</span><span class="w"> </span><span class="kt">1963</span><span class="w"> </span><span class="p">})</span>
+<span class="p">}).</span><span class="nx">openapi</span><span class="p">(</span><span class="s1">'Book'</span><span class="p">);</span><span class="w">          </span><span class="c1">// ← el nombre en components/schemas</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">NewBookSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">BookSchema</span><span class="p">.</span><span class="nx">omit</span><span class="p">({</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">}).</span><span class="nx">openapi</span><span class="p">(</span><span class="s1">'NewBook'</span><span class="p">);</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">BookPatchSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">NewBookSchema</span><span class="p">.</span><span class="nx">partial</span><span class="p">().</span><span class="nx">openapi</span><span class="p">(</span><span class="s1">'BookPatch'</span><span class="p">);</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">ProblemSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="kr">type</span><span class="o">:</span><span class="w">     </span><span class="nx">z</span><span class="p">.</span><span class="kt">string</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w">    </span><span class="kt">z.string</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w">   </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">detail</span><span class="o">:</span><span class="w">   </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">optional</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">instance</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">optional</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">errors</span><span class="o">:</span><span class="w">   </span><span class="kt">z.record</span><span class="p">(</span><span class="nx">z</span><span class="p">.</span><span class="nx">array</span><span class="p">(</span><span class="nx">z</span><span class="p">.</span><span class="kt">string</span><span class="p">())).</span><span class="nx">optional</span><span class="p">()</span>
+<span class="p">}).</span><span class="nx">openapi</span><span class="p">(</span><span class="s1">'Problem'</span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Fijate que
+    <code>
+     NewBookSchema
+    </code>
+    y
+    <code>
+     BookPatchSchema
+    </code>
+    <strong>
+     se derivan
+    </strong>
+    de
+    <code>
+     BookSchema
+    </code>
+    con
+    <code>
+     .omit()
+    </code>
+    y
+    <code>
+     .partial()
+    </code>
+    . Es imposible que queden desalineados: no son copias, son transformaciones.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/docs/registry.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">OpenAPIRegistry</span><span class="p">,</span><span class="w"> </span><span class="nx">OpenApiGeneratorV31</span>
+<span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@asteasolutions/zod-to-openapi'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">BookSchema</span><span class="p">,</span><span class="w"> </span><span class="nx">NewBookSchema</span><span class="p">,</span><span class="w"> </span><span class="nx">BookPatchSchema</span><span class="p">,</span><span class="w"> </span><span class="nx">ProblemSchema</span>
+<span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../schemas/book.schema.js'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">listBooksQuery</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../routes/books.query.js'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'zod'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">registry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenAPIRegistry</span><span class="p">();</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">BookPage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">z.array</span><span class="p">(</span><span class="nx">BookSchema</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">meta</span><span class="o">:</span><span class="w"> </span><span class="kt">z.object</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">page</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">(),</span><span class="w"> </span><span class="nx">pageSize</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">(),</span>
+<span class="w">    </span><span class="nx">total</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">(),</span><span class="w"> </span><span class="nx">totalPages</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">()</span>
+<span class="w">  </span><span class="p">}),</span>
+<span class="w">  </span><span class="nx">links</span><span class="o">:</span><span class="w"> </span><span class="kt">z.object</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">self</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">(),</span><span class="w"> </span><span class="nx">first</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">(),</span>
+<span class="w">    </span><span class="nx">prev</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">nullable</span><span class="p">(),</span><span class="w"> </span><span class="nx">next</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">nullable</span><span class="p">(),</span>
+<span class="w">    </span><span class="nx">last</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">()</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">}).</span><span class="nx">openapi</span><span class="p">(</span><span class="s1">'BookPage'</span><span class="p">);</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">problemResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">  </span><span class="nx">description</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">'application/problem+json'</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">schema</span><span class="o">:</span><span class="w"> </span><span class="kt">ProblemSchema</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">registry</span><span class="p">.</span><span class="nx">registerPath</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'get'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="s1">'/v1/books'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">operationId</span><span class="o">:</span><span class="w"> </span><span class="s1">'listBooks'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">summary</span><span class="o">:</span><span class="w"> </span><span class="s1">'Lista libros con paginación, orden y filtros'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">tags</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'Books'</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">request</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">query</span><span class="o">:</span><span class="w"> </span><span class="kt">listBooksQuery</span><span class="w"> </span><span class="p">},</span><span class="w">        </span><span class="c1">// ← el MISMO schema que valida</span>
+<span class="w">  </span><span class="nx">responses</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mf">200</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s1">'Página de resultados'</span><span class="p">,</span>
+<span class="w">           </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">'application/json'</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">schema</span><span class="o">:</span><span class="w"> </span><span class="kt">BookPage</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">400</span><span class="o">:</span><span class="w"> </span><span class="kt">problemResponse</span><span class="p">(</span><span class="s1">'La solicitud no pasó la validación'</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">registry</span><span class="p">.</span><span class="nx">registerPath</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'post'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="s1">'/v1/books'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">operationId</span><span class="o">:</span><span class="w"> </span><span class="s1">'createBook'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">summary</span><span class="o">:</span><span class="w"> </span><span class="s1">'Crea un libro'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">tags</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'Books'</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">request</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">'application/json'</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">schema</span><span class="o">:</span><span class="w"> </span><span class="kt">NewBookSchema</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">responses</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mf">201</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s1">'Libro creado'</span><span class="p">,</span>
+<span class="w">           </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">'application/json'</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">schema</span><span class="o">:</span><span class="w"> </span><span class="kt">z.object</span><span class="p">({</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">BookSchema</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">400</span><span class="o">:</span><span class="w"> </span><span class="kt">problemResponse</span><span class="p">(</span><span class="s1">'La solicitud no pasó la validación'</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">422</span><span class="o">:</span><span class="w"> </span><span class="kt">problemResponse</span><span class="p">(</span><span class="s1">'Regla de negocio violada'</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+
+<span class="c1">// ... getBookById, updateBook, deleteBook</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">buildDocument</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">OpenApiGeneratorV31</span><span class="p">(</span><span class="nx">registry</span><span class="p">.</span><span class="nx">definitions</span><span class="p">).</span><span class="nx">generateDocument</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">openapi</span><span class="o">:</span><span class="w"> </span><span class="s1">'3.1.0'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">info</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'API de Libros'</span><span class="p">,</span><span class="w"> </span><span class="nx">version</span><span class="o">:</span><span class="w"> </span><span class="s1">'1.0.0'</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">servers</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:3000'</span><span class="w"> </span><span class="p">}]</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Ahora
+    <code>
+     openapi.yaml
+    </code>
+    deja de escribirse a mano. Se genera:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// scripts/generate-openapi.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">fs</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'node:fs'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">YAML</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'yaml'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">buildDocument</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../src/docs/registry.js'</span><span class="p">;</span>
+
+<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span><span class="p">(</span><span class="s1">'openapi.yaml'</span><span class="p">,</span><span class="w"> </span><span class="nx">YAML</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">buildDocument</span><span class="p">()));</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'openapi.yaml generado'</span><span class="p">);</span>
+</pre>
+   </div>
+   <div class="highlight language-json">
+    <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"openapi"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsx scripts/generate-openapi.ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"openapi:check"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsx scripts/generate-openapi.ts &amp;&amp; git diff --exit-code openapi.yaml"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <blockquote>
+    <p>
+     <strong>
+      <code>
+       openapi:check
+      </code>
+      en CI.
+     </strong>
+     Si alguien cambia un schema de Zod y no regenera el documento,
+     <code>
+      git diff --exit-code
+     </code>
+     falla y el pipeline se pone en rojo. Es la pieza que convierte "deberíamos mantener la doc actualizada" en algo que el proyecto
+     <strong>
+      garantiza
+     </strong>
+     .
+    </p>
+   </blockquote>
+   <h3 id="62-alternativa-ztojsonschema-de-zod-4">
+    6.2 Alternativa:
+    <code>
+     z.toJSONSchema()
+    </code>
+    de Zod 4
+   </h3>
+   <p>
+    Zod 4 incorporó conversión a JSON Schema sin dependencias extra:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">jsonSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">toJSONSchema</span><span class="p">(</span><span class="nx">BookSchema</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">target</span><span class="o">:</span><span class="w"> </span><span class="s1">'draft-2020-12'</span><span class="w"> </span><span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    Alcanza para generar
+    <code>
+     components/schemas
+    </code>
+    , pero
+    <strong>
+     no
+    </strong>
+    registra paths ni operaciones: eso hay que armarlo igual. Sirve bien si ya tenés el esqueleto del documento y sólo querés que los schemas se deriven del código.
+   </p>
+   <h3 id="63-el-otro-sentido-generar-el-cliente">
+    6.3 El otro sentido: generar el cliente
+   </h3>
+   <p>
+    Con el documento como fuente de verdad, el front deja de escribir
+    <code>
+     fetch
+    </code>
+    a mano:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npx<span class="w"> </span>openapi-typescript<span class="w"> </span>openapi.yaml<span class="w"> </span>-o<span class="w"> </span>src/api/types.ts
+</pre>
+   </div>
+   <p>
+    Eso produce tipos de TypeScript para cada request y cada response. Combinado con
+    <code>
+     openapi-fetch
+    </code>
+    , el front consume la API con autocompletado y errores de compilación si el contrato cambió:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">createClient</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'openapi-fetch'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">paths</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./api/types'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createClient</span><span class="o">&lt;</span><span class="nx">paths</span><span class="o">&gt;</span><span class="p">({</span><span class="w"> </span><span class="nx">baseUrl</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:3000'</span><span class="w"> </span><span class="p">});</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">api</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">params</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">query</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">page</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="p">,</span><span class="w"> </span><span class="nx">sort</span><span class="o">:</span><span class="w"> </span><span class="s1">'-year'</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">});</span>
+<span class="c1">// data está tipado como BookPage; 'sort: "pasword"' no compila.</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Lo retomamos en la Unidad 5, cuando el front consuma esta API.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-tests-de-contrato">
+    7. Tests de contrato
+   </h2>
+   <p>
+    Un test de contrato no verifica
+    <em>
+     qué
+    </em>
+    devuelve el endpoint, sino que
+    <strong>
+     lo que devuelve cumple el documento
+    </strong>
+    . Es la red que detecta la desincronización.
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>ajv<span class="w"> </span>ajv-formats
+</pre>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/helpers/contract.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">Ajv</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'ajv/dist/2020.js'</span><span class="p">;</span><span class="w">       </span><span class="c1">// ← Draft 2020-12, el de OpenAPI 3.1</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">addFormats</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'ajv-formats'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">buildDocument</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/docs/registry.js'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">buildDocument</span><span class="p">();</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">ajv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Ajv</span><span class="p">({</span><span class="w"> </span><span class="nx">strict</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span><span class="w"> </span><span class="nx">allErrors</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">});</span>
+<span class="nx">addFormats</span><span class="p">(</span><span class="nx">ajv</span><span class="p">);</span>
+
+<span class="c1">// Registramos components/schemas para que los $ref resuelvan</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">schema</span><span class="p">]</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nb">Object</span><span class="p">.</span><span class="nx">entries</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">components</span><span class="o">?</span><span class="p">.</span><span class="nx">schemas</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">{}))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">ajv</span><span class="p">.</span><span class="nx">addSchema</span><span class="p">(</span><span class="nx">schema</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">object</span><span class="p">,</span><span class="w"> </span><span class="sb">`#/components/schemas/</span><span class="si">${</span><span class="nx">name</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">expectMatchesSchema</span><span class="p">(</span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">unknown</span><span class="p">,</span><span class="w"> </span><span class="nx">schemaName</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">schema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">doc</span><span class="p">.</span><span class="nx">components</span><span class="o">?</span><span class="p">.</span><span class="nx">schemas</span><span class="o">?</span><span class="p">.[</span><span class="nx">schemaName</span><span class="p">];</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">schema</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="sb">`Schema </span><span class="si">${</span><span class="nx">schemaName</span><span class="si">}</span><span class="sb"> no está en el documento`</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">validate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ajv</span><span class="p">.</span><span class="nx">compile</span><span class="p">(</span><span class="nx">schema</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">object</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">validate</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span>
+<span class="w">      </span><span class="sb">`La respuesta no cumple </span><span class="si">${</span><span class="nx">schemaName</span><span class="si">}</span><span class="sb">:\n`</span><span class="w"> </span><span class="o">+</span>
+<span class="w">      </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">validate</span><span class="p">.</span><span class="nx">errors</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/contract/books.contract.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'supertest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">makeApp</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/app.js'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">expectMatchesSchema</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../helpers/contract.js'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'contrato OpenAPI'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'GET /v1/books cumple BookPage'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">makeApp</span><span class="p">()).</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expectMatchesSchema</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="s1">'BookPage'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'POST /v1/books devuelve un Book válido'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">makeApp</span><span class="p">())</span>
+<span class="w">      </span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">)</span>
+<span class="w">      </span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Rayuela'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Cortázar'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">1963</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">201</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expectMatchesSchema</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="s1">'Book'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'los errores cumplen Problem'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">makeApp</span><span class="p">()).</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/v1/books/inexistente'</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">404</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expectMatchesSchema</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="s1">'Problem'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="71-el-test-que-realmente-encuentra-bugs">
+    7.1 El test que realmente encuentra bugs
+   </h3>
+   <p>
+    Los tres de arriba verifican que la respuesta
+    <strong>
+     tenga
+    </strong>
+    lo que promete. Falta el inverso: que no tenga
+    <strong>
+     de más
+    </strong>
+    . Ese es el que atrapa la filtración de campos internos.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">it</span><span class="p">(</span><span class="s1">'no filtra campos no declarados en el contrato'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">makeApp</span><span class="p">())</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'X'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Y'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">2020</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">declarados</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">'id'</span><span class="p">,</span><span class="w"> </span><span class="s1">'title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'author'</span><span class="p">,</span><span class="w"> </span><span class="s1">'year'</span><span class="p">];</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">).</span><span class="nx">sort</span><span class="p">()).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">declarados</span><span class="p">.</span><span class="nx">sort</span><span class="p">());</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    El día que alguien agregue un campo
+    <code>
+     internalNotes
+    </code>
+    o
+    <code>
+     _rawRow
+    </code>
+    al objeto que se serializa, este test falla. En la Unidad 4, cuando
+    <code>
+     Book
+    </code>
+    venga de una base de datos, va a ser el test más valioso del archivo.
+   </p>
+   <blockquote>
+    <p>
+     <strong>
+      Alternativa conocida:
+     </strong>
+     <code>
+      jest-openapi
+     </code>
+     agrega el matcher
+     <code>
+      expect(res).toSatisfyApiSpec()
+     </code>
+     , que hace el mismo trabajo con menos código pero resuelve la operación por path y método. Si el proyecto usa Jest, es una opción válida; el helper con Ajv funciona igual en Jest y en Vitest y deja a la vista el mecanismo.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-evolucion-del-documento">
+    8. Evolución del documento
+   </h2>
+   <h3 id="81-versionar-el-documento-con-la-api">
+    8.1 Versionar el documento con la API
+   </h3>
+   <p>
+    <code>
+     info.version
+    </code>
+    sigue semver y acompaña a la versión de la URL:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Cambio
+      </th>
+      <th>
+       <code>
+        info.version
+       </code>
+      </th>
+      <th>
+       Prefijo de URL
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Agregar un endpoint
+      </td>
+      <td>
+       <code>
+        1.0.0
+       </code>
+       →
+       <code>
+        1.1.0
+       </code>
+      </td>
+      <td>
+       <code>
+        /v1
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Agregar un campo opcional
+      </td>
+      <td>
+       <code>
+        1.0.0
+       </code>
+       →
+       <code>
+        1.1.0
+       </code>
+      </td>
+      <td>
+       <code>
+        /v1
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Corregir la descripción de un campo
+      </td>
+      <td>
+       <code>
+        1.0.0
+       </code>
+       →
+       <code>
+        1.0.1
+       </code>
+      </td>
+      <td>
+       <code>
+        /v1
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Quitar o renombrar un campo
+      </td>
+      <td>
+       <code>
+        1.x
+       </code>
+       →
+       <code>
+        2.0.0
+       </code>
+      </td>
+      <td>
+       <code>
+        /v2
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="82-detectar-breaking-changes-automaticamente">
+    8.2 Detectar breaking changes automáticamente
+   </h3>
+   <p>
+    Teniendo el documento en el repo, un cambio incompatible se puede detectar
+    <strong>
+     antes
+    </strong>
+    de mergear:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="c1"># compara el documento de la rama contra el de main</span>
+npx<span class="w"> </span>@useoptic/openapi-diff<span class="w"> </span>...<span class="w"> </span><span class="c1"># o:</span>
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">:/w"</span><span class="w"> </span>tufin/oasdiff<span class="w"> </span>breaking<span class="w"> </span>/w/base.yaml<span class="w"> </span>/w/openapi.yaml
+</pre>
+   </div>
+   <p>
+    En CI, el paso falla si aparece un cambio incompatible sin un bump de major. Lo integramos al pipeline en la Unidad 9.
+   </p>
+   <h3 id="83-mantener-el-documento-legible">
+    8.3 Mantener el documento legible
+   </h3>
+   <p>
+    A medida que la API crece, un
+    <code>
+     openapi.yaml
+    </code>
+    de 3.000 líneas es ilegible. Dos reglas:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Todo lo repetido va a
+      <code>
+       components
+      </code>
+      .
+     </strong>
+     Si escribiste dos veces la misma respuesta de error, está mal.
+    </li>
+    <li>
+     <strong>
+      Un tag por recurso
+     </strong>
+     , con
+     <code>
+      description
+     </code>
+     . Swagger UI agrupa por tag y es la única navegación que tiene quien lo lee por primera vez.
+    </li>
+   </ul>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}
+
+#mermaid-svg-0 {font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333;}
+
+from {stroke-dashoffset: 0;}
+
+to {stroke-dashoffset: 0;}
+
+#mermaid-svg-0 .edge-animation-slow {stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round;}
+
+#mermaid-svg-0 .edge-animation-fast {stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round;}
+
+#mermaid-svg-0 .error-icon {fill: #552222;}
+
+#mermaid-svg-0 .error-text {fill: #552222; stroke: #552222;}
+
+#mermaid-svg-0 .edge-thickness-normal {stroke-width: 1px;}
+
+#mermaid-svg-0 .edge-thickness-thick {stroke-width: 3.5px;}
+
+#mermaid-svg-0 .edge-pattern-solid {stroke-dasharray: 0;}
+
+#mermaid-svg-0 .edge-thickness-invisible {stroke-width: 0; fill: none;}
+
+#mermaid-svg-0 .edge-pattern-dashed {stroke-dasharray: 3;}
+
+#mermaid-svg-0 .edge-pattern-dotted {stroke-dasharray: 2;}
+
+#mermaid-svg-0 .marker {fill: #333333; stroke: #333333;}
+
+#mermaid-svg-0 .marker.cross {stroke: #333333;}
+
+#mermaid-svg-0 svg {font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px;}
+
+#mermaid-svg-0 p {margin: 0;}
+
+#mermaid-svg-0 .label {font-family: "trebuchet ms",verdana,arial,sans-serif; color: #333;}
+
+#mermaid-svg-0 .cluster-label text {fill: #333;}
+
+#mermaid-svg-0 .cluster-label span {color: #333;}
+
+#mermaid-svg-0 .cluster-label span p {background-color: transparent;}
+
+#mermaid-svg-0 .label text {fill: #333; color: #333;}
+
+#mermaid-svg-0 span {fill: #333; color: #333;}
+
+#mermaid-svg-0 .node rect {fill: #ECECFF; stroke: #9370DB; stroke-width: 1px;}
+
+#mermaid-svg-0 .node circle {fill: #ECECFF; stroke: #9370DB; stroke-width: 1px;}
+
+#mermaid-svg-0 .node ellipse {fill: #ECECFF; stroke: #9370DB; stroke-width: 1px;}
+
+#mermaid-svg-0 .node polygon {fill: #ECECFF; stroke: #9370DB; stroke-width: 1px;}
+
+#mermaid-svg-0 .node path {fill: #ECECFF; stroke: #9370DB; stroke-width: 1px;}
+
+#mermaid-svg-0 .rough-node .label text {text-anchor: middle;}
+
+#mermaid-svg-0 .node .label text {text-anchor: middle;}
+
+#mermaid-svg-0 .image-shape .label {text-anchor: middle; text-align: center;}
+
+#mermaid-svg-0 .icon-shape .label {text-anchor: middle; text-align: center;}
+
+#mermaid-svg-0 .node .katex path {fill: #000; stroke: #000; stroke-width: 1px;}
+
+#mermaid-svg-0 .rough-node .label {text-align: center;}
+
+#mermaid-svg-0 .node .label {text-align: center;}
+
+#mermaid-svg-0 .node.clickable {cursor: pointer;}
+
+#mermaid-svg-0 .root .anchor path {fill: #333333!important; stroke-width: 0; stroke: #333333;}
+
+#mermaid-svg-0 .arrowheadPath {fill: #333333;}
+
+#mermaid-svg-0 .edgePaths .path {stroke: #333333; stroke-width: 1px;}
+
+#mermaid-svg-0 .flowchart-link {stroke: #333333; fill: none;}
+
+#mermaid-svg-0 .edgeLabel {background-color: rgba(232,232,232, 0.8); text-align: center;}
+
+#mermaid-svg-0 .edgeLabel p {background-color: rgba(232,232,232, 0.8);}
+
+#mermaid-svg-0 .edgeLabel rect {opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8);}
+
+#mermaid-svg-0 .labelBkg {background-color: rgba(232, 232, 232, 0.5);}
+
+#mermaid-svg-0 .cluster rect {fill: #ffffde; stroke: #aaaa33; stroke-width: 1px;}
+
+#mermaid-svg-0 .cluster text {fill: #333;}
+
+#mermaid-svg-0 .cluster span {color: #333;}
+
+#mermaid-svg-0 .node .collapsed-indicator {fill: #aaaa33; stroke: none; opacity: 0.6;}
+
+#mermaid-svg-0 .node .collapsed-separator {stroke: #aaaa33; stroke-width: 0.75px;}
+
+#mermaid-svg-0 div.mermaidTooltip {position: absolute; text-align: center; max-width: 200px; padding: 2px; font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 12px; background: hsl(80, 100%, 96.2745098039%); border: 1px solid #aaaa33; border-radius: 2px; pointer-events: none; z-index: 100;}
+
+#mermaid-svg-0 .flowchartTitleText {text-anchor: middle; font-size: 18px; fill: #333;}
+
+#mermaid-svg-0 rect.text {fill: none; stroke-width: 0;}
+
+#mermaid-svg-0 .icon-shape {background-color: rgba(232,232,232, 0.8); text-align: center;}
+
+#mermaid-svg-0 .image-shape {background-color: rgba(232,232,232, 0.8); text-align: center;}
+
+#mermaid-svg-0 .icon-shape p {background-color: rgba(232,232,232, 0.8); padding: 2px;}
+
+#mermaid-svg-0 .image-shape p {background-color: rgba(232,232,232, 0.8); padding: 2px;}
+
+#mermaid-svg-0 .icon-shape .label rect {opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8);}
+
+#mermaid-svg-0 .image-shape .label rect {opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8);}
+
+#mermaid-svg-0 .label-icon {display: inline-block; height: 1em; overflow: visible; vertical-align: -0.125em;}
+
+#mermaid-svg-0 .node .label-icon path {fill: currentColor; stroke: revert; stroke-width: revert;}
+
+#mermaid-svg-0 .node .neo-node {stroke: #9370DB;}
+
+#mermaid-svg-0 [data-look="neo"].node rect {stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}
+
+#mermaid-svg-0 [data-look="neo"].cluster rect {stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}
+
+#mermaid-svg-0 [data-look="neo"].node polygon {stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}
+
+#mermaid-svg-0 [data-look="neo"].swimlane.cluster rect {filter: none;}
+
+#mermaid-svg-0 [data-look="neo"].node path {stroke: #9370DB; stroke-width: 1px;}
+
+#mermaid-svg-0 [data-look="neo"].node .outer-path {filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}
+
+#mermaid-svg-0 [data-look="neo"].node .neo-line path {stroke: #9370DB; filter: none;}
+
+#mermaid-svg-0 [data-look="neo"].node circle {stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}
+
+#mermaid-svg-0 [data-look="neo"].node circle .state-start {fill: #000000;}
+
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon {fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}
+
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon-neo path {stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1));}
+
+#mermaid-svg-0 :root {--mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('svg[data-viewbox]').forEach(function(svg) {
+        if (!svg.getAttribute('viewBox')) {
+            svg.setAttribute('viewBox', svg.getAttribute('data-viewbox'));
+        }
+    });
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

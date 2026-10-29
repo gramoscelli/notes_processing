@@ -112,7 +112,7 @@ def combine_styles(html_file_path, output_file_path=None):
         output_file_path = f"{file_name}_simplify{file_ext}"
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
-        file.write(str(soup))
+        file.write(str(soup).replace(' viewbox=', ' viewBox='))
 
     print(f"Style blocks successfully simplified and saved to {output_file_path}")
     return output_file_path

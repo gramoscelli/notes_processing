@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   guia_tdd_api_2
+  </title>
+ </head>
+ <body>
+  <h1 id="guia-tdd-para-apis-typescript-express-jest-supertest">
+   Guía TDD para APIs (TypeScript + Express + Jest + Supertest)
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#0-enfoque-tdd-aplicado-a-apis">
+      0) Enfoque TDD aplicado a APIs
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#1-preparacion-del-proyecto">
+      1) Preparación del proyecto
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-estrategia-por-capa">
+      2) Estrategia por capa
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-receta-tdd-por-historia-user-story">
+      3) Receta TDD por historia (user story)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-ejemplo-guiado-regla-year-y-endpoint-post-books">
+      4) Ejemplo guiado: regla year y endpoint POST /books
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-plantillas-reutilizables">
+      5) Plantillas reutilizables
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-buenas-practicas-rapidas">
+      6) Buenas prácticas rápidas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-definition-of-done-por-user-story">
+      7) Definition of Done por user story
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-ejercicios-tdd-sugeridos-para-practicar">
+      8) Ejercicios TDD sugeridos (para practicar)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-snippets-utiles-copiarpegar">
+      9) Snippets útiles (copiar/pegar)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-proximos-pasos">
+      10) Próximos pasos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#11-alternativa-vitest-en-lugar-de-jest">
+      11) Alternativa: Vitest (en lugar de Jest)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#12-zod-en-la-api-por-que-y-como-usarlo">
+      12) Zod en la API: por qué y cómo usarlo
+     </a>
+    </li>
+   </ul>
+  </div>
+  <blockquote>
+   <p>
+    Receta paso a paso en español. Incluye estructura, comandos, snippets de configuración y ejemplos de tests
+    <strong>
+     unitarios
+    </strong>
+    e
+    <strong>
+     integración
+    </strong>
+    siguiendo
+    <strong>
+     Rojo → Verde → Refactor
+    </strong>
+    . Puedes copiar/pegar cada bloque.
+   </p>
+  </blockquote>
+  <div class="chapter-container">
+   <h2 id="0-enfoque-tdd-aplicado-a-apis">
+    0) Enfoque TDD aplicado a APIs
+   </h2>
+   <p>
+    <strong>
+     Ciclo:
+    </strong>
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Rojo
+     </strong>
+     : escribe un test que falla (define comportamiento).
+    </li>
+    <li>
+     <strong>
+      Verde
+     </strong>
+     : implementa lo mínimo para pasar el test.
+    </li>
+    <li>
+     <strong>
+      Refactor
+     </strong>
+     : limpia el código manteniendo los tests en verde.
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Capas recomendadas:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Unitarios
+     </strong>
+     : reglas de dominio/servicio sin I/O.
+    </li>
+    <li>
+     <strong>
+      Integración
+     </strong>
+     : rutas HTTP, códigos de estado, validaciones.
+    </li>
+    <li>
+     (Opcional)
+     <strong>
+      E2E
+     </strong>
+     /contratos con DB real o contenedores.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Principios clave:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Separa
+     <strong>
+      app
+     </strong>
+     (Express) de
+     <strong>
+      server
+     </strong>
+     (listen).
+    </li>
+    <li>
+     Inyecta dependencias en routers (
+     <code>
+      makeBooksRouter(service)
+     </code>
+     ).
+    </li>
+    <li>
+     Valida entradas/salidas en bordes (p.ej., Zod).
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="1-preparacion-del-proyecto">
+    1) Preparación del proyecto
+   </h2>
+   <h3 id="11-estructura-minima-sugerida">
+    1.1 Estructura mínima (sugerida)
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>.
+├─ src/
+│  ├─ app.ts
+│  ├─ server.ts
+│  ├─ routes/
+│  │  └─ books.ts
+│  └─ services/
+│     └─ bookService.ts
+├─ tests/
+│  ├─ unit/
+│  │  └─ bookService.yearRule.test.ts
+│  └─ integration/
+│     └─ books.yearRule.routes.test.ts
+├─ package.json
+├─ tsconfig.json
+└─ jest.config.ts
+</pre>
+    </div>
+   </div>
+   <h3 id="12-instalacion-comandos">
+    1.2 Instalación (comandos)
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>i<span class="w"> </span>express<span class="w"> </span>zod
+npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>typescript<span class="w"> </span>ts-node<span class="w"> </span>@types/express<span class="w"> </span>jest<span class="w"> </span>ts-jest<span class="w"> </span>@types/jest<span class="w"> </span>supertest<span class="w"> </span>@types/supertest
+npx<span class="w"> </span>tsc<span class="w"> </span>--init
+npx<span class="w"> </span>ts-jest<span class="w"> </span>config:init
+</pre>
+   </div>
+   <h3 id="13-packagejson-scripts-sugeridos">
+    1.3
+    <code>
+     package.json
+    </code>
+    (scripts sugeridos)
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"module"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node src/server.ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jest --watchAll"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"coverage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jest --coverage"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="14-tsconfigjson-valores-utiles">
+    1.4
+    <code>
+     tsconfig.json
+    </code>
+    (valores útiles)
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ES2020"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ESNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NodeNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"strict"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"esModuleInterop"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"forceConsistentCasingInFileNames"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"outDir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dist"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tests"</span><span class="p">]</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="15-jestconfigts">
+    1.5
+    <code>
+     jest.config.ts
+    </code>
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Config</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'jest'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">config</span><span class="o">:</span><span class="w"> </span><span class="kt">Config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">preset</span><span class="o">:</span><span class="w"> </span><span class="s1">'ts-jest'</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">testEnvironment</span><span class="o">:</span><span class="w"> </span><span class="s1">'node'</span><span class="p">,</span>
+<span class="w">  </span><span class="kr">module</span><span class="nx">FileExtensions</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'ts'</span><span class="p">,</span><span class="w"> </span><span class="s1">'tsx'</span><span class="p">,</span><span class="w"> </span><span class="s1">'js'</span><span class="p">,</span><span class="w"> </span><span class="s1">'json'</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">collectCoverageFrom</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s1">'src/**/*.{ts,tsx}'</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">'!src/server.ts'</span><span class="w"> </span><span class="c1">// excluir el arranque del servidor</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">};</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">config</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-estrategia-por-capa">
+    2) Estrategia por capa
+   </h2>
+   <h3 id="21-tests-unitarios-serviciodomino">
+    2.1 Tests unitarios (servicio/domino)
+   </h3>
+   <p>
+    <strong>
+     Objetivo:
+    </strong>
+    lógica pura sin red/IO.
+    <strong>
+     Técnicas:
+    </strong>
+    fixtures/factories simples; mocks donde haya I/O.
+   </p>
+   <p>
+    <strong>
+     Checklist de un buen test unitario
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Nombre describe el comportamiento.
+    </li>
+    <li>
+     Entrada mínima y clara.
+    </li>
+    <li>
+     1–2 afirmaciones fuertes y específicas.
+    </li>
+    <li>
+     Casos borde separados (no mezclar muchos asserts en un test).
+    </li>
+   </ul>
+   <h3 id="22-tests-de-integracion-rutas-http">
+    2.2 Tests de integración (rutas HTTP)
+   </h3>
+   <p>
+    <strong>
+     Objetivo:
+    </strong>
+    contrato de la API (status, body, validaciones, headers).
+    <strong>
+     Técnicas:
+    </strong>
+    montar
+    <code>
+     express()
+    </code>
+    fresco por suite, inyectar servicios fakes si aplica.
+   </p>
+   <h3 id="23-opcional-e2econtratos">
+    2.3 (Opcional) E2E/contratos
+   </h3>
+   <ul>
+    <li>
+     E2E con
+     <code>
+      testcontainers
+     </code>
+     + DB real.
+    </li>
+    <li>
+     Validación de contrato con Zod y/o schemas compartidos.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-receta-tdd-por-historia-user-story">
+    3) Receta TDD por historia (user story)
+   </h2>
+   <blockquote>
+    <p>
+     <em>
+      Historia
+     </em>
+     =
+     <strong>
+      historia de usuario (user story)
+     </strong>
+     : ítem de backlog que describe un comportamiento con valor para el usuario y sus criterios de aceptación.
+    </p>
+   </blockquote>
+   <ol>
+    <li>
+     Elige el
+     <strong>
+      próximo comportamiento
+     </strong>
+     (pequeño).
+    </li>
+    <li>
+     Escribe
+     <strong>
+      primero
+     </strong>
+     el test
+     <strong>
+      unitario
+     </strong>
+     (servicio/regla).
+    </li>
+    <li>
+     Corre tests →
+     <strong>
+      Rojo
+     </strong>
+     .
+    </li>
+    <li>
+     Implementa mínimo →
+     <strong>
+      Verde
+     </strong>
+     .
+    </li>
+    <li>
+     <strong>
+      Refactor
+     </strong>
+     (nombres, duplicación, helpers).
+    </li>
+    <li>
+     Añade el test
+     <strong>
+      de integración
+     </strong>
+     que cubra la ruta.
+    </li>
+    <li>
+     (Opcional) Refuerza validaciones y mensajes de error.
+    </li>
+    <li>
+     Repite.
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-ejemplo-guiado-regla-year-y-endpoint-post-books">
+    4) Ejemplo guiado: regla
+    <code>
+     year
+    </code>
+    y endpoint
+    <code>
+     POST /books
+    </code>
+   </h2>
+   <h3 id="41-servicio-test-unitario-primero">
+    4.1 Servicio (test unitario primero)
+   </h3>
+   <p>
+    <strong>
+     Regla:
+    </strong>
+    <code>
+     year
+    </code>
+    no puede ser mayor al año actual.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/unit/bookService.yearRule.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BookService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/services/bookService'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'BookService - regla de year'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'rechaza crear libro con year futuro'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">svc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">      </span><span class="nx">svc</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Foo'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Bar'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="p">).</span><span class="nx">toThrow</span><span class="p">(</span><span class="sr">/year/i</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'permite crear libro con year del año actual'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">svc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">book</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">svc</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Ok'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'A'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">book</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">toBeDefined</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Implementación mínima del servicio
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/services/bookService.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">NewBook</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">};</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Book</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">NewBook</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">};</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">BookService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">private</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">Book</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+
+<span class="w">  </span><span class="nx">create</span><span class="p">(</span><span class="nx">input</span><span class="o">:</span><span class="w"> </span><span class="kt">NewBook</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Book</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">currentYear</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">input</span><span class="p">.</span><span class="nx">year</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nx">currentYear</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Invalid year'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">book</span><span class="o">:</span><span class="w"> </span><span class="kt">Book</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="nx">input</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">crypto.randomUUID</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">book</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">book</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">list</span><span class="p">(</span><span class="nx">params</span><span class="o">?:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">author?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">})</span><span class="o">:</span><span class="w"> </span><span class="nx">Book</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">author</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">params</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">author</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">b</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">author</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">author</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">[...</span><span class="k">this</span><span class="p">.</span><span class="nx">data</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="42-approuter-y-validacion">
+    4.2 App/Router y validación
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/app.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./routes/books.js'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BookService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./services/bookService.js'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">makeApp</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+
+<span class="w">  </span><span class="c1">// inyección de dependencias</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/books'</span><span class="p">,</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="p">(</span><span class="nx">service</span><span class="p">));</span>
+
+<span class="w">  </span><span class="c1">// healthcheck simple</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/health'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">_req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">}));</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">app</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// src/server.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">makeApp</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./app.js'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">PORT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="mf">3000</span><span class="p">;</span>
+<span class="nx">makeApp</span><span class="p">().</span><span class="nx">listen</span><span class="p">(</span><span class="nx">PORT</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`API listening on :</span><span class="si">${</span><span class="nx">PORT</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/routes/books.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Router</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'zod'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BookService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../services/bookService.js'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">max</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">())</span>
+<span class="p">});</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="p">(</span><span class="nx">service</span><span class="o">:</span><span class="w"> </span><span class="kt">BookService</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">router</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Router</span><span class="p">();</span>
+
+<span class="w">  </span><span class="nx">router</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">parse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="p">.</span><span class="nx">safeParse</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">parse</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s1">'ValidationError'</span><span class="p">,</span><span class="w"> </span><span class="nx">details</span><span class="o">:</span><span class="w"> </span><span class="kt">parse.error.flatten</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">created</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">service</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">parse</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">201</span><span class="p">).</span><span class="nx">json</span><span class="p">(</span><span class="nx">created</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="ne">Error</span><span class="p">).</span><span class="nx">message</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">router</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">author</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">author</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'string'</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">req.query.author</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">undefined</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">service</span><span class="p">.</span><span class="nx">list</span><span class="p">({</span><span class="w"> </span><span class="nx">author</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">list</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">router</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="43-test-de-integracion-supertest">
+    4.3 Test de integración (Supertest)
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/integration/books.yearRule.routes.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'supertest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/routes/books'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BookService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/services/bookService'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'POST /books - validaciones'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">makeApp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+<span class="w">    </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/books'</span><span class="p">,</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">()));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">app</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'year futuro → 400 con error'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">makeApp</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/books'</span><span class="p">).</span><span class="nx">send</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Future'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'X'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">400</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">).</span><span class="nx">toHaveProperty</span><span class="p">(</span><span class="s1">'error'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'payload válido → 201 con objeto creado'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">makeApp</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/books'</span><span class="p">).</span><span class="nx">send</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Now'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Y'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">()</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">201</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">).</span><span class="nx">toHaveProperty</span><span class="p">(</span><span class="s1">'id'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-plantillas-reutilizables">
+    5) Plantillas reutilizables
+   </h2>
+   <h3 id="51-plantilla-de-caso-unitario">
+    5.1 Plantilla de caso unitario
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/unit/&lt;feature&gt;.&lt;behavior&gt;.test.ts</span>
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'&lt;Feature&gt; - &lt;Behavior&gt;'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería &lt;resultado esperable&gt;'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// arrange</span>
+<span class="w">    </span><span class="c1">// act</span>
+<span class="w">    </span><span class="c1">// assert</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="52-plantilla-de-suite-de-integracion">
+    5.2 Plantilla de suite de integración
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/integration/&lt;route&gt;.&lt;behavior&gt;.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'supertest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+
+<span class="c1">// importa router y servicio</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'&lt;RUTA&gt; - &lt;Behavior&gt;'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">makeApp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+<span class="w">    </span><span class="c1">// app.use('/&lt;ruta&gt;', make&lt;Router&gt;(new &lt;Service&gt;()));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">app</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería responder &lt;status&gt; y &lt;body&gt;'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">makeApp</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="o">&lt;</span><span class="nx">METHOD</span><span class="o">&gt;</span><span class="p">(</span><span class="s1">'&lt;&lt;ruta&gt;&gt;'</span><span class="p">).</span><span class="nx">send</span><span class="p">(</span><span class="cm">/* body */</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">STATUS</span><span class="o">&gt;</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// más asserts</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="53-validacion-con-zod-reutilizable">
+    5.3 Validación con Zod (reutilizable)
+   </h3>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'zod'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">idParam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">uuid</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">pagination</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">page</span><span class="o">:</span><span class="w"> </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="k">default</span><span class="p">(</span><span class="mf">1</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">pageSize</span><span class="o">:</span><span class="w"> </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mf">100</span><span class="p">).</span><span class="k">default</span><span class="p">(</span><span class="mf">20</span><span class="p">)</span>
+<span class="p">});</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-buenas-practicas-rapidas">
+    6) Buenas prácticas rápidas
+   </h2>
+   <ul>
+    <li>
+     Tests pequeños, cada uno con intención clara.
+    </li>
+    <li>
+     Un
+     <strong>
+      comportamiento
+     </strong>
+     por test; evita asserts no relacionados.
+    </li>
+    <li>
+     Nombres descriptivos:
+     <code>
+      feature.behavior.test.ts
+     </code>
+     .
+    </li>
+    <li>
+     Factories/fixtures para evitar duplicación de datos.
+    </li>
+    <li>
+     Inyección de dependencias en routers.
+    </li>
+    <li>
+     Mensajes de error consistentes y formato de error estable.
+    </li>
+    <li>
+     Thresholds de cobertura razonables; evita perseguir 100% inútil.
+    </li>
+    <li>
+     CI:
+     <code>
+      npm ci &amp;&amp; npm test
+     </code>
+     en cada PR.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-definition-of-done-por-user-story">
+    7) Definition of Done por user story
+   </h2>
+   <blockquote>
+    <p>
+     La
+     <em>
+      user story
+     </em>
+     se considera completa cuando cumple
+     <strong>
+      todo
+     </strong>
+     lo siguiente.
+    </p>
+   </blockquote>
+   <h3 id="71-tests-y-contrato">
+    7.1 Tests y contrato
+   </h3>
+   <p>
+    *
+   </p>
+   <h3 id="72-calidad-y-mantenimiento">
+    7.2 Calidad y mantenimiento
+   </h3>
+   <p>
+    *
+   </p>
+   <h3 id="73-delivery">
+    7.3 Delivery
+   </h3>
+   <p>
+    *
+   </p>
+   <blockquote>
+    <p>
+     Tip: añade una tabla "
+     <strong>
+      Matriz de casos
+     </strong>
+     " en la descripción del PR con entradas/estados esperados y el test que los cubre.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-ejercicios-tdd-sugeridos-para-practicar">
+    8) Ejercicios TDD sugeridos (para practicar)
+   </h2>
+   <ol>
+    <li>
+     <code>
+      GET /books?author=
+     </code>
+     filtra por autor (unit → integración; casos borde autor vacío, autor inexistente).
+    </li>
+    <li>
+     Paginación
+     <code>
+      ?page=&amp;pageSize=
+     </code>
+     con límites y contrato estable.
+    </li>
+    <li>
+     Regla de unicidad (título + autor) en el servicio (con test de colisión).
+    </li>
+    <li>
+     Endpoint
+     <code>
+      DELETE /books/:id
+     </code>
+     con validación UUID y tests de 204/404.
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-snippets-utiles-copiarpegar">
+    9) Snippets útiles (copiar/pegar)
+   </h2>
+   <h3 id="91-middleware-de-manejo-de-errores-simple">
+    9.1 Middleware de manejo de errores simple
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/middleware/errors.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">NextFunction</span><span class="p">,</span><span class="w"> </span><span class="nx">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">Response</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">errorHandler</span><span class="p">(</span><span class="nx">err</span><span class="o">:</span><span class="w"> </span><span class="kt">unknown</span><span class="p">,</span><span class="w"> </span><span class="nx">_req</span><span class="o">:</span><span class="w"> </span><span class="kt">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="o">:</span><span class="w"> </span><span class="kt">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">_next</span><span class="o">:</span><span class="w"> </span><span class="kt">NextFunction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'UnexpectedError'</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">/not found/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">404</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">400</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="nx">status</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">message</span><span class="w"> </span><span class="p">});</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="92-cors-basico">
+    9.2 CORS básico
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/middleware/cors.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">NextFunction</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">simpleCors</span><span class="p">(</span><span class="nx">_req</span><span class="o">:</span><span class="w"> </span><span class="kt">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="o">:</span><span class="w"> </span><span class="kt">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">next</span><span class="o">:</span><span class="w"> </span><span class="kt">NextFunction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">'Access-Control-Allow-Origin'</span><span class="p">,</span><span class="w"> </span><span class="s1">'*'</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">'Access-Control-Allow-Methods'</span><span class="p">,</span><span class="w"> </span><span class="s1">'GET,POST,PUT,PATCH,DELETE,OPTIONS'</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">'Access-Control-Allow-Headers'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Content-Type, Authorization'</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">next</span><span class="p">();</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="93-hook-de-test-para-clock-fijo-si-necesitas-fechas-deterministas">
+    9.3 Hook de test para clock fijo (si necesitas fechas deterministas)
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/setup/fakeClock.ts</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">RealDate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">withFixedDate</span><span class="p">(</span><span class="nx">iso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'2025-01-01T00:00:00Z'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">fixed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">RealDate</span><span class="p">(</span><span class="nx">iso</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// @ts-ignore</span>
+<span class="w">  </span><span class="nb">global</span><span class="p">.</span><span class="nb">Date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">RealDate</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kr">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">super</span><span class="p">();</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">fixed</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">global</span><span class="p">.</span><span class="nb">Date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">RealDate</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">;</span><span class="w"> </span><span class="p">};</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-proximos-pasos">
+    10) Próximos pasos
+   </h2>
+   <ul>
+    <li>
+     Añade más reglas de dominio (unit) y expónlas gradualmente vía endpoints (integración).
+    </li>
+    <li>
+     Considera
+     <code>
+      testcontainers
+     </code>
+     si integras DB real.
+    </li>
+    <li>
+     Añade validación de salida (Zod
+     <code>
+      transform
+     </code>
+     /
+     <code>
+      parse
+     </code>
+     ) si compartes contratos.
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     ¿Quieres que convierta este canvas en un esqueleto de proyecto descargable (zip) con los archivos listos? Puedo generarlo a partir de estos snippets.
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-alternativa-vitest-en-lugar-de-jest">
+    11) Alternativa:
+    <strong>
+     Vitest
+    </strong>
+    (en lugar de Jest)
+   </h2>
+   <p>
+    Si preferís
+    <strong>
+     Vitest
+    </strong>
+    , el flujo TDD no cambia (Rojo → Verde → Refactor), solo cambian las herramientas.
+   </p>
+   <h3 id="111-instalacion">
+    11.1 Instalación
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="c1"># quitar jest/ts-jest si migras</span>
+npm<span class="w"> </span>remove<span class="w"> </span>jest<span class="w"> </span>ts-jest<span class="w"> </span>@types/jest
+
+<span class="c1"># instalar vitest y utilidades</span>
+npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>vitest<span class="w"> </span>@vitest/coverage-v8<span class="w"> </span>@types/node<span class="w"> </span>tsx
+<span class="c1"># (ya deberías tener) supertest y sus tipos</span>
+npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>supertest<span class="w"> </span>@types/supertest
+</pre>
+   </div>
+   <h3 id="112-scripts-en-packagejson">
+    11.2 Scripts en
+    <code>
+     package.json
+    </code>
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node src/server.ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"coverage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run --coverage"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     Nota: Vitest compila TS con
+     <strong>
+      esbuild
+     </strong>
+     , no requiere
+     <code>
+      ts-jest
+     </code>
+     .
+    </p>
+   </blockquote>
+   <h3 id="113-configuracion-vitestconfigts">
+    11.3 Configuración
+    <code>
+     vitest.config.ts
+    </code>
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// vitest.config.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest/config'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">test</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">environment</span><span class="o">:</span><span class="w"> </span><span class="s1">'node'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">include</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'tests/**/*.{test,spec}.{ts,tsx,js}'</span><span class="p">],</span>
+<span class="w">    </span><span class="nx">globals</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span><span class="w"> </span><span class="c1">// opcional: usar describe/it/expect sin importar</span>
+<span class="w">    </span><span class="nx">coverage</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">provider</span><span class="o">:</span><span class="w"> </span><span class="s1">'v8'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">reporter</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'text'</span><span class="p">,</span><span class="w"> </span><span class="s1">'html'</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">include</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'src/**/*.{ts,tsx}'</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">exclude</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'src/server.ts'</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     Si preferís
+     <strong>
+      no
+     </strong>
+     usar
+     <code>
+      globals: true
+     </code>
+     , importá desde
+     <code>
+      vitest
+     </code>
+     en cada test:
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     Alternativamente, añade a
+     <code>
+      tsconfig.json
+     </code>
+     :
+    </li>
+   </ul>
+   <div class="highlight language-json">
+    <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"types"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"vitest/globals"</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <h3 id="114-tests-que-cambia">
+    11.4 Tests: ¿qué cambia?
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Unitarios
+     </strong>
+     y
+     <strong>
+      de integración
+     </strong>
+     funcionan igual. Supertest se usa igual.
+    </li>
+    <li>
+     En archivos de test, podés:
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/unit/bookService.yearRule.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BookService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/services/bookService'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'BookService - regla de year'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'rechaza crear libro con year futuro'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">svc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">      </span><span class="nx">svc</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Foo'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Bar'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="p">).</span><span class="nx">toThrow</span><span class="p">(</span><span class="sr">/year/i</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// tests/integration/books.yearRule.routes.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'supertest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/routes/books'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">BookService</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/services/bookService'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'POST /books - validaciones'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">makeApp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">express</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+<span class="w">    </span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/books'</span><span class="p">,</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nx">BookService</span><span class="p">()));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">app</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'year futuro → 400 con error'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">makeApp</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/books'</span><span class="p">).</span><span class="nx">send</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Future'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'X'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">400</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">).</span><span class="nx">toHaveProperty</span><span class="p">(</span><span class="s1">'error'</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="115-esmtypescript-detalles-rapidos">
+    11.5 ESM/TypeScript: detalles rápidos
+   </h3>
+   <ul>
+    <li>
+     Con
+     <code>
+      "module": "ESNext"
+     </code>
+     y
+     <code>
+      "moduleResolution": "NodeNext"
+     </code>
+     , usá **extensión **`` en imports relativos TS → TS (p. ej.,
+     <code>
+      import { makeBooksRouter } from './routes/books.js'
+     </code>
+     ).
+    </li>
+    <li>
+     Vitest no requiere
+     <code>
+      jest.config
+     </code>
+     , su configuración vive en
+     <code>
+      vitest.config.ts
+     </code>
+     .
+    </li>
+   </ul>
+   <h3 id="116-comandos-utiles">
+    11.6 Comandos útiles
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span><span class="w">        </span><span class="c1"># corre una pasada</span>
+npm<span class="w"> </span>run<span class="w"> </span>test:watch<span class="w">  </span><span class="c1"># watch mode</span>
+npm<span class="w"> </span>run<span class="w"> </span>coverage<span class="w">    </span><span class="c1"># reporte de cobertura (text + html)</span>
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="12-zod-en-la-api-por-que-y-como-usarlo">
+    12) Zod en la API: por qué y cómo usarlo
+   </h2>
+   <p>
+    <strong>
+     Zod
+    </strong>
+    es una biblioteca de
+    <em>
+     schemas
+    </em>
+    para
+    <strong>
+     validar
+    </strong>
+    y
+    <strong>
+     tipar
+    </strong>
+    datos en tiempo de ejecución. En TDD para APIs se usa para
+    <strong>
+     definir el contrato
+    </strong>
+    en los bordes de tu sistema (HTTP request/response), mantener entradas limpias y simplificar tests.
+   </p>
+   <h3 id="121-donde-aplicarlo">
+    12.1 Dónde aplicarlo
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Entradas
+     </strong>
+     :
+     <code>
+      req.body
+     </code>
+     ,
+     <code>
+      req.query
+     </code>
+     ,
+     <code>
+      req.params
+     </code>
+     , y, si hace falta,
+     <code>
+      req.headers
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Salidas
+     </strong>
+     (opcional): valida la forma de lo que enviás por
+     <code>
+      res.json(...)
+     </code>
+     .
+    </li>
+    <li>
+     No reemplaza la
+     <strong>
+      lógica de dominio
+     </strong>
+     : Zod asegura contratos; las reglas de negocio van en el servicio con tests unitarios.
+    </li>
+   </ul>
+   <h3 id="122-parse-vs-safeparse">
+    12.2
+    <code>
+     parse
+    </code>
+    vs
+    <code>
+     safeParse
+    </code>
+   </h3>
+   <ul>
+    <li>
+     <code>
+      schema.parse(x)
+     </code>
+     lanza excepción si no valida.
+    </li>
+    <li>
+     <code>
+      schema.safeParse(x)
+     </code>
+     devuelve
+     <code>
+      { success, data?, error? }
+     </code>
+     y no lanza.
+    </li>
+   </ul>
+   <p>
+    En controladores conviene `` para responder
+    <code>
+     400
+    </code>
+    sin hacer
+    <code>
+     throw
+    </code>
+    :
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="p">.</span><span class="nx">safeParse</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s1">'ValidationError'</span><span class="p">,</span><span class="w"> </span><span class="nx">details</span><span class="o">:</span><span class="w"> </span><span class="kt">result.error.flatten</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="p">}</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span><span class="w"> </span><span class="c1">// tipado y sanitizado</span>
+</pre>
+   </div>
+   <h3 id="123-schemas-tipicos">
+    12.3 Schemas típicos
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'zod'</span><span class="p">;</span>
+
+<span class="c1">// Body: crear libro</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">trim</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">trim</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">max</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">())</span>
+<span class="p">});</span>
+
+<span class="c1">// Query: filtros y paginación</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">listBooksQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">trim</span><span class="p">().</span><span class="nx">optional</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">page</span><span class="o">:</span><span class="w"> </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="k">default</span><span class="p">(</span><span class="mf">1</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">pageSize</span><span class="o">:</span><span class="w"> </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">max</span><span class="p">(</span><span class="mf">100</span><span class="p">).</span><span class="k">default</span><span class="p">(</span><span class="mf">20</span><span class="p">)</span>
+<span class="p">}).</span><span class="nx">strict</span><span class="p">();</span>
+
+<span class="c1">// Params: path variables</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">idParam</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">uuid</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     Consejo:
+     <code>
+      z.coerce.number()
+     </code>
+     convierte strings de
+     <code>
+      query
+     </code>
+     en números.
+    </p>
+   </blockquote>
+   <h3 id="124-derivar-tipos-de-typescript-del-schema">
+    12.4 Derivar tipos de TypeScript del schema
+   </h3>
+   <p>
+    Evita duplicar tipos y schemas:
+    <strong>
+     deriva
+    </strong>
+    los tipos con
+    <code>
+     z.infer
+    </code>
+    .
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">NewBook</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">infer</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="o">&gt;</span><span class="p">;</span>
+</pre>
+   </div>
+   <h3 id="125-refinements-y-reglas-simples">
+    12.5 Refinements y reglas simples
+   </h3>
+   <p>
+    Podés agregar precondiciones con
+    <code>
+     .refine
+    </code>
+    o
+    <code>
+     .superRefine
+    </code>
+    para casos ligeros.
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">createBookWithRule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="p">.</span><span class="nx">refine</span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">year</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">(),</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'year'</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="s1">'year no puede ser futuro'</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    Aun así, mantené la
+    <strong>
+     regla
+    </strong>
+    también en el servicio y probala con tests unitarios.
+   </p>
+   <h3 id="126-transforms-y-sanitizacion">
+    12.6 Transforms y sanitización
+   </h3>
+   <p>
+    Usá
+    <code>
+     .transform
+    </code>
+    para normalizar entradas antes de pasar al servicio.
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">normalizedCreate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">v</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">  </span><span class="p">...</span><span class="nx">v</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">v.title.trim</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="kt">v.author.trim</span><span class="p">()</span>
+<span class="p">}));</span>
+</pre>
+   </div>
+   <h3 id="127-validar-la-salida-opcional">
+    12.7 Validar la
+    <strong>
+     salida
+    </strong>
+    (opcional)
+   </h3>
+   <p>
+    Útil para contratos estables (especialmente en TDD):
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">bookSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">uuid</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">created</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">service</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span>
+<span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">201</span><span class="p">).</span><span class="nx">json</span><span class="p">(</span><span class="nx">bookSchema</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">created</span><span class="p">));</span>
+</pre>
+   </div>
+   <p>
+    Podés activarlo solo en desarrollo.
+   </p>
+   <h3 id="128-helper-generico-validate">
+    12.8 Helper genérico
+    <code>
+     validate
+    </code>
+   </h3>
+   <p>
+    Centraliza la validación y el formato de error.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/middleware/validate.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ZodSchema</span><span class="p">,</span><span class="w"> </span><span class="nx">ZodError</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'zod'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">RequestHandler</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'express'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">validate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="nx">schema</span><span class="o">:</span><span class="w"> </span><span class="kt">ZodSchema</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">source</span><span class="o">:</span><span class="w"> </span><span class="s1">'body'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'query'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'params'</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'body'</span>
+<span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">RequestHandler</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">next</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">)[</span><span class="nx">source</span><span class="p">];</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">schema</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">).</span><span class="nx">safeParse</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">result</span><span class="p">.</span><span class="nx">success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">error</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">ZodError</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s1">'ValidationError'</span><span class="p">,</span><span class="w"> </span><span class="nx">details</span><span class="o">:</span><span class="w"> </span><span class="kt">err.flatten</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="p">(</span><span class="nx">req</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">)[</span><span class="nx">source</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">next</span><span class="p">();</span>
+<span class="p">};</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Uso en router:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">router</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span><span class="w"> </span><span class="nx">validate</span><span class="p">(</span><span class="nx">listBooksQuery</span><span class="p">,</span><span class="w"> </span><span class="s1">'query'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">author</span><span class="p">,</span><span class="w"> </span><span class="nx">page</span><span class="p">,</span><span class="w"> </span><span class="nx">pageSize</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">infer</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">listBooksQuery</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">service</span><span class="p">.</span><span class="nx">list</span><span class="p">({</span><span class="w"> </span><span class="nx">author</span><span class="w"> </span><span class="p">}));</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <h3 id="129-tests-de-schemas">
+    12.9 Tests de schemas
+   </h3>
+   <p>
+    Podés testear los contratos con casos borde:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span><span class="w"> </span><span class="c1">// o jest</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'../../src/routes/books'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'schema createBook'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'rechaza year futuro'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="p">.</span><span class="nx">safeParse</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'T'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'A'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">9999</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">success</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'acepta datos válidos'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">createBookSchema</span><span class="p">.</span><span class="nx">safeParse</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'T'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'A'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">2020</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">success</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="1210-errores-comunes">
+    12.10 Errores comunes
+   </h3>
+   <ul>
+    <li>
+     Usar
+     <code>
+      z.number()
+     </code>
+     en
+     <code>
+      query
+     </code>
+     sin
+     <code>
+      coerce
+     </code>
+     y que todo falle porque llegan strings.
+    </li>
+    <li>
+     Olvidar
+     <code>
+      .strict()
+     </code>
+     y aceptar claves desconocidas.
+    </li>
+    <li>
+     Poner lógica compleja en
+     <code>
+      .transform
+     </code>
+     en vez de en el servicio.
+    </li>
+    <li>
+     Duplicar tipos (TS) y schemas (Zod) y que se desincronicen.
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     Regla de oro:
+     <strong>
+      valida en los bordes
+     </strong>
+     ,
+     <strong>
+      aplica reglas en el dominio
+     </strong>
+     , y
+     <strong>
+      testea ambos
+     </strong>
+     con TDD.
+    </p>
+   </blockquote>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

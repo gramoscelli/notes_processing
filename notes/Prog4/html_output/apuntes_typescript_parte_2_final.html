@@ -371,2576 +371,809 @@
       <strong>
        Función Genérica Básica:
       </strong>
-      <div class="highlight language-typescript">
-       <pre><span></span><span class="w">    </span><span class="c1">// La función 'identidad' acepta un argumento 'x' de un tipo 'T'</span>
-<span class="w">    </span><span class="c1">// y promete devolver un valor del mismo tipo 'T'.</span>
-<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">identidad</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span></pre>
-      </div>
+     </p>
+     <p>
+      La gran ventaja sobre usar
+      <code>
+       any
+      </code>
+      es que mantenemos la seguridad de tipos.
+      <code>
+       resultadoString
+      </code>
+      es de tipo
+      <code>
+       string
+      </code>
+      , no
+      <code>
+       any
+      </code>
+      .
      </p>
     </li>
    </ul>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// La función 'identidad' acepta un argumento 'x' de un tipo 'T'</span>
+<span class="c1">// y promete devolver un valor del mismo tipo 'T'.</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">identidad</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Al llamarla, TypeScript infiere el tipo 'T' a partir del argumento:</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">resultadoString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">identidad</span><span class="p">(</span><span class="s2">"Hola Mundo"</span><span class="p">);</span><span class="w"> </span><span class="c1">// 'T' es 'string'</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">resultadoNumero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">identidad</span><span class="p">(</span><span class="mf">123</span><span class="p">);</span><span class="w">        </span><span class="c1">// 'T' es 'number'</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Restricciones Genéricas: Poniendo Límites con
+       <code>
+        extends
+       </code>
+      </strong>
+     </p>
+     <p>
+      A menudo, necesitas que tu función genérica sepa
+      <em>
+       algo
+      </em>
+      sobre el tipo con el que está trabajando. Por ejemplo, que tiene una propiedad
+      <code>
+       .length
+      </code>
+      . Las
+      <strong>
+       restricciones
+      </strong>
+      te permiten decirle a
+      <em>
+       TypeScript
+      </em>
+      : "El tipo
+      <code>
+       T
+      </code>
+      puede ser cualquiera,
+      <em>
+       siempre y cuando
+      </em>
+      cumpla con esta forma o contrato".
+     </p>
+     <p>
+      <strong>
+       Ejemplo Avanzado: Acceder a una Propiedad de Forma Segura
+      </strong>
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Esta función toma un objeto 'obj' (de tipo 'T') y una clave 'k' (de tipo 'K')</span>
+<span class="cm">    * y devuelve la propiedad correspondiente.</span>
+<span class="cm">    *</span>
+<span class="cm">    * Las restricciones son clave aquí:</span>
+<span class="cm">    * 1. 'T': Representa el objeto.</span>
+<span class="cm">    * 2. 'K extends keyof T': Esta es la restricción. Dice que el tipo 'K' DEBE SER</span>
+<span class="cm">    *    una de las claves ('keyof') del objeto 'T'.</span>
+<span class="cm">    * 3. Retorno 'T[K]': El tipo de retorno es el "tipo de la propiedad 'K' en 'T'".</span>
+<span class="cm">    */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">obtenerPropiedad</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">obj</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">usuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="s2">"Ana"</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="kt">30</span><span class="w"> </span><span class="p">};</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">obtenerPropiedad</span><span class="p">(</span><span class="nx">usuario</span><span class="p">,</span><span class="w"> </span><span class="s2">"nombre"</span><span class="p">);</span><span class="w"> </span><span class="c1">// Válido. 'nombre' es de tipo 'string'.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">edad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">obtenerPropiedad</span><span class="p">(</span><span class="nx">usuario</span><span class="p">,</span><span class="w"> </span><span class="s2">"edad"</span><span class="p">);</span><span class="w">     </span><span class="c1">// Válido. 'edad' es de tipo 'number'.</span>
+<span class="c1">// const invalido = obtenerPropiedad(usuario, "email"); // ❌ Error: "email" no es una clave de 'usuario'.</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Parámetros Genéricos por Defecto
+      </strong>
+     </p>
+     <p>
+      Al igual que los parámetros de una función, los parámetros genéricos pueden tener un
+      <strong>
+       tipo por defecto
+      </strong>
+      . Esto proporciona un tipo de respaldo si el usuario no especifica uno, haciendo tu código más conveniente.
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 'Bolsa' es un tipo genérico que contiene un array de 'T'.</span>
+<span class="c1">// Si no se especifica 'T', por defecto será 'string'.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Bolsa</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[];</span>
+<span class="p">};</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">bolsaDeCuerdas</span><span class="o">:</span><span class="w"> </span><span class="kt">Bolsa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"cuerda1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cuerda2"</span><span class="p">]</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// 'T' es 'string' (por defecto)</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">bolsaDeNumeros</span><span class="o">:</span><span class="w"> </span><span class="kt">Bolsa</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">]</span><span class="w"> </span><span class="p">};</span><span class="w">   </span><span class="c1">// 'T' es 'number' (especificado)</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+   <h4 id="14-tipado-de-this-en-funciones-evitando-errores-de-contexto">
+    1.4 Tipado de
+    <code>
+     this
+    </code>
+    en Funciones: Evitando Errores de Contexto
+   </h4>
    <p>
-    <span class="w">
-    </span>
-    <span class="c1">
-     // Al llamarla, TypeScript infiere el tipo 'T' a partir del argumento:
-    </span>
-    <span class="w">
-    </span>
-    <span class="kd">
-     const
-    </span>
-    <span class="w">
-    </span>
-    <span class="nx">
-     resultadoString
-    </span>
-    <span class="w">
-    </span>
-    <span class="o">
-     =
-    </span>
-    <span class="w">
-    </span>
-    <span class="nx">
-     identidad
-    </span>
-    <span class="p">
-     (
-    </span>
-    <span class="s2">
-     "Hola Mundo"
-    </span>
-    <span class="p">
-     );
-    </span>
-    <span class="w">
-    </span>
-    <span class="c1">
-     // 'T' es 'string'
-    </span>
-    <span class="w">
-    </span>
-    <span class="kd">
-     const
-    </span>
-    <span class="w">
-    </span>
-    <span class="nx">
-     resultadoNumero
-    </span>
-    <span class="w">
-    </span>
-    <span class="o">
-     =
-    </span>
-    <span class="w">
-    </span>
-    <span class="nx">
-     identidad
-    </span>
-    <span class="p">
-     (
-    </span>
-    <span class="mf">
-     123
-    </span>
-    <span class="p">
-     );
-    </span>
-    <span class="w">
-    </span>
-    <span class="c1">
-     // 'T' es 'number'
-    </span>
-    <span class="w">
-    </span>
+    En JavaScript, el valor de
+    <code>
+     this
+    </code>
+    es dinámico y una fuente común de errores, especialmente cuando una función se pasa como callback y pierde su contexto original.
+    <em>
+     TypeScript
+    </em>
+    ofrece dos mecanismos principales para controlar
+    <code>
+     this
+    </code>
+    y asegurar que siempre se use correctamente.
    </p>
-  </div>
-  <pre><code>La gran ventaja sobre usar `any` es que mantenemos la seguridad de tipos. `resultadoString` es de tipo `string`, no `any`.
-</code></pre>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      Restricciones Genéricas: Poniendo Límites con
+   <ul>
+    <li>
+     <p>
+      <strong>
+       1. Tipado Explícito de
+       <code>
+        this
+       </code>
+       (Para Métodos Tradicionales)
+      </strong>
+     </p>
+     <p>
+      Para funciones declaradas con la sintaxis tradicional (
       <code>
-       extends
+       function() { ... }
       </code>
-     </strong>
-    </p>
-    <p>
-     A menudo, necesitas que tu función genérica sepa
-     <em>
-      algo
-     </em>
-     sobre el tipo con el que está trabajando. Por ejemplo, que tiene una propiedad
-     <code>
-      .length
-     </code>
-     . Las
-     <strong>
-      restricciones
-     </strong>
-     te permiten decirle a
-     <em>
-      TypeScript
-     </em>
-     : "El tipo
-     <code>
-      T
-     </code>
-     puede ser cualquiera,
-     <em>
-      siempre y cuando
-     </em>
-     cumpla con esta forma o contrato".
-    </p>
-    <p>
-     <strong>
-      Ejemplo Avanzado: Acceder a una Propiedad de Forma Segura
-     </strong>
-     <div class="highlight language-typescript">
-      <div class="collapsible-container" data-max-lines="6">
-       <pre><span></span><span class="w">    </span><span class="cm">/<em><em></em></em></span>
-<span class="cm">     * Esta función toma un objeto 'obj' (de tipo 'T') y una clave 'k' (de tipo 'K')</span>
-<span class="cm">     * y devuelve la propiedad correspondiente.</span>
-<span class="cm">     </span>
-<span class="cm">     * Las restricciones son clave aquí:</span>
-<span class="cm">     * 1. 'T': Representa el objeto.</span>
-<span class="cm">     * 2. 'K extends keyof T': Esta es la restricción. Dice que el tipo 'K' DEBE SER</span>
-<span class="cm">     *    una de las claves ('keyof') del objeto 'T'.</span>
-<span class="cm">     * 3. Retorno 'T[K]': El tipo de retorno es el "tipo de la propiedad 'K' en 'T'".</span>
-<span class="cm">     /</span>
-<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">obtenerPropiedad</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">k</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="nx">obj</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span>
-<span class="w">    </span><span class="p">}</span></pre>
-      </div>
-     </div>
-    </p>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    usuario
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nombre
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="s2">
-    "Ana"
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    edad
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    30
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    };
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nombre
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    obtenerPropiedad
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    usuario
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="s2">
-    "nombre"
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Válido. 'nombre' es de tipo 'string'.
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    edad
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    obtenerPropiedad
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    usuario
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="s2">
-    "edad"
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Válido. 'edad' es de tipo 'number'.
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // const invalido = obtenerPropiedad(usuario, "email"); // ❌ Error: "email" no es una clave de 'usuario'.
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      Parámetros Genéricos por Defecto
-     </strong>
-    </p>
-    <p>
-     Al igual que los parámetros de una función, los parámetros genéricos pueden tener un
-     <strong>
-      tipo por defecto
-     </strong>
-     . Esto proporciona un tipo de respaldo si el usuario no especifica uno, haciendo tu código más conveniente.
-    </p>
-    <p>
-     <div class="highlight language-typescript">
-      <pre><span></span><span class="w">    </span><span class="c1">// 'Bolsa' es un tipo genérico que contiene un array de 'T'.</span>
-<span class="w">    </span><span class="c1">// Si no se especifica 'T', por defecto será 'string'.</span>
-<span class="w">    </span><span class="kr">type</span><span class="w"> </span><span class="nx">Bolsa</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">items</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[];</span>
-<span class="w">    </span><span class="p">};</span></pre>
-     </div>
-    </p>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    bolsaDeCuerdas
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    Bolsa
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    items
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    [
-   </span>
-   <span class="s2">
-    "cuerda1"
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="s2">
-    "cuerda2"
-   </span>
-   <span class="p">
-    ]
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    };
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // 'T' es 'string' (por defecto)
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    bolsaDeNumeros
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    Bolsa
-   </span>
-   <span class="o">
-    &lt;
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="o">
-    &gt;
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    items
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    [
-   </span>
-   <span class="mf">
-    1
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="mf">
-    2
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="mf">
-    3
-   </span>
-   <span class="p">
-    ]
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    };
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // 'T' es 'number' (especificado)
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <hr/>
-  <h4 id="14-tipado-de-this-en-funciones-evitando-errores-de-contexto">
-   1.4 Tipado de
-   <code>
-    this
-   </code>
-   en Funciones: Evitando Errores de Contexto
-  </h4>
-  <p>
-   En JavaScript, el valor de
-   <code>
-    this
-   </code>
-   es dinámico y una fuente común de errores, especialmente cuando una función se pasa como callback y pierde su contexto original.
-   <em>
-    TypeScript
-   </em>
-   ofrece dos mecanismos principales para controlar
-   <code>
-    this
-   </code>
-   y asegurar que siempre se use correctamente.
-  </p>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      1. Tipado Explícito de
+      o
+      <code>
+       metodo() { ... }
+      </code>
+      ), puedes forzar el tipo de
       <code>
        this
       </code>
-      (Para Métodos Tradicionales)
-     </strong>
-    </p>
-    <p>
-     Para funciones declaradas con la sintaxis tradicional (
-     <code>
-      function() { ... }
-     </code>
-     o
-     <code>
-      metodo() { ... }
-     </code>
-     ), puedes forzar el tipo de
-     <code>
-      this
-     </code>
-     añadiéndolo como un "parámetro fantasma" al principio de la lista de argumentos. Este parámetro no existe en el JavaScript compilado, pero le sirve a
-     <em>
-      TypeScript
-     </em>
-     como una
-     <strong>
-      restricción de contexto
-     </strong>
-     .
-    </p>
-    <p>
-     <strong>
-      ¿Para qué sirve?
-     </strong>
-     Garantiza que un método solo pueda ser llamado si su
-     <code>
-      this
-     </code>
-     corresponde al tipo que has especificado.
-    </p>
-    <p>
-     <div class="highlight language-typescript">
-      <pre><span></span><span class="w">    </span><span class="kr">type</span><span class="w"> </span><span class="nx">Contador</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
-<span class="w">      </span><span class="c1">// Esta firma EXIGE que 'incrementar' sea llamado en un contexto ('this') de tipo 'Contador'.</span>
-<span class="w">      </span><span class="nx">incrementar</span><span class="p">(</span><span class="nx">this</span><span class="o">:</span><span class="w"> </span><span class="kt">Contador</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
-<span class="w">    </span><span class="p">};</span></pre>
-     </div>
-    </p>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    miContador
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    Contador
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    valor
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    0
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    incrementar
-   </span>
-   <span class="p">
-    ()
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    this
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    valor
-   </span>
-   <span class="o">
-    ++
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // TypeScript sabe que 'this' aquí es de tipo 'Contador'.
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    },
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    };
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="nx">
-    miContador
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    incrementar
-   </span>
-   <span class="p">
-    ();
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Válido: 'this' es 'miContador'.
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Aquí es donde TypeScript nos protege:
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    fn
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    miContador
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    incrementar
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // fn(); // ❌ Error: El contexto 'this' de esta llamada es 'undefined' (en modo estricto) y no es de tipo 'Contador'.
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      2. Funciones de Flecha y el
+      añadiéndolo como un "parámetro fantasma" al principio de la lista de argumentos. Este parámetro no existe en el JavaScript compilado, pero le sirve a
+      <em>
+       TypeScript
+      </em>
+      como una
+      <strong>
+       restricción de contexto
+      </strong>
+      .
+     </p>
+     <p>
+      <strong>
+       ¿Para qué sirve?
+      </strong>
+      Garantiza que un método solo pueda ser llamado si su
       <code>
        this
       </code>
-      Léxico (La Solución Moderna)
-     </strong>
-    </p>
-    <p>
-     Las funciones de flecha (
-     <code>
-      =&gt;
-     </code>
-     ) se comportan de manera diferente:
-     <strong>
-      no tienen su propio
+      corresponde al tipo que has especificado.
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Contador</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Esta firma EXIGE que 'incrementar' sea llamado en un contexto ('this') de tipo 'Contador'.</span>
+<span class="w">    </span><span class="nx">incrementar</span><span class="p">(</span><span class="nx">this</span><span class="o">:</span><span class="w"> </span><span class="kt">Contador</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">miContador</span><span class="o">:</span><span class="w"> </span><span class="kt">Contador</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">incrementar</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">valor</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// TypeScript sabe que 'this' aquí es de tipo 'Contador'.</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nx">miContador</span><span class="p">.</span><span class="nx">incrementar</span><span class="p">();</span><span class="w"> </span><span class="c1">// Válido: 'this' es 'miContador'.</span>
+
+<span class="c1">// Aquí es donde TypeScript nos protege:</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">miContador</span><span class="p">.</span><span class="nx">incrementar</span><span class="p">;</span>
+<span class="c1">// fn(); // ❌ Error: El contexto 'this' de esta llamada es 'undefined' (en modo estricto) y no es de tipo 'Contador'.</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       2. Funciones de Flecha y el
+       <code>
+        this
+       </code>
+       Léxico (La Solución Moderna)
+      </strong>
+     </p>
+     <p>
+      Las funciones de flecha (
+      <code>
+       =&gt;
+      </code>
+      ) se comportan de manera diferente:
+      <strong>
+       no tienen su propio
+       <code>
+        this
+       </code>
+      </strong>
+      . En su lugar, capturan o "heredan" el
       <code>
        this
       </code>
-     </strong>
-     . En su lugar, capturan o "heredan" el
-     <code>
-      this
-     </code>
-     del ámbito en el que fueron definidas. A esto se le llama
-     <code>
-      this
-     </code>
-     léxico.
-    </p>
-    <p>
-     <strong>
-      ¿Por qué es útil?
-     </strong>
-     Elimina por completo la necesidad de preocuparse por la pérdida de contexto, haciendo el código más predecible y robusto, especialmente en clases, callbacks o manejadores de eventos (como en React).
-    </p>
-    <p>
-     Debido a este comportamiento,
-     <strong>
-      no se puede (ni se necesita) tipar
+      del ámbito en el que fueron definidas. A esto se le llama
       <code>
        this
       </code>
-      explícitamente en una función de flecha.
-     </strong>
-    </p>
-    <p>
-     <div class="highlight language-typescript">
-      <div class="collapsible-container" data-max-lines="6">
-       <pre><span></span><span class="w">    </span><span class="kd">class</span><span class="w"> </span><span class="nx">Cronometro</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">segundos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
-<span class="w">      </span>
-<span class="w">      </span><span class="c1">// Usamos una función de flecha para el método.</span>
-<span class="w">      </span><span class="nx">iniciar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nx">setInterval</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="c1">// Gracias a la función de flecha, 'this' aquí siempre</span>
-<span class="w">          </span><span class="c1">// se referirá a la instancia de la clase 'Cronometro'.</span>
-<span class="w">          </span><span class="c1">// No hay riesgo de perder el contexto.</span>
-<span class="w">          </span><span class="k">this</span><span class="p">.</span><span class="nx">segundos</span><span class="o">++</span><span class="p">;</span>
-<span class="w">          </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">segundos</span><span class="p">);</span>
-<span class="w">        </span><span class="p">},</span><span class="w"> </span><span class="mf">1000</span><span class="p">);</span>
-<span class="w">      </span><span class="p">};</span>
-<span class="w">    </span><span class="p">}</span></pre>
-      </div>
-     </div>
-    </p>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    miCronometro
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="ow">
-    new
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Cronometro
-   </span>
-   <span class="p">
-    ();
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    miCronometro
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    iniciar
-   </span>
-   <span class="p">
-    ();
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <hr/>
-  <h3 id="15-clases-en-typescript-blueprints-con-superpoderes">
-   1.5 Clases en TypeScript: Blueprints con Superpoderes
-  </h3>
-  <p>
-   Las clases en
-   <em>
-    TypeScript
-   </em>
-   son la evolución natural de las clases de JavaScript, enriquecidas con un robusto sistema de tipos que permite crear "planos" para objetos de forma segura y escalable.
-  </p>
-  <ul>
-   <li>
-    <p>
+      léxico.
+     </p>
+     <p>
+      <strong>
+       ¿Por qué es útil?
+      </strong>
+      Elimina por completo la necesidad de preocuparse por la pérdida de contexto, haciendo el código más predecible y robusto, especialmente en clases, callbacks o manejadores de eventos (como en React).
+     </p>
+     <p>
+      Debido a este comportamiento,
+      <strong>
+       no se puede (ni se necesita) tipar
+       <code>
+        this
+       </code>
+       explícitamente en una función de flecha.
+      </strong>
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nx">Cronometro</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">segundos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// Usamos una función de flecha para el método.</span>
+<span class="w">    </span><span class="nx">iniciar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">setInterval</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Gracias a la función de flecha, 'this' aquí siempre</span>
+<span class="w">        </span><span class="c1">// se referirá a la instancia de la clase 'Cronometro'.</span>
+<span class="w">        </span><span class="c1">// No hay riesgo de perder el contexto.</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">segundos</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">segundos</span><span class="p">);</span>
+<span class="w">    </span><span class="p">},</span><span class="w"> </span><span class="mf">1000</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">miCronometro</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Cronometro</span><span class="p">();</span>
+<span class="nx">miCronometro</span><span class="p">.</span><span class="nx">iniciar</span><span class="p">();</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+   <h3 id="15-clases-en-typescript-blueprints-con-superpoderes">
+    1.5 Clases en TypeScript: Blueprints con Superpoderes
+   </h3>
+   <p>
+    Las clases en
+    <em>
+     TypeScript
+    </em>
+    son la evolución natural de las clases de JavaScript, enriquecidas con un robusto sistema de tipos que permite crear "planos" para objetos de forma segura y escalable.
+   </p>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Modificadores: Controlando la Visibilidad y el Comportamiento
+      </strong>
+     </p>
+     <p>
+      Los modificadores son palabras clave que se anteponen a las propiedades y métodos para controlar cómo y desde dónde se pueden acceder.
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         public
+        </code>
+       </strong>
+       : (Por defecto) Accesible desde cualquier lugar, dentro o fuera de la clase.
+      </li>
+      <li>
+       <strong>
+        <code>
+         private
+        </code>
+       </strong>
+       : Solo accesible
+       <strong>
+        desde dentro
+       </strong>
+       de la misma clase. Ideal para ocultar detalles de implementación.
+      </li>
+      <li>
+       <strong>
+        <code>
+         protected
+        </code>
+       </strong>
+       : Accesible desde dentro de la clase y
+       <strong>
+        desde las clases que la heredan
+       </strong>
+       (subclases), pero no desde fuera.
+      </li>
+      <li>
+       <strong>
+        <code>
+         readonly
+        </code>
+       </strong>
+       : La propiedad solo se puede asignar en el constructor. Una vez asignada, no se puede cambiar, promoviendo la inmutabilidad.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Propiedades de Parámetro: Menos Código, Misma Claridad
+      </strong>
+     </p>
+     <p>
+      <em>
+       TypeScript
+      </em>
+      ofrece una sintaxis abreviada muy conveniente que te permite declarar e inicializar una propiedad de clase directamente en la firma del constructor.
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// La forma larga y repetitiva:</span>
+<span class="kd">class</span><span class="w"> </span><span class="nx">PuntoLargo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">y</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// La forma moderna con propiedades de parámetro:</span>
+<span class="kd">class</span><span class="w"> </span><span class="nx">Punto</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Declara y asigna 'x' e 'y' como propiedades públicas de solo lectura en un solo paso.</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       <code>
+        getters
+       </code>
+       /
+       <code>
+        setters
+       </code>
+       y
+       <code>
+        override
+       </code>
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        Getters y Setters
+       </strong>
+       : Permiten ejecutar lógica personalizada al leer o escribir una propiedad. Son útiles para validaciones, cálculos derivados o para exponer una versión controlada de una propiedad privada.
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nx">Usuario</span><span class="w"> </span><span class="p">{</span>
+<span class="k">private</span><span class="w"> </span><span class="nx">_nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="k">private</span><span class="w"> </span><span class="nx">_apellido</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+
+<span class="kr">constructor</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">apellido</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">_nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nombre</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">_apellido</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">apellido</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">public</span><span class="w"> </span><span class="nx">get</span><span class="w"> </span><span class="nx">nombreCompleto</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"-&gt; Se está usando el GETTER para leer el nombre completo."</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">'${this._nombre} ${this._apellido}'</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">public</span><span class="w"> </span><span class="nx">set</span><span class="w"> </span><span class="nx">nombreCompleto</span><span class="p">(</span><span class="nx">nuevoNombreCompleto</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"-&gt; Se está usando el SETTER para cambiar el nombre completo."</span><span class="p">);</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c1">// Lógica de validación: nos aseguramos de que el nombre tenga al menos un espacio.</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">nuevoNombreCompleto</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">nuevoNombreCompleto</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"Error: El nombre completo debe contener nombre y apellido."</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span><span class="w"> </span><span class="c1">// No hacemos ningún cambio si el valor es inválido.</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Si es válido, separamos el nombre y el apellido y actualizamos las propiedades internas.</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">nuevoNombre</span><span class="p">,</span><span class="w"> </span><span class="nx">nuevoApellido</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nuevoNombreCompleto</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">);</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">_nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nuevoNombre</span><span class="p">;</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">_apellido</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nuevoApellido</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
      <strong>
-      Modificadores: Controlando la Visibilidad y el Comportamiento
-     </strong>
-    </p>
-    <p>
-     Los modificadores son palabras clave que se anteponen a las propiedades y métodos para controlar cómo y desde dónde se pueden acceder.
-    </p>
-    <ul>
-     <li>
-      <strong>
-       <code>
-        public
-       </code>
-      </strong>
-      : (Por defecto) Accesible desde cualquier lugar, dentro o fuera de la clase.
-     </li>
-     <li>
-      <strong>
-       <code>
-        private
-       </code>
-      </strong>
-      : Solo accesible
-      <strong>
-       desde dentro
-      </strong>
-      de la misma clase. Ideal para ocultar detalles de implementación.
-     </li>
-     <li>
-      <strong>
-       <code>
-        protected
-       </code>
-      </strong>
-      : Accesible desde dentro de la clase y
-      <strong>
-       desde las clases que la heredan
-      </strong>
-      (subclases), pero no desde fuera.
-     </li>
-     <li>
-      <strong>
-       <code>
-        readonly
-       </code>
-      </strong>
-      : La propiedad solo se puede asignar en el constructor. Una vez asignada, no se puede cambiar, promoviendo la inmutabilidad.
-     </li>
-    </ul>
-   </li>
-   <li>
-    <p>
-     <strong>
-      Propiedades de Parámetro: Menos Código, Misma Claridad
-     </strong>
-    </p>
-    <p>
-     <em>
-      TypeScript
-     </em>
-     ofrece una sintaxis abreviada muy conveniente que te permite declarar e inicializar una propiedad de clase directamente en la firma del constructor.
-    </p>
-    <p>
-     <div class="highlight language-typescript">
-      <div class="collapsible-container" data-max-lines="6">
-       <pre><span></span><span class="w">    </span><span class="c1">// La forma larga y repetitiva:</span>
-<span class="w">    </span><span class="kd">class</span><span class="w"> </span><span class="nx">PuntoLargo</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
-<span class="w">      </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
-<span class="w">      </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
-<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">y</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span></pre>
-      </div>
-     </div>
-    </p>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // La forma moderna con propiedades de parámetro:
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    class
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Punto
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Declara y asigna 'x' e 'y' como propiedades públicas de solo lectura en un solo paso.
-   </span>
-   <span class="w">
-   </span>
-   <span class="kr">
-    constructor
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="k">
-    public
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    readonly
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    x
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    public
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    readonly
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    y
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {}
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      <code>
-       getters
-      </code>
-      /
-      <code>
-       setters
-      </code>
-      y
       <code>
        override
       </code>
      </strong>
-    </p>
-    <ul>
-     <li>
+     : Una palabra clave de seguridad. Al usarla en un método de una subclase, le dices a
+     <em>
+      TypeScript
+     </em>
+     : "Tengo la intención de sobrescribir el método de la clase padre". Si te equivocas en el nombre del método,
+     <em>
+      TypeScript
+     </em>
+     te dará un error, previniendo bugs difíciles de encontrar.
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// --- 1. La Clase Base (Padre) ---</span>
+<span class="kd">class</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="k">protected</span><span class="w"> </span><span class="nx">marca</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="k">protected</span><span class="w"> </span><span class="nx">anio</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">    </span><span class="nx">mostrarDetalles</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Vehículo base: ${this.marca}, Año: ${this.anio}'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// --- 2. La Subclase Correcta (Hija) ---</span>
+<span class="kd">class</span><span class="w"> </span><span class="nx">Coche</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">marca</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="nx">numeroDePuertas</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 'super()' llama al constructor de la clase padre (Vehiculo)</span>
+<span class="w">    </span><span class="k">super</span><span class="p">(</span><span class="nx">marca</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">    * Usamos 'override' para indicar que estamos sobrescribiendo intencionadamente</span>
+<span class="cm">    * el método 'mostrarDetalles' de la clase 'Vehiculo'.</span>
+<span class="cm">    * TypeScript verifica que este método realmente exista en la clase padre.</span>
+<span class="cm">    */</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="nx">mostrarDetalles</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// 'super.mostrarDetalles()' nos permite llamar a la implementación original del padre.</span>
+<span class="w">    </span><span class="k">super</span><span class="p">.</span><span class="nx">mostrarDetalles</span><span class="p">();</span><span class="w"> </span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'  -&gt; Detalles del Coche: ${this.numeroDePuertas} puertas.'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// --- 3. La Protección de 'override' en Acción ---</span>
+<span class="c1">// Ahora, imaginemos que cometemos un error de tipeo al intentar sobrescribir.</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nx">Motocicleta</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">constructor</span><span class="p">(</span><span class="nx">marca</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="nx">tieneSidecar</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">super</span><span class="p">(</span><span class="nx">marca</span><span class="p">,</span><span class="w"> </span><span class="nx">anio</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// ¡ERROR INTENCIONADO! Escribimos "mostrarDetalle" en singular.</span>
+<span class="w">    </span><span class="c1">// Gracias a 'override', TypeScript nos avisa inmediatamente del error.</span>
+<span class="w">    </span><span class="c1">// Si quitas 'override', el error desaparece, pero creas un bug silencioso:</span>
+<span class="w">    </span><span class="c1">// un método nuevo en lugar de sobrescribir el existente.</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="cm">/* </span>
+<span class="cm">    // DESCOMENTA ESTA SECCIÓN PARA VER EL ERROR DE TYPESCRIPT:</span>
+<span class="cm">    override mostrarDetalle(): void { </span>
+<span class="cm">        // Error: This member cannot have an 'override' modifier because it is not </span>
+<span class="cm">        // declared in the base class 'Vehiculo'. Did you mean to write 'mostrarDetalles'?</span>
+<span class="cm">        console.log("Este método nunca se llamará como esperamos");</span>
+<span class="cm">    }</span>
+<span class="cm">    */</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
       <strong>
-       Getters y Setters
-      </strong>
-      : Permiten ejecutar lógica personalizada al leer o escribir una propiedad. Son útiles para validaciones, cálculos derivados o para exponer una versión controlada de una propiedad privada.
-      <div class="highlight language-ts">
-       <pre><span></span><span class="w">      </span><span class="kd">class</span><span class="w"> </span><span class="nx">Usuario</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="nx">_nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
-<span class="w">        </span><span class="k">private</span><span class="w"> </span><span class="nx">_apellido</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span></pre>
-      </div>
-     </li>
-    </ul>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kr">
-    constructor
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    nombre
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    string
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    apellido
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    string
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    this
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    _nombre
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nombre
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    this
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    _apellido
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    apellido
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="k">
-    public
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    get
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nombreCompleto
-   </span>
-   <span class="p">
-    ()
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    string
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    console
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    log
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s2">
-    "-&gt; Se está usando el GETTER para leer el nombre completo."
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    return
-   </span>
-   <span class="w">
-   </span>
-   <span class="s1">
-    '${this._nombre} ${this._apellido}'
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    public
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    set
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nombreCompleto
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    nuevoNombreCompleto
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    string
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    console
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    log
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s2">
-    "-&gt; Se está usando el SETTER para cambiar el nombre completo."
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Lógica de validación: nos aseguramos de que el nombre tenga al menos un espacio.
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    if
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="o">
-    !
-   </span>
-   <span class="nx">
-    nuevoNombreCompleto
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    ||
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nuevoNombreCompleto
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    indexOf
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s1">
-    ' '
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    &lt;
-   </span>
-   <span class="w">
-   </span>
-   <span class="mf">
-    0
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    console
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    error
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s2">
-    "Error: El nombre completo debe contener nombre y apellido."
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    return
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // No hacemos ningún cambio si el valor es inválido.
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Si es válido, separamos el nombre y el apellido y actualizamos las propiedades internas.
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    [
-   </span>
-   <span class="nx">
-    nuevoNombre
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nuevoApellido
-   </span>
-   <span class="p">
-    ]
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nuevoNombreCompleto
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    split
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s1">
-    ' '
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    this
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    _nombre
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nuevoNombre
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    this
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    _apellido
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    nuevoApellido
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <pre><code>*   **`override`**: Una palabra clave de seguridad. Al usarla en un método de una subclase, le dices a *TypeScript*: "Tengo la intención de sobrescribir el método de la clase padre". Si te equivocas en el nombre del método, *TypeScript* te dará un error, previniendo bugs difíciles de encontrar.
-&lt;div class="highlight language-ts"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="c1"&gt;// --- 1. La Clase Base (Padre) ---&lt;/span&gt;
-</code></pre>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    class
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Vehiculo
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="kr">
-    constructor
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="k">
-    protected
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    marca
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    string
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    protected
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    anio
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {}
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="nx">
-    mostrarDetalles
-   </span>
-   <span class="p">
-    ()
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="ow">
-    void
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    console
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    log
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s1">
-    'Vehículo base: ${this.marca}, Año: ${this.anio}'
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // --- 2. La Subclase Correcta (Hija) ---
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    class
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Coche
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    extends
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Vehiculo
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="kr">
-    constructor
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    marca
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    string
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    anio
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    public
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    numeroDePuertas
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // 'super()' llama al constructor de la clase padre (Vehiculo)
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    super
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    marca
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    anio
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="cm">
-    /*
-    <em>
-    </em>
-   </span>
-   <span class="cm">
-    * Usamos 'override' para indicar que estamos sobrescribiendo intencionadamente
-   </span>
-   <span class="cm">
-    * el método 'mostrarDetalles' de la clase 'Vehiculo'.
-   </span>
-   <span class="cm">
-    * TypeScript verifica que este método realmente exista en la clase padre.
-   </span>
-   <span class="cm">
-    /
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    override
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    mostrarDetalles
-   </span>
-   <span class="p">
-    ()
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="ow">
-    void
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // 'super.mostrarDetalles()' nos permite llamar a la implementación original del padre.
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    super
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    mostrarDetalles
-   </span>
-   <span class="p">
-    ();
-   </span>
-   <span class="w">
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    console
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    log
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s1">
-    '  -&gt; Detalles del Coche: ${this.numeroDePuertas} puertas.'
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // --- 3. La Protección de 'override' en Acción ---
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Ahora, imaginemos que cometemos un error de tipeo al intentar sobrescribir.
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    class
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Motocicleta
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    extends
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Vehiculo
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="kr">
-    constructor
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    marca
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    string
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    anio
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    public
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    tieneSidecar
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    boolean
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    super
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    marca
-   </span>
-   <span class="p">
-    ,
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    anio
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // ¡ERROR INTENCIONADO! Escribimos "mostrarDetalle" en singular.
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Gracias a 'override', TypeScript nos avisa inmediatamente del error.
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Si quitas 'override', el error desaparece, pero creas un bug silencioso:
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // un método nuevo en lugar de sobrescribir el existente.
-   </span>
-   <span class="w">
-   </span>
-   <span class="w">
-   </span>
-   <span class="cm">
-    /
-    <em>
-    </em>
-   </span>
-   <span class="cm">
-    // DESCOMENTA ESTA SECCIÓN PARA VER EL ERROR DE TYPESCRIPT:
-   </span>
-   <span class="cm">
-    override mostrarDetalle(): void {
-   </span>
-   <span class="cm">
-    // Error: This member cannot have an 'override' modifier because it is not
-   </span>
-   <span class="cm">
-    // declared in the base class 'Vehiculo'. Did you mean to write 'mostrarDetalles'?
-   </span>
-   <span class="cm">
-    console.log("Este método nunca se llamará como esperamos");
-   </span>
-   <span class="cm">
-    }
-   </span>
-   <span class="cm">
-    /
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-  </p>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      Privacidad Real (
-      <code>
-       #
-      </code>
-      ) vs. Privacidad de Tipos (
-      <code>
-       private
-      </code>
-      )
-     </strong>
-    </p>
-    <p>
-     Existen dos formas de declarar propiedades privadas, y la diferencia es crucial:
-    </p>
-    <ul>
-     <li>
-      <strong>
-       <code>
-        private
-       </code>
-       (TypeScript)
-      </strong>
-      : Es una construcción de
-      <em>
-       TypeScript
-      </em>
-      que solo existe
-      <strong>
-       en tiempo de compilación
-      </strong>
-      . Desaparece en el JavaScript final. Un desarrollador podría, si quisiera, acceder a la propiedad en el JavaScript compilado. Es como un "pacto de caballeros".
-     </li>
-     <li>
-      <strong>
+       Privacidad Real (
        <code>
         #
        </code>
-       (Campos Privados de JS)
-      </strong>
-      : Es una característica nativa de JavaScript (ECMAScript). La privacidad se mantiene
-      <strong>
-       en tiempo de ejecución
-      </strong>
-      . Si intentas acceder a un campo
-      <code>
-       #privado
-      </code>
-      desde fuera de la clase, obtendrás un error real. Es como una puerta con cerradura.
-     </li>
-    </ul>
-    <p>
-     <div class="highlight language-typescript">
-      <pre><span></span><span class="w">    </span><span class="kd">class</span><span class="w"> </span><span class="nx">Secreto</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">private</span><span class="w"> </span><span class="nx">secretoSuave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Esto es un secreto de TypeScript"</span><span class="p">;</span>
-<span class="w">      </span><span class="n">#secretoReal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Esto es un secreto real de JavaScript"</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span></pre>
-     </div>
-    </p>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    const
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    miSecreto
-   </span>
-   <span class="w">
-   </span>
-   <span class="o">
-    =
-   </span>
-   <span class="w">
-   </span>
-   <span class="ow">
-    new
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Secreto
-   </span>
-   <span class="p">
-    ();
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // console.log(miSecreto.#secretoReal); // Error en tiempo de ejecución
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <pre><code>**Regla general:** Usa `#` para una privacidad robusta y garantizada.
-</code></pre>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      <code>
-       implements
-      </code>
-      vs.
-      <code>
-       abstract
-      </code>
-      : Definiendo Contratos y Plantillas
-     </strong>
-    </p>
-    <p>
-     Ambos ayudan a estandarizar tus clases, pero de maneras diferentes:
-    </p>
-    <ul>
-     <li>
-      <strong>
+       ) vs. Privacidad de Tipos (
        <code>
-        interface
+        private
        </code>
-       +
+       )
+      </strong>
+     </p>
+     <p>
+      Existen dos formas de declarar propiedades privadas, y la diferencia es crucial:
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         private
+        </code>
+        (TypeScript)
+       </strong>
+       : Es una construcción de
+       <em>
+        TypeScript
+       </em>
+       que solo existe
+       <strong>
+        en tiempo de compilación
+       </strong>
+       . Desaparece en el JavaScript final. Un desarrollador podría, si quisiera, acceder a la propiedad en el JavaScript compilado. Es como un "pacto de caballeros".
+      </li>
+      <li>
+       <strong>
+        <code>
+         #
+        </code>
+        (Campos Privados de JS)
+       </strong>
+       : Es una característica nativa de JavaScript (ECMAScript). La privacidad se mantiene
+       <strong>
+        en tiempo de ejecución
+       </strong>
+       . Si intentas acceder a un campo
+       <code>
+        #privado
+       </code>
+       desde fuera de la clase, obtendrás un error real. Es como una puerta con cerradura.
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="kd">class</span><span class="w"> </span><span class="nx">Secreto</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">private</span><span class="w"> </span><span class="nx">secretoSuave</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Esto es un secreto de TypeScript"</span><span class="p">;</span>
+<span class="w">    </span><span class="n">#secretoReal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Esto es un secreto real de JavaScript"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">miSecreto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Secreto</span><span class="p">();</span>
+<span class="c1">// console.log(miSecreto.#secretoReal); // Error en tiempo de ejecución</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Regla general:
+      </strong>
+      Usa
+      <code>
+       #
+      </code>
+      para una privacidad robusta y garantizada.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
        <code>
         implements
        </code>
-       (El Contrato)
-      </strong>
-      : Una
-      <code>
-       interface
-      </code>
-      define la "forma" pública que una clase debe tener (qué métodos y propiedades debe exponer). La clase
-      <strong>
-       promete
-      </strong>
-      cumplir con ese contrato usando la palabra clave
-      <code>
-       implements
-      </code>
-      . La
-      <code>
-       interface
-      </code>
-      no proporciona ninguna implementación.
-     </li>
-     <li>
-      <strong>
+       vs.
        <code>
-        abstract class
+        abstract
        </code>
-       (La Plantilla)
+       : Definiendo Contratos y Plantillas
       </strong>
-      : Es una clase a medio construir que no puede ser instanciada directamente. Puede contener métodos y propiedades ya implementados (comportamiento compartido) y también métodos
-      <code>
-       abstract
-      </code>
-      (sin implementación) que las clases hijas
+     </p>
+     <p>
+      Ambos ayudan a estandarizar tus clases, pero de maneras diferentes:
+     </p>
+     <ul>
+      <li>
+       <strong>
+        <code>
+         interface
+        </code>
+        +
+        <code>
+         implements
+        </code>
+        (El Contrato)
+       </strong>
+       : Una
+       <code>
+        interface
+       </code>
+       define la "forma" pública que una clase debe tener (qué métodos y propiedades debe exponer). La clase
+       <strong>
+        promete
+       </strong>
+       cumplir con ese contrato usando la palabra clave
+       <code>
+        implements
+       </code>
+       . La
+       <code>
+        interface
+       </code>
+       no proporciona ninguna implementación.
+      </li>
+      <li>
+       <strong>
+        <code>
+         abstract class
+        </code>
+        (La Plantilla)
+       </strong>
+       : Es una clase a medio construir que no puede ser instanciada directamente. Puede contener métodos y propiedades ya implementados (comportamiento compartido) y también métodos
+       <code>
+        abstract
+       </code>
+       (sin implementación) que las clases hijas
+       <strong>
+        están obligadas
+       </strong>
+       a implementar.
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// El Contrato: Cualquier "Vehículo" debe tener estos métodos.</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">acelerar</span><span class="p">(</span><span class="nx">velocidad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nx">Coche</span><span class="w"> </span><span class="k">implements</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">acelerar</span><span class="p">(</span><span class="nx">velocidad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// La Plantilla: Un "Animal" tiene un método 'mover' compartido,</span>
+<span class="c1">// pero cada subclase debe definir cómo 'hacerSonido'.</span>
+<span class="k">abstract</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">Animal</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">mover</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Moviéndose..."</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="k">abstract</span><span class="w"> </span><span class="nx">hacerSonido</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nx">Perro</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Animal</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">hacerSonido</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Guau!"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Obligatorio</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+   <h4 id="16-composicion-sobre-herencia-un-principio-de-diseno-clave">
+    1.6 Composición sobre Herencia: Un Principio de Diseño Clave
+   </h4>
+   <p>
+    En el diseño de software, tanto la herencia como la composición son mecanismos para reutilizar código, pero lo hacen de maneras fundamentalmente diferentes. Un principio de diseño ampliamente aceptado es
+    <strong>
+     "preferir la composición sobre la herencia"
+    </strong>
+    por su flexibilidad y robustez.
+   </p>
+   <ul>
+    <li>
+     <p>
       <strong>
-       están obligadas
+       Herencia (Relación "es un/a"):
       </strong>
-      a implementar.
-     </li>
-    </ul>
-    <p>
-     <div class="highlight language-typescript">
-      <pre><span></span><span class="w">    </span><span class="c1">// El Contrato: Cualquier "Vehículo" debe tener estos métodos.</span>
-<span class="w">    </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Vehiculo</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">acelerar</span><span class="p">(</span><span class="nx">velocidad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span></pre>
-     </div>
-    </p>
-   </li>
-  </ul>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    class
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Coche
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    implements
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Vehiculo
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    acelerar
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="nx">
-    velocidad
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="kt">
-    number
-   </span>
-   <span class="p">
-    )
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="cm">
-    /
-    <em>
-     ...
-    </em>
-    /
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // La Plantilla: Un "Animal" tiene un método 'mover' compartido,
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // pero cada subclase debe definir cómo 'hacerSonido'.
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    abstract
-   </span>
-   <span class="w">
-   </span>
-   <span class="kd">
-    class
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Animal
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    mover
-   </span>
-   <span class="p">
-    ()
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    console
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    log
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s2">
-    "Moviéndose..."
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    abstract
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    hacerSonido
-   </span>
-   <span class="p">
-    ()
-   </span>
-   <span class="o">
-    :
-   </span>
-   <span class="w">
-   </span>
-   <span class="ow">
-    void
-   </span>
-   <span class="p">
-    ;
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-  </p>
-  <p>
-   <span class="w">
-   </span>
-   <span class="kd">
-    class
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Perro
-   </span>
-   <span class="w">
-   </span>
-   <span class="k">
-    extends
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    Animal
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    hacerSonido
-   </span>
-   <span class="p">
-    ()
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    {
-   </span>
-   <span class="w">
-   </span>
-   <span class="nx">
-    console
-   </span>
-   <span class="p">
-    .
-   </span>
-   <span class="nx">
-    log
-   </span>
-   <span class="p">
-    (
-   </span>
-   <span class="s2">
-    "Guau!"
-   </span>
-   <span class="p">
-    );
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-   <span class="c1">
-    // Obligatorio
-   </span>
-   <span class="w">
-   </span>
-   <span class="p">
-    }
-   </span>
-   <span class="w">
-   </span>
-  </p>
-  <hr/>
-  <h4 id="16-composicion-sobre-herencia-un-principio-de-diseno-clave">
-   1.6 Composición sobre Herencia: Un Principio de Diseño Clave
-  </h4>
-  <p>
-   En el diseño de software, tanto la herencia como la composición son mecanismos para reutilizar código, pero lo hacen de maneras fundamentalmente diferentes. Un principio de diseño ampliamente aceptado es
-   <strong>
-    "preferir la composición sobre la herencia"
-   </strong>
-   por su flexibilidad y robustez.
-  </p>
-  <ul>
-   <li>
-    <p>
-     <strong>
-      Herencia (Relación "es un/a"):
-     </strong>
-     La herencia crea una jerarquía rígida y fuertemente acoplada. Cuando una clase
-     <code>
-      Perro
-     </code>
-     hereda de
-     <code>
-      Animal
-     </code>
-     , se establece que un
-     <code>
-      Perro
-     </code>
-     <strong>
-      es un
-     </strong>
-     <code>
-      Animal
-     </code>
-     . Esto significa que
-     <code>
-      Perro
-     </code>
-     obtiene
+      La herencia crea una jerarquía rígida y fuertemente acoplada. Cuando una clase
+      <code>
+       Perro
+      </code>
+      hereda de
+      <code>
+       Animal
+      </code>
+      , se establece que un
+      <code>
+       Perro
+      </code>
+      <strong>
+       es un
+      </strong>
+      <code>
+       Animal
+      </code>
+      . Esto significa que
+      <code>
+       Perro
+      </code>
+      obtiene
+      <em>
+       todo
+      </em>
+      el comportamiento de
+      <code>
+       Animal
+      </code>
+      , lo quiera o no. Los cambios en la clase padre (
+      <code>
+       Animal
+      </code>
+      ) pueden romper inesperadamente a las clases hijas (
+      <code>
+       Perro
+      </code>
+      ), lo que hace que el código sea más frágil.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Composición (Relación "tiene un/a"):
+      </strong>
+      La composición es como construir con bloques de LEGO. En lugar de heredar un conjunto de características, construyes objetos complejos combinando piezas más pequeñas e independientes que encapsulan un comportamiento específico. Un
+      <code>
+       Coche
+      </code>
+      no
+      <em>
+       es un
+      </em>
+      motor, sino que
+      <strong>
+       tiene un
+      </strong>
+      motor. Esta aproximación es mucho más flexible, ya que puedes "conectar" y "desconectar" comportamientos según sea necesario sin afectar a otras partes del sistema.
+     </p>
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Ejemplo Práctico: Composición con Funciones (Patrón Mixin)
+    </strong>
+   </p>
+   <p>
+    El código que presentaste es un excelente ejemplo de composición funcional. En lugar de una clase
+    <code>
+     ObjetoConLogger
+    </code>
+    que hereda de
+    <code>
+     ObjetoBase
+    </code>
+    , creamos una función "mixin" que puede
+    <strong>
+     añadir la capacidad de registrar logs a
      <em>
-      todo
+      cualquier
      </em>
-     el comportamiento de
-     <code>
-      Animal
-     </code>
-     , lo quiera o no. Los cambios en la clase padre (
-     <code>
-      Animal
-     </code>
-     ) pueden romper inesperadamente a las clases hijas (
-     <code>
-      Perro
-     </code>
-     ), lo que hace que el código sea más frágil.
-    </p>
-   </li>
-   <li>
-    <p>
-     <strong>
-      Composición (Relación "tiene un/a"):
-     </strong>
-     La composición es como construir con bloques de LEGO. En lugar de heredar un conjunto de características, construyes objetos complejos combinando piezas más pequeñas e independientes que encapsulan un comportamiento específico. Un
-     <code>
-      Coche
-     </code>
-     no
-     <em>
-      es un
-     </em>
-     motor, sino que
-     <strong>
-      tiene un
-     </strong>
-     motor. Esta aproximación es mucho más flexible, ya que puedes "conectar" y "desconectar" comportamientos según sea necesario sin afectar a otras partes del sistema.
-    </p>
-   </li>
-  </ul>
-  <p>
-   <strong>
-    Ejemplo Práctico: Composición con Funciones (Patrón Mixin)
-   </strong>
-  </p>
-  <p>
-   El código que presentaste es un excelente ejemplo de composición funcional. En lugar de una clase
-   <code>
-    ObjetoConLogger
-   </code>
-   que hereda de
-   <code>
-    ObjetoBase
-   </code>
-   , creamos una función "mixin" que puede
-   <strong>
-    añadir la capacidad de registrar logs a
-    <em>
-     cualquier
-    </em>
-    objeto
-   </strong>
-   .
-  </p>
-  <div class="highlight language-typescript">
-   <div class="collapsible-container" data-max-lines="6">
-    <pre><span></span><span class="c1">// 1. Definimos la "capacidad" que queremos añadir.</span>
+     objeto
+    </strong>
+    .
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// 1. Definimos la "capacidad" que queremos añadir.</span>
 <span class="c1">// Cualquier objeto que tenga esta forma, "tiene un logger".</span>
 <span class="kr">type</span><span class="w"> </span><span class="nx">HasLogger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nx">log</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
@@ -2982,85 +1215,85 @@
 <span class="nx">usuarioConLogger</span><span class="p">.</span><span class="nx">iniciarSesion</span><span class="p">();</span><span class="w">        </span><span class="c1">// Salida: Ana ha iniciado sesión.</span>
 <span class="nx">usuarioConLogger</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Intento de inicio de sesión exitoso."</span><span class="p">);</span><span class="w"> </span><span class="c1">// Salida: [LOG]: Intento de inicio de sesión exitoso.</span>
 </pre>
+    </div>
    </div>
-  </div>
-  <p>
-   <strong>
-    Ventaja Clave:
-   </strong>
-   Podríamos usar la misma función
-   <code>
-    withLogger
-   </code>
-   para añadir esta capacidad a cualquier otro objeto (
-   <code>
-    Producto
-   </code>
-   ,
-   <code>
-    Pedido
-   </code>
-   , etc.), demostrando la increíble flexibilidad y reusabilidad de la composición.
-  </p>
-  <h4 id="17-operador-satisfies-validacion-no-ensanchante">
-   1.7 Operador
-   <code>
-    satisfies
-   </code>
-   (validación no-ensanchante)
-  </h4>
-  <ul>
-   <li>
-    Verifica que un valor
+   <p>
     <strong>
-     cumple
+     Ventaja Clave:
     </strong>
-    un tipo
-    <strong>
-     sin
-    </strong>
-    cambiar sus literales:
-   </li>
-  </ul>
-  <div class="highlight language-ts">
-   <pre><span></span><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">routes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+    Podríamos usar la misma función
+    <code>
+     withLogger
+    </code>
+    para añadir esta capacidad a cualquier otro objeto (
+    <code>
+     Producto
+    </code>
+    ,
+    <code>
+     Pedido
+    </code>
+    , etc.), demostrando la increíble flexibilidad y reusabilidad de la composición.
+   </p>
+   <h4 id="17-operador-satisfies-validacion-no-ensanchante">
+    1.7 Operador
+    <code>
+     satisfies
+    </code>
+    (validación no-ensanchante)
+   </h4>
+   <ul>
+    <li>
+     Verifica que un valor
+     <strong>
+      cumple
+     </strong>
+     un tipo
+     <strong>
+      sin
+     </strong>
+     cambiar sus literales:
+    </li>
+   </ul>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">routes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nx">home</span><span class="o">:</span><span class="w"> </span><span class="s2">"/"</span><span class="p">,</span>
 <span class="w">    </span><span class="nx">about</span><span class="o">:</span><span class="w"> </span><span class="s2">"/about"</span>
 <span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">satisfies</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="s2">"home"</span><span class="o">|</span><span class="s2">"about"</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span>
 <span class="w">  </span>
 </pre>
-  </div>
-  <hr/>
-  <h3 id="2-practica">
-   2) Práctica
-  </h3>
-  <blockquote>
-   <p>
-    Si aún no instalaste
-    <strong>
-     tsup
-    </strong>
-    , hacelo para empaquetar utilidades con
-    <code>
-     .d.ts
-    </code>
-    .
-   </p>
-  </blockquote>
-  <div class="highlight language-bash">
-   <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>tsup
+   </div>
+   <hr/>
+   <h3 id="2-practica">
+    2) Práctica
+   </h3>
+   <blockquote>
+    <p>
+     Si aún no instalaste
+     <strong>
+      tsup
+     </strong>
+     , hacelo para empaquetar utilidades con
+     <code>
+      .d.ts
+     </code>
+     .
+    </p>
+   </blockquote>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>tsup
 </pre>
-  </div>
-  <p>
-   Agregá/ajustá scripts en
-   <code>
-    package.json
-   </code>
-   :
-  </p>
-  <div class="highlight language-json">
-   <div class="collapsible-container" data-max-lines="6">
-    <pre><span></span><span class="p">{</span>
+   </div>
+   <p>
+    Agregá/ajustá scripts en
+    <code>
+     package.json
+    </code>
+    :
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node"</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">"typecheck"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc --noEmit"</span><span class="p">,</span>
@@ -3069,22 +1302,22 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre>
+    </div>
    </div>
-  </div>
-  <h4 id="21-utilidad-generica-resultt-e-srclibresultts">
-   2.1 Utilidad genérica:
-   <code>
-    Result&lt;T, E&gt;
-   </code>
-   (
-   <code>
-    src/lib/result.ts
-   </code>
-   )
-  </h4>
-  <div class="highlight language-ts">
-   <div class="collapsible-container" data-max-lines="6">
-    <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">;</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="p">}</span>
+   <h4 id="21-utilidad-generica-resultt-e-srclibresultts">
+    2.1 Utilidad genérica:
+    <code>
+     Result&lt;T, E&gt;
+    </code>
+    (
+    <code>
+     src/lib/result.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">;</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="w"> </span><span class="p">}</span>
 <span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">;</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">E</span><span class="w"> </span><span class="p">}</span>
 <span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ne">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Ok</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Err</span><span class="o">&lt;</span><span class="nx">E</span><span class="o">&gt;</span>
 
@@ -3097,18 +1330,18 @@
 <span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">flatMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">r</span><span class="o">:</span><span class="w"> </span><span class="kt">Result</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">A</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Result</span><span class="o">&lt;</span><span class="nx">B</span><span class="p">,</span><span class="w"> </span><span class="nx">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">=&gt;</span>
 <span class="w">  </span><span class="nx">r</span><span class="p">.</span><span class="nx">ok</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">f</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">r</span>
 </pre>
+    </div>
    </div>
-  </div>
-  <h4 id="22-funciones-genericas-utiles-src03-functionsts">
-   2.2 Funciones genéricas útiles (
-   <code>
-    src/03-functions.ts
-   </code>
-   )
-  </h4>
-  <div class="highlight language-ts">
-   <div class="collapsible-container" data-max-lines="6">
-    <pre><span></span><span class="c1">// groupBy con restricciones de clave</span>
+   <h4 id="22-funciones-genericas-utiles-src03-functionsts">
+    2.2 Funciones genéricas útiles (
+    <code>
+     src/03-functions.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// groupBy con restricciones de clave</span>
 <span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">groupBy</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">PropertyKey</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">xs</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="nx">T</span><span class="p">[],</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">t</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="nx">K</span><span class="p">,</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">xs</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">acc</span><span class="p">,</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">key</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
@@ -3153,18 +1386,18 @@
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">users</span><span class="p">,</span><span class="w"> </span><span class="s2">"name"</span><span class="p">))</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">format</span><span class="p">(</span><span class="mf">3.14159</span><span class="p">),</span><span class="w"> </span><span class="nx">format</span><span class="p">(</span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">()))</span>
 </pre>
+    </div>
    </div>
-  </div>
-  <h4 id="23-clases-y-repositorio-generico-src03-classests">
-   2.3 Clases y repositorio genérico (
-   <code>
-    src/03-classes.ts
-   </code>
-   )
-  </h4>
-  <div class="highlight language-ts">
-   <div class="collapsible-container" data-max-lines="6">
-    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span>
+   <h4 id="23-clases-y-repositorio-generico-src03-classests">
+    2.3 Clases y repositorio genérico (
+    <code>
+     src/03-classes.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span>
 
 <span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Entity</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">Id</span><span class="w"> </span><span class="p">}</span>
 <span class="k">export</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">Repository</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">Entity</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
@@ -3201,40 +1434,40 @@
 <span class="nx">repo</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nx">Vec2</span><span class="p">.</span><span class="nx">zero</span><span class="p">(),</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"b"</span><span class="w"> </span><span class="p">}))</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"repo size:"</span><span class="p">,</span><span class="w"> </span><span class="nx">repo</span><span class="p">.</span><span class="nx">all</span><span class="p">().</span><span class="nx">length</span><span class="p">)</span>
 </pre>
+    </div>
    </div>
-  </div>
-  <hr/>
-  <h4 id="24-aserciones-de-tipo-con-asserts">
-   2.4 Aserciones de Tipo con
-   <code>
-    asserts
-   </code>
-  </h4>
-  <p>
-   Las funciones de aserción son una forma de decirle al compilador de
-   <em>
-    TypeScript
-   </em>
-   : "
-   <strong>
-    Te garantizo que esta condición es verdadera. Si no lo es, mi programa se detendrá.
-   </strong>
-   "
-  </p>
-  <p>
-   El principal beneficio es que te permiten crear funciones de validación reutilizables que refinan (o "estrechan") el tipo de una variable para todo el código que sigue a la llamada de la función.
-  </p>
-  <p>
-   <strong>
-    El Problema Común (Sin Aserción)
-   </strong>
-  </p>
-  <p>
-   Imagina que tienes que comprobar si una variable es nula en varios lugares:
-  </p>
-  <div class="highlight language-typescript">
-   <div class="collapsible-container" data-max-lines="6">
-    <pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">procesar</span><span class="p">(</span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+   <hr/>
+   <h4 id="24-aserciones-de-tipo-con-asserts">
+    2.4 Aserciones de Tipo con
+    <code>
+     asserts
+    </code>
+   </h4>
+   <p>
+    Las funciones de aserción son una forma de decirle al compilador de
+    <em>
+     TypeScript
+    </em>
+    : "
+    <strong>
+     Te garantizo que esta condición es verdadera. Si no lo es, mi programa se detendrá.
+    </strong>
+    "
+   </p>
+   <p>
+    El principal beneficio es que te permiten crear funciones de validación reutilizables que refinan (o "estrechan") el tipo de una variable para todo el código que sigue a la llamada de la función.
+   </p>
+   <p>
+    <strong>
+     El Problema Común (Sin Aserción)
+    </strong>
+   </p>
+   <p>
+    Imagina que tienes que comprobar si una variable es nula en varios lugares:
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">procesar</span><span class="p">(</span><span class="nx">valor</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">valor</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"El valor no puede ser nulo"</span><span class="p">);</span>
 <span class="w">  </span><span class="p">}</span>
@@ -3242,34 +1475,34 @@
 <span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">valor</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">());</span>
 <span class="p">}</span>
 </pre>
+    </div>
    </div>
-  </div>
-  <p>
-   Esto funciona, pero si tienes que repetir esta validación en 10 funciones diferentes, se vuelve tedioso. Si lo extraes a una función normal, pierdes el refinamiento de tipo.
-  </p>
-  <p>
-   <strong>
-    La Solución Elegante con
-    <code>
-     asserts
-    </code>
-   </strong>
-  </p>
-  <p>
-   Una función de aserción encapsula esta lógica y, lo más importante,
-   <strong>
-    comunica el resultado de la validación al compilador
-   </strong>
-   .
-  </p>
-  <p>
-   <strong>
-    Desglosando el Ejemplo:
-   </strong>
-  </p>
-  <div class="highlight language-typescript">
-   <div class="collapsible-container" data-max-lines="6">
-    <pre><span></span><span class="c1">// La firma de la función es la clave de todo.</span>
+   <p>
+    Esto funciona, pero si tienes que repetir esta validación en 10 funciones diferentes, se vuelve tedioso. Si lo extraes a una función normal, pierdes el refinamiento de tipo.
+   </p>
+   <p>
+    <strong>
+     La Solución Elegante con
+     <code>
+      asserts
+     </code>
+    </strong>
+   </p>
+   <p>
+    Una función de aserción encapsula esta lógica y, lo más importante,
+    <strong>
+     comunica el resultado de la validación al compilador
+    </strong>
+    .
+   </p>
+   <p>
+    <strong>
+     Desglosando el Ejemplo:
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// La firma de la función es la clave de todo.</span>
 <span class="c1">// `asserts x is NonNullable&lt;T&gt;` le dice a TypeScript:</span>
 <span class="c1">// 1. `asserts`: Esto no es una función normal; es una aserción.</span>
 <span class="c1">// 2. `x is ...`: Si esta función NO lanza un error, te prometo que el parámetro `x`...</span>
@@ -3299,119 +1532,132 @@
 <span class="c1">// debe ser cierta. TypeScript ahora trata a `maybe` como si fuera de tipo `string`.</span>
 <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">maybe</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">());</span><span class="w"> </span><span class="c1">// ✅ ¡Ahora es válido!</span>
 </pre>
+    </div>
    </div>
-  </div>
-  <p>
-   <strong>
-    Regla Mental:
-   </strong>
-  </p>
-  <p>
-   Usa
-   <code>
-    asserts
-   </code>
-   para crear funciones de validación que actúan como "guardias". Si la variable pasa la guardia (la función no lanza un error),
-   <em>
-    TypeScript
-   </em>
-   confía en que es segura y le aplica un tipo más específico para todo el código que viene después.
-  </p>
-  <h4 id="25-indice-del-paquete-srcindexts">
-   2.5 Índice del paquete (
-   <code>
-    src/index.ts
-   </code>
-   )
-  </h4>
-  <div class="highlight language-ts">
-   <pre><span></span><span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./lib/result"</span>
+   <p>
+    <strong>
+     Regla Mental:
+    </strong>
+   </p>
+   <p>
+    Usa
+    <code>
+     asserts
+    </code>
+    para crear funciones de validación que actúan como "guardias". Si la variable pasa la guardia (la función no lanza un error),
+    <em>
+     TypeScript
+    </em>
+    confía en que es segura y le aplica un tipo más específico para todo el código que viene después.
+   </p>
+   <h4 id="25-indice-del-paquete-srcindexts">
+    2.5 Índice del paquete (
+    <code>
+     src/index.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./lib/result"</span>
 <span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-functions"</span>
 <span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-classes"</span>
 <span class="k">export</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./03-asserts"</span>
 </pre>
-  </div>
-  <h4 id="26-comandos-utiles">
-   2.6 Comandos útiles
-  </h4>
-  <div class="highlight language-bash">
-   <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>typecheck
+   </div>
+   <h4 id="26-comandos-utiles">
+    2.6 Comandos útiles
+   </h4>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>typecheck
 npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-functions.ts
 npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-classes.ts
 npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>src/03-asserts.ts
 npm<span class="w"> </span>run<span class="w"> </span>build
 </pre>
-  </div>
-  <hr/>
-  <h3 id="3-ejercicios-para-auto-evaluacion">
-   3) Ejercicios para auto-evaluación
-  </h3>
-  <ol>
-   <li>
-    <strong>
-     Overloads
-    </strong>
-    : Agrega una firma
-    <code>
-     format(x: string): string
-    </code>
-    que trate strings como números si es posible y, si no, devuelva el string.
-   </li>
-   <li>
-    <strong>
-     Genéricos
-    </strong>
-    : implementá
-    <code>
-     uniqueBy&lt;T, K&gt;(xs: T[], key: (t: T) =&gt; K): T[]
-    </code>
-    sin perder tipos.
-   </li>
-   <li>
-    <strong>
-     Repositorio
-    </strong>
-    : Agrega
-    <code>
-     find(predicate: (t: T) =&gt; boolean): T[]
-    </code>
-    al repo genérico.
-   </li>
-   <li>
-    <strong>
-     Clases
-    </strong>
-    : Añade
-    <code>
-     normalize()
-    </code>
-    a
-    <code>
-     Vec2
-    </code>
-    que devuelva un nuevo vector de norma 1 (o
-    <code>
-     this
-    </code>
-    si es cero).
-   </li>
-   <li>
-    <strong>
+   </div>
+   <hr/>
+   <h3 id="3-ejercicios-para-auto-evaluacion">
+    3) Ejercicios para auto-evaluación
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Overloads
+     </strong>
+     : Agrega una firma
      <code>
-      satisfies
+      format(x: string): string
      </code>
-    </strong>
-    : definí un mapa de mensajes
-    <code>
-     as const
-    </code>
-    y validalo contra
-    <code>
-     Record&lt;"ok"|"err", string&gt;
-    </code>
-    .
-   </li>
-  </ol>
+     que trate strings como números si es posible y, si no, devuelva el string.
+    </li>
+    <li>
+     <strong>
+      Genéricos
+     </strong>
+     : implementá
+     <code>
+      uniqueBy&lt;T, K&gt;(xs: T[], key: (t: T) =&gt; K): T[]
+     </code>
+     sin perder tipos.
+    </li>
+    <li>
+     <strong>
+      Repositorio
+     </strong>
+     : Agrega
+     <code>
+      find(predicate: (t: T) =&gt; boolean): T[]
+     </code>
+     al repo genérico.
+    </li>
+    <li>
+     <strong>
+      Clases
+     </strong>
+     : Añade
+     <code>
+      normalize()
+     </code>
+     a
+     <code>
+      Vec2
+     </code>
+     que devuelva un nuevo vector de norma 1 (o
+     <code>
+      this
+     </code>
+     si es cero).
+    </li>
+    <li>
+     <strong>
+      <code>
+       satisfies
+      </code>
+     </strong>
+     : definí un mapa de mensajes
+     <code>
+      as const
+     </code>
+     y validalo contra
+     <code>
+      Record&lt;"ok"|"err", string&gt;
+     </code>
+     .
+    </li>
+   </ol>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
   <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
 
 td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
@@ -3803,6 +2049,14 @@ code {font-family: "Courier New", Courier, monospace;}
 
 .highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
 
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
 .empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
 
 .highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
@@ -3879,26 +2133,26 @@ ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
 #table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
   <script>
    document.addEventListener('DOMContentLoaded', function() {
-    var cssCode = document.getElementById('css-editor').value;
-    var style = document.createElement('style');
-    style.textContent = cssCode;
-    document.head.appendChild(style);
-});
-  </script>
-  <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
-    setTimeout(function() {
-        document.querySelectorAll('.toggle-button').forEach(btn => {
-            btn.style.setProperty('color', 'black', 'important');
-            if (!btn.textContent.trim()) {
-                btn.textContent = '+';
-            }
-        });
-        document.querySelectorAll('.copy-button').forEach(btn => {
-            btn.style.setProperty('color', 'black', 'important');
-        });
-    }, 1000);
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
 });
   </script>
   <script>

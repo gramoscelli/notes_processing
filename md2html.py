@@ -20,13 +20,27 @@ from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
 from pygments.lexers.special import TextLexer
 
+class ListIndentPreprocessor(markdown.preprocessors.Preprocessor):
+    """
+    Python-markdown requiere 4 espacios para sublistas anidadas.
+    Este preprocesador normaliza indentación de 2-3 espacios a 4.
+    """
+    import re
+    LIST_ITEM_RE = re.compile(r'^( {2,3})([-*+]|\d+[.)]) ', re.MULTILINE)
+
+    def run(self, lines):
+        text = '\n'.join(lines)
+        text = self.LIST_ITEM_RE.sub(r'    \2 ', text)
+        return text.split('\n')
+
 class EnhancedSyntaxExtension(markdown.Extension):
     """
     Markdown extension for syntax highlighting with focus on MongoDB, JavaScript, JSX, Python, Bash, Mermaid, and SVG
     """
     def extendMarkdown(self, md):
         md.registerExtension(self)
-        
+
+        md.preprocessors.register(ListIndentPreprocessor(md), 'list_indent', 200)
         # Replace the default code block processor with our custom one
         md.preprocessors.register(EnhancedSyntaxPreprocessor(md), 'enhanced_syntax', 175)
         
@@ -34,7 +48,7 @@ class EnhancedSyntaxPreprocessor(markdown.preprocessors.Preprocessor):
     """
     Preprocessor to handle code blocks with MongoDB, JavaScript, JSX, Python, Bash syntax highlighting, Mermaid diagrams, and SVG content
     """
-    FENCED_BLOCK_RE = r'```([\w+-]+)?\n([\s\S]*?)```'
+    FENCED_BLOCK_RE = r'^```([\w+-]+)?\n([\s\S]*?)^```'
     
     def __init__(self, md):
         super().__init__(md)
@@ -332,6 +346,7 @@ def convert_markdown_to_html(md_file, css_file=None, output_file=None, highlight
     class CustomEnhancedSyntaxExtension(markdown.Extension):
         def extendMarkdown(self, md):
             md.registerExtension(self)
+            md.preprocessors.register(ListIndentPreprocessor(md), 'list_indent', 200)
             md.preprocessors.register(CustomEnhancedSyntaxPreprocessor(md), 'enhanced_syntax', 175)
     
     # Convert markdown to HTML with syntax highlighting

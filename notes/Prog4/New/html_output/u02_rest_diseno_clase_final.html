@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   u02_rest_diseno_clase
+  </title>
+ </head>
+ <body>
+  <h1 id="guion-de-clase-diseno-de-apis-rest-recursos-contrato-y-colecciones">
+   Guion de clase — Diseño de APIs REST: recursos, contrato y colecciones
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-apertura-el-middleware-que-miente">
+      1. Apertura: el middleware que miente
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-de-endpoints-que-funcionan-a-una-api-con-contrato">
+      2. De endpoints que funcionan a una API con contrato
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-recursos-no-acciones">
+      3. Recursos, no acciones
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-metodos-seguridad-e-idempotencia">
+      4. Métodos: seguridad e idempotencia
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-estados-y-errores">
+      5. Estados y errores
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-colecciones">
+      6. Colecciones
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-versionado">
+      7. Versionado
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-hateoas-en-cinco-minutos">
+      8. HATEOAS, en cinco minutos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-cierre">
+      9. Cierre
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-comandos-de-la-demo">
+      10. Comandos de la demo
+     </a>
+    </li>
+   </ul>
+  </div>
+  <blockquote>
+   <p>
+    Notas para dictar la clase. Siguen el orden real de exposición, con lo que se dice,
+lo que va en pantalla y las preguntas que se lanzan.
+Apunte del alumno:
+    <a href="u02_rest_diseno.md">
+     Diseño de APIs REST
+    </a>
+    .
+   </p>
+  </blockquote>
+  <hr/>
+  <div class="chapter-container">
+   <h2 id="1-apertura-el-middleware-que-miente">
+    1. Apertura: el middleware que miente
+   </h2>
+   <p>
+    <strong>
+     En pantalla
+    </strong>
+    , el código que ellos mismos escribieron en Testing Parte 4:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">errorHandler</span><span class="p">(</span><span class="nx">err</span><span class="o">:</span><span class="w"> </span><span class="kt">unknown</span><span class="p">,</span><span class="w"> </span><span class="nx">_req</span><span class="o">:</span><span class="w"> </span><span class="kt">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="o">:</span><span class="w"> </span><span class="kt">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">_next</span><span class="o">:</span><span class="w"> </span><span class="kt">NextFunction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'UnexpectedError'</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">/not found/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">404</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">400</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="nx">status</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">message</span><span class="w"> </span><span class="p">});</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <p>
+    Esto es lo que tenemos hoy y funciona: los tests pasan. Pero miren cómo decide el
+status code. Lo decide leyendo el
+    <strong>
+     texto
+    </strong>
+    del mensaje de error y buscando ahí adentro
+la frase "not found", en inglés, con una expresión regular.
+   </p>
+   <p>
+    <em>
+     Pregunta: ¿qué pasa si mañana alguien carga un libro titulado "Not Found"?
+    </em>
+   </p>
+   <p>
+    <strong>
+     Demo:
+    </strong>
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>localhost:3000/books<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"title":"Not Found","author":"X","year":1990}'</span>
+</pre>
+   </div>
+   <p>
+    Y hay algo peor. Si la base de datos se cae, el error dice "connection refused". No
+contiene "not found", así que cae en el
+    <code>
+     else
+    </code>
+    : devuelve
+    <strong>
+     400
+    </strong>
+    . Le estamos diciendo
+al cliente "lo que mandaste está mal" cuando el que se rompió fue el servidor. El
+front va a mostrar un cartel de error de validación por una caída nuestra.
+   </p>
+   <p>
+    <strong>
+     La frase que queda en el pizarrón toda la clase:
+    </strong>
+   </p>
+   <blockquote>
+    <p>
+     El status code no se decide con una expresión regular sobre un mensaje.
+Se decide con el
+     <strong>
+      tipo
+     </strong>
+     del error. Y el formato de la respuesta es uno solo para
+toda la API.
+    </p>
+   </blockquote>
+   <p>
+    Eso es un
+    <strong>
+     contrato
+    </strong>
+    , y es de lo que se trata esta clase.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-de-endpoints-que-funcionan-a-una-api-con-contrato">
+    2. De endpoints que funcionan a una API con contrato
+   </h2>
+   <p>
+    Lo que tenemos hoy son funciones accesibles por HTTP:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">router</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* crea un libro */</span><span class="w"> </span><span class="p">});</span>
+<span class="nx">router</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span><span class="w">  </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* lista libros  */</span><span class="w"> </span><span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    Eso no es todavía una API. La diferencia es la
+    <strong>
+     promesa estable
+    </strong>
+    que le hacemos a
+quien consume. Comparen las dos columnas:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Sin contrato
+      </th>
+      <th>
+       Con contrato
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       "Devuelve un array"
+      </td>
+      <td>
+       <code>
+        200
+       </code>
+       con
+       <code>
+        { data, meta }
+       </code>
+       ,
+       <code>
+        data
+       </code>
+       es un array de
+       <code>
+        Book
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       "Si falla tira 500"
+      </td>
+      <td>
+       <code>
+        400
+       </code>
+       validación,
+       <code>
+        404
+       </code>
+       inexistente,
+       <code>
+        409
+       </code>
+       conflicto,
+       <code>
+        422
+       </code>
+       regla de negocio
+      </td>
+     </tr>
+     <tr>
+      <td>
+       "Agregamos un campo y listo"
+      </td>
+      <td>
+       Agregar es compatible; renombrar o quitar es breaking
+      </td>
+     </tr>
+     <tr>
+      <td>
+       El front descubre la forma probando
+      </td>
+      <td>
+       El front lee el contrato y programa contra él
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    La columna izquierda es la que obliga al front a abrir el Postman para averiguar qué
+devuelve cada endpoint. La derecha es la que le permite escribir el cliente antes de
+que el back exista.
+   </p>
+   <p>
+    Un contrato se apoya en cuatro decisiones, y son las cuatro de hoy:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>Recursos y URLs → Métodos y semántica → Estados y errores → Colecciones y evolución
+</pre>
+   </div>
+   <p>
+    <strong>
+     Regla de oro:
+    </strong>
+    el contrato es lo primero que se diseña y lo último que se cambia.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-recursos-no-acciones">
+    3. Recursos, no acciones
+   </h2>
+   <p>
+    REST modela
+    <strong>
+     sustantivos
+    </strong>
+    , no
+    <strong>
+     verbos
+    </strong>
+    . El verbo ya lo pone HTTP. Cuando uno pone
+el verbo también en la URL, lo está diciendo dos veces y mal.
+   </p>
+   <p>
+    <strong>
+     En el pizarrón, para que lo traduzcan ellos:
+    </strong>
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>POST /crearLibro
+POST /borrarLibro?id=7
+GET  /obtenerLibrosDelAutor?autor=Borges
+POST /actualizarAñoDelLibro
+</pre>
+   </div>
+   <p>
+    Son cuatro URLs distintas para un mismo recurso. El método HTTP no significa nada
+—todo es
+    <code>
+     POST
+    </code>
+    —, nada de esto es cacheable y nada es predecible: para saber cómo
+borrar hay que leer la documentación.
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>POST   /books
+DELETE /books/7
+GET    /books?author=Borges
+PATCH  /books/7
+</pre>
+   </div>
+   <p>
+    <em>
+     Pregunta: ¿cuántas URLs distintas necesita un CRUD completo de libros?
+    </em>
+   </p>
+   <p>
+    Dos.
+    <strong>
+     <code>
+      /books
+     </code>
+     y
+     <code>
+      /books/{id}
+     </code>
+     .
+    </strong>
+    Toda API REST se arma repitiendo esos dos patrones:
+la colección y el ítem. Cuatro operaciones, dos URLs.
+   </p>
+   <h3 id="31-anidamiento">
+    3.1 Anidamiento
+   </h3>
+   <p>
+    Se anida cuando hay pertenencia real:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>/books/{id}/reviews        → las reseñas de un libro
+/books/{id}/reviews/{rid}  → una reseña concreta
+</pre>
+   </div>
+   <p>
+    Pero esto es un error de diseño:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>/authors/3/books/7/reviews/12/comments/4
+</pre>
+   </div>
+   <p>
+    <em>
+     Pregunta: ¿dónde lo cortarían?
+    </em>
+   </p>
+   <p>
+    El criterio:
+    <strong>
+     anidá sólo si el hijo no tiene sentido fuera del padre
+    </strong>
+    . Una reseña sin
+libro no significa nada, se anida. Un comentario ya tiene id propio global, así que se
+expone de primer nivel y se filtra:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>/comments/4
+/comments?reviewId=12
+</pre>
+   </div>
+   <p>
+    Más de dos niveles de anidamiento es casi siempre señal de que estamos modelando la
+navegación de la pantalla en lugar de los recursos.
+   </p>
+   <h3 id="32-convenciones-que-se-fijan-de-entrada">
+    3.2 Convenciones que se fijan de entrada
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Plural
+     </strong>
+     para colecciones:
+     <code>
+      /books
+     </code>
+     , no
+     <code>
+      /book
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      kebab-case
+     </strong>
+     si hay más de una palabra:
+     <code>
+      /reading-lists
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Sin extensión ni verbo
+     </strong>
+     : nada de
+     <code>
+      /books.json
+     </code>
+     ni
+     <code>
+      /getBooks
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Sin barra final
+     </strong>
+     .
+    </li>
+    <li>
+     <strong>
+      Ids opacos
+     </strong>
+     : quien consume no debe asumir que son numéricos ni correlativos.
+    </li>
+   </ul>
+   <p>
+    Son arbitrarias, cualquiera de las dos opciones sirve. Lo que no sirve es tener las dos
+en la misma API.
+   </p>
+   <h3 id="33-la-excepcion-honesta">
+    3.3 La excepción honesta
+   </h3>
+   <p>
+    A veces hay una operación que realmente no es un CRUD: publicar un borrador, reenviar
+un mail, recalcular un índice. Forzarla a ser un recurso produce diseños peores que
+admitir la excepción:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>POST /books/7/publish
+POST /books/7/restore
+</pre>
+   </div>
+   <p>
+    Está aceptado por convención. Es legítimo
+    <strong>
+     si es la excepción
+    </strong>
+    . Si la mitad de la API
+son acciones, el modelo de recursos está mal planteado y conviene rehacerlo.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-metodos-seguridad-e-idempotencia">
+    4. Métodos: seguridad e idempotencia
+   </h2>
+   <p>
+    Dos propiedades definen la semántica de cada método:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Seguro:
+     </strong>
+     no modifica estado. Se puede ejecutar mil veces sin consecuencias.
+    </li>
+    <li>
+     <strong>
+      Idempotente:
+     </strong>
+     ejecutarlo N veces deja el mismo estado final que ejecutarlo una vez.
+    </li>
+   </ul>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Método
+      </th>
+      <th style="text-align: center;">
+       Seguro
+      </th>
+      <th style="text-align: center;">
+       Idempotente
+      </th>
+      <th>
+       Uso en
+       <code>
+        /books
+       </code>
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        GET
+       </code>
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+      <td>
+       leer colección o ítem
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        POST
+       </code>
+      </td>
+      <td style="text-align: center;">
+       ❌
+      </td>
+      <td style="text-align: center;">
+       ❌
+      </td>
+      <td>
+       crear (el servidor asigna el id)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        PUT
+       </code>
+      </td>
+      <td style="text-align: center;">
+       ❌
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+      <td>
+       reemplazo completo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        PATCH
+       </code>
+      </td>
+      <td style="text-align: center;">
+       ❌
+      </td>
+      <td style="text-align: center;">
+       ❌*
+      </td>
+      <td>
+       modificación parcial
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        DELETE
+       </code>
+      </td>
+      <td style="text-align: center;">
+       ❌
+      </td>
+      <td style="text-align: center;">
+       ✅
+      </td>
+      <td>
+       eliminar
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    <strong>
+     El ejemplo que hace entender para qué sirve la palabra.
+    </strong>
+    El usuario está en el
+subte, manda el request, se corta la señal justo después. El cliente no sabe si llegó
+y reintenta.
+   </p>
+   <p>
+    <em>
+     Pregunta: ¿qué pasa si eso era un
+     <code>
+      POST /books
+     </code>
+     ? ¿Y si era un
+     <code>
+      PUT /books/7
+     </code>
+     ?
+    </em>
+   </p>
+   <p>
+    Con
+    <code>
+     POST
+    </code>
+    quedan dos libros. Con
+    <code>
+     PUT
+    </code>
+    queda uno. Por eso importa: los proxies, las
+CDN y los navegadores
+    <strong>
+     reintentan solos
+    </strong>
+    los métodos idempotentes ante un timeout.
+No es teoría de examen, es el motivo por el que un
+    <code>
+     PUT
+    </code>
+    que crea sin id provisto por
+el cliente duplica registros en producción.
+   </p>
+   <p>
+    Dos aclaraciones que siempre hacen falta:
+   </p>
+   <ul>
+    <li>
+     Idempotente
+     <strong>
+      no
+     </strong>
+     es "devuelve lo mismo". Es que el
+     <strong>
+      estado final del servidor
+     </strong>
+     es
+  el mismo.
+     <code>
+      DELETE /books/7
+     </code>
+     dos veces es idempotente aunque la segunda dé
+     <code>
+      404
+     </code>
+     .
+    </li>
+    <li>
+     <code>
+      PATCH
+     </code>
+     es idempotente
+     <em>
+      si
+     </em>
+     el parche es absoluto (
+     <code>
+      {"year": 1994}
+     </code>
+     ). No lo es si es
+  relativo (
+     <code>
+      {"incrementStock": 1}
+     </code>
+     ).
+    </li>
+   </ul>
+   <h3 id="41-put-vs-patch">
+    4.1
+    <code>
+     PUT
+    </code>
+    vs
+    <code>
+     PATCH
+    </code>
+   </h3>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="c1">// PUT /books/7 → el body es el libro COMPLETO. Lo que falta, se borra.</span>
+<span class="p">{</span><span class="w"> </span><span class="s2">"title"</span><span class="o">:</span><span class="w"> </span><span class="s2">"Rayuela"</span><span class="p">,</span><span class="w"> </span><span class="s2">"author"</span><span class="o">:</span><span class="w"> </span><span class="s2">"Cortázar"</span><span class="p">,</span><span class="w"> </span><span class="s2">"year"</span><span class="o">:</span><span class="w"> </span><span class="mf">1963</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// PATCH /books/7 → el body son SÓLO los campos a cambiar.</span>
+<span class="p">{</span><span class="w"> </span><span class="s2">"year"</span><span class="o">:</span><span class="w"> </span><span class="mf">1963</span><span class="w"> </span><span class="p">}</span>
+</pre>
+   </div>
+   <p>
+    El error clásico es implementar
+    <code>
+     PUT
+    </code>
+    como si fuera
+    <code>
+     PATCH
+    </code>
+    : mergear en lugar de
+reemplazar. Queda una API donde es
+    <strong>
+     imposible borrar un campo opcional
+    </strong>
+    , y eso se
+descubre en producción, con un cliente que no puede limpiar un dato.
+   </p>
+   <p>
+    Recomendación práctica, discutible y vale discutirla:
+    <strong>
+     expongan
+     <code>
+      PATCH
+     </code>
+     y no expongan
+     <code>
+      PUT
+     </code>
+    </strong>
+    . Es menos frágil frente a clientes desactualizados y evita el merge accidental.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-estados-y-errores">
+    5. Estados y errores
+   </h2>
+   <h3 id="51-que-codigo-devolver">
+    5.1 Qué código devolver
+   </h3>
+   <p>
+    No hace falta memorizar la tabla, hace falta razonar el caso.
+    <strong>
+     Van dictando y ellos
+contestan:
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Caso
+      </th>
+      <th>
+       Respuesta
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Se creó el libro
+      </td>
+      <td>
+       <code>
+        201
+       </code>
+       + header
+       <code>
+        Location
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Se borró el libro
+      </td>
+      <td>
+       <code>
+        204
+       </code>
+       , sin cuerpo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        {"year": "mil"}
+       </code>
+      </td>
+      <td>
+       <code>
+        400
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        {"year": 2097}
+       </code>
+      </td>
+      <td>
+       <code>
+        422
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       ISBN repetido
+      </td>
+      <td>
+       <code>
+        409
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        GET /books/999
+       </code>
+      </td>
+      <td>
+       <code>
+        404
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Se cayó la base
+      </td>
+      <td>
+       <code>
+        500
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    El par que hay que dejar clavado:
+   </p>
+   <blockquote>
+    <p>
+     <strong>
+      <code>
+       400
+      </code>
+      = no entiendo lo que me mandaste.
+      <code>
+       422
+      </code>
+      = te entiendo perfectamente, pero no
+puedo aceptarlo.
+     </strong>
+    </p>
+   </blockquote>
+   <p>
+    <code>
+     {"year": "mil"}
+    </code>
+    no es un número: no lo entiendo,
+    <code>
+     400
+    </code>
+    .
+    <code>
+     {"year": 2097}
+    </code>
+    es un número
+perfectamente válido, lo entiendo, pero un libro no puede ser del futuro:
+    <code>
+     422
+    </code>
+    .
+   </p>
+   <p>
+    Y esto no es decorativo, le sirve concretamente al front:
+    <strong>
+     ante un
+     <code>
+      400
+     </code>
+     hay un bug en
+el cliente
+    </strong>
+    —mandó algo mal formado, el usuario no puede arreglarlo—;
+    <strong>
+     ante un
+     <code>
+      422
+     </code>
+     hay un mensaje para mostrarle al usuario
+    </strong>
+    .
+   </p>
+   <p>
+    Aclaración honesta: hay equipos serios que usan
+    <code>
+     400
+    </code>
+    para todo y no están violando la
+especificación. Nosotros distinguimos porque el front necesita saber si muestra un
+cartel o reporta un bug.
+   </p>
+   <h3 id="52-un-solo-formato-de-error">
+    5.2 Un solo formato de error
+   </h3>
+   <p>
+    Nada hace más difícil consumir una API que tener tres formatos de error distintos
+según qué parte del código falló. Usamos
+    <strong>
+     RFC 9457,
+     <code>
+      application/problem+json
+     </code>
+    </strong>
+    —un
+estándar, no un invento de la cátedra:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/http/problem.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Problem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w">      </span><span class="c1">// URI que identifica el tipo de error</span>
+<span class="w">  </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w">     </span><span class="c1">// resumen legible, estable</span>
+<span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w">    </span><span class="c1">// el mismo status HTTP</span>
+<span class="w">  </span><span class="nx">detail?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w">   </span><span class="c1">// explicación de ESTA ocurrencia</span>
+<span class="w">  </span><span class="nx">instance?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// la URL que falló</span>
+<span class="w">  </span><span class="nx">errors?</span><span class="o">:</span><span class="w"> </span><span class="kt">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// detalle por campo</span>
+<span class="p">};</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Un error de validación se ve así. Fíjense en
+    <code>
+     errors
+    </code>
+    : es lo que le permite al front
+pintar de rojo el campo exacto del formulario.
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://api.utn.edu.ar/errors/validation"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"La solicitud no pasó la validación"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"detail"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Revisá los campos indicados en 'errors'."</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"instance"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/v1/books"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"errors"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"year"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Expected number, received string"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="53-el-middleware-centralizado">
+    5.3 El middleware centralizado
+   </h3>
+   <blockquote>
+    <p>
+     <strong>
+      Las rutas lanzan, el middleware traduce. Ninguna ruta arma un error a mano.
+     </strong>
+    </p>
+   </blockquote>
+   <p>
+    Es la misma separación que ya hicimos entre dominio y transporte: el service no sabe
+de HTTP, tira un error de negocio, y hay un solo lugar que decide cómo se ve eso en la
+respuesta.
+   </p>
+   <p>
+    Primero los errores tipados —acá está el reemplazo de la expresión regular del
+principio:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/http/errors.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">AppError</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="nx">detail?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span>
+<span class="w">    </span><span class="k">public</span><span class="w"> </span><span class="nx">errors?</span><span class="o">:</span><span class="w"> </span><span class="kt">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">super</span><span class="p">(</span><span class="nx">title</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">notFound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">what</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="ow">new</span><span class="w"> </span><span class="nx">AppError</span><span class="p">(</span><span class="mf">404</span><span class="p">,</span><span class="w"> </span><span class="s1">'https://api.utn.edu.ar/errors/not-found'</span><span class="p">,</span>
+<span class="w">    </span><span class="sb">`</span><span class="si">${</span><span class="nx">what</span><span class="si">}</span><span class="sb"> no encontrado`</span><span class="p">,</span><span class="w"> </span><span class="sb">`No existe </span><span class="si">${</span><span class="nx">what</span><span class="si">}</span><span class="sb"> con id </span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">.`</span><span class="p">);</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">businessRule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">detail</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="ow">new</span><span class="w"> </span><span class="nx">AppError</span><span class="p">(</span><span class="mf">422</span><span class="p">,</span><span class="w"> </span><span class="s1">'https://api.utn.edu.ar/errors/business-rule'</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">'Regla de negocio violada'</span><span class="p">,</span><span class="w"> </span><span class="nx">detail</span><span class="p">);</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">conflict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">detail</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span>
+<span class="w">  </span><span class="ow">new</span><span class="w"> </span><span class="nx">AppError</span><span class="p">(</span><span class="mf">409</span><span class="p">,</span><span class="w"> </span><span class="s1">'https://api.utn.edu.ar/errors/conflict'</span><span class="p">,</span>
+<span class="w">    </span><span class="s1">'Conflicto con el estado actual'</span><span class="p">,</span><span class="w"> </span><span class="nx">detail</span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Y el traductor, con tres ramas y nada más:
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/http/errorHandler.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">errorHandler</span><span class="o">:</span><span class="w"> </span><span class="kt">ErrorRequestHandler</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">,</span><span class="w"> </span><span class="nx">_next</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="nx">ZodError</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="kr">type</span><span class="p">(</span><span class="s1">'application/problem+json'</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span>
+<span class="w">      </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s1">'https://api.utn.edu.ar/errors/validation'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'La solicitud no pasó la validación'</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">400</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">instance</span><span class="o">:</span><span class="w"> </span><span class="kt">req.originalUrl</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">errors</span><span class="o">:</span><span class="w"> </span><span class="kt">err.flatten</span><span class="p">().</span><span class="nx">fieldErrors</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="nx">AppError</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="kr">type</span><span class="p">(</span><span class="s1">'application/problem+json'</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span>
+<span class="w">      </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="kr">type</span><span class="p">,</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">err.title</span><span class="p">,</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">err.status</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">detail</span><span class="o">:</span><span class="w"> </span><span class="kt">err.detail</span><span class="p">,</span><span class="w"> </span><span class="nx">instance</span><span class="o">:</span><span class="w"> </span><span class="kt">req.originalUrl</span><span class="p">,</span><span class="w"> </span><span class="nx">errors</span><span class="o">:</span><span class="w"> </span><span class="kt">err.errors</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span><span class="w">                       </span><span class="c1">// adentro, completo</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">500</span><span class="p">).</span><span class="kr">type</span><span class="p">(</span><span class="s1">'application/problem+json'</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="s1">'about:blank'</span><span class="p">,</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'Error interno'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">500</span><span class="p">,</span><span class="w"> </span><span class="nx">instance</span><span class="o">:</span><span class="w"> </span><span class="kt">req.originalUrl</span><span class="w">  </span><span class="c1">// afuera, genérico</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">};</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Tres cosas mientras se escribe:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      La tercera rama nunca filtra el stack.
+     </strong>
+     El log va adentro; la respuesta es
+   genérica. Un stack trace le regala al atacante la estructura de carpetas, las
+   versiones de las librerías y las rutas internas. Volvemos a esto en Unidad 7.
+    </li>
+    <li>
+     <strong>
+      Se registra último
+     </strong>
+     , después de todas las rutas. Si va antes, no se ejecuta nunca:
+    </li>
+   </ol>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">,</span><span class="w"> </span><span class="nx">makeBooksRouter</span><span class="p">(</span><span class="nx">service</span><span class="p">));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">errorHandler</span><span class="p">);</span><span class="w"> </span><span class="c1">// ← siempre último</span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     <strong>
+      Cuidado con
+      <code>
+       async
+      </code>
+      en Express 4.
+     </strong>
+     Un
+     <code>
+      throw
+     </code>
+     dentro de un handler
+     <code>
+      async
+     </code>
+     no
+   llega acá: el request queda colgado hasta el timeout. Hay que capturar y llamar
+     <code>
+      next(err)
+     </code>
+     , o usar un wrapper. En Express 5 ya se propaga solo.
+    </li>
+   </ol>
+   <h3 id="54-el-contrato-es-un-test">
+    5.4 El contrato es un test
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">it</span><span class="p">(</span><span class="s1">'404 con problem+json cuando el libro no existe'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">makeApp</span><span class="p">()).</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/v1/books/no-existe'</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">404</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">'content-type'</span><span class="p">]).</span><span class="nx">toMatch</span><span class="p">(</span><span class="sr">/application\/problem\+json/</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">).</span><span class="nx">toMatchObject</span><span class="p">({</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">404</span><span class="p">,</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">expect.any</span><span class="p">(</span><span class="nb">String</span><span class="p">)</span><span class="w"> </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s1">'422 cuando el year es futuro (regla de negocio, no sintaxis)'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">makeApp</span><span class="p">()).</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/v1/books'</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">send</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'X'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Y'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">().</span><span class="nx">getFullYear</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">5</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">422</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     El contrato no es documentación: es un test. Si nadie verifica el
+     <code>
+      content-type
+     </code>
+     del
+error, el contrato se rompe y no se entera nadie hasta que lo reporta el front.
+    </p>
+   </blockquote>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-colecciones">
+    6. Colecciones
+   </h2>
+   <div class="highlight language-bash">
+    <pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/v1/books<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-c
+</pre>
+   </div>
+   <p>
+    Con tres libros, unos cientos de bytes.
+    <em>
+     Pregunta: ¿cuánto da con cuarenta mil?
+    </em>
+   </p>
+   <p>
+    Un
+    <code>
+     GET /books
+    </code>
+    que devuelve todo es una bomba de tiempo: anda perfecto en la demo y
+tira el servidor en producción.
+    <strong>
+     Toda colección se pagina desde el día uno
+    </strong>
+    , aunque
+hoy tenga tres registros, porque agregar paginación después es un cambio breaking.
+   </p>
+   <h3 id="61-offset-o-cursor">
+    6.1 Offset o cursor
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+      </th>
+      <th>
+       Offset / página
+      </th>
+      <th>
+       Cursor / keyset
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       URL
+      </td>
+      <td>
+       <code>
+        ?page=3&amp;pageSize=20
+       </code>
+      </td>
+      <td>
+       <code>
+        ?cursor=abc&amp;limit=20
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Saltar a la página N
+      </td>
+      <td>
+       ✅ directo
+      </td>
+      <td>
+       ❌ sólo siguiente/anterior
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Costo en la base
+      </td>
+      <td>
+       crece con el offset
+      </td>
+      <td>
+       constante
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Si los datos cambian mientras paginás
+      </td>
+      <td>
+       ❌ repite o saltea ítems
+      </td>
+      <td>
+       ✅ estable
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Cuándo
+      </td>
+      <td>
+       back-office, tablas con paginador
+      </td>
+      <td>
+       feeds, scroll infinito
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Nosotros usamos
+    <strong>
+     offset
+    </strong>
+    , que es lo que espera una tabla con paginador. En Unidad 4,
+contra una base real, vamos a ver por qué se degrada.
+   </p>
+   <h3 id="62-validar-la-query-con-zod">
+    6.2 Validar la query con Zod
+   </h3>
+   <p>
+    Los query params
+    <strong>
+     siempre
+    </strong>
+    llegan como string. Convertirlos a mano en cada ruta es la
+fuente número uno de bugs de paginación.
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">listBooksQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">page</span><span class="o">:</span><span class="w">     </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">positive</span><span class="p">().</span><span class="k">default</span><span class="p">(</span><span class="mf">1</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">pageSize</span><span class="o">:</span><span class="w"> </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">positive</span><span class="p">().</span><span class="nx">max</span><span class="p">(</span><span class="mf">100</span><span class="p">).</span><span class="k">default</span><span class="p">(</span><span class="mf">20</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">sort</span><span class="o">:</span><span class="w">     </span><span class="kt">z.enum</span><span class="p">([</span><span class="s1">'title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'year'</span><span class="p">,</span><span class="w"> </span><span class="s1">'author'</span><span class="p">,</span><span class="w"> </span><span class="s1">'-title'</span><span class="p">,</span><span class="w"> </span><span class="s1">'-year'</span><span class="p">,</span><span class="w"> </span><span class="s1">'-author'</span><span class="p">])</span>
+<span class="w">              </span><span class="p">.</span><span class="k">default</span><span class="p">(</span><span class="s1">'title'</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">author</span><span class="o">:</span><span class="w">   </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">optional</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">yearFrom</span><span class="o">:</span><span class="w"> </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">optional</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">yearTo</span><span class="o">:</span><span class="w">   </span><span class="kt">z.coerce.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">optional</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">q</span><span class="o">:</span><span class="w">        </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">1</span><span class="p">).</span><span class="nx">optional</span><span class="p">()</span>
+<span class="p">}).</span><span class="nx">refine</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">v</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">yearFrom</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">yearTo</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">yearFrom</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nx">v</span><span class="p">.</span><span class="nx">yearTo</span><span class="p">,</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="s1">'yearFrom no puede ser mayor que yearTo'</span><span class="p">,</span><span class="w"> </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'yearFrom'</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Hay tres decisiones deliberadas ahí, y las tres importan:
+   </p>
+   <p>
+    <strong>
+     <code>
+      z.coerce
+     </code>
+    </strong>
+    hace el casteo de string a número en un solo lugar. Nunca más un
+    <code>
+     Number(req.query.page)
+    </code>
+    suelto en una ruta.
+   </p>
+   <p>
+    <strong>
+     <code>
+      .max(100)
+     </code>
+     en
+     <code>
+      pageSize
+     </code>
+     .
+    </strong>
+    <em>
+     Pregunta: ¿qué pasa si alguien pide
+     <code>
+      ?pageSize=999999
+     </code>
+     ?
+    </em>
+    Sin el tope, le estamos dando a cualquiera una forma trivial de tirarnos la API. Un
+límite sin tope no es un límite.
+   </p>
+   <p>
+    <strong>
+     <code>
+      z.enum
+     </code>
+     en
+     <code>
+      sort
+     </code>
+     , no
+     <code>
+      z.string()
+     </code>
+     .
+    </strong>
+    Hoy, con datos en memoria, un
+    <code>
+     sort
+    </code>
+    libre
+sólo es feo. En Unidad 4, contra una base de datos, un campo de orden que viene del
+cliente es una vía de inyección y de full scan. La whitelist se define
+    <strong>
+     ahora
+    </strong>
+    ,
+cuando no cuesta nada.
+   </p>
+   <p>
+    La convención de orden: un solo parámetro,
+    <code>
+     -
+    </code>
+    para descendente, coma para multi-campo.
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>?sort=title        → título ascendente
+?sort=-year        → año descendente
+?sort=-year,title  → año descendente y, a igual año, título ascendente
+</pre>
+   </div>
+   <h3 id="63-el-sobre-de-respuesta">
+    6.3 El sobre de respuesta
+   </h3>
+   <p>
+    Si devolvemos un array pelado no hay dónde poner los metadatos de paginación. Por eso
+el sobre:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Page</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[];</span>
+<span class="w">  </span><span class="nx">meta</span><span class="o">:</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nx">page</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">pageSize</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">total</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">totalPages</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="nx">links</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">self</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">first</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">prev</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">           </span><span class="nx">next</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w"> </span><span class="nx">last</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">};</span>
+<span class="p">};</span>
+</pre>
+   </div>
+   <p>
+    Los
+    <code>
+     links
+    </code>
+    son el dato más útil para el front: no tiene que saber armar la URL de la
+página siguiente, la sigue. Y cuando
+    <code>
+     next
+    </code>
+    es
+    <code>
+     null
+    </code>
+    , se terminó.
+   </p>
+   <p>
+    <strong>
+     Coherencia:
+    </strong>
+    si la colección devuelve
+    <code>
+     { data, meta }
+    </code>
+    , el ítem individual también
+devuelve
+    <code>
+     { data }
+    </code>
+    . Una API donde
+    <code>
+     GET /books
+    </code>
+    y
+    <code>
+     GET /books/7
+    </code>
+    tienen formas
+distintas obliga al front a escribir dos deserializadores.
+   </p>
+   <h3 id="64-el-test-que-vale-por-diez">
+    6.4 El test que vale por diez
+   </h3>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">years</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">year</span><span class="p">);</span>
+<span class="nx">expect</span><span class="p">(</span><span class="nx">years</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">([...</span><span class="nx">years</span><span class="p">].</span><span class="nx">sort</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">a</span><span class="p">));</span>
+</pre>
+   </div>
+   <p>
+    Pará acá. Este test
+    <strong>
+     no hardcodea el resultado esperado
+    </strong>
+    : verifica la
+    <em>
+     propiedad
+    </em>
+    "está ordenado descendente". Sigue pasando cuando cambian los datos de prueba, y falla
+exactamente cuando el orden se rompe. Es el patrón que quiero ver en el TP.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-versionado">
+    7. Versionado
+   </h2>
+   <p>
+    Toda API que se usa, cambia. La pregunta no es
+    <em>
+     si
+    </em>
+    vas a romper el contrato, sino
+    <em>
+     cómo
+    </em>
+    lo vas a administrar.
+   </p>
+   <p>
+    <strong>
+     Juego rápido: digo el cambio, ustedes dicen si rompe o no.
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Cambio
+      </th>
+      <th style="text-align: center;">
+       ¿Breaking?
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Agregar un campo opcional a la respuesta
+      </td>
+      <td style="text-align: center;">
+       No
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Agregar un endpoint nuevo
+      </td>
+      <td style="text-align: center;">
+       No
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Agregar un query param con default
+      </td>
+      <td style="text-align: center;">
+       No
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Quitar o renombrar un campo
+      </td>
+      <td style="text-align: center;">
+       <strong>
+        Sí
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Cambiar el tipo de un campo
+      </td>
+      <td style="text-align: center;">
+       <strong>
+        Sí
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Agregar un campo requerido al request
+      </td>
+      <td style="text-align: center;">
+       <strong>
+        Sí
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Cambiar un status code
+      </td>
+      <td style="text-align: center;">
+       <strong>
+        Sí
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Endurecer una validación
+      </td>
+      <td style="text-align: center;">
+       <strong>
+        Sí
+       </strong>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <blockquote>
+    <p>
+     <strong>
+      Agregar es seguro; quitar y cambiar, no.
+     </strong>
+     Y los clientes viejos siguen existiendo
+aunque hayas avisado.
+    </p>
+   </blockquote>
+   <p>
+    La versión va
+    <strong>
+     en la URL y sólo major
+    </strong>
+    :
+    <code>
+     /v1/books
+    </code>
+    . Es visible, cacheable, trivial
+de rutear y de probar con
+    <code>
+     curl
+    </code>
+    . No existe
+    <code>
+     /v1.2
+    </code>
+    , porque los cambios menores son
+compatibles por definición.
+   </p>
+   <p>
+    Y no se apaga una versión de un día para el otro. El procedimiento: publicar
+    <code>
+     /v2
+    </code>
+    ,
+marcar
+    <code>
+     /v1
+    </code>
+    como deprecada con los headers estándar
+    <code>
+     Deprecation
+    </code>
+    y
+    <code>
+     Sunset
+    </code>
+    , medir
+cuánto tráfico sigue entrando por
+    <code>
+     /v1
+    </code>
+    , y recién ahí apagarla.
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="nx">res</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'Deprecation'</span><span class="p">,</span><span class="w"> </span><span class="s1">'true'</span><span class="p">);</span>
+<span class="nx">res</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'Sunset'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Sat, 01 Aug 2026 00:00:00 GMT'</span><span class="p">);</span>
+<span class="nx">res</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'Link'</span><span class="p">,</span><span class="w"> </span><span class="s1">'&lt;/v2/books&gt;; rel="successor-version"'</span><span class="p">);</span>
+</pre>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-hateoas-en-cinco-minutos">
+    8. HATEOAS, en cinco minutos
+   </h2>
+   <p>
+    La idea: la respuesta no trae sólo datos, trae
+    <strong>
+     qué se puede hacer ahora
+    </strong>
+    con esos
+datos.
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7"</span><span class="p">,</span><span class="w"> </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Rayuela"</span><span class="p">,</span><span class="w"> </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"draft"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"links"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"self"</span><span class="p">:</span><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/v1/books/7"</span><span class="p">,</span><span class="w"> </span><span class="nt">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"publish"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"href"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/v1/books/7/publish"</span><span class="p">,</span><span class="w"> </span><span class="nt">"method"</span><span class="p">:</span><span class="w"> </span><span class="s2">"POST"</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Lo interesante es lo que
+    <strong>
+     no
+    </strong>
+    aparece: si el libro ya estuviera publicado, el link
+    <code>
+     publish
+    </code>
+    no vendría. El servidor comunica su máquina de estados y el front
+    <strong>
+     no tiene
+que reimplementar
+    </strong>
+    la regla "el botón Publicar se muestra sólo si está en borrador".
+   </p>
+   <p>
+    Dicho esto, HATEOAS completo casi nadie lo implementa: requiere un cliente que descubra
+links en runtime, infla las respuestas y cada API inventa su propio formato.
+   </p>
+   <p>
+    <strong>
+     Posición del curso:
+    </strong>
+    adoptamos la hipermedia útil —los links de paginación que ya
+hicimos, y los links de acción condicionados por estado— y no la ortodoxia.
+   </p>
+   <p>
+    Si preguntan si entonces nuestra API no es REST: en el modelo de Richardson estamos en
+    <strong>
+     nivel 2
+    </strong>
+    (recursos + verbos + status codes), que es lo que la industria llama REST.
+El nivel 3 es la hipermedia. Nuestra API queda en nivel 2 con los links de paginación
+del 3, y eso está bien.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-cierre">
+    9. Cierre
+   </h2>
+   <p>
+    Los errores que vamos a ver una y otra vez, y que están todos en el apunte:
+   </p>
+   <ul>
+    <li>
+     <code>
+      200 OK
+     </code>
+     con
+     <code>
+      {"error": "..."}
+     </code>
+     adentro — rompe
+     <code>
+      res.ok
+     </code>
+     , los reintentos y el monitoreo.
+    </li>
+    <li>
+     Un
+     <code>
+      GET
+     </code>
+     que modifica estado — un prefetch del navegador ejecuta la acción.
+    </li>
+    <li>
+     Listado sin paginación.
+    </li>
+    <li>
+     <code>
+      sort
+     </code>
+     como string libre.
+    </li>
+    <li>
+     <code>
+      float
+     </code>
+     para plata —
+     <code>
+      0.1 + 0.2 !== 0.3
+     </code>
+     . Enteros en centavos.
+    </li>
+    <li>
+     Fechas con formato propio — ISO 8601 UTC siempre.
+    </li>
+    <li>
+     <code>
+      null
+     </code>
+     y campo ausente usados indistintamente: en
+     <code>
+      PATCH
+     </code>
+     ,
+     <code>
+      null
+     </code>
+     es "ponelo en nada"
+  y ausente es "no lo toques".
+    </li>
+   </ul>
+   <p>
+    Y la pregunta con la que nos vamos,
+    <strong>
+     sin contestarla
+    </strong>
+    :
+   </p>
+   <blockquote>
+    <p>
+     Todo este contrato que acabamos de diseñar, ¿dónde está escrito? En nuestra cabeza y
+en los tests. ¿Cómo hace el front para saber que
+     <code>
+      meta.totalPages
+     </code>
+     existe, sin
+preguntarnos por WhatsApp?
+    </p>
+   </blockquote>
+   <p>
+    Eso es la clase que viene:
+    <a href="u02_openapi.md">
+     OpenAPI
+    </a>
+    .
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-comandos-de-la-demo">
+    10. Comandos de la demo
+   </h2>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1"># Apertura: el título que rompe el middleware viejo</span>
+curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>localhost:3000/books<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"title":"Not Found","author":"X","year":1990}'</span>
+
+<span class="c1"># 404 con problem+json</span>
+curl<span class="w"> </span>-i<span class="w"> </span>localhost:3000/v1/books/no-existe
+
+<span class="c1"># 400: sintaxis mal</span>
+curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>localhost:3000/v1/books<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"title":"X","author":"Y","year":"mil novecientos"}'</span>
+
+<span class="c1"># 422: sintaxis bien, regla de negocio violada</span>
+curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>localhost:3000/v1/books<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"title":"X","author":"Y","year":2097}'</span>
+
+<span class="c1"># 201 + Location</span>
+curl<span class="w"> </span>-i<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>localhost:3000/v1/books<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{"title":"Rayuela","author":"Cortázar","year":1963}'</span>
+
+<span class="c1"># El sobre completo</span>
+curl<span class="w"> </span>-s<span class="w"> </span>localhost:3000/v1/books<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'{meta, links}'</span>
+
+<span class="c1"># El tope de pageSize y la whitelist de sort</span>
+curl<span class="w"> </span>-i<span class="w"> </span><span class="s1">'localhost:3000/v1/books?pageSize=999999'</span>
+curl<span class="w"> </span>-i<span class="w"> </span><span class="s1">'localhost:3000/v1/books?sort=password'</span>
+
+<span class="c1"># Headers de deprecación</span>
+curl<span class="w"> </span>-sI<span class="w"> </span>localhost:3000/v1/books<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-iE<span class="w"> </span><span class="s1">'deprecation|sunset|link'</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

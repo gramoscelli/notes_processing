@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   apuntes_typescript_parte_3
+  </title>
+ </head>
+ <body>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#genericos-avanzados-utility-types-y-conditionalmapped-types">
+      Genéricos avanzados, utility types y conditional/mapped types
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="genericos-avanzados-utility-types-y-conditionalmapped-types">
+    Genéricos avanzados,
+    <em>
+     utility types
+    </em>
+    y
+    <em>
+     conditional/mapped types
+    </em>
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Aplicar
+     <code>
+      keyof
+     </code>
+     ,
+     <em>
+      indexed access
+     </em>
+     ,
+     <em>
+      template literal types
+     </em>
+     ,
+     <code>
+      infer
+     </code>
+     .
+    </li>
+   </ul>
+   <h3 id="1-teoria-minima">
+    1) Teoría mínima
+   </h3>
+   <h4 id="11-keyof-indexed-access-y-lookup-types-inspeccionando-tipos">
+    1.1
+    <code>
+     keyof
+    </code>
+    , Indexed Access y Lookup Types: Inspeccionando Tipos
+   </h4>
+   <p>
+    <em>
+     TypeScript
+    </em>
+    proporciona un conjunto de operadores que nos permiten "inspeccionar" la estructura de otros tipos. Esto es fundamental para crear utilidades genéricas y seguras que puedan operar sobre objetos sin conocer sus propiedades de antemano.
+   </p>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       <code>
+        keyof
+       </code>
+       : Obteniendo las Llaves del Tipo
+      </strong>
+     </p>
+     <p>
+      El operador
+      <code>
+       keyof
+      </code>
+      toma un tipo de objeto
+      <code>
+       T
+      </code>
+      y produce un nuevo tipo que es una
+      <strong>
+       unión de strings literales
+      </strong>
+      de todas sus claves (propiedades) públicas. Piensa en él como si pidieras el "menú de propiedades" disponibles en un tipo.
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// `keyof User` inspecciona el tipo `User` y devuelve una unión de sus claves.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">UserKeys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">User</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo resultante es: "id" | "age" | "created"</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       <code>
+        T[K]
+       </code>
+       : Consultando el Tipo de una Propiedad (Indexed Access Types)
+      </strong>
+     </p>
+     <p>
+      Una vez que tienes la "llave" de una propiedad, puedes usar la sintaxis de corchetes
+      <code>
+       T[K]
+      </code>
+      para "buscar" y obtener el
+      <strong>
+       tipo
+      </strong>
+      de esa propiedad específica. A esto se le conoce como
+      <em>
+       Indexed Access Type
+      </em>
+      o
+      <em>
+       Lookup Type
+      </em>
+      .
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="c1">// Usamos una de las claves de `User` (un string literal) para consultar su tipo.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">AgeType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">User</span><span class="p">[</span><span class="s2">"age"</span><span class="p">];</span><span class="w">     </span><span class="c1">// El tipo resultante es `number`</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">IdType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">User</span><span class="p">[</span><span class="s2">"id"</span><span class="p">];</span><span class="w">       </span><span class="c1">// El tipo resultante es `string`</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Poniéndolo Todo Junto: El Patrón en Acción
+      </strong>
+     </p>
+     <p>
+      La verdadera magia ocurre cuando combinas
+      <code>
+       keyof
+      </code>
+      y
+      <code>
+       T[K]
+      </code>
+      para crear funciones genéricas seguras. El uso más común es para una función que accede a una propiedad de un objeto de forma segura.
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Esta función genérica toma un objeto `obj` (de tipo `T`) y una clave `key` (de tipo `K`).</span>
+<span class="cm">  *</span>
+<span class="cm">  * La restricción `K extends keyof T` es crucial:</span>
+<span class="cm">  * Asegura que el argumento `key` SÓLO pueda ser una de las claves válidas del objeto `obj`.</span>
+<span class="cm">  *</span>
+<span class="cm">  * El tipo de retorno `T[K]` garantiza que el tipo de salida coincida</span>
+<span class="cm">  * perfectamente con el tipo de la propiedad que se está accediendo.</span>
+<span class="cm">  */</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">getProperty</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">obj</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="c1">// --- Viéndolo funcionar ---</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="s2">"user-123"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">30</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(),</span>
+<span class="p">};</span>
+
+<span class="c1">// `age` es de tipo `number` porque TypeScript infiere que T[K] es User["age"], que es `number`.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getProperty</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="s2">"age"</span><span class="p">);</span>
+
+<span class="c1">// `created` es de tipo `Date`.</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">creationDate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getProperty</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="s2">"created"</span><span class="p">);</span>
+
+<span class="c1">// const invalid = getProperty(user, "email"); // ❌ Error: Argument of type '"email"' is not </span>
+<span class="w">                                              </span><span class="c1">// assignable to parameter of type 'keyof User'.</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="12-mapped-types-creando-nuevos-tipos-a-partir-de-otros">
+    1.2 Mapped Types: Creando Nuevos Tipos a Partir de Otros
+   </h4>
+   <p>
+    Piensa en los
+    <em>
+     Mapped Types
+    </em>
+    como un bucle
+    <code>
+     for...in
+    </code>
+    que opera sobre los
+    <strong>
+     tipos
+    </strong>
+    en lugar de sobre los valores. Te permiten tomar un tipo existente y, de forma programática, crear un nuevo tipo aplicando transformaciones a cada una de sus propiedades. Son como una "fábrica" para generar nuevos tipos.
+   </p>
+   <p>
+    <strong>
+     La Anatomía de un Mapped Type
+    </strong>
+   </p>
+   <p>
+    La sintaxis básica es una plantilla que itera sobre las claves de otro tipo.
+   </p>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="c1">// La sintaxis `[K in keyof T]` se puede leer como:</span>
+<span class="c1">// "Para cada clave `K` en el tipo `T`..."</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Mapped</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="c1">// "...la nueva propiedad `K` tendrá el tipo del valor original `T[K]`"</span>
+<span class="p">};</span>
+</pre>
+   </div>
+   <p>
+    Los famosos tipos de utilidad
+    <code>
+     Readonly&lt;T&gt;
+    </code>
+    y
+    <code>
+     Partial&lt;T&gt;
+    </code>
+    son implementaciones perfectas de este patrón:
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// `Readonly&lt;T&gt;`: Añade el modificador `readonly` a cada propiedad.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Readonly</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="c1">// `Partial&lt;T&gt;`: Hace que cada propiedad sea opcional con `?`.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Partial</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="nx">?</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[</span><span class="nx">K</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">};</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ReadonlyUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Readonly</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// { readonly name: string; readonly age: number; }</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">PartialUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Partial</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span><span class="p">;</span><span class="w">   </span><span class="c1">// { name?: string; age?: number; }</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Modificadores de Mapeo: Añadiendo o Quitando
+     <code>
+      readonly
+     </code>
+     y
+     <code>
+      ?
+     </code>
+    </strong>
+   </p>
+   <p>
+    Puedes controlar explícitamente si una propiedad debe ser opcional o de solo lectura usando los prefijos
+    <code>
+     +
+    </code>
+    (añadir) y
+    <code>
+     -
+    </code>
+    (quitar). Si no se usa prefijo,
+    <code>
+     +
+    </code>
+    es el valor por defecto.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// `Required&lt;T&gt;` es lo opuesto a `Partial&lt;T&gt;`. Quita el `?` de cada propiedad.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Required</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// El modificador `-?` elimina la opcionalidad.</span>
+<span class="w">  </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">-</span><span class="nx">?</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[</span><span class="nx">K</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">PartialUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">age?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">};</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">RequiredUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Required</span><span class="o">&lt;</span><span class="nx">PartialUser</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// { name: string; age: number; }</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Re-mapeo de Claves con
+     <code>
+      as
+     </code>
+     : Filtrando y Renombrando Propiedades
+    </strong>
+   </p>
+   <p>
+    Esta es la parte más poderosa. Usando la cláusula
+    <code>
+     as
+    </code>
+    dentro de un
+    <em>
+     Mapped Type
+    </em>
+    , puedes cambiar el
+    <strong>
+     nombre de las claves
+    </strong>
+    o incluso
+    <strong>
+     filtrarlas
+    </strong>
+    por completo.
+   </p>
+   <p>
+    La técnica de filtrado se basa en un tipo condicional: si la condición se cumple, mantienes la clave; si no, la "descartas" devolviendo
+    <code>
+     never
+    </code>
+    .
+   </p>
+   <p>
+    <strong>
+     Ejemplo: Crear un tipo que solo contenga las propiedades de tipo
+     <code>
+      string
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">UserWithMixedTypes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">isActive</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Este Mapped Type filtra las claves.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">StringPropertiesOnly</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// `as T[K] extends string ? K : never` es la clave del filtrado.</span>
+<span class="w">  </span><span class="c1">// Se lee como:</span>
+<span class="w">  </span><span class="c1">// "Para cada clave `K` en `T`..."</span>
+<span class="w">  </span><span class="c1">// "...si el tipo del valor `T[K]` es un `string`..."</span>
+<span class="w">  </span><span class="c1">// "...entonces (`?`) usa `K` como el nombre de la nueva clave..."</span>
+<span class="w">  </span><span class="c1">// "...de lo contrario (`:`), descarta esta clave (`never`)."</span>
+<span class="w">  </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">never</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="c1">// `FilteredUser` solo contendrá las propiedades `name` y `email`.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">FilteredUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">StringPropertiesOnly</span><span class="o">&lt;</span><span class="nx">UserWithMixedTypes</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="c1">// El tipo resultante es: { name: string; email: string; }</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="13-conditional-types-el-operador-ternario-para-tipos">
+    1.3 Conditional Types: El Operador Ternario para Tipos
+   </h4>
+   <p>
+    Piensa en los tipos condicionales como el operador ternario de JavaScript (
+    <code>
+     condicion ? valorSiVerdadero : valorSiFalso
+    </code>
+    ), pero para el sistema de tipos. Te permiten crear un tipo que cambia basándose en si otro tipo cumple una cierta condición.
+   </p>
+   <p>
+    <strong>
+     La Forma General:
+     <code>
+      T extends U ? X : Y
+     </code>
+    </strong>
+   </p>
+   <p>
+    La sintaxis se lee de la siguiente manera:
+    <em>
+     "Si el tipo
+     <code>
+      T
+     </code>
+     es asignable al tipo
+     <code>
+      U
+     </code>
+     , entonces el tipo resultante es
+     <code>
+      X
+     </code>
+     ; de lo contrario, el tipo resultante es
+     <code>
+      Y
+     </code>
+     ."
+    </em>
+   </p>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="c1">// Un ejemplo simple para ilustrar la lógica.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">EsUnString</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s2">"Sí, es un string"</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">"No, no es un string"</span><span class="p">;</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">Caso1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">EsUnString</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo resultante es "Sí, es un string"</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Caso2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">EsUnString</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo resultante es "No, no es un string"</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     La Magia de la Distribución sobre Uniones
+    </strong>
+   </p>
+   <p>
+    Aquí es donde los tipos condicionales realmente brillan. Si el tipo a la izquierda de
+    <code>
+     extends
+    </code>
+    (en nuestro caso,
+    <code>
+     T
+    </code>
+    ) es una
+    <strong>
+     variable de tipo genérica "desnuda"
+    </strong>
+    (es decir, no está envuelta en otro tipo como
+    <code>
+     T[]
+    </code>
+    o
+    <code>
+     { prop: T }
+    </code>
+    ) y le pasas una
+    <strong>
+     unión
+    </strong>
+    , el tipo condicional se
+    <strong>
+     distribuye
+    </strong>
+    sobre cada miembro de esa unión.
+   </p>
+   <p>
+    En otras palabras, la operación se aplica a cada miembro de la unión por separado, y los resultados se vuelven a unir en una nueva unión.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// `T` es un genérico "desnudo".</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">AArray</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">any</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">never</span><span class="p">;</span>
+
+<span class="c1">// Cuando pasamos `string | number` a `AArray`, TypeScript lo descompone:</span>
+<span class="c1">// 1. Aplica `AArray` a `string` -&gt; `string[]`</span>
+<span class="c1">// 2. Aplica `AArray` a `number` -&gt; `number[]`</span>
+<span class="c1">// 3. Recombina los resultados en una nueva unión.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Resultado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">AArray</span><span class="o">&lt;</span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo resultante es: string[] | number[]</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Para evitar este comportamiento de distribución, puedes "envolver" el genérico en ambos lados de
+    <code>
+     extends
+    </code>
+    :
+   </p>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">AArraySinDistribuir</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nx">T</span><span class="p">]</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="p">[</span><span class="nx">any</span><span class="p">]</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">T</span><span class="p">[]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">never</span><span class="p">;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ResultadoSinDistribuir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">AArraySinDistribuir</span><span class="o">&lt;</span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es: (string | number)[]</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Extrayendo Tipos con
+     <code>
+      infer
+     </code>
+    </strong>
+   </p>
+   <p>
+    La palabra clave
+    <code>
+     infer
+    </code>
+    se puede usar dentro de los tipos condicionales para "declarar" una nueva variable de tipo que captura una parte del tipo que se está comprobando. Es una herramienta increíblemente poderosa para "extraer" tipos anidados.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// `ReturnType&lt;T&gt;` es una utilidad nativa que extrae el tipo de retorno de una función.</span>
+<span class="c1">// Así es como funciona por dentro:</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">MiReturnType</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="p">(</span><span class="nx">...args</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">[])</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">infer</span><span class="w"> </span><span class="nx">R</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">;</span>
+<span class="c1">// Se lee como: "Si `T` tiene la forma de una función,</span>
+<span class="c1">// INFIERE su tipo de retorno en una nueva variable `R`, y usa `R` como resultado".</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">MiFuncion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">TipoDeRetorno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">MiReturnType</span><span class="o">&lt;</span><span class="nx">MiFuncion</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo resultante es `string`</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     La Base de las Utilidades Nativas
+    </strong>
+   </p>
+   <p>
+    Muchos de los tipos de utilidad más útiles de
+    <em>
+     TypeScript
+    </em>
+    están construidos con tipos condicionales.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       Exclude&lt;T, U&gt;
+      </code>
+     </strong>
+     : De la unión
+     <code>
+      T
+     </code>
+     , excluye los miembros que son asignables a
+     <code>
+      U
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="c1">// Definición interna:</span>
+<span class="c1">// type Exclude&lt;T, U&gt; = T extends U ? never : T;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Letras</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"a"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"b"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"c"</span><span class="p">;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">LetrasSinA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Exclude</span><span class="o">&lt;</span><span class="nx">Letras</span><span class="p">,</span><span class="w"> </span><span class="s2">"a"</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es "b" | "c"</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       Extract&lt;T, U&gt;
+      </code>
+     </strong>
+     : De la unión
+     <code>
+      T
+     </code>
+     , extrae solo los miembros que son asignables a
+     <code>
+      U
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       NonNullable&lt;T&gt;
+      </code>
+     </strong>
+     : Excluye
+     <code>
+      null
+     </code>
+     y
+     <code>
+      undefined
+     </code>
+     de
+     <code>
+      T
+     </code>
+     .
+¡Por supuesto! La palabra clave
+     <code>
+      infer
+     </code>
+     es como una herramienta de "deconstrucción" para los tipos. Desbloquea patrones de programación de tipos muy avanzados.
+    </li>
+   </ul>
+   <h4 id="14-infer-capturando-tipos-dentro-de-otros-tipos">
+    1.4
+    <code>
+     infer
+    </code>
+    : Capturando Tipos Dentro de Otros Tipos
+   </h4>
+   <p>
+    La palabra clave
+    <code>
+     infer
+    </code>
+    es una herramienta avanzada que se usa exclusivamente dentro de los tipos condicionales (
+    <code>
+     T extends U ? X : Y
+    </code>
+    ). Su propósito es
+    <strong>
+     "inferir" o "capturar"
+    </strong>
+    una parte del tipo que estás comprobando y almacenarla en una nueva variable de tipo temporal.
+   </p>
+   <p>
+    Piensa en ello como una expresión regular que, además de verificar si un string coincide con un patrón, también te permite
+    <strong>
+     capturar y extraer partes de ese string
+    </strong>
+    .
+   </p>
+   <p>
+    <strong>
+     La Sintaxis:
+     <code>
+      ... infer R ...
+     </code>
+    </strong>
+   </p>
+   <p>
+    Cuando usas
+    <code>
+     infer R
+    </code>
+    , le estás diciendo a
+    <em>
+     TypeScript
+    </em>
+    : "Si el tipo que estoy comprobando coincide con esta estructura, por favor, toma la parte del tipo que está en la posición de
+    <code>
+     R
+    </code>
+    y ponla en una nueva variable de tipo llamada
+    <code>
+     R
+    </code>
+    que pueda usar en la rama 'verdadera' de mi condicional".
+   </p>
+   <p>
+    <strong>
+     Ejemplo 1: Extrayendo el Tipo de Retorno de una Función
+    </strong>
+   </p>
+   <p>
+    Este es el caso de uso canónico. Queremos crear una utilidad
+    <code>
+     ReturnType&lt;T&gt;
+    </code>
+    que pueda tomar un tipo de función y devolvernos solo su tipo de retorno.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// `T extends (...args: any) =&gt; infer R` es el patrón que queremos hacer coincidir.</span>
+<span class="c1">// Se lee como: "Si `T` es una función..."</span>
+<span class="c1">// `... infer R`: "...infiere su tipo de retorno y ponlo en una variable `R`."</span>
+<span class="c1">// `? R`: "Si coincide, el resultado de este tipo condicional es `R`."</span>
+<span class="c1">// `: never`: "Si no coincide, el resultado es `never`."</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Return</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="p">(</span><span class="nx">...args</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">infer</span><span class="w"> </span><span class="nx">R</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">R</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">never</span><span class="p">;</span>
+
+<span class="c1">// --- Viéndolo en acción ---</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">MiFuncion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">edad</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+
+<span class="c1">// TypeScript hace coincidir `MiFuncion` con el patrón:</span>
+<span class="c1">// (...args: any) =&gt; infer R  =&gt;  (nombre: string, edad: number) =&gt; boolean</span>
+<span class="c1">// Y captura `boolean` en la variable `R`.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ElTipoDeRetorno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Return</span><span class="o">&lt;</span><span class="nx">MiFuncion</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo resultante es `boolean`</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Ejemplo 2: Desenvolviendo el Tipo de una Promesa
+    </strong>
+   </p>
+   <p>
+    Otro patrón muy común es querer obtener el tipo del valor que una
+    <code>
+     Promise
+    </code>
+    resolverá.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// `T extends Promise&lt;infer U&gt;` es el patrón.</span>
+<span class="c1">// Se lee como: "Si `T` es una `Promise`..."</span>
+<span class="c1">// `... infer U`: "...infiere el tipo genérico con el que fue creada y ponlo en `U`."</span>
+<span class="c1">// `? U`: "Si coincide, el resultado es `U`."</span>
+<span class="c1">// `: T`: "Si no coincide (no es una promesa), simplemente devuelve el tipo original `T`."</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">UnwrapPromise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">infer</span><span class="w"> </span><span class="nx">U</span><span class="o">&gt;</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">U</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">;</span>
+
+<span class="c1">// --- Viéndolo en acción ---</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">PromesaDeString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">PromesaDeNumero</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">UnNumeroSimple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+
+<span class="c1">// `U` se infiere como `string`.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ValorResuelto1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">UnwrapPromise</span><span class="o">&lt;</span><span class="nx">PromesaDeString</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es `string`</span>
+
+<span class="c1">// `U` se infiere como `number`.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ValorResuelto2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">UnwrapPromise</span><span class="o">&lt;</span><span class="nx">PromesaDeNumero</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es `number`</span>
+
+<span class="c1">// No coincide con el patrón `Promise&lt;...&gt;`.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ValorResuelto3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">UnwrapPromise</span><span class="o">&lt;</span><span class="nx">UnNumeroSimple</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es `number` (la rama "falsa")</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="15-template-literal-types-manipulando-strings-en-el-sistema-de-tipos">
+    1.5 Template Literal Types: Manipulando Strings en el Sistema de Tipos
+   </h4>
+   <p>
+    Los
+    <em>
+     Template Literal Types
+    </em>
+    llevan el poder de las plantillas de string de JavaScript (las que usan backticks
+    <code>
+     ``
+    </code>
+    ) directamente al sistema de tipos. Esto te permite crear tipos de string dinámicos, complejos y extremadamente específicos, lo que abre la puerta a patrones de validación muy avanzados.
+   </p>
+   <p>
+    <strong>
+     1. Componiendo Tipos de String
+    </strong>
+   </p>
+   <p>
+    En su forma más básica, puedes usarlos para construir nuevos tipos de string literal combinando otros tipos.
+   </p>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="c1">// Este tipo genérico toma un string `P` y lo concatena dentro de un patrón.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Route</span><span class="o">&lt;</span><span class="nx">P</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`/api/v1/</span><span class="si">${</span><span class="nx">P</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+
+<span class="c1">// Al usarlo, creamos un tipo de string literal específico y seguro.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">UserRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Route</span><span class="o">&lt;</span><span class="s2">"users"</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es exactamente "/api/v1/users"</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ProductRoute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Route</span><span class="o">&lt;</span><span class="s2">"products"</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es exactamente "/api/v1/products"</span>
+
+<span class="c1">// const invalidRoute: UserRoute = "/api/v1/products"; // ❌ Error: Los tipos no coinciden.</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     2. Manipulando Strings con Utilidades Nativas
+    </strong>
+   </p>
+   <p>
+    <em>
+     TypeScript
+    </em>
+    incluye un conjunto de tipos de utilidad para realizar transformaciones comunes en los strings, como cambiar a mayúsculas o minúsculas.
+   </p>
+   <ul>
+    <li>
+     <code>
+      Capitalize&lt;S&gt;
+     </code>
+     : Pone en mayúscula el primer carácter.
+    </li>
+    <li>
+     <code>
+      Uppercase&lt;S&gt;
+     </code>
+     : Pone todo el string en mayúsculas.
+    </li>
+    <li>
+     <code>
+      Lowercase&lt;S&gt;
+     </code>
+     : Pone todo el string en minúsculas.
+    </li>
+    <li>
+     <code>
+      Uncapitalize&lt;S&gt;
+     </code>
+     : Pone en minúscula el primer carácter.
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Saludo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hello world"</span><span class="p">;</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">SaludoCapitalizado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Capitalize</span><span class="o">&lt;</span><span class="nx">Saludo</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es "Hello world"</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">SaludoEnMayusculas</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Uppercase</span><span class="o">&lt;</span><span class="nx">Saludo</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es "HELLO WORLD"</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     3. Extrayendo Patrones con
+     <code>
+      infer
+     </code>
+    </strong>
+   </p>
+   <p>
+    Aquí es donde reside el verdadero poder. Puedes combinar los
+    <em>
+     Template Literal Types
+    </em>
+    con los tipos condicionales (
+    <code>
+     extends
+    </code>
+    ) y la palabra clave
+    <code>
+     infer
+    </code>
+    para
+    <strong>
+     deconstruir y capturar partes de un tipo de string
+    </strong>
+    .
+   </p>
+   <p>
+    Piensa en ello como una expresión regular para el sistema de tipos.
+   </p>
+   <p>
+    <strong>
+     Ejemplo: Dividir un tipo de string por un guion
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Este tipo intenta dividir un string `S` en dos partes usando un guion como separador.</span>
+<span class="cm"> *</span>
+<span class="cm"> * La lógica `S extends `${infer A}-${infer B}`` se lee como:</span>
+<span class="cm"> * "Si el tipo `S` coincide con el patrón de 'un_texto-otro_texto'..."</span>
+<span class="cm"> *</span>
+<span class="cm"> * `infer A`: "...captura la parte antes del guion en una nueva variable de tipo `A`."</span>
+<span class="cm"> * `infer B`: "...y captura la parte después del guion en una nueva variable de tipo `B`."</span>
+<span class="cm"> *</span>
+<span class="cm"> * `? [A, B]`: "Si coincide, el resultado es una tupla con las dos partes capturadas."</span>
+<span class="cm"> * `: [S]`: "Si no coincide, el resultado es una tupla con el string original."</span>
+<span class="cm"> */</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">SplitByDash</span><span class="o">&lt;</span><span class="nx">S</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">S</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">infer</span><span class="w"> </span><span class="nx">A</span><span class="si">}</span><span class="sb">-</span><span class="si">${</span><span class="nx">infer</span><span class="w"> </span><span class="nx">B</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">[</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">S</span><span class="p">];</span>
+
+<span class="c1">// --- Viéndolo en acción ---</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Result1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">SplitByDash</span><span class="o">&lt;</span><span class="s2">"user-profile"</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es ["user", "profile"]</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Result2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">SplitByDash</span><span class="o">&lt;</span><span class="s2">"dashboard"</span><span class="o">&gt;</span><span class="p">;</span><span class="w">    </span><span class="c1">// El tipo es ["dashboard"] (no coincide el patrón)</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Result3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">SplitByDash</span><span class="o">&lt;</span><span class="s2">"id-name-role"</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// El tipo es ["id", "name-role"] (solo divide en el primer guion)</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    ¡Excelente! El re-mapeo de claves con
+    <code>
+     as
+    </code>
+    es la culminación de varias características avanzadas de
+    <em>
+     TypeScript
+    </em>
+    (Mapped Types, Conditional Types, Template Literals). Es una herramienta increíblemente poderosa para transformar la "forma" de los tipos de objeto.
+   </p>
+   <h4 id="16-key-remapping-avanzado-con-as">
+    1.6 Key Remapping Avanzado con
+    <code>
+     as
+    </code>
+   </h4>
+   <p>
+    El re-mapeo de claves, habilitado por la cláusula
+    <code>
+     as
+    </code>
+    dentro de un
+    <em>
+     Mapped Type
+    </em>
+    , te da control total sobre las claves del nuevo tipo que estás creando. Te permite realizar dos operaciones principales:
+    <strong>
+     renombrar
+    </strong>
+    claves existentes o
+    <strong>
+     filtrarlas
+    </strong>
+    para eliminarlas por completo.
+   </p>
+   <h5 id="161-renombrar-claves">
+    1.6.1 Renombrar Claves
+   </h5>
+   <p>
+    Puedes usar
+    <code>
+     as
+    </code>
+    junto con
+    <em>
+     Template Literal Types
+    </em>
+    para generar nuevos nombres de clave de forma programática.
+   </p>
+   <p>
+    <strong>
+     Ejemplo: Crear un tipo que añade un prefijo a todas las claves
+    </strong>
+   </p>
+   <p>
+    Imagina que quieres tomar un tipo
+    <code>
+     User
+    </code>
+    y crear un nuevo tipo donde cada propiedad esté prefijada con
+    <code>
+     user_
+    </code>
+    (por ejemplo,
+    <code>
+     name
+    </code>
+    se convierte en
+    <code>
+     user_name
+    </code>
+    ).
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Este tipo genérico toma un tipo `T` y un prefijo `P` (un string).</span>
+<span class="cm"> * Luego, crea un nuevo tipo donde cada clave `K` de `T` es renombrada.</span>
+<span class="cm"> */</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">PrefixKeys</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">P</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// `as `${P}${Extract&lt;K, string&gt;}`` es la cláusula de renombrado.</span>
+<span class="w">  </span><span class="c1">// Se lee como: "Para cada clave `K` en `T`, el nuevo nombre de la clave será..."</span>
+<span class="w">  </span><span class="c1">// "...el prefijo `P` seguido del nombre de la clave `K`."</span>
+<span class="w">  </span><span class="c1">//</span>
+<span class="w">  </span><span class="c1">// (Nota: `Extract&lt;K, string&gt;` es una medida de seguridad para asegurar que solo</span>
+<span class="w">  </span><span class="c1">// trabajamos con claves de tipo string, ya que `keyof` puede incluir numbers o symbols).</span>
+<span class="w">  </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">P</span><span class="si">}${</span><span class="nx">Extract</span><span class="o">&lt;</span><span class="nx">K</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="si">}</span><span class="sb">`</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="c1">// --- Viéndolo en acción ---</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Creamos un nuevo tipo usando `PrefixKeys`.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">PrefixedUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">PrefixKeys</span><span class="o">&lt;</span><span class="nx">User</span><span class="p">,</span><span class="w"> </span><span class="s2">"user_"</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="c1">// El tipo resultante de `PrefixedUser` es:</span>
+<span class="c1">// {</span>
+<span class="c1">//   user_name: string;</span>
+<span class="c1">//   user_id: number;</span>
+<span class="c1">// }</span>
+</pre>
+    </div>
+   </div>
+   <h5 id="162-filtrar-claves">
+    1.6.2 Filtrar Claves
+   </h5>
+   <p>
+    El verdadero poder del re-mapeo se revela cuando lo combinas con tipos condicionales. Al mapear una clave a
+    <code>
+     never
+    </code>
+    , le dices a
+    <em>
+     TypeScript
+    </em>
+    que
+    <strong>
+     descarte esa clave por completo
+    </strong>
+    del tipo resultante.
+   </p>
+   <p>
+    <strong>
+     Ejemplo: Crear un tipo que elimina todas las propiedades que comienzan con un guion bajo
+    </strong>
+   </p>
+   <p>
+    Este es un caso de uso común para crear un tipo "público" a partir de un tipo que contiene propiedades "privadas" (convencionalmente prefijadas con
+    <code>
+     _
+    </code>
+    ).
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Este tipo genérico toma un tipo `T` y elimina cualquier clave que</span>
+<span class="cm"> * comience con un guion bajo.</span>
+<span class="cm"> */</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">RemoveUnderscoreProperties</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// La cláusula `as` ahora contiene un tipo condicional para filtrar.</span>
+<span class="w">  </span><span class="c1">// Se lee como: "Para cada clave `K` en `T`..."</span>
+<span class="w">  </span><span class="c1">// "...si `K` coincide con el patrón de un string que empieza por `_` (`_${string}`)..."</span>
+<span class="w">  </span><span class="c1">// "...entonces (`?`) descarta esta clave (`never`)..."</span>
+<span class="w">  </span><span class="c1">// "...de lo contrario (`:`), mantén el nombre original de la clave (`K`)."</span>
+<span class="w">  </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="sb">`_</span><span class="si">${</span><span class="kt">string</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">never</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="c1">// --- Viéndolo en acción ---</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">UserWithInternalProperties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">_passwordHash</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// Propiedad "privada" que queremos eliminar.</span>
+<span class="w">  </span><span class="nx">_sessionToken</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="c1">// Otra propiedad "privada".</span>
+<span class="p">};</span>
+
+<span class="c1">// Aplicamos el filtro para obtener solo la vista pública del usuario.</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">PublicUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">RemoveUnderscoreProperties</span><span class="o">&lt;</span><span class="nx">UserWithInternalProperties</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="c1">// El tipo resultante de `PublicUser` es:</span>
+<span class="c1">// {</span>
+<span class="c1">//   id: string;</span>
+<span class="c1">//   name: string;</span>
+<span class="c1">// }</span>
+<span class="c1">// Las propiedades `_passwordHash` y `_sessionToken` han sido eliminadas.</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="17-utility-types-la-caja-de-herramientas-de-typescript">
+    1.7 Utility Types: La Caja de Herramientas de TypeScript
+   </h4>
+   <p>
+    <em>
+     TypeScript
+    </em>
+    viene con una "caja de herramientas" de tipos genéricos predefinidos, llamados
+    <em>
+     Utility Types
+    </em>
+    , diseñados para realizar transformaciones de tipos comunes. En lugar de reescribir la misma lógica de
+    <em>
+     Mapped
+    </em>
+    o
+    <em>
+     Conditional Types
+    </em>
+    una y otra vez, puedes usar estas utilidades para que tu código sea más conciso y expresivo.
+   </p>
+   <p>
+    A continuación, se presenta un panorama de los más importantes, agrupados por su función:
+   </p>
+   <h5 id="1-modificadores-de-propiedades-de-objetos">
+    1. Modificadores de Propiedades de Objetos
+   </h5>
+   <p>
+    Estos tipos cambian la naturaleza de las propiedades de un tipo de objeto.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       Partial&lt;T&gt;
+      </code>
+     </strong>
+     : Hace que todas las propiedades de
+     <code>
+      T
+     </code>
+     sean opcionales (
+     <code>
+      ?
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      <code>
+       Required&lt;T&gt;
+      </code>
+     </strong>
+     : Hace que todas las propiedades de
+     <code>
+      T
+     </code>
+     sean requeridas (elimina
+     <code>
+      ?
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      <code>
+       Readonly&lt;T&gt;
+      </code>
+     </strong>
+     : Hace que todas las propiedades de
+     <code>
+      T
+     </code>
+     sean de solo lectura (
+     <code>
+      readonly
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      <code>
+       Record&lt;K, T&gt;
+      </code>
+     </strong>
+     : Crea un tipo de objeto con un conjunto de claves
+     <code>
+      K
+     </code>
+     (generalmente una unión de strings) donde cada clave tiene el tipo
+     <code>
+      T
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">age?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">};</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">PartialUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Partial</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// { name?: string; age?: number; }</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">RequiredUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Required</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// { name: string; age: number; }</span>
+</pre>
+   </div>
+   <h5 id="2-subconjuntos-de-propiedades-de-objetos">
+    2. Subconjuntos de Propiedades de Objetos
+   </h5>
+   <p>
+    Estos tipos te permiten crear nuevos tipos seleccionando u omitiendo propiedades de otro.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       Pick&lt;T, K&gt;
+      </code>
+     </strong>
+     : Crea un tipo seleccionando solo un subconjunto de claves
+     <code>
+      K
+     </code>
+     del tipo
+     <code>
+      T
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       Omit&lt;T, K&gt;
+      </code>
+     </strong>
+     : Crea un tipo omitiendo un subconjunto de claves
+     <code>
+      K
+     </code>
+     del tipo
+     <code>
+      T
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">};</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">UserWithIdAndName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Pick</span><span class="o">&lt;</span><span class="nx">User</span><span class="p">,</span><span class="w"> </span><span class="s2">"id"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"name"</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// { id: string; name: string; }</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">UserWithoutEmail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Omit</span><span class="o">&lt;</span><span class="nx">User</span><span class="p">,</span><span class="w"> </span><span class="s2">"email"</span><span class="o">&gt;</span><span class="p">;</span><span class="w">      </span><span class="c1">// { id: string; name: string; }</span>
+</pre>
+   </div>
+   <h5 id="3-manipulacion-de-uniones">
+    3. Manipulación de Uniones
+   </h5>
+   <p>
+    Estos tipos operan sobre tipos de unión, permitiéndote filtrarlos.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       Exclude&lt;T, U&gt;
+      </code>
+     </strong>
+     : De la unión
+     <code>
+      T
+     </code>
+     , excluye todos los miembros que son asignables a
+     <code>
+      U
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       Extract&lt;T, U&gt;
+      </code>
+     </strong>
+     : De la unión
+     <code>
+      T
+     </code>
+     , extrae solo los miembros que son asignables a
+     <code>
+      U
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       NonNullable&lt;T&gt;
+      </code>
+     </strong>
+     : Excluye
+     <code>
+      null
+     </code>
+     y
+     <code>
+      undefined
+     </code>
+     del tipo
+     <code>
+      T
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">Status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"success"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"loading"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"error"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">NetworkStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Exclude</span><span class="o">&lt;</span><span class="nx">Status</span><span class="p">,</span><span class="w"> </span><span class="s2">"error"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span><span class="w">      </span><span class="c1">// "success" | "loading"</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">NullableStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Extract</span><span class="o">&lt;</span><span class="nx">Status</span><span class="p">,</span><span class="w"> </span><span class="s2">"error"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span><span class="w">     </span><span class="c1">// "error" | null</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">DefiniteStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">NonNullable</span><span class="o">&lt;</span><span class="nx">Status</span><span class="o">&gt;</span><span class="p">;</span><span class="w">                 </span><span class="c1">// "success" | "loading" | "error"</span>
+</pre>
+   </div>
+   <h5 id="4-introspeccion-de-funciones-y-clases">
+    4. Introspección de Funciones y Clases
+   </h5>
+   <p>
+    Estos tipos te permiten extraer "meta-información" de los tipos de funciones y constructores.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       Parameters&lt;T&gt;
+      </code>
+     </strong>
+     : Extrae los tipos de los parámetros de una función
+     <code>
+      T
+     </code>
+     como una tupla.
+    </li>
+    <li>
+     <strong>
+      <code>
+       ReturnType&lt;T&gt;
+      </code>
+     </strong>
+     : Extrae el tipo de retorno de una función
+     <code>
+      T
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       InstanceType&lt;T&gt;
+      </code>
+     </strong>
+     : Extrae el tipo de la instancia de una clase constructora
+     <code>
+      T
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="kr">type</span><span class="w"> </span><span class="nx">MiFuncion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">MisParametros</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Parameters</span><span class="o">&lt;</span><span class="nx">MiFuncion</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// [number, string]</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">MiTipoDeRetorno</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ReturnType</span><span class="o">&lt;</span><span class="nx">MiFuncion</span><span class="o">&gt;</span><span class="p">;</span><span class="w"> </span><span class="c1">// boolean</span>
+</pre>
+   </div>
+   <hr/>
+   <p>
+    <strong>
+     El Camino hacia la Maestría
+    </strong>
+   </p>
+   <p>
+    La idea fundamental es que
+    <strong>
+     puedes recrear la mayoría de estas utilidades
+    </strong>
+    usando las herramientas que hemos visto (
+    <em>
+     Mapped Types
+    </em>
+    ,
+    <em>
+     Conditional Types
+    </em>
+    ,
+    <code>
+     keyof
+    </code>
+    ,
+    <code>
+     infer
+    </code>
+    , etc.). Hacerlo es el mejor ejercicio para comprender profundamente su semántica y cómo funciona el sistema de tipos de
+    <em>
+     TypeScript
+    </em>
+    .
+   </p>
+   <blockquote>
+    <p>
+     En la práctica, combinaremos todas estas piezas para crear nuestras propias
+     <strong>
+      utilidades de tipos reutilizables
+     </strong>
+     y específicas para nuestro dominio. Esto nos permite construir APIs de tipos robustas, seguras y auto-documentadas, validando su comportamiento con técnicas de "tests de tipos" para garantizar que nuestras transformaciones complejas siempre funcionen como se espera.
+    </p>
+   </blockquote>
+   <h3 id="2-practica">
+    2) Práctica
+   </h3>
+   <blockquote>
+    <p>
+     Usaremos archivos
+     <code>
+      src/04-*.ts
+     </code>
+     . Ejecutá
+     <code>
+      npm run typecheck
+     </code>
+     con frecuencia.
+    </p>
+   </blockquote>
+   <h4 id="21-utilidades-basicas-de-mapeo-srctypes04-utilitiests">
+    2.1 Utilidades básicas de mapeo (
+    <code>
+     src/types/04-utilities.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Quitar readonly y opcionales</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Mutable</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">-</span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">-</span><span class="nx">?</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Hacer opcionales solo algunas claves</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">OptionalBy</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Omit</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">Partial</span><span class="o">&lt;</span><span class="nx">Pick</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="o">&gt;&gt;</span>
+
+<span class="c1">// Hacer requeridas solo algunas claves</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">RequiredBy</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Omit</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">Required</span><span class="o">&lt;</span><span class="nx">Pick</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">K</span><span class="o">&gt;&gt;</span>
+
+<span class="c1">// Profundidad recursiva: DeepPartial y DeepReadonly</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">DeepPartial</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">object</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="nx">?</span><span class="o">:</span><span class="w"> </span><span class="kt">DeepPartial</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">T</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">DeepReadonly</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">object</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">DeepReadonly</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">T</span>
+
+<span class="c1">// Marcas nominales (branded types)</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Brand</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="nx">__brand</span><span class="o">:</span><span class="w"> </span><span class="kt">B</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Filtrar por tipo de valor</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">PickByValue</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">V</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">V</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">never</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">OmitByValue</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">V</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">V</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">never</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Expandir para mejorar DX en tooltips</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Expand</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">infer</span><span class="w"> </span><span class="nx">O</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">O</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">O</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">never</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="22-condicionales-e-infer-src04-conditional-inferts">
+    2.2 Condicionales e
+    <code>
+     infer
+    </code>
+    (
+    <code>
+     src/04-conditional-infer.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Unwrappers comunes</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">UnwrapPromise</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">infer</span><span class="w"> </span><span class="nx">U</span><span class="o">&gt;</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">U</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">T</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">ElementType</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="k">readonly</span><span class="w"> </span><span class="p">(</span><span class="nx">infer</span><span class="w"> </span><span class="nx">U</span><span class="p">)[]</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">U</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">never</span>
+
+<span class="c1">// Retorno de funciones síncronas y asíncronas export type AsyncReturn&lt;T&gt; = T extends (...args: any) =&gt; Promise&lt;infer R&gt; ? R : T extends (...args: any) =&gt; infer R ? R : never</span>
+
+<span class="c1">// Obtener claves cuyo valor coincide con V</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">KeysByValue</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">V</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span><span class="o">-</span><span class="nx">?</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">V</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">never</span><span class="w"> </span><span class="p">}[</span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="p">]</span>
+
+<span class="c1">// Acceso por ruta string: Get&lt;T, "a.b.c"&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Get</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">P</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">P</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">infer</span><span class="w"> </span><span class="nx">K</span><span class="si">}</span><span class="sb">.</span><span class="si">${</span><span class="nx">infer</span><span class="w"> </span><span class="nx">R</span><span class="si">}</span><span class="sb">`</span>
+<span class="w">  </span><span class="o">?</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span>
+<span class="w">    </span><span class="o">?</span><span class="w"> </span><span class="nx">Get</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">],</span><span class="w"> </span><span class="nx">R</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="nx">never</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="kt">P</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span>
+<span class="w">    </span><span class="o">?</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">P</span><span class="p">]</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="nx">never</span>
+
+<span class="c1">// Tests básicos</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">meta</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">tags</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span><span class="w"> </span><span class="nx">flags?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">T1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ElementType</span><span class="o">&lt;</span><span class="nx">User</span><span class="p">[</span><span class="s2">"meta"</span><span class="p">][</span><span class="s2">"tags"</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// string</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">T2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Get</span><span class="o">&lt;</span><span class="nx">User</span><span class="p">,</span><span class="w"> </span><span class="s2">"meta.flags"</span><span class="o">&gt;</span><span class="w">            </span><span class="c1">// number | undefined</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="23-template-literals-y-remapeo-src04-template-remapts">
+    2.3 Template literals y remapeo (
+    <code>
+     src/04-template-remap.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Camelizar strings tipo "user_name" -&gt; "userName"</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">ToCamel</span><span class="o">&lt;</span><span class="nx">S</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">S</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">infer</span><span class="w"> </span><span class="nx">H</span><span class="si">}</span><span class="sb">_</span><span class="si">${</span><span class="nx">infer</span><span class="w"> </span><span class="nx">T</span><span class="si">}</span><span class="sb">`</span>
+<span class="w">  </span><span class="o">?</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">Lowercase</span><span class="o">&lt;</span><span class="nx">H</span><span class="o">&gt;</span><span class="si">}${</span><span class="nx">Capitalize</span><span class="o">&lt;</span><span class="nx">ToCamel</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;&gt;</span><span class="si">}</span><span class="sb">`</span>
+<span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="nx">Lowercase</span><span class="o">&lt;</span><span class="nx">S</span><span class="o">&gt;</span>
+
+<span class="c1">// Camelizar claves de un objeto</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Camelize</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">K</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">ToCamel</span><span class="o">&lt;</span><span class="nx">K</span><span class="o">&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">K</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Prefijar claves</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">PrefixKeys</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span><span class="w"> </span><span class="nx">P</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">P</span><span class="si">}${</span><span class="nx">Extract</span><span class="o">&lt;</span><span class="nx">K</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="o">&gt;</span><span class="si">}</span><span class="sb">`</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Filtrar nullish vía remapeo</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">NonNullishProps</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">K</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">keyof</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">never</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">K</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">T</span><span class="p">[</span><span class="nx">K</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Demo</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">user_name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">created_at</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">count</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Clean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Camelize</span><span class="o">&lt;</span><span class="nx">Raw</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// { userName: string; createdAt: string; count: number | null }</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">CleanNN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">NonNullishProps</span><span class="o">&lt;</span><span class="nx">Clean</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// quita 'count' si es nullish</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="24-utility-types-en-accion-src04-utility-demots">
+    2.4
+    <em>
+     Utility types
+    </em>
+    en acción (
+    <code>
+     src/04-utility-demo.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Estándar de TS</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">email?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Partial</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Required</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Readonly</span><span class="o">&lt;</span><span class="nx">User</span><span class="o">&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Pick</span><span class="o">&lt;</span><span class="nx">User</span><span class="p">,</span><span class="w"> </span><span class="s2">"id"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"name"</span><span class="o">&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Omit</span><span class="o">&lt;</span><span class="nx">User</span><span class="p">,</span><span class="w"> </span><span class="s2">"email"</span><span class="o">&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="s2">"admin"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"viewer"</span><span class="p">,</span><span class="w"> </span><span class="nx">User</span><span class="o">&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Exclude</span><span class="o">&lt;</span><span class="s2">"a"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"b"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"c"</span><span class="p">,</span><span class="w"> </span><span class="s2">"b"</span><span class="o">&gt;</span><span class="w">      </span><span class="c1">// "a" | "c"</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Extract</span><span class="o">&lt;</span><span class="s2">"a"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"b"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"c"</span><span class="p">,</span><span class="w"> </span><span class="s2">"b"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"x"</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// "b"</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">U9</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">NonNullable</span><span class="o">&lt;</span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="o">&gt;</span><span class="w">   </span><span class="c1">// string</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">makeUser</span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">ReturnType</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">makeUser</span><span class="o">&gt;</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Parameters</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">makeUser</span><span class="o">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="25-tests-de-tipos-src04-type-teststs">
+    2.5 “Tests de tipos” (
+    <code>
+     src/04-type-tests.ts
+    </code>
+    )
+   </h4>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Pequeño framework de assertions de tipos</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Equal</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">,</span><span class="w"> </span><span class="nx">B</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">A</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">2</span><span class="p">)</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">B</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">2</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">true</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">false</span>
+<span class="k">export</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="nx">Expect</span><span class="o">&lt;</span><span class="nx">T</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="kc">true</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">T</span>
+
+<span class="c1">// Casos de prueba</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">DeepPartial</span><span class="p">,</span><span class="w"> </span><span class="nx">DeepReadonly</span><span class="p">,</span><span class="w"> </span><span class="nx">OptionalBy</span><span class="p">,</span><span class="w"> </span><span class="nx">RequiredBy</span><span class="p">,</span><span class="w"> </span><span class="nx">Brand</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./types/04-utilities"</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ToCamel</span><span class="p">,</span><span class="w"> </span><span class="nx">Camelize</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./04-template-remap"</span>
+<span class="k">import</span><span class="w"> </span><span class="kr">type</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">UnwrapPromise</span><span class="p">,</span><span class="w"> </span><span class="nx">ElementType</span><span class="p">,</span><span class="w"> </span><span class="nx">Get</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./04-conditional-infer"</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">E1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Expect</span><span class="o">&lt;</span><span class="nx">Equal</span><span class="o">&lt;</span><span class="nx">UnwrapPromise</span><span class="o">&lt;</span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="w"> </span><span class="kt">number</span><span class="o">&gt;&gt;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">E2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Expect</span><span class="o">&lt;</span><span class="nx">Equal</span><span class="o">&lt;</span><span class="nx">ElementType</span><span class="o">&lt;</span><span class="k">readonly</span><span class="w"> </span><span class="p">[</span><span class="mf">1</span><span class="p">,</span><span class="mf">2</span><span class="p">,</span><span class="mf">3</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mf">3</span><span class="o">&gt;&gt;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">E3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Expect</span><span class="o">&lt;</span><span class="nx">Equal</span><span class="o">&lt;</span><span class="nx">Get</span><span class="o">&lt;</span><span class="p">{</span><span class="w"> </span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="s2">"a.b"</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="o">&gt;&gt;</span>
+
+<span class="kr">type</span><span class="w"> </span><span class="nx">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">DP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">DeepPartial</span><span class="o">&lt;</span><span class="nx">P</span><span class="o">&gt;</span>
+<span class="c1">// @ts-expect-error: debería permitir undefined en niveles profundos</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">DP</span>
+
+<span class="c1">// Brands</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">UserId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Brand</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="s2">"UserId"</span><span class="o">&gt;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u1"</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">UserId</span>
+<span class="c1">// @ts-expect-error: string sin brand no es UserId</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">id2</span><span class="o">:</span><span class="w"> </span><span class="kt">UserId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"u2"</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+   <h3 id="3-ejercicios-opcionales">
+    3) Ejercicios opcionales
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      <code>
+       PickByValue
+      </code>
+      /
+      <code>
+       OmitByValue
+      </code>
+     </strong>
+     : aplicalos a un tipo
+     <code>
+      Config
+     </code>
+     y justificá cuándo conviene remapear claves a
+     <code>
+      never
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      <code>
+       Get&lt;T, P&gt;
+      </code>
+     </strong>
+     : extendelo para aceptar hasta 4 niveles (
+     <code>
+      a.b.c.d
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      <code>
+       ToCamel
+      </code>
+      +
+      <code>
+       Camelize
+      </code>
+     </strong>
+     : agregá soporte para claves con múltiples guiones bajos consecutivos.
+    </li>
+    <li>
+     <strong>
+      <code>
+       DeepReadonly
+      </code>
+     </strong>
+     : agregá una variante que no afecte arrays a nivel profundo.
+    </li>
+    <li>
+     <strong>
+      <code>
+       KeysByValue&lt;T, V&gt;
+      </code>
+     </strong>
+     : usalo para construir un
+     <code>
+      Subtipo&lt;T, V&gt;
+     </code>
+     que
+     <strong>
+      solo
+     </strong>
+     conserve las propiedades con valor
+     <code>
+      V
+     </code>
+     .
+    </li>
+   </ol>
+   <hr/>
+   <h3 id="4-comandos-utiles">
+    4) Comandos útiles
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>typecheck
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/04-utility-demo.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/04-conditional-infer.ts
+npm<span class="w"> </span>run<span class="w"> </span>dev<span class="w"> </span>--<span class="w"> </span>src/04-template-remap.ts
+</pre>
+   </div>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

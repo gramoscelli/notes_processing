@@ -280,7 +280,7 @@ def transform_html(input_path, output_path, max_lines):
 
         # Guardar resultado
         with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(str(soup))
+            f.write(str(soup).replace(' viewbox=', ' viewBox='))
             
     except Exception as e:
         print(f"Error procesando el archivo: {e}")

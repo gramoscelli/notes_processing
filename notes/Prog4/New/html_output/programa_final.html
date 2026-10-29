@@ -1,0 +1,2522 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   programa
+  </title>
+ </head>
+ <body>
+  <h1 id="programacion-iv-programa-y-cobertura-de-apuntes">
+   Programación IV — Programa y cobertura de apuntes
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#resumen-de-cobertura">
+      Resumen de cobertura
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-1-arquitectura-y-protocolos-web-avanzados">
+      UNIDAD 1: Arquitectura y protocolos web avanzados
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-2-diseno-y-documentacion-de-apis">
+      UNIDAD 2: Diseño y documentación de APIs
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-3-autenticacion-y-autorizacion">
+      UNIDAD 3: Autenticación y autorización
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-4-acceso-a-datos-y-persistencia">
+      UNIDAD 4: Acceso a datos y persistencia
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-5-front-end-y-consumo-de-apis">
+      UNIDAD 5: Front End y consumo de APIs
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-6-comunicacion-en-tiempo-real">
+      UNIDAD 6: Comunicación en tiempo real
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-7-integracion-frontback-y-seguridad">
+      UNIDAD 7: Integración Front–Back y seguridad
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-8-calidad-y-pruebas">
+      UNIDAD 8: Calidad y pruebas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-9-despliegue-y-cicd">
+      UNIDAD 9: Despliegue y CI/CD
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#unidad-10-observabilidad-y-operacion">
+      UNIDAD 10: Observabilidad y operación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#material-fuera-del-programa-nuevo">
+      Material fuera del programa nuevo
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#duplicados-a-consolidar">
+      Duplicados a consolidar
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#prioridad-sugerida">
+      Prioridad sugerida
+     </a>
+    </li>
+   </ul>
+  </div>
+  <p>
+   Índice de las 10 unidades del programa (
+   <code>
+    temas.txt
+   </code>
+   ) cruzado con los apuntes
+que ya existen en el repositorio. Para cada unidad: los temas del programa, los
+apuntes disponibles, el estado de cobertura y qué falta escribir.
+  </p>
+  <p>
+   <strong>
+    Convenciones de estado:
+   </strong>
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th>
+      Estado
+     </th>
+     <th>
+      Significado
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      ✅ Cubierto
+     </td>
+     <td>
+      Hay material propio y suficiente para dictar la unidad
+     </td>
+    </tr>
+    <tr>
+     <td>
+      🟡 Parcial
+     </td>
+     <td>
+      Hay material, pero faltan temas centrales del programa
+     </td>
+    </tr>
+    <tr>
+     <td>
+      🔴 Sin cubrir
+     </td>
+     <td>
+      No hay apuntes propios sobre la unidad
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <p>
+   <strong>
+    Criterio de cobertura (importante):
+   </strong>
+   sólo cuentan como cobertura los apuntes
+de
+   <strong>
+    Programación IV
+   </strong>
+   . El material de
+   <code>
+    notes/Prog3/
+   </code>
+   y de las materias de bases
+de datos se lista como
+   <strong>
+    prerrequisito o consulta
+   </strong>
+   , no como cobertura: son temas
+que se dictan en otras materias y que esta materia asume conocidos. Por eso las
+unidades 3 y 5 bajaron de estado respecto de la primera versión de este índice.
+  </p>
+  <div class="chapter-container">
+   <h2 id="resumen-de-cobertura">
+    Resumen de cobertura
+   </h2>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Unidad
+      </th>
+      <th>
+       Tema
+      </th>
+      <th style="text-align: center;">
+       Estado
+      </th>
+      <th style="text-align: center;">
+       Apuntes
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       1
+      </td>
+      <td>
+       Arquitectura y protocolos web avanzados
+      </td>
+      <td style="text-align: center;">
+       🟡 Parcial
+      </td>
+      <td style="text-align: center;">
+       2
+      </td>
+     </tr>
+     <tr>
+      <td>
+       2
+      </td>
+      <td>
+       Diseño y documentación de APIs
+      </td>
+      <td style="text-align: center;">
+       ✅ Cubierto
+      </td>
+      <td style="text-align: center;">
+       3
+      </td>
+     </tr>
+     <tr>
+      <td>
+       3
+      </td>
+      <td>
+       Autenticación y autorización
+      </td>
+      <td style="text-align: center;">
+       🔴 Sin cubrir
+      </td>
+      <td style="text-align: center;">
+       0
+      </td>
+     </tr>
+     <tr>
+      <td>
+       4
+      </td>
+      <td>
+       Acceso a datos y persistencia
+      </td>
+      <td style="text-align: center;">
+       🔴 Sin cubrir
+      </td>
+      <td style="text-align: center;">
+       0
+      </td>
+     </tr>
+     <tr>
+      <td>
+       5
+      </td>
+      <td>
+       Front End y consumo de APIs
+      </td>
+      <td style="text-align: center;">
+       🟡 Parcial
+      </td>
+      <td style="text-align: center;">
+       5
+      </td>
+     </tr>
+     <tr>
+      <td>
+       6
+      </td>
+      <td>
+       Comunicación en tiempo real
+      </td>
+      <td style="text-align: center;">
+       🔴 Sin cubrir
+      </td>
+      <td style="text-align: center;">
+       0
+      </td>
+     </tr>
+     <tr>
+      <td>
+       7
+      </td>
+      <td>
+       Integración Front–Back y seguridad
+      </td>
+      <td style="text-align: center;">
+       ✅ Cubierto
+      </td>
+      <td style="text-align: center;">
+       10
+      </td>
+     </tr>
+     <tr>
+      <td>
+       8
+      </td>
+      <td>
+       Calidad y pruebas
+      </td>
+      <td style="text-align: center;">
+       ✅ Cubierto
+      </td>
+      <td style="text-align: center;">
+       14
+      </td>
+     </tr>
+     <tr>
+      <td>
+       9
+      </td>
+      <td>
+       Despliegue y CI/CD
+      </td>
+      <td style="text-align: center;">
+       🟡 Parcial
+      </td>
+      <td style="text-align: center;">
+       3
+      </td>
+     </tr>
+     <tr>
+      <td>
+       10
+      </td>
+      <td>
+       Observabilidad y operación
+      </td>
+      <td style="text-align: center;">
+       🔴 Sin cubrir
+      </td>
+      <td style="text-align: center;">
+       0
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Cuatro unidades sin material propio (3, 4, 6 y 10) y tres parciales (1, 5 y 9).
+El peso del repositorio está en testing y seguridad. La Unidad 2 pasó a estar
+cubierta con los tres apuntes nuevos de
+    <code>
+     New/
+    </code>
+    .
+   </p>
+   <h3 id="correspondencia-con-el-curso-publicado-en-moodle">
+    Correspondencia con el curso publicado en Moodle
+   </h3>
+   <p>
+    El aula virtual de
+    <em>
+     Programación IV (Ramoscelli)
+    </em>
+    todavía está organizada según
+el programa anterior: objetos y TypeScript → Testing (4 partes) → Estilos →
+React con TypeScript → Redes y Seguridad → Despliegue → Clases grabadas. De ahí
+se deduce qué unidades del programa nuevo no tienen
+    <strong>
+     ninguna
+    </strong>
+    sección en el
+aula:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Unidad
+      </th>
+      <th>
+       Sección en Moodle
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       1
+      </td>
+      <td>
+       parcial: "Redes y Seguridad"
+      </td>
+     </tr>
+     <tr>
+      <td>
+       2
+      </td>
+      <td>
+       <strong>
+        ninguna
+       </strong>
+       → la cubren los apuntes nuevos de
+       <code>
+        New/
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       3
+      </td>
+      <td>
+       <strong>
+        ninguna
+       </strong>
+       (JWT se dictó en Programación III)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       4
+      </td>
+      <td>
+       <strong>
+        ninguna
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       5
+      </td>
+      <td>
+       "React con TypeScript"
+      </td>
+     </tr>
+     <tr>
+      <td>
+       6
+      </td>
+      <td>
+       <strong>
+        ninguna
+       </strong>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       7
+      </td>
+      <td>
+       "Redes y Seguridad"
+      </td>
+     </tr>
+     <tr>
+      <td>
+       8
+      </td>
+      <td>
+       "Testing" (partes 1 a 4)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       9
+      </td>
+      <td>
+       un solo recurso: "Introducción general al despliegue"
+      </td>
+     </tr>
+     <tr>
+      <td>
+       10
+      </td>
+      <td>
+       <strong>
+        ninguna
+       </strong>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    El aula no contiene material de Programación III, lo que confirma el criterio de
+arriba: esos temas se asumen conocidos y no se vuelven a dictar.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-1-arquitectura-y-protocolos-web-avanzados">
+    UNIDAD 1: Arquitectura y protocolos web avanzados
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    Modelo cliente–servidor revisitado. Capas y
+responsabilidades. HTTP/1.1 vs HTTP/2 vs HTTP/3 (h/2, QUIC). CORS, políticas de
+caché, CDN y compresión.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <a href="../redes.md">
+      redes.md
+     </a>
+     — modelo TCP/IP, capas de acceso/internet/transporte/aplicación, NAT y resolución de nombres, herramientas de diagnóstico, redes con Docker, sockets en Python (2026 líneas, 16 secciones)
+    </li>
+    <li>
+     <a href="../deployment_apunte.md">
+      deployment_apunte.md
+     </a>
+     — NGINX como proxy reverso, SSL/TLS, certificados (cubre la parte de infraestructura del modelo cliente–servidor)
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: 🟡 Parcial.
+    </strong>
+    Las capas y el modelo cliente–servidor están bien
+servidos por
+    <code>
+     redes.md
+    </code>
+    , pero desde la óptica de redes, no de HTTP aplicado.
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Comparativa HTTP/1.1 vs HTTP/2 vs HTTP/3: multiplexing, head-of-line blocking, server push, QUIC sobre UDP
+    </li>
+    <li>
+     Políticas de caché HTTP (
+     <code>
+      Cache-Control
+     </code>
+     ,
+     <code>
+      ETag
+     </code>
+     , revalidación)
+    </li>
+    <li>
+     CDN: qué resuelve, cuándo conviene
+    </li>
+    <li>
+     Compresión (gzip / brotli) y negociación de contenido
+    </li>
+    <li>
+     CORS como protocolo (el preflight está parcialmente en la Unidad 7, ver más abajo)
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-2-diseno-y-documentacion-de-apis">
+    UNIDAD 2: Diseño y documentación de APIs
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    REST (recursos, verbos, códigos), HATEOAS. GraphQL
+(tipos, queries, mutations). Especificación y documentación con
+OpenAPI/Swagger. Versionado, compatibilidad y deprecaciones. Paginación,
+ordenamientos y filtros; convenciones.
+   </p>
+   <p>
+    <strong>
+     Apuntes de la unidad
+    </strong>
+    (nuevos, en
+    <code>
+     notes/Prog4/New/
+    </code>
+    ):
+   </p>
+   <ol>
+    <li>
+     <a href="u02_rest_diseno.md">
+      u02_rest_diseno.md
+     </a>
+     —
+     <strong>
+      Diseño de APIs REST
+     </strong>
+     : recursos
+   vs acciones, diseño de URIs, métodos seguros e idempotentes, PUT vs PATCH,
+   códigos de estado, errores uniformes con
+     <code>
+      problem+json
+     </code>
+     (RFC 9457) y
+   middleware centralizado, colecciones (paginación offset vs cursor, orden,
+   filtros validados con Zod, sobre
+     <code>
+      { data, meta, links }
+     </code>
+     ), versionado y
+   deprecación (
+     <code>
+      Deprecation
+     </code>
+     /
+     <code>
+      Sunset
+     </code>
+     ), HATEOAS y modelo de madurez de
+   Richardson, checklist del contrato.
+    </li>
+    <li>
+     <a href="u02_openapi.md">
+      u02_openapi.md
+     </a>
+     —
+     <strong>
+      OpenAPI 3.1 y Swagger UI
+     </strong>
+     : anatomía del
+   documento, descripción completa de
+     <code>
+      /v1/books
+     </code>
+     , componentes reutilizables,
+   servir Swagger UI desde Express,
+     <strong>
+      una sola fuente de verdad
+     </strong>
+     generando el
+   documento desde los schemas de Zod, generación del cliente tipado, tests de
+   contrato con Ajv y detección de cambios incompatibles en CI.
+    </li>
+    <li>
+     <a href="u02_graphql.md">
+      u02_graphql.md
+     </a>
+     —
+     <strong>
+      GraphQL
+     </strong>
+     : over/under-fetching, esquema
+   SDL (tipos, inputs, queries, mutations), resolvers sobre el
+     <strong>
+      mismo
+     </strong>
+     <code>
+      BookService
+     </code>
+     , montaje en el Express existente, conexiones Relay vs
+     <code>
+      page
+     </code>
+     /
+     <code>
+      pageSize
+     </code>
+     , errores en
+     <code>
+      extensions
+     </code>
+     (y el "siempre 200"), N+1 y
+   DataLoader, límites de profundidad y costo, comparación honesta REST vs
+   GraphQL y cuándo elegir cada uno.
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Hilo conductor:
+    </strong>
+    los tres extienden la
+    <strong>
+     API de libros
+    </strong>
+    de
+    <a href="../guia_tdd_api.md">
+     guia_tdd_api.md
+    </a>
+    (en Moodle:
+    <em>
+     Testing Parte 4
+    </em>
+    ), el mismo
+    <code>
+     BookService
+    </code>
+    y el mismo
+    <code>
+     makeApp()
+    </code>
+    . No se introduce un dominio nuevo: se le
+agregan capas. Ese mismo servicio es el que recibe autorización en la Unidad 3,
+persistencia real en la Unidad 4 y eventos en la Unidad 6.
+   </p>
+   <p>
+    <strong>
+     Material previo que se apoya:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <a href="../guia_tdd_api.md">
+      guia_tdd_api.md
+     </a>
+     — la API de libros original, con Zod y Supertest
+    </li>
+    <li>
+     <a href="../testing_api.md">
+      testing_api.md
+     </a>
+     — estructura de una API Express para probarla
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: ✅ Cubierto.
+    </strong>
+    Los tres apuntes cubren los cinco temas del programa de
+la unidad. Queda pendiente generarlos como sección nueva en el aula virtual.
+   </p>
+   <p>
+    <strong>
+     Posibles ampliaciones (no bloqueantes):
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Colecciones Postman/Newman derivadas del documento OpenAPI (se solapa con la Unidad 8)
+    </li>
+    <li>
+     Federación de esquemas GraphQL (queda fuera del alcance de la materia)
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-3-autenticacion-y-autorizacion">
+    UNIDAD 3: Autenticación y autorización
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    OAuth 2.1/OIDC: authorization code, PKCE, scopes y
+claims. JWT: estructura, firmas, expiración y revocación. SSO y federación.
+Gestión de sesiones. Roles, permisos y control de acceso. Buenas prácticas de
+almacenamiento de credenciales.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes en Prog4:
+    </strong>
+    ninguno.
+   </p>
+   <p>
+    <strong>
+     Prerrequisito que se asume conocido
+    </strong>
+    (dictado en Programación III,
+    <em>
+     no
+    </em>
+    cuenta
+como cobertura y
+    <em>
+     no
+    </em>
+    se vuelve a dictar):
+   </p>
+   <ul>
+    <li>
+     <a href="../../Prog3/clases/JWT.md">
+      Prog3/clases/JWT.md
+     </a>
+     — JWT en APIs con Express y TypeScript: estructura, firma, middlewares de autenticación, roles (1440 líneas, 34 secciones)
+    </li>
+    <li>
+     <a href="../../Prog3/proyecto/seguridad.md">
+      Prog3/proyecto/seguridad.md
+     </a>
+     — JWT, CORS y CSRF integrados, implementación en React
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: 🔴 Sin cubrir.
+    </strong>
+    Es coherente con el aula virtual, que no tiene ninguna
+sección de autenticación: el JWT se dictó en Programación III. Lo que falta es
+exactamente lo que
+    <em>
+     no
+    </em>
+    se vio allá: el lado del protocolo delegado.
+   </p>
+   <p>
+    <strong>
+     Falta escribir
+    </strong>
+    (asumiendo JWT conocido, sin repetirlo):
+   </p>
+   <ul>
+    <li>
+     OAuth 2.1: flujo authorization code + PKCE, roles del protocolo, scopes
+    </li>
+    <li>
+     OpenID Connect: ID token, claims, diferencia con OAuth
+    </li>
+    <li>
+     Revocación de tokens y estrategia de refresh tokens
+    </li>
+    <li>
+     SSO y federación de identidad
+    </li>
+    <li>
+     Autorización como capa sobre la API de la Unidad 2: scopes → permisos → middleware
+    </li>
+    <li>
+     Almacenamiento de credenciales: hashing (argon2/bcrypt), secretos, dónde guardar tokens en el cliente
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-4-acceso-a-datos-y-persistencia">
+    UNIDAD 4: Acceso a datos y persistencia
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    Patrón repositorio. ORM (mapeo, migraciones,
+relaciones, transacciones). SQL vs NoSQL: selección y trade offs. Caché de
+lectura/escritura, invalidación. Integración con motores de búsqueda y colas de
+mensajes.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes:
+    </strong>
+    ninguno en Prog4.
+   </p>
+   <p>
+    <strong>
+     Material de otras materias
+    </strong>
+    (consulta o prerrequisito, no cobertura):
+   </p>
+   <ul>
+    <li>
+     <a href="../../BdDII/sequalize/sequelize.md">
+      BdDII/sequalize/sequelize.md
+     </a>
+     y
+     <a href="../../BdDII/sequalize/example.md">
+      example.md
+     </a>
+     — ORM Sequelize: mapeo y relaciones
+    </li>
+    <li>
+     <a href="../../BDI/transacciones.md">
+      BDI/transacciones.md
+     </a>
+     — transacciones
+    </li>
+    <li>
+     <a href="../../BdDII/neo4j_v2/">
+      BdDII/neo4j_v2/
+     </a>
+     y
+     <a href="../../BdDII/crud/crud_operations.md">
+      BdDII/crud/crud_operations.md
+     </a>
+     — NoSQL (grafos y documentos)
+    </li>
+    <li>
+     <a href="../../Prog3/orm/pymongo.md">
+      Prog3/orm/pymongo.md
+     </a>
+     — MongoDB, aunque desde Python
+    </li>
+   </ul>
+   <p>
+    ⚠️
+    <strong>
+     Decisión pendiente:
+    </strong>
+    qué ORM/estrategia usar para esta unidad. Sequelize ya
+se dictó en Programación III (
+    <code>
+     JWT.md
+    </code>
+    ), así que repetirlo contradice el criterio
+de no re-dictar temas de Prog3. Alternativas: Prisma, Drizzle, o un repositorio
+a mano sobre
+    <code>
+     pg
+    </code>
+    para que el patrón quede explícito antes de taparlo con un ORM.
+   </p>
+   <p>
+    <strong>
+     Estado: 🔴 Sin cubrir
+    </strong>
+    desde la perspectiva de Programación IV. Hay mucho
+material de bases de datos, pero nada sobre la
+    <em>
+     capa de acceso a datos
+    </em>
+    de una
+aplicación.
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Patrón repositorio: motivación, interfaz, implementación en TypeScript, testeabilidad
+    </li>
+    <li>
+     ORM aplicado: migraciones versionadas, relaciones, transacciones y unit of work
+    </li>
+    <li>
+     SQL vs NoSQL: criterios de selección y trade-offs concretos
+    </li>
+    <li>
+     Caché de lectura/escritura (write-through, write-behind) e invalidación
+    </li>
+    <li>
+     Integración con motores de búsqueda y colas de mensajes
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-5-front-end-y-consumo-de-apis">
+    UNIDAD 5: Front End y consumo de APIs
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    Consumo seguro (tokens, refresh, renovación). Gestión de
+estado (por ejemplo, context/store). Validación de formularios en cliente y
+servidor. Enrutamiento, protección de rutas y manejo de errores.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes en Prog4
+    </strong>
+    (sección "React con TypeScript" del aula):
+   </p>
+   <ul>
+    <li>
+     <a href="../react_ts.md">
+      react_ts.md
+     </a>
+     — migración de React JS a TypeScript
+    </li>
+    <li>
+     <a href="../React_peliculas.md">
+      React_peliculas.md
+     </a>
+     — app completa con búsqueda, detalle y consumo de API (1292 líneas, 25 secciones)
+    </li>
+    <li>
+     <a href="../React_TS_Gatos.md">
+      React_TS_Gatos.md
+     </a>
+     y
+     <a href="../React_TS_cat_simple.md">
+      React_TS_cat_simple.md
+     </a>
+     — estados entrelazados, consumo de API
+    </li>
+    <li>
+     <a href="../React_TS_Cat_bootstrap.md">
+      React_TS_Cat_bootstrap.md
+     </a>
+     — la misma app con Bootstrap
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Prerrequisito que se asume conocido
+    </strong>
+    (React de Programación III: hooks,
+    <code>
+     useContext
+    </code>
+    /
+    <code>
+     useReducer
+    </code>
+    , React Router,
+    <code>
+     fetch
+    </code>
+    vs
+    <code>
+     axios
+    </code>
+    , localStorage). No
+cuenta como cobertura.
+   </p>
+   <p>
+    <strong>
+     Estado: 🟡 Parcial.
+    </strong>
+    Los apuntes de Prog4 enseñan React
+    <strong>
+     con TypeScript
+    </strong>
+    y
+consumo de API, pero los cuatro temas del programa de esta unidad (consumo
+seguro, gestión de estado, validación cliente/servidor, rutas protegidas) se
+apoyaban en el material de Prog3.
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Consumo seguro: ciclo de refresh y renovación de tokens, interceptores, cola de reintentos (depende de la Unidad 3)
+    </li>
+    <li>
+     Gestión de estado a escala de aplicación, con TypeScript: store tipado, estado de servidor vs estado de UI
+    </li>
+    <li>
+     Validación de formularios con
+     <strong>
+      esquema compartido
+     </strong>
+     cliente/servidor (el mismo Zod de la Unidad 2)
+    </li>
+    <li>
+     Protección de rutas y manejo global de errores: error boundaries, mapeo de
+     <code>
+      problem+json
+     </code>
+     a mensajes de UI
+    </li>
+    <li>
+     Cliente generado desde OpenAPI (
+     <code>
+      openapi-fetch
+     </code>
+     ) como alternativa a escribir
+     <code>
+      fetch
+     </code>
+     a mano — ya introducido en
+     <a href="u02_openapi.md">
+      u02_openapi.md
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-6-comunicacion-en-tiempo-real">
+    UNIDAD 6: Comunicación en tiempo real
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    WebSockets, SSE y alternativas. Pub/Sub y mensajería.
+Diseño de eventos, idempotencia y reintentos. Casos de uso: notificaciones,
+tableros en vivo, chat, tracking geográfico.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes:
+    </strong>
+    ninguno.
+   </p>
+   <p>
+    <strong>
+     Material tangencial:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <a href="../../Prog3/clases/observable.md">
+      Prog3/clases/observable.md
+     </a>
+     — Observables en JavaScript: el modelo mental de streams de eventos
+    </li>
+    <li>
+     <a href="../redes.md">
+      redes.md
+     </a>
+     §14 — sockets TCP con Python (la capa de transporte por debajo de WebSockets)
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: 🔴 Sin cubrir.
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     WebSockets: handshake de upgrade, ciclo de vida, reconexión,
+     <code>
+      socket.io
+     </code>
+    </li>
+    <li>
+     Server-Sent Events y polling/long-polling como alternativas; cuándo usar cada uno
+    </li>
+    <li>
+     Pub/Sub y mensajería: broker, tópicos, colas
+    </li>
+    <li>
+     Diseño de eventos: idempotencia, reintentos, entrega at-least-once
+    </li>
+    <li>
+     Un caso práctico de los cuatro del programa (chat o tablero en vivo son los más didácticos)
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-7-integracion-frontback-y-seguridad">
+    UNIDAD 7: Integración Front–Back y seguridad
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    CORS en detalle, CSRF, sanitización de entradas,
+validación centralizada, rate limiting, throttling y protección ante fuerza
+bruta. Subida de archivos segura.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <a href="../ciberseguridad_guia.md">
+      ciberseguridad_guia.md
+     </a>
+     y
+     <a href="../ciberseguridad_checklist.md">
+      ciberseguridad_checklist.md
+     </a>
+     — guía y checklist
+    </li>
+    <li>
+     <a href="../ciberseguridad_práctica.md">
+      ciberseguridad_práctica.md
+     </a>
+     — prácticas de seguridad en código web para juniors (561 líneas)
+    </li>
+    <li>
+     <a href="../ciberseguridad_DVWA_practica_0.md">
+      ciberseguridad_DVWA_practica_0.md
+     </a>
+     a
+     <a href="../ciberseguridad_DVWA_practica_4.md">
+      practica_4.md
+     </a>
+     — cinco prácticas sobre DVWA con Docker
+    </li>
+    <li>
+     <a href="../integrador_juice_shop.md">
+      integrador_juice_shop.md
+     </a>
+     y
+     <a href="../soluciones_profesor.md">
+      soluciones_profesor.md
+     </a>
+     — práctica integradora OWASP Juice Shop
+     <strong>
+      Prerrequisito que se asume conocido:
+     </strong>
+     <a href="../../Prog3/proyecto/seguridad.md">
+      Prog3/proyecto/seguridad.md
+     </a>
+     — CORS y CSRF
+con integración en React.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: ✅ Cubierto
+    </strong>
+    en la parte de vulnerabilidades y práctica ofensiva.
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Rate limiting, throttling y protección ante fuerza bruta (no aparecen en ningún apunte)
+    </li>
+    <li>
+     Límite de profundidad y de costo en GraphQL — pendiente desde
+     <a href="u02_graphql.md">
+      u02_graphql.md
+     </a>
+     §6.3
+    </li>
+    <li>
+     Subida de archivos segura: validación de tipo, tamaño, almacenamiento fuera del webroot
+    </li>
+    <li>
+     Validación centralizada como patrón de arquitectura (middleware + esquema único); el middleware de errores de
+     <a href="u02_rest_diseno.md">
+      u02_rest_diseno.md
+     </a>
+     §3.3 es el punto de partida
+    </li>
+   </ul>
+   <p>
+    ⚠️
+    <strong>
+     <code>
+      ciberseguridad.md
+     </code>
+     está vacío (0 líneas).
+    </strong>
+    Decidir si se completa o se
+borra; hoy solo agrega ruido al listado.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-8-calidad-y-pruebas">
+    UNIDAD 8: Calidad y pruebas
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    TDD/BDD. Pruebas unitarias e integración en back end y
+front end. Pruebas de contrato y de API (Postman/Newman). Pruebas end to end.
+Métricas de cobertura. Linters y formateadores.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <a href="../guia_tdd_api.md">
+      guia_tdd_api.md
+     </a>
+     y
+     <a href="../guia_tdd_api_2.md">
+      guia_tdd_api_2.md
+     </a>
+     — TDD para APIs con TypeScript + Express + Jest + Supertest, receta por user story, Zod, Definition of Done
+    </li>
+    <li>
+     <a href="../React_and_Vitest_TDD.md">
+      React_and_Vitest_TDD.md
+     </a>
+     ,
+     <a href="../React_and_Vitest_TDD_v2.md">
+      _v2
+     </a>
+     ,
+     <a href="../React_and_Vitest_TDD_v3.md">
+      _v3
+     </a>
+     — TDD con React + Vite + Vitest
+    </li>
+    <li>
+     <a href="../React_TDD_Integration.md">
+      React_TDD_Integration.md
+     </a>
+     y
+     <a href="../React_TDD_Integration_v2.md">
+      _v2
+     </a>
+     — tests de integración con Vitest y React Testing Library
+    </li>
+    <li>
+     <a href="../testing_c.md">
+      testing_c.md
+     </a>
+     — fundamentos de testing en TypeScript + Express
+    </li>
+    <li>
+     <a href="../testing_a.md">
+      testing_a.md
+     </a>
+     — Vitest: empezando y mockeando
+    </li>
+    <li>
+     <a href="../testing_b.md">
+      testing_b.md
+     </a>
+     — generar y ejecutar tests en TypeScript
+    </li>
+    <li>
+     <a href="../testing_E2E.md">
+      testing_E2E.md
+     </a>
+     — tests end-to-end en APIs con Node/TypeScript
+    </li>
+    <li>
+     <a href="../testing_api.md">
+      testing_api.md
+     </a>
+     — testing de API por capas
+    </li>
+    <li>
+     <a href="../testing.md">
+      testing.md
+     </a>
+     y
+     <a href="../testing2.md">
+      testing2.md
+     </a>
+     — notas sueltas
+    </li>
+    <li>
+     <a href="../TP_TDD.md">
+      TP_TDD.md
+     </a>
+     y
+     <a href="../TP3.md">
+      TP3.md
+     </a>
+     — trabajos prácticos (TDD + RTL + MSW)
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: ✅ Cubierto,
+    </strong>
+    con amplitud. Es el tema más trabajado del
+repositorio.
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     BDD explícito: Gherkin, Given/When/Then, Cucumber (hoy solo hay TDD)
+    </li>
+    <li>
+     Pruebas de contrato y colecciones Postman/Newman en CI
+    </li>
+    <li>
+     Métricas de cobertura: configuración, umbrales, cómo leerlas sin fetichizarlas
+    </li>
+    <li>
+     Linters y formateadores: ESLint + Prettier, integración con el editor y con CI
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-9-despliegue-y-cicd">
+    UNIDAD 9: Despliegue y CI/CD
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    Empaquetado con Docker. Variables de entorno y
+secretos. Promoción de ambientes (dev, test, prod). Migraciones de base de
+datos. Monitoreo básico de salud. Estrategias de despliegue.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <a href="../deployment_apunte.md">
+      deployment_apunte.md
+     </a>
+     — Docker, NGINX, SSL, CI/CD, cloud, entornos de despliegue, observabilidad básica (650 líneas, 14 secciones)
+    </li>
+    <li>
+     <a href="../heroku.md">
+      heroku.md
+     </a>
+     — despliegue en Heroku paso a paso, variables, add-ons, scaling
+    </li>
+    <li>
+     <a href="../ciberseguridad_DVWA_practica_0.md">
+      ciberseguridad_DVWA_practica_0.md
+     </a>
+     — Docker aplicado a levantar un entorno
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: 🟡 Parcial.
+    </strong>
+    <code>
+     deployment_apunte.md
+    </code>
+    toca casi todos los temas, pero
+en algunos casos de forma superficial.
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Dockerfile en profundidad: multi-stage builds, capas, imágenes mínimas,
+     <code>
+      docker-compose
+     </code>
+     para dev
+    </li>
+    <li>
+     Gestión de secretos (no solo variables de entorno): vaults, secretos en CI
+    </li>
+    <li>
+     Promoción de ambientes dev → test → prod como flujo, con gates
+    </li>
+    <li>
+     Migraciones de base de datos en el pipeline de despliegue
+    </li>
+    <li>
+     Estrategias de despliegue: blue-green, canary, rolling, feature flags
+    </li>
+    <li>
+     Health checks y readiness/liveness probes
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="unidad-10-observabilidad-y-operacion">
+    UNIDAD 10: Observabilidad y operación
+   </h2>
+   <p>
+    <strong>
+     Temas del programa:
+    </strong>
+    Logging estructurado, trazas distribuidas y métricas.
+Alertas. Diagnóstico de performance (latencia, throughput, uso de CPU/RAM/I/O).
+Buenas prácticas de mantenimiento.
+   </p>
+   <p>
+    <strong>
+     Apuntes existentes:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <a href="../deployment_apunte.md">
+      deployment_apunte.md
+     </a>
+     §11 "Observabilidad (Monitoreo)" — es lo único que existe, una sección dentro de otro apunte
+    </li>
+    <li>
+     <a href="../redes.md">
+      redes.md
+     </a>
+     §12 "Diagnóstico y herramientas de red" — diagnóstico, pero a nivel red
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estado: 🔴 Sin cubrir
+    </strong>
+    como unidad propia.
+   </p>
+   <p>
+    <strong>
+     Falta escribir:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Logging estructurado: niveles, formato JSON, correlación por request id, qué no loguear
+    </li>
+    <li>
+     Trazas distribuidas: spans, contexto, OpenTelemetry
+    </li>
+    <li>
+     Métricas: los cuatro signos de oro (latencia, tráfico, errores, saturación), histogramas vs contadores
+    </li>
+    <li>
+     Alertas: umbrales, ruido, alertar sobre síntomas y no sobre causas
+    </li>
+    <li>
+     Diagnóstico de performance: medir latencia y throughput, perfilar CPU/RAM/I/O
+    </li>
+    <li>
+     Buenas prácticas de mantenimiento
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="material-fuera-del-programa-nuevo">
+    Material fuera del programa nuevo
+   </h2>
+   <p>
+    Estos apuntes no corresponden a ninguna de las 10 unidades. Son temas del
+programa anterior o prerrequisitos que conviene conservar como material de
+consulta o de nivelación:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Apunte
+      </th>
+      <th>
+       Tema
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <a href="../apuntes_typescript_parte_1.md">
+        apuntes_typescript_parte_1.md
+       </a>
+       …
+       <a href="../apuntes_typescript_parte_4.md">
+        parte_4
+       </a>
+       ,
+       <a href="../apuntes_typescript_parte_n.md">
+        parte_n
+       </a>
+      </td>
+      <td>
+       TypeScript: 5 apuntes, ~4000 líneas
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <a href="../typescript_cronograma.md">
+        typescript_cronograma.md
+       </a>
+      </td>
+      <td>
+       Programa del curso de TypeScript
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <a href="../objetos.md">
+        objetos.md
+       </a>
+       ,
+       <a href="../objetos2.md">
+        objetos2.md
+       </a>
+       ,
+       <a href="../objetos3.md">
+        objetos3.md
+       </a>
+      </td>
+      <td>
+       Programación orientada a objetos (~3100 líneas)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <a href="../bootstrap.md">
+        bootstrap.md
+       </a>
+       ,
+       <a href="../bootstrap2.md">
+        bootstrap2.md
+       </a>
+       ,
+       <a href="../bootstrap2_v2.md">
+        bootstrap2_v2.md
+       </a>
+       ,
+       <a href="../React_TS_Cat_bootstrap.md">
+        React_TS_Cat_bootstrap.md
+       </a>
+      </td>
+      <td>
+       Bootstrap y clases utilitarias
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <a href="../lenguajes_proprocesador.md">
+        lenguajes_proprocesador.md
+       </a>
+      </td>
+      <td>
+       Preprocesadores CSS
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <a href="../commonjs_vs_esm.md">
+        commonjs_vs_esm.md
+       </a>
+      </td>
+      <td>
+       Módulos en TypeScript con Vite
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <a href="../enunciado_ej1_t1.md">
+        enunciado_ej1_t1.md
+       </a>
+       ,
+       <a href="../enunciado_ej1_t2.md">
+        _t2
+       </a>
+       ,
+       <a href="../enunciado_ej1_t3.md">
+        _t3
+       </a>
+       ,
+       <a href="../examen.md">
+        examen.md
+       </a>
+       ,
+       <a href="../recu/">
+        recu/
+       </a>
+      </td>
+      <td>
+       Parciales y recuperatorios
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <a href="../React_button_solution.md">
+        React_button_solution.md
+       </a>
+       ,
+       <a href="../ejemplo_clases_1.md">
+        ejemplo_clases_1.md
+       </a>
+      </td>
+      <td>
+       Resoluciones puntuales de clase
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    TypeScript y POO siguen siendo prerrequisitos implícitos de las unidades 2 a 5,
+aunque el programa nuevo ya no los liste.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="duplicados-a-consolidar">
+    Duplicados a consolidar
+   </h2>
+   <p>
+    Varios apuntes existen en múltiples versiones sin que esté marcado cuál es la
+vigente:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Familia
+      </th>
+      <th>
+       Archivos
+      </th>
+      <th>
+       Comentario
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       TDD con Vitest
+      </td>
+      <td>
+       <code>
+        React_and_Vitest_TDD.md
+       </code>
+       ,
+       <code>
+        _v2
+       </code>
+       ,
+       <code>
+        _v3
+       </code>
+      </td>
+      <td>
+       <code>
+        _v2
+       </code>
+       es el más extenso (717 líneas, 14 secciones);
+       <code>
+        _v3
+       </code>
+       el más corto (403)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Tests de integración
+      </td>
+      <td>
+       <code>
+        React_TDD_Integration.md
+       </code>
+       ,
+       <code>
+        _v2
+       </code>
+      </td>
+      <td>
+       <code>
+        _v2
+       </code>
+       casi duplica al original
+      </td>
+     </tr>
+     <tr>
+      <td>
+       TDD para APIs
+      </td>
+      <td>
+       <code>
+        guia_tdd_api.md
+       </code>
+       ,
+       <code>
+        guia_tdd_api_2.md
+       </code>
+      </td>
+      <td>
+       806 y 760 líneas, mismo título
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Bootstrap parte 2
+      </td>
+      <td>
+       <code>
+        bootstrap2.md
+       </code>
+       ,
+       <code>
+        bootstrap2_v2.md
+       </code>
+      </td>
+      <td>
+       <code>
+        _v2
+       </code>
+       es "deep dive"
+      </td>
+     </tr>
+     <tr>
+      <td>
+       Testing sueltos
+      </td>
+      <td>
+       <code>
+        testing.md
+       </code>
+       ,
+       <code>
+        testing2.md
+       </code>
+       ,
+       <code>
+        testing_a/b/c.md
+       </code>
+      </td>
+      <td>
+       Sin h1 ni títulos claros en los dos primeros
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    Conviene elegir una versión canónica por familia antes de sumar los apuntes
+nuevos de las unidades 3, 4, 6 y 10.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="prioridad-sugerida">
+    Prioridad sugerida
+   </h2>
+   <ol>
+    <li>
+     ~~
+     <strong>
+      Unidad 2 (APIs)
+     </strong>
+     ~~ — ✅ hecha: tres apuntes en
+     <code>
+      New/
+     </code>
+    </li>
+    <li>
+     <strong>
+      Unidad 4 (persistencia)
+     </strong>
+     — el siguiente eslabón del hilo conductor: sacarle el array en memoria al
+     <code>
+      BookService
+     </code>
+     . Requiere decidir el ORM (ver la advertencia de la Unidad 4)
+    </li>
+    <li>
+     <strong>
+      Unidad 3 (auth)
+     </strong>
+     — se monta sobre la API de la Unidad 2 y habilita el "consumo seguro" de la Unidad 5
+    </li>
+    <li>
+     <strong>
+      Unidad 6 (tiempo real)
+     </strong>
+     — autocontenido; el caso natural es notificar cambios de la API de libros
+    </li>
+    <li>
+     <strong>
+      Unidad 10 (observabilidad)
+     </strong>
+     — autocontenido y corto
+    </li>
+    <li>
+     <strong>
+      Completar unidades 1, 5 y 9
+     </strong>
+     con los temas faltantes listados en cada sección
+    </li>
+   </ol>
+   <p>
+    El hilo conductor queda así: la
+    <strong>
+     API de libros
+    </strong>
+    nace en la Unidad 8 (TDD),
+recibe contrato y documentación en la
+    <strong>
+     2
+    </strong>
+    , autorización en la
+    <strong>
+     3
+    </strong>
+    ,
+persistencia en la
+    <strong>
+     4
+    </strong>
+    , eventos en la
+    <strong>
+     6
+    </strong>
+    , consumo desde el front en la
+    <strong>
+     5
+    </strong>
+    , despliegue en la
+    <strong>
+     9
+    </strong>
+    e instrumentación en la
+    <strong>
+     10
+    </strong>
+    .
+   </p>
+   <blockquote>
+    <p>
+     Los enlaces de este índice son rutas relativas entre archivos
+     <code>
+      .md
+     </code>
+     , pensadas
+para navegar el repositorio desde el editor. En el HTML generado por el
+pipeline no resuelven, porque la salida queda un nivel más abajo
+(
+     <code>
+      New/html_output/
+     </code>
+     ).
+    </p>
+   </blockquote>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

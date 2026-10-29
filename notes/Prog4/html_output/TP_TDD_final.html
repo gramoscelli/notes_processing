@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   TP_TDD
+  </title>
+ </head>
+ <body>
+  <h1 id="trabajo-practico-de-tdd">
+   Trabajo Práctico de TDD
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-requisitos-tecnicos">
+      1) Requisitos técnicos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-modalidad-y-organizacion">
+      2) Modalidad y organización
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-entregables">
+      3) Entregables
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-rubrica-de-evaluacion-100-pts">
+      4) Rúbrica de evaluación (100 pts)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-preguntas-de-teoria-comunes-para-todos">
+      5) Preguntas de teoría (comunes para todos)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-miniproyectos-elegir-1-de-la-lista-todos-distintos">
+      6) Mini‑proyectos (elegir 1 de la lista, todos distintos)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-reglas-de-tdd-para-este-tp">
+      7) Reglas de TDD para este TP
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-formato-de-entrega">
+      8) Formato de entrega
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-plantillas-utiles">
+      9) Plantillas útiles
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-reglas-administrativas">
+      10) Reglas administrativas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#11-sugerencias-para-avanzar">
+      11) Sugerencias para avanzar
+     </a>
+    </li>
+   </ul>
+  </div>
+  <p>
+   <strong>
+    Teoría + Mini‑proyectos (TypeScript/Express/Zod + Jest o Vitest)
+   </strong>
+  </p>
+  <blockquote>
+   <p>
+    <strong>
+     Objetivo general.
+    </strong>
+    Practicar TDD (Rojo → Verde → Refactor) construyendo una API pequeña con TypeScript + Express, validaciones con Zod y tests
+    <strong>
+     unitarios
+    </strong>
+    +
+    <strong>
+     integración
+    </strong>
+    (Jest
+    <strong>
+     o
+    </strong>
+    Vitest + Supertest). Las
+    <strong>
+     preguntas teóricas
+    </strong>
+    son comunes a todos; cada grupo desarrolla
+    <strong>
+     un mini‑proyecto distinto
+    </strong>
+    de la lista.
+   </p>
+  </blockquote>
+  <div class="chapter-container">
+   <h2 id="1-requisitos-tecnicos">
+    1) Requisitos técnicos
+   </h2>
+   <ul>
+    <li>
+     Node 18+ y npm.
+    </li>
+    <li>
+     TypeScript, Express, Zod.
+    </li>
+    <li>
+     Testing:
+     <strong>
+      Jest
+     </strong>
+     (ts‑jest)
+     <strong>
+      o
+     </strong>
+     <strong>
+      Vitest
+     </strong>
+     +
+     <strong>
+      Supertest
+     </strong>
+     .
+    </li>
+    <li>
+     ESM recomendado:
+     <code>
+      "module": "ESNext"
+     </code>
+     ,
+     <code>
+      "moduleResolution": "NodeNext"
+     </code>
+     (usar extensión
+     <code>
+      .js
+     </code>
+     en imports relativos TS→TS).
+    </li>
+    <li>
+     Separar
+     <strong>
+      app
+     </strong>
+     de
+     <strong>
+      server
+     </strong>
+     :
+     <code>
+      makeApp()
+     </code>
+     sin
+     <code>
+      listen
+     </code>
+     en tests.
+    </li>
+    <li>
+     Validación en bordes con Zod (body/query/params). Reglas de negocio en servicios (probadas con unit tests).
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-modalidad-y-organizacion">
+    2) Modalidad y organización
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      Equipos:
+     </strong>
+     2–3 integrantes. Cada equipo elige
+     <strong>
+      un proyecto distinto
+     </strong>
+     (sin repetidos si es posible).
+    </li>
+    <li>
+     <strong>
+      Evidencia de TDD:
+     </strong>
+     commits pequeños que muestren
+     <code>
+      test rojo → implementación mínima → refactor
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Repositorio público o privado compartido con docentes
+     </strong>
+     .
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-entregables">
+    3) Entregables
+   </h2>
+   <ol>
+    <li>
+     <strong>
+      Código
+     </strong>
+     de la API con tests unitarios + integración en verde.
+    </li>
+    <li>
+     <strong>
+      Historial de commits
+     </strong>
+     mostrando el ciclo TDD por historia (user story).
+    </li>
+    <li>
+     <strong>
+      Cobertura
+     </strong>
+     : ≥
+     <strong>
+      80%
+     </strong>
+     en archivos modificados.
+    </li>
+    <li>
+     <strong>
+      Matriz de casos
+     </strong>
+     (tabla CA ↔ tests) en README o en el PR.
+    </li>
+    <li>
+     <strong>
+      Guía de ejecución
+     </strong>
+     : scripts npm, requisitos, comandos para correr tests.
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-rubrica-de-evaluacion-100-pts">
+    4) Rúbrica de evaluación (100 pts)
+   </h2>
+   <ul>
+    <li>
+     <strong>
+      TDD aplicado (30 pts):
+     </strong>
+     commits atómicos, tests antes del código, refactors sin romper tests.
+    </li>
+    <li>
+     <strong>
+      Calidad de tests (25 pts):
+     </strong>
+     casos felices y de error; claridad; ausencia de mocks innecesarios; nombres descriptivos.
+    </li>
+    <li>
+     <strong>
+      Diseño/validación (20 pts):
+     </strong>
+     Zod en bordes; reglas de dominio en servicios; inyección de dependencias; manejo de errores consistente.
+    </li>
+    <li>
+     <strong>
+      Cobertura (10 pts):
+     </strong>
+     umbrales cumplidos y cobertura significativa.
+    </li>
+    <li>
+     <strong>
+      Documentación/entrega (10 pts):
+     </strong>
+     README con matriz de casos, ejemplos
+     <code>
+      curl
+     </code>
+     , scripts.
+    </li>
+    <li>
+     <strong>
+      Buenas prácticas (5 pts):
+     </strong>
+     linter/formatter, estructura limpia.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-preguntas-de-teoria-comunes-para-todos">
+    5) Preguntas de teoría (comunes para todos)
+   </h2>
+   <p>
+    Responda en un archivo
+    <code>
+     TEORIA.md
+    </code>
+    (máx. 1–2 párrafos por ítem, salvo que se pida código):
+   </p>
+   <ol>
+    <li>
+     Explique el ciclo
+     <strong>
+      Rojo → Verde → Refactor
+     </strong>
+     y por qué es importante el tamaño de los pasos.
+    </li>
+    <li>
+     Diferencie
+     <strong>
+      tests unitarios
+     </strong>
+     ,
+     <strong>
+      de integración
+     </strong>
+     y
+     <strong>
+      E2E
+     </strong>
+     en APIs.
+    </li>
+    <li>
+     ¿Qué es un
+     <strong>
+      doble de prueba
+     </strong>
+     ? Defina
+     <strong>
+      mock
+     </strong>
+     ,
+     <strong>
+      stub
+     </strong>
+     y
+     <strong>
+      spy
+     </strong>
+     y cuándo conviene cada uno.
+    </li>
+    <li>
+     ¿Por qué es útil separar
+     <code>
+      app
+     </code>
+     de
+     <code>
+      server
+     </code>
+     ? Muestre (en 8–10 líneas) un ejemplo mínimo con
+     <code>
+      makeApp()
+     </code>
+     y un test de integración con Supertest.
+    </li>
+    <li>
+     Zod: diferencia entre
+     <code>
+      parse
+     </code>
+     y
+     <code>
+      safeParse
+     </code>
+     . ¿Dónde usaría cada uno en una ruta Express y por qué?
+    </li>
+    <li>
+     Dé
+     <strong>
+      dos ejemplos
+     </strong>
+     de
+     <strong>
+      reglas de dominio
+     </strong>
+     que deben probarse con tests unitarios (no sólo validación de entrada).
+    </li>
+    <li>
+     ¿Qué
+     <strong>
+      malos olores
+     </strong>
+     suele haber en suites de tests? Dé 3 ejemplos (naming, duplicación, asserts débiles, mocks frágiles, etc.).
+    </li>
+    <li>
+     ¿Cómo trazará
+     <strong>
+      criterios de aceptación ↔ tests
+     </strong>
+     ? Incluya un mini ejemplo de tabla con 2 filas.
+    </li>
+    <li>
+     ¿Por qué no perseguir 100% de cobertura a toda costa? Mencione riesgos/limitaciones.
+    </li>
+    <li>
+     Defina y dé un ejemplo de
+     <strong>
+      helper
+     </strong>
+     /builder para tests.
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-miniproyectos-elegir-1-de-la-lista-todos-distintos">
+    6) Mini‑proyectos (elegir 1 de la lista, todos distintos)
+   </h2>
+   <blockquote>
+    <p>
+     Para cada proyecto implementar
+     <strong>
+      al menos
+     </strong>
+     : 3–5 endpoints, validaciones con Zod,
+     <strong>
+      tests unitarios
+     </strong>
+     de reglas de negocio y
+     <strong>
+      tests de integración
+     </strong>
+     del contrato HTTP (status/body/errores). Incluya ejemplos
+     <code>
+      curl
+     </code>
+     en README.
+    </p>
+   </blockquote>
+   <h3 id="p0-gestor-de-tareas">
+    P0. Gestor de Tareas
+   </h3>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Endpoints mínimos:
+      </strong>
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       POST /tasks
+      </code>
+      (crear),
+      <code>
+       GET /tasks?status
+      </code>
+      ,
+      <code>
+       PATCH /tasks/:id/complete
+      </code>
+      ,
+      <code>
+       DELETE /tasks/:id
+      </code>
+      .
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       Reglas de negocio:
+      </strong>
+     </p>
+    </li>
+    <li>
+     <p>
+      <code>
+       dueDate
+      </code>
+      no puede ser pasada; un
+      <strong>
+       título no puede repetirse
+      </strong>
+      si la tarea está
+      <strong>
+       pendiente
+      </strong>
+      ; cambiar
+      <code>
+       completedAt
+      </code>
+      sólo vía
+      <code>
+       complete
+      </code>
+      .
+     </p>
+    </li>
+    <li>
+     <strong>
+      Validaciones (Zod):
+     </strong>
+     <code>
+      status ∈ {"todo","doing","done"}
+     </code>
+     ,
+     <code>
+      title
+     </code>
+     min 3,
+     <code>
+      dueDate
+     </code>
+     ISO.
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     400 por datos inválidos; 404 si
+     <code>
+      :id
+     </code>
+     no existe; 409 si título duplicado (pendiente).
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     paginación y orden por dueDate.
+    </li>
+   </ul>
+   <h3 id="p1-agenda-de-contactos">
+    P1. Agenda de Contactos
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST/GET/PUT/DELETE /contacts
+     </code>
+     ,
+     <code>
+      GET /contacts?query=…
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     <code>
+      email
+     </code>
+     <strong>
+      único
+     </strong>
+     ;
+     <code>
+      phone
+     </code>
+     en formato E.164; búsqueda por
+     <code>
+      query
+     </code>
+     en nombre/email.
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      name
+     </code>
+     min 2,
+     <code>
+      email
+     </code>
+     válido,
+     <code>
+      phone
+     </code>
+     regex.
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     409 por email duplicado; 400 por query vacía si se usa.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     favoritos y
+     <code>
+      GET /contacts/favorites
+     </code>
+     .
+    </li>
+   </ul>
+   <h3 id="p2-pedidos-de-pizzeria">
+    P2. Pedidos de Pizzería
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /orders
+     </code>
+     ,
+     <code>
+      GET /orders/:id
+     </code>
+     ,
+     <code>
+      POST /orders/:id/cancel
+     </code>
+     ,
+     <code>
+      GET /orders?status
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     <code>
+      size ∈ {S,M,L}
+     </code>
+     , máx. 5 toppings;
+     <strong>
+      precio calculado
+     </strong>
+     (size + toppings); no se puede cancelar si
+     <code>
+      status = delivered
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     body con
+     <code>
+      items[]
+     </code>
+     no vacío;
+     <code>
+      address
+     </code>
+     min 10.
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     422 si
+     <code>
+      items
+     </code>
+     vacío; 409 si intenta cancelar entregado.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     estimación de entrega en minutos.
+    </li>
+   </ul>
+   <h3 id="p3-inventario-de-ferreteria">
+    P3. Inventario de Ferretería
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /items
+     </code>
+     ,
+     <code>
+      PATCH /items/:id/adjust
+     </code>
+     (±stock),
+     <code>
+      GET /items?lowStock
+     </code>
+     ,
+     <code>
+      GET /items/:id
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     <code>
+      SKU
+     </code>
+     único; el stock
+     <strong>
+      no puede quedar &lt; 0
+     </strong>
+     ; marcar
+     <code>
+      lowStock
+     </code>
+     si
+     <code>
+      stock ≤ threshold
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      name
+     </code>
+     min 2;
+     <code>
+      threshold ≥ 0
+     </code>
+     ;
+     <code>
+      delta
+     </code>
+     entero.
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     409 si
+     <code>
+      SKU
+     </code>
+     duplicado; 422 si ajuste deja stock negativo.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     histórico de ajustes.
+    </li>
+   </ul>
+   <h3 id="p4-turnos-medicos">
+    P4. Turnos Médicos
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /appointments
+     </code>
+     ,
+     <code>
+      GET /appointments?doctorId&amp;date
+     </code>
+     ,
+     <code>
+      DELETE /appointments/:id
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     turnos de 30′;
+     <strong>
+      no solapar
+     </strong>
+     turnos del mismo médico; no reservar en pasado.
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      doctorId
+     </code>
+     /
+     <code>
+      patientId
+     </code>
+     UUID;
+     <code>
+      dni
+     </code>
+     formato
+     <code>
+      \d{7,8}
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     409 por solapamiento; 422 por fecha pasada.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     <code>
+      POST /appointments/:id/reschedule
+     </code>
+     con mismas reglas.
+    </li>
+   </ul>
+   <h3 id="p5-reservas-de-cine-simplificado">
+    P5. Reservas de Cine (simplificado)
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /shows
+     </code>
+     ,
+     <code>
+      GET /shows/:id/seats
+     </code>
+     ,
+     <code>
+      POST /reservations
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     asiento debe estar
+     <strong>
+      disponible
+     </strong>
+     ; máx. 8 asientos por reserva.
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     sala con
+     <code>
+      rows
+     </code>
+     y
+     <code>
+      cols
+     </code>
+     (1–30);
+     <code>
+      seats[]
+     </code>
+     pares
+     <code>
+      {row,col}
+     </code>
+     válidos.
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     409 por seat ocupado; 422 por fuera de rango.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     cancelar reserva y liberar asientos.
+    </li>
+   </ul>
+   <h3 id="p6-gastos-compartidos">
+    P6. Gastos Compartidos
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /groups
+     </code>
+     ,
+     <code>
+      POST /expenses
+     </code>
+     ,
+     <code>
+      GET /groups/:id/balance
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     no repetir miembro;
+     <strong>
+      balances
+     </strong>
+     correctos por persona;
+     <code>
+      shares
+     </code>
+     suman 100% (o repartir equitativo si no se envían).
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      amount &gt; 0
+     </code>
+     ;
+     <code>
+      currency ∈ {ARS,USD,EUR}
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     400 si
+     <code>
+      shares
+     </code>
+     inconsistentes.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     exportar balance simplificado (quién paga a quién).
+    </li>
+   </ul>
+   <h3 id="p7-microblogging">
+    P7. Microblogging
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /posts
+     </code>
+     ,
+     <code>
+      GET /posts?authorId
+     </code>
+     ,
+     <code>
+      POST /posts/:id/like
+     </code>
+     ,
+     <code>
+      GET /feed
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     <code>
+      content
+     </code>
+     ≤ 280 chars;
+     <strong>
+      no likear tu propio post
+     </strong>
+     ; cada usuario likea una vez.
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      authorId
+     </code>
+     UUID;
+     <code>
+      content
+     </code>
+     min 1.
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     409 por like repetido o propio.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     <code>
+      GET /trending
+     </code>
+     por likes en ventana de tiempo.
+    </li>
+   </ul>
+   <h3 id="p8-mascotas-y-vacunas">
+    P8. Mascotas y Vacunas
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /pets
+     </code>
+     ,
+     <code>
+      GET /pets?owner
+     </code>
+     ,
+     <code>
+      POST /pets/:id/vaccines
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     calendario por especie (
+     <code>
+      dog/cat
+     </code>
+     );
+     <strong>
+      no booster antes
+     </strong>
+     de la base; microchip
+     <code>
+      ^[A-Z0-9]{10,15}$
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      species ∈ {dog,cat}
+     </code>
+     ; fechas ISO.
+    </li>
+    <li>
+     <strong>
+      Errores:
+     </strong>
+     409 si se viola orden de vacunas.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     <code>
+      GET /pets/:id/card
+     </code>
+     con últimas vacunas.
+    </li>
+   </ul>
+   <h3 id="p9-alquiler-de-herramientas">
+    P9. Alquiler de Herramientas
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /tools
+     </code>
+     ,
+     <code>
+      POST /rentals
+     </code>
+     ,
+     <code>
+      POST /rentals/:id/return
+     </code>
+     ,
+     <code>
+      GET /rentals?status
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     <strong>
+      no solapar
+     </strong>
+     alquiler del mismo ítem; depósito calculado; multa por atraso.
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     rango de fechas válido (
+     <code>
+      start &lt; end
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      Erroros:
+     </strong>
+     409 si solapa; 422 si rango inválido.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     reporte simple de ingresos por período.
+    </li>
+   </ul>
+   <h3 id="p10-cursos-e-inscripciones">
+    P10. Cursos e Inscripciones
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /courses
+     </code>
+     ,
+     <code>
+      POST /courses/:id/enroll
+     </code>
+     ,
+     <code>
+      GET /courses/:id
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     <strong>
+      cupo
+     </strong>
+     máximo; no inscribir dos veces al mismo alumno;
+     <strong>
+      cierre
+     </strong>
+     de inscripción por fecha límite.
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      capacity ≥ 1
+     </code>
+     ;
+     <code>
+      studentId
+     </code>
+     UUID.
+    </li>
+    <li>
+     <strong>
+      Erroros:
+     </strong>
+     409 por cupo completo o doble inscripción; 422 por fuera de fecha.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     <code>
+      GET /courses/:id/waitlist
+     </code>
+     con reglas claras.
+    </li>
+   </ul>
+   <h3 id="p11-tickets-de-soporte">
+    P11. Tickets de Soporte
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Endpoints:
+     </strong>
+     <code>
+      POST /tickets
+     </code>
+     ,
+     <code>
+      PATCH /tickets/:id/status
+     </code>
+     ,
+     <code>
+      GET /tickets?status&amp;priority
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Reglas:
+     </strong>
+     transiciones válidas (p.ej.,
+     <code>
+      open→in_progress→resolved→closed
+     </code>
+     ); no cerrar sin
+     <code>
+      resolution
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Validaciones:
+     </strong>
+     <code>
+      priority ∈ {low,medium,high}
+     </code>
+     ;
+     <code>
+      title
+     </code>
+     min 5.
+    </li>
+    <li>
+     <strong>
+      Erroros:
+     </strong>
+     409 por transición inválida; 422 por falta de
+     <code>
+      resolution
+     </code>
+     al cerrar.
+    </li>
+    <li>
+     <strong>
+      Extra:
+     </strong>
+     SLA simple por prioridad.
+    </li>
+   </ul>
+   <blockquote>
+    <p>
+     <strong>
+      Nota:
+     </strong>
+     todos los proyectos deben exponer al menos
+     <strong>
+      un caso de negocio
+     </strong>
+     que se pruebe con
+     <strong>
+      tests unitarios
+     </strong>
+     (servicio) y uno o más
+     <strong>
+      contratos HTTP
+     </strong>
+     que se prueben con
+     <strong>
+      Supertest
+     </strong>
+     (integración).
+    </p>
+   </blockquote>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-reglas-de-tdd-para-este-tp">
+    7) Reglas de TDD para este TP
+   </h2>
+   <ol>
+    <li>
+     Escribir primero el
+     <strong>
+      test
+     </strong>
+     del caso (unitario) →
+     <strong>
+      rojo
+     </strong>
+     .
+    </li>
+    <li>
+     Implementar
+     <strong>
+      lo mínimo
+     </strong>
+     en el servicio →
+     <strong>
+      verde
+     </strong>
+     .
+    </li>
+    <li>
+     Agregar test
+     <strong>
+      de integración
+     </strong>
+     del endpoint (status, body, errores) →
+     <strong>
+      rojo → verde
+     </strong>
+     .
+    </li>
+    <li>
+     <strong>
+      Refactor
+     </strong>
+     (nombres, helpers, duplicación) manteniendo tests en verde.
+    </li>
+    <li>
+     Repetir por cada historia (user story).
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-formato-de-entrega">
+    8) Formato de entrega
+   </h2>
+   <ul>
+    <li>
+     Link al
+     <strong>
+      repositorio
+     </strong>
+     y breve README con: scripts, instrucciones de ejecución, ejemplos
+     <code>
+      curl
+     </code>
+     y
+     <strong>
+      Matriz de casos
+     </strong>
+     .
+    </li>
+    <li>
+     Indicar si usan
+     <strong>
+      Jest
+     </strong>
+     o
+     <strong>
+      Vitest
+     </strong>
+     y cómo correr
+     <code>
+      coverage
+     </code>
+     .
+    </li>
+    <li>
+     Marcar en el README las
+     <strong>
+      user stories
+     </strong>
+     abordadas.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-plantillas-utiles">
+    9) Plantillas útiles
+   </h2>
+   <h3 id="91-scripts-npm-jest">
+    9.1 Scripts npm (Jest)
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jest --watchAll"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"coverage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jest --coverage"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="92-scripts-npm-vitest">
+    9.2 Scripts npm (Vitest)
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"coverage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run --coverage"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="93-matriz-de-casos-copiarpegar">
+    9.3 Matriz de casos (copiar/pegar)
+   </h3>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       ID
+      </th>
+      <th>
+       Caso / Descripción
+      </th>
+      <th>
+       Precondición
+      </th>
+      <th>
+       Input
+      </th>
+      <th>
+       Acción
+      </th>
+      <th>
+       Resultado esperado
+      </th>
+      <th>
+       Test
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       CA1
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       CA2
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       ERR1
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+      <td>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-reglas-administrativas">
+    10) Reglas administrativas
+   </h2>
+   <ul>
+    <li>
+     No subir secretos/credenciales.
+    </li>
+    <li>
+     Si usan datos persistentes, usar
+     <strong>
+      in‑memory
+     </strong>
+     o un stub/adapter para la DB (no se requiere DB real).
+    </li>
+    <li>
+     Cada integración con librerías externas debe aislarse para poder testear.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-sugerencias-para-avanzar">
+    11) Sugerencias para avanzar
+   </h2>
+   <ul>
+    <li>
+     Definir primero
+     <strong>
+      criterios de aceptación
+     </strong>
+     por user story.
+    </li>
+    <li>
+     Empezar por la
+     <strong>
+      regla de dominio
+     </strong>
+     más simple → test unitario.
+    </li>
+    <li>
+     Subir a la ruta con
+     <strong>
+      validación Zod
+     </strong>
+     y
+     <strong>
+      Supertest
+     </strong>
+     .
+    </li>
+    <li>
+     Mantener
+     <strong>
+      nombres
+     </strong>
+     y
+     <strong>
+      mensajes de error
+     </strong>
+     consistentes.
+    </li>
+    <li>
+     Usar
+     <strong>
+      helpers
+     </strong>
+     y
+     <strong>
+      builders
+     </strong>
+     de test para reducir duplicación.
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

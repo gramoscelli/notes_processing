@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   testing_a
+  </title>
+ </head>
+ <body>
+  <h1 id="guia-de-vitest-empezando-y-mockeando">
+   Guía de Vitest: Empezando y Mockeando
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#parte-1-introduccion-a-vitest-basado-en-betterstack">
+      Parte 1: Introducción a Vitest (Basado en Betterstack)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#parte-2-mocks-avanzados-con-vimock-basado-en-vitestdev">
+      Parte 2: Mocks Avanzados con vi.mock (Basado en Vitest.dev)
+     </a>
+    </li>
+   </ul>
+  </div>
+  <p>
+   Vitest es un framework de testing rápido y moderno, diseñado para proyectos JavaScript y TypeScript. Se integra perfectamente con Vite, aprovechando su velocidad y simplicidad. Esta guía cubre los fundamentos de Vitest y profundiza en una de sus características más potentes:
+   <code>
+    vi.mock
+   </code>
+   para la simulación de módulos.
+  </p>
+  <div class="chapter-container">
+   <h2 id="parte-1-introduccion-a-vitest-basado-en-betterstack">
+    <strong>
+     Parte 1: Introducción a Vitest (Basado en Betterstack)
+    </strong>
+   </h2>
+   <p>
+    Vitest fue creado para ser un reemplazo rápido y eficiente para Jest, especialmente en el ecosistema de Vite.
+   </p>
+   <p>
+    <strong>
+     1. ¿Por qué Vitest?
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Velocidad:
+     </strong>
+     Aprovecha el sistema de HMR (Hot Module Replacement) de Vite para tests increíblemente rápidos, recompilando solo los módulos afectados.
+    </li>
+    <li>
+     <strong>
+      Integración con Vite:
+     </strong>
+     Funciona "out-of-the-box" con tus proyectos Vite, utilizando la misma configuración de
+     <code>
+      vite.config.ts
+     </code>
+     (alias, plugins, etc.).
+    </li>
+    <li>
+     <strong>
+      Desarrollo Moderno:
+     </strong>
+     Soporte nativo para ES Modules, TypeScript, JSX/TSX.
+    </li>
+    <li>
+     <strong>
+      Experiencia de Desarrollador (DX):
+     </strong>
+     Ofrece funcionalidades como Watch Mode inteligente, cobertura de código integrada y API inspirada en Jest, lo que facilita la migración.
+    </li>
+    <li>
+     <strong>
+      Simplicidad:
+     </strong>
+     Configuración mínima necesaria para empezar.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     2. Instalación y Configuración Básica
+    </strong>
+   </p>
+   <p>
+    Para añadir Vitest a tu proyecto Vite:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>-D<span class="w"> </span>vitest
+<span class="c1"># o</span>
+yarn<span class="w"> </span>add<span class="w"> </span>-D<span class="w"> </span>vitest
+<span class="c1"># o</span>
+pnpm<span class="w"> </span>add<span class="w"> </span>-D<span class="w"> </span>vitest
+</pre>
+   </div>
+   <p>
+    <strong>
+     <code>
+      vite.config.ts
+     </code>
+     (Opcional pero recomendado para configuración global):
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// vite.config.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vite'</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="c1">// ... tus configuraciones de Vite ...</span>
+<span class="w">  </span><span class="nx">test</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">globals</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span><span class="w"> </span><span class="c1">// Habilita APIs globales como `describe`, `it`, `expect`</span>
+<span class="w">    </span><span class="nx">environment</span><span class="o">:</span><span class="w"> </span><span class="s1">'jsdom'</span><span class="p">,</span><span class="w"> </span><span class="c1">// Para tests de UI/DOM (React, Vue, etc.)</span>
+<span class="w">    </span><span class="nx">setupFiles</span><span class="o">:</span><span class="w"> </span><span class="s1">'./vitest.setup.ts'</span><span class="p">,</span><span class="w"> </span><span class="c1">// Archivo de configuración global para tests</span>
+<span class="w">    </span><span class="c1">// ... otras opciones de Vitest ...</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">})</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     3. Escribiendo tu Primer Test
+    </strong>
+   </p>
+   <p>
+    Crea un archivo de test (por ejemplo,
+    <code>
+     sum.test.ts
+    </code>
+    ):
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// sum.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">sum</span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// sum.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span><span class="w"> </span><span class="c1">// No necesario si globals: true</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">sum</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./sum'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'sum'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'should add two numbers'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">sum</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">3</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'should handle negative numbers'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">sum</span><span class="p">(</span><span class="o">-</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">4</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     4. Ejecutando Tests
+    </strong>
+   </p>
+   <p>
+    Añade un script a tu
+    <code>
+     package.json
+    </code>
+    :
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:ui"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest --ui"</span><span class="p">,</span><span class="w"> </span><span class="c1">// Para una interfaz gráfica de tests</span>
+<span class="w">    </span><span class="nt">"test:coverage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run --coverage"</span><span class="w"> </span><span class="c1">// Para generar reportes de cobertura</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Luego ejecuta
+    <code>
+     npm run test
+    </code>
+    (o
+    <code>
+     yarn test
+    </code>
+    ,
+    <code>
+     pnpm test
+    </code>
+    ).
+   </p>
+   <p>
+    <strong>
+     5. Características Clave de Vitest:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      API Familiar:
+     </strong>
+     <code>
+      describe
+     </code>
+     ,
+     <code>
+      it
+     </code>
+     (o
+     <code>
+      test
+     </code>
+     ),
+     <code>
+      expect
+     </code>
+     funcionan de manera muy similar a Jest.
+    </li>
+    <li>
+     <strong>
+      Matchers Extensivos:
+     </strong>
+     Amplia gama de matchers para
+     <code>
+      expect
+     </code>
+     (
+     <code>
+      toBe
+     </code>
+     ,
+     <code>
+      toEqual
+     </code>
+     ,
+     <code>
+      toHaveBeenCalledWith
+     </code>
+     , etc.).
+    </li>
+    <li>
+     <strong>
+      Simulaciones (Mocks):
+     </strong>
+     Funciones
+     <code>
+      vi.fn()
+     </code>
+     ,
+     <code>
+      vi.spyOn()
+     </code>
+     y
+     <code>
+      vi.mock()
+     </code>
+     para controlar el comportamiento de funciones y módulos.
+    </li>
+    <li>
+     <strong>
+      Modos de Ejecución:
+     </strong>
+     <ul>
+      <li>
+       <strong>
+        Watch Mode (por defecto):
+       </strong>
+       Ejecuta tests automáticamente al guardar cambios.
+      </li>
+      <li>
+       <strong>
+        Run Mode (
+        <code>
+         vitest run
+        </code>
+        ):
+       </strong>
+       Ejecuta todos los tests una vez y sale.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Cobertura de Código:
+     </strong>
+     Integración con librerías como
+     <code>
+      c8
+     </code>
+     o
+     <code>
+      istanbul
+     </code>
+     para reportes de cobertura.
+    </li>
+    <li>
+     <strong>
+      Entornos (Environments):
+     </strong>
+     <ul>
+      <li>
+       <code>
+        node
+       </code>
+       (por defecto): Para tests de lógica de backend.
+      </li>
+      <li>
+       <code>
+        jsdom
+       </code>
+       : Simula un entorno de navegador para tests de componentes de UI.
+      </li>
+      <li>
+       <code>
+        happy-dom
+       </code>
+       : Una alternativa más ligera a JSDOM.
+      </li>
+     </ul>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="parte-2-mocks-avanzados-con-vimock-basado-en-vitestdev">
+    <strong>
+     Parte 2: Mocks Avanzados con
+     <code>
+      vi.mock
+     </code>
+     (Basado en Vitest.dev)
+    </strong>
+   </h2>
+   <p>
+    <code>
+     vi.mock
+    </code>
+    es una función fundamental en Vitest para la gestión de
+    <strong>
+     módulos simulados (mocks)
+    </strong>
+    . Permite interceptar las dependencias de tus módulos y reemplazarlas por implementaciones falsas, crucial para aislar el código que estás probando y asegurar que tus tests sean predecibles y rápidos.
+   </p>
+   <p>
+    <strong>
+     1. Concepto y Sintaxis Básica:
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="nx">vi</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span><span class="w"> </span><span class="nx">factory</span><span class="p">)</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       path
+      </code>
+      (string):
+     </strong>
+     La ruta del módulo a simular. Puede ser una ruta relativa (
+     <code>
+      ./my-module
+     </code>
+     ), un alias de Vite (
+     <code>
+      @utils/api
+     </code>
+     ) o el nombre de un paquete
+     <code>
+      node_modules
+     </code>
+     (
+     <code>
+      axios
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      <code>
+       factory
+      </code>
+      (función):
+     </strong>
+     Una función que devuelve la implementación simulada del módulo. Esta función se ejecuta para proporcionar el valor del mock.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     2. Tipos de Mocks con
+     <code>
+      vi.mock
+     </code>
+     :
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Módulos Completamente Simulados (Full Mocks):
+     </strong>
+     <ul>
+      <li>
+       Reemplazan todo el módulo con una implementación personalizada, ignorando por completo la original.
+      </li>
+      <li>
+       <strong>
+        Uso:
+       </strong>
+       Cuando quieres controlar totalmente el comportamiento de un módulo externo o cuando el módulo original tiene efectos secundarios indeseados en los tests.
+      </li>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// service.ts (módulo a testear)</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">fetchData</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./api'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">getImportantData</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetchData</span><span class="p">(</span><span class="s1">'/data'</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// service.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="p">,</span><span class="w"> </span><span class="nx">vi</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">getImportantData</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./service'</span><span class="p">;</span>
+
+<span class="nx">vi</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="s1">'./api'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="c1">// Simula completamente el módulo './api'</span>
+<span class="w">    </span><span class="nx">fetchData</span><span class="o">:</span><span class="w"> </span><span class="kt">vi.fn</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="s1">'mocked data'</span><span class="p">)),</span>
+<span class="p">}));</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'getImportantData'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">it</span><span class="p">(</span><span class="s1">'should return mocked data'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">getImportantData</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="s1">'mocked data'</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">vi</span><span class="p">.</span><span class="nx">mocked</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="k">import</span><span class="p">(</span><span class="s1">'./api'</span><span class="p">)).</span><span class="nx">fetchData</span><span class="p">).</span><span class="nx">toHaveBeenCalledWith</span><span class="p">(</span><span class="s1">'/data'</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Módulos Parcialmente Simulados (Partial Mocks):
+     </strong>
+     <ul>
+      <li>
+       Permiten mantener el comportamiento original de la mayoría del módulo, simulando solo funciones o propiedades específicas.
+      </li>
+      <li>
+       Se usa
+       <code>
+        vi.importActual(path)
+       </code>
+       <strong>
+        dentro de la
+        <code>
+         factory
+        </code>
+       </strong>
+       para obtener la implementación real del módulo.
+      </li>
+      <li>
+       <strong>
+        Uso:
+       </strong>
+       Cuando un módulo tiene muchas exportaciones y solo unas pocas necesitan ser modificadas para el test, evitando reescribir todo el módulo.
+      </li>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// utils.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">subtract</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">multiply</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+
+<span class="c1">// some-component.ts (que usa utils.ts)</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">add</span><span class="p">,</span><span class="w"> </span><span class="nx">multiply</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./utils'</span><span class="p">;</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">calculate</span><span class="p">(</span><span class="nx">x</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">multiply</span><span class="p">(</span><span class="nx">add</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">),</span><span class="w"> </span><span class="mf">2</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// some-component.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="p">,</span><span class="w"> </span><span class="nx">vi</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">calculate</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./some-component'</span><span class="p">;</span>
+
+<span class="nx">vi</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="s1">'./utils'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">actual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">vi</span><span class="p">.</span><span class="nx">importActual</span><span class="p">(</span><span class="s1">'./utils'</span><span class="p">)</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="k">import</span><span class="p">(</span><span class="s1">'./utils'</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">...</span><span class="nx">actual</span><span class="p">,</span><span class="w"> </span><span class="c1">// Mantener add, subtract, etc. originales</span>
+<span class="w">    </span><span class="nx">multiply</span><span class="o">:</span><span class="w"> </span><span class="kt">vi.fn</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">10</span><span class="p">),</span><span class="w"> </span><span class="c1">// ¡Simular solo multiply!</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">});</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'calculate'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">it</span><span class="p">(</span><span class="s1">'should use the mocked multiply function'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// (1 + 2) * 2 * 10 = 60</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">calculate</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">60</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">vi</span><span class="p">.</span><span class="nx">mocked</span><span class="p">(</span><span class="k">import</span><span class="p">(</span><span class="s1">'./utils'</span><span class="p">)).</span><span class="nx">multiply</span><span class="p">).</span><span class="nx">toHaveBeenCalledWith</span><span class="p">(</span><span class="mf">3</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     3. Mocks de Clases:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Puedes simular clases para controlar el comportamiento de sus métodos o el valor de sus propiedades.
+    </li>
+    <li>
+     Es común devolver una clase simulada con métodos
+     <code>
+      vi.fn()
+     </code>
+     para poder espiar sus llamadas y definir sus retornos.
+    </li>
+    <li>
+     <strong>
+      Ejemplo:
+     </strong>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// MyLogger.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">MyLogger</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">error</span><span class="p">(</span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// app.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">MyLogger</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./MyLogger'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">MyLogger</span><span class="p">();</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">processData</span><span class="p">(</span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">logger</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Processing: </span><span class="si">${</span><span class="nx">data</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// app.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="p">,</span><span class="w"> </span><span class="nx">vi</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">processData</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./app'</span><span class="p">;</span>
+
+<span class="nx">vi</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="s1">'./MyLogger'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">class</span><span class="w"> </span><span class="nx">MockedLogger</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">vi</span><span class="p">.</span><span class="nx">fn</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">vi</span><span class="p">.</span><span class="nx">fn</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">MyLogger</span><span class="o">:</span><span class="w"> </span><span class="kt">MockedLogger</span><span class="w"> </span><span class="p">};</span>
+<span class="p">});</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'processData'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">it</span><span class="p">(</span><span class="s1">'should log the processing message and return uppercase data'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">MyLogger</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">vi</span><span class="p">.</span><span class="nx">mocked</span><span class="p">(</span><span class="k">import</span><span class="p">(</span><span class="s1">'./MyLogger'</span><span class="p">));</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">loggerInstance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">MyLogger</span><span class="p">();</span><span class="w"> </span><span class="c1">// Obtén la instancia simulada</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">processData</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="s1">'HELLO'</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">loggerInstance</span><span class="p">.</span><span class="nx">log</span><span class="p">).</span><span class="nx">toHaveBeenCalledWith</span><span class="p">(</span><span class="s1">'Processing: hello'</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">loggerInstance</span><span class="p">.</span><span class="nx">error</span><span class="p">).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toHaveBeenCalled</span><span class="p">();</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     4. Mocks Automáticos (
+     <code>
+      vi.mock
+     </code>
+     con solo
+     <code>
+      path
+     </code>
+     ):
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Si llamas a
+     <code>
+      vi.mock
+     </code>
+     solo con el
+     <code>
+      path
+     </code>
+     (sin la
+     <code>
+      factory
+     </code>
+     ), Vitest intentará simular automáticamente el módulo.
+    </li>
+    <li>
+     <strong>
+      Comportamiento:
+     </strong>
+     <ul>
+      <li>
+       Las funciones exportadas se reemplazan con
+       <code>
+        vi.fn()
+       </code>
+       vacíos.
+      </li>
+      <li>
+       Las primitivas (strings, numbers, booleans) y objetos/arrays complejos se mantienen tal cual (si son exportaciones con nombre).
+      </li>
+      <li>
+       Las exportaciones
+       <code>
+        default
+       </code>
+       se convierten en
+       <code>
+        vi.fn()
+       </code>
+       si son funciones.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Uso:
+     </strong>
+     Conveniente para módulos con muchas exportaciones que no te interesan y solo quieres asegurar que sus funciones no se ejecuten y sean espiables.
+    </li>
+    <li>
+     <strong>
+      Ejemplo:
+     </strong>
+     <code>
+      vi.mock('./some-utility-library');
+     </code>
+    </li>
+   </ul>
+   <p>
+    <strong>
+     5. La Elevación (Hoisting) de
+     <code>
+      vi.mock
+     </code>
+     :
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Todas las llamadas a
+     <code>
+      vi.mock
+     </code>
+     se "elevan" al principio del archivo de test. Esto significa que las simulaciones se configuran
+     <em>
+      antes
+     </em>
+     de que cualquier
+     <code>
+      import
+     </code>
+     en el test se resuelva.
+    </li>
+    <li>
+     <strong>
+      ¡Importante!
+     </strong>
+     La
+     <code>
+      factory
+     </code>
+     de
+     <code>
+      vi.mock
+     </code>
+     (la función que devuelve la implementación simulada)
+     <em>
+      no
+     </em>
+     se eleva. Solo el registro del mock. La
+     <code>
+      factory
+     </code>
+     se ejecutará cuando el módulo simulado sea importado por primera vez en el módulo bajo test.
+    </li>
+    <li>
+     <strong>
+      Restricción:
+     </strong>
+     No puedes definir
+     <code>
+      vi.mock
+     </code>
+     dentro de bloques
+     <code>
+      describe
+     </code>
+     o
+     <code>
+      test
+     </code>
+     , ya que su propósito es preparar el entorno de módulos antes de que los tests se ejecuten. Deben estar en el nivel superior de tu archivo de test.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     6.
+     <code>
+      vi.importActual
+     </code>
+     vs.
+     <code>
+      import
+     </code>
+     normal:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       vi.importActual(path)
+      </code>
+      :
+     </strong>
+     Se usa
+     <em>
+      exclusivamente dentro de la factoría de
+      <code>
+       vi.mock
+      </code>
+     </em>
+     para obtener la implementación real y no simulada del módulo. Es vital para los partial mocks.
+    </li>
+    <li>
+     <strong>
+      <code>
+       import path from '...'
+      </code>
+      (importación normal):
+     </strong>
+     Cuando importas un módulo en tu archivo de test o en el código que estás testeando, si ese módulo ha sido simulado con
+     <code>
+      vi.mock
+     </code>
+     , siempre obtendrás la versión
+     <em>
+      simulada
+     </em>
+     , no la original.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     7. Mocks Asíncronos (Async Factories):
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Si la
+     <code>
+      factory
+     </code>
+     de tu mock necesita realizar operaciones asíncronas (como importar otro módulo dinámicamente o esperar alguna configuración), puedes hacer que sea una función
+     <code>
+      async
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Ejemplo:
+     </strong>
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="nx">vi</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="s1">'./external-config'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">someAsyncOperationToGetConfig</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">getConfig</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">config</span><span class="p">,</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     8. Otras Funciones de Simulación:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       vi.fn()
+      </code>
+      :
+     </strong>
+     Crea una función mock simple que puedes espiar, definir su implementación o su valor de retorno.
+     <ul>
+      <li>
+       Ejemplo:
+       <code>
+        const myMockFn = vi.fn(() =&gt; 'hello');
+       </code>
+      </li>
+      <li>
+       Matchers:
+       <code>
+        toHaveBeenCalled()
+       </code>
+       ,
+       <code>
+        toHaveBeenCalledWith()
+       </code>
+       ,
+       <code>
+        toHaveReturned()
+       </code>
+       , etc.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      <code>
+       vi.spyOn(object, method)
+      </code>
+      :
+     </strong>
+     Crea un "espía" sobre un método existente de un objeto. Ejecuta el método original por defecto, pero te permite espiar sus llamadas y cambiar temporalmente su implementación.
+     <ul>
+      <li>
+       Ejemplo:
+       <code>
+        const spy = vi.spyOn(console, 'log');
+       </code>
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Control del Estado de Mocks:
+     </strong>
+     <ul>
+      <li>
+       <code>
+        vi.clearAllMocks()
+       </code>
+       : Borra todas las llamadas y estados de los mocks
+       <code>
+        vi.fn()
+       </code>
+       y
+       <code>
+        vi.spyOn()
+       </code>
+       .
+      </li>
+      <li>
+       <code>
+        vi.resetAllMocks()
+       </code>
+       : Resetea los mocks a su implementación inicial (antes de
+       <code>
+        mockImplementation
+       </code>
+       ).
+      </li>
+      <li>
+       <code>
+        vi.restoreAllMocks()
+       </code>
+       : Restaura los mocks
+       <code>
+        vi.spyOn()
+       </code>
+       a su implementación original.
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <p>
+    <strong>
+     9. Consideraciones Adicionales:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Cache de Módulos:
+     </strong>
+     Una vez que un módulo es simulado, Vitest lo almacena en caché. Es importante entender los métodos para limpiar o restablecer mocks si tus tests afectan el estado global.
+    </li>
+    <li>
+     <strong>
+      Testing de Efectos Secundarios:
+     </strong>
+     <code>
+      vi.mock
+     </code>
+     es la herramienta principal para probar funciones que tienen efectos secundarios (como llamadas a APIs, manipulación del DOM, logging) sin que realmente ocurran esos efectos durante los tests.
+    </li>
+    <li>
+     <strong>
+      <code>
+       vi.doNotMock()
+      </code>
+      :
+     </strong>
+     Permite evitar la simulación automática de un módulo que de otro modo sería simulado por un patrón de
+     <code>
+      vi.mock
+     </code>
+     más amplio.
+    </li>
+   </ul>
+   <hr/>
+   <p>
+    <strong>
+     Visualización del Flujo de
+     <code>
+      vi.mock
+     </code>
+     :
+    </strong>
+   </p>
+   <div class="mermaid">
+    #10graph TD#10    A[Archivo de Test]#10    B{Módulo X Importado por el código bajo test?}#10    C["vi.mock('./ModuloX', () =&gt; mockFactory)"]#10    D["ModuloX (real)"]#10    E["ModuloX (simulado)"]#10    F["Ejecuta mockFactory()"]#10    G[Retorna implementación simulada]#10#10    A --&gt; C#10    C --&gt;|Hoisted| B#10    B -- Sí --&gt; F#10    F --&gt; G#10    G --&gt; E#10    E --&gt;|Es lo que el código bajo test recibe| A#10    B -- No --&gt; D#10    D --&gt;|Es lo que el código bajo test recibe| A#10#10
+   </div>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    // Buscar todos los divs con clase 'mermaid'
+    var mermaidDivs = document.querySelectorAll('div.mermaid');
+    
+    mermaidDivs.forEach(function(div) {
+        // Obtener el contenido actual del div
+        var content = div.innerHTML;
+        
+        // Reemplazar #10 con saltos de línea reales
+        var restoredContent = content.replace(/#10/g, '\n');
+        
+        // Actualizar el contenido del div
+        div.innerHTML = restoredContent;
+    });
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,3132 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   apuntes_typescript_parte_n
+  </title>
+ </head>
+ <body>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#pruebas-en-typescript-vitest-y-pruebas-http">
+      Pruebas en TypeScript (Vitest) y pruebas HTTP
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-practica-con-npm">
+      2) Práctica con npm
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-minikatas-ejemplos-opcionales">
+      3) Mini–katas (ejemplos opcionales)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-comandos-utiles">
+      4) Comandos útiles
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-checklist-de-la-semana">
+      5) Checklist de la semana
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-entregables">
+      6) Entregables
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#automatizacion-de-calidad-husky-lint-staged-tipo-estricto">
+      Automatización de calidad: Husky + lint-staged + tipo estricto
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ruta-frontend-opcional-react-ts-con-vite">
+      Ruta Frontend (opcional): React + TS con Vite
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#ruta-backend-alternativa-api-tipada-y-documentacion">
+      Ruta Backend (alternativa): API tipada y documentación
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#capstone-y-entrega-final">
+      Capstone y entrega final
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="pruebas-en-typescript-vitest-y-pruebas-http">
+    Pruebas en TypeScript (Vitest) y pruebas HTTP
+   </h2>
+   <blockquote>
+    <p>
+     Objetivo: configurar un entorno de
+     <strong>
+      tests en TypeScript
+     </strong>
+     con
+     <strong>
+      Vitest
+     </strong>
+     , medir
+     <strong>
+      cobertura
+     </strong>
+     (V8), probar utilidades síncronas/asíncronas y realizar
+     <strong>
+      tests de integración
+     </strong>
+     de la mini API (Semana 6) usando
+     <code>
+      app.inject()
+     </code>
+     de Fastify.
+    </p>
+   </blockquote>
+   <hr/>
+   <h3 id="1-teoria-minima">
+    1) Teoría mínima
+   </h3>
+   <h4 id="11-la-estrategia-de-pruebas-la-piramide">
+    1.1 La Estrategia de Pruebas: La Pirámide
+   </h4>
+   <p>
+    No todas las pruebas son iguales. Una estrategia de testing robusta se visualiza comúnmente como una pirámide, donde cada nivel representa un tipo de prueba con un propósito, costo y velocidad diferentes. La idea es tener muchas pruebas rápidas y baratas en la base y muy pocas pruebas lentas y costosas en la cima.
+   </p>
+   <div class="svg-container">
+    <svg font-family="sans-serif" height="400" viewbox="0 0 500 400" width="500" xmlns="http://www.w3.org/2000/svg">
+     <!-- Capa Base: Pruebas Unitarias -->
+     <polygon fill="#a7f3d0" points="10,390 490,390 390,260 110,260" stroke="#10b981" stroke-width="2">
+     </polygon>
+     <text class="layer-text" x="250" y="310">
+      Pruebas Unitarias
+     </text>
+     <text class="desc-text" x="250" y="340">
+      Muchas, Rápidas, Aisladas
+     </text>
+     <!-- Capa Media: Pruebas de Integración -->
+     <polygon fill="#fde68a" points="110,260 390,260 320,130 180,130" stroke="#f59e0b" stroke-width="2">
+     </polygon>
+     <text class="layer-text" x="250" y="180">
+      Pruebas de Integración
+     </text>
+     <text class="desc-text" x="250" y="210">
+      Bastantes, Velocidad Media
+     </text>
+     <!-- Capa Superior: Pruebas E2E -->
+     <polygon fill="#fecaca" points="180,130 320,130 280,30 220,30" stroke="#ef4444" stroke-width="2">
+     </polygon>
+     <text class="layer-text" x="250" y="70">
+      Pruebas E2E
+     </text>
+     <text class="desc-text" x="250" y="100">
+      Pocas, Lentas, Costosas
+     </text>
+    </svg>
+   </div>
+   <h4 id="112-pruebas-unitarias-unit-tests-la-base-de-la-piramide">
+    1.1.2 Pruebas Unitarias (
+    <em>
+     Unit Tests
+    </em>
+    ): La Base de la Pirámide
+   </h4>
+   <p>
+    <strong>
+     Analogía:
+    </strong>
+    Probar un solo ladrillo de LEGO para asegurar que tiene el color y la forma correctos antes de construir nada.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Propósito:
+     </strong>
+     Verificar que la
+     <strong>
+      unidad más pequeña y aislada
+     </strong>
+     de código funciona como se espera. Una "unidad" suele ser una función, un método de una clase o un componente de UI en completo aislamiento.
+    </li>
+    <li>
+     <strong>
+      Características:
+     </strong>
+     <ul>
+      <li>
+       <strong>
+        Aisladas:
+       </strong>
+       No dependen de otras partes del sistema como bases de datos, redes o el DOM. Las dependencias externas se "simulan" (
+       <em>
+        mocking
+       </em>
+       ).
+      </li>
+      <li>
+       <strong>
+        Rápidas:
+       </strong>
+       Se ejecutan en milisegundos. Puedes tener miles de ellas y ejecutarlas en segundos.
+      </li>
+      <li>
+       <strong>
+        Abundantes:
+       </strong>
+       Forman la gran mayoría de tus pruebas.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Ejemplo práctico:
+     </strong>
+     <ul>
+      <li>
+       Probar que una función
+       <code>
+        sumar(2, 3)
+       </code>
+       devuelve
+       <code>
+        5
+       </code>
+       .
+      </li>
+      <li>
+       Probar que una función
+       <code>
+        validarEmail("texto@dominio.com")
+       </code>
+       devuelve
+       <code>
+        true
+       </code>
+       .
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <h4 id="113-pruebas-de-integracion-integration-tests-el-nivel-intermedio">
+    1.1.3 Pruebas de Integración (
+    <em>
+     Integration Tests
+    </em>
+    ): El Nivel Intermedio
+   </h4>
+   <p>
+    <strong>
+     Analogía:
+    </strong>
+    Probar que dos o tres ladrillos de LEGO encajan correctamente entre sí.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Propósito:
+     </strong>
+     Verificar que
+     <strong>
+      varios componentes (unidades) interactúan correctamente
+     </strong>
+     cuando se combinan. El objetivo es encontrar errores en las "costuras" o interfaces entre los módulos.
+    </li>
+    <li>
+     <strong>
+      Características:
+     </strong>
+     <ul>
+      <li>
+       <strong>
+        Combinadas:
+       </strong>
+       Prueban un flujo corto que involucra a varios módulos.
+      </li>
+      <li>
+       <strong>
+        Más lentas:
+       </strong>
+       Tardan más que las pruebas unitarias porque involucran más código y, a veces, sistemas reales (como una base de datos en memoria).
+      </li>
+      <li>
+       <strong>
+        Menos numerosas:
+       </strong>
+       Tienes menos pruebas de integración que unitarias.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Ejemplo práctico:
+     </strong>
+     <ul>
+      <li>
+       Probar que al llamar a la ruta de una API (
+       <code>
+        /api/usuarios
+       </code>
+       ), el controlador interactúa correctamente con el servicio de validación y este con un repositorio (usando una base de datos en memoria o de prueba) para devolver la lista de usuarios.
+      </li>
+      <li>
+       Probar que al hacer clic en un botón "Añadir al Carrito" en un componente, el estado global de la aplicación se actualiza correctamente.
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <h4 id="114-pruebas-de-extremo-a-extremo-end-to-end-o-e2e-la-cima-de-la-piramide">
+    1.1.4 Pruebas de Extremo a Extremo (
+    <em>
+     End-to-End
+    </em>
+    o E2E): La Cima de la Pirámide
+   </h4>
+   <p>
+    <strong>
+     Analogía:
+    </strong>
+    Construir el castillo de LEGO completo y asegurarse de que se parece a la imagen de la caja.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Propósito:
+     </strong>
+     Verificar un
+     <strong>
+      flujo de usuario completo
+     </strong>
+     a través de la aplicación, simulando el comportamiento de un usuario real. Es la prueba definitiva de que el sistema funciona como un todo.
+    </li>
+    <li>
+     <strong>
+      Características:
+     </strong>
+     <ul>
+      <li>
+       <strong>
+        Completas:
+       </strong>
+       Involucran toda la pila tecnológica: el frontend en un navegador real, el backend, la base de datos, servicios externos, etc.
+      </li>
+      <li>
+       <strong>
+        Lentas y costosas:
+       </strong>
+       Son las más lentas de ejecutar (pueden tardar segundos o minutos por prueba) y las más frágiles (pueden fallar por problemas de red o cambios menores en la UI).
+      </li>
+      <li>
+       <strong>
+        Escasas:
+       </strong>
+       Debes tener solo unas pocas pruebas E2E que cubran los flujos más críticos de tu aplicación (ej. registro, inicio de sesión, proceso de compra).
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Ejemplo práctico:
+     </strong>
+     <ul>
+      <li>
+       Automatizar un navegador (con herramientas como Cypress o Playwright) para que:
+       <ol>
+        <li>
+         Abra la página de inicio de sesión.
+        </li>
+        <li>
+         Rellene el formulario con un usuario y contraseña.
+        </li>
+        <li>
+         Haga clic en "Iniciar sesión".
+        </li>
+        <li>
+         Verifique que es redirigido al panel de control y que su nombre de usuario aparece en la pantalla.
+        </li>
+       </ol>
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <hr/>
+   <h3 id="12-por-que-elegir-vitest">
+    1.2 ¿Por Qué Elegir Vitest?
+   </h3>
+   <p>
+    Vitest se ha posicionado como el framework de testing de nueva generación para el ecosistema de Vite (y más allá), ofreciendo una experiencia de desarrollo superior por varias razones clave. No es solo una alternativa a Jest, sino una mejora fundamental en velocidad y simplicidad.
+   </p>
+   <h4 id="121-api-familiar-y-compatible-con-jest">
+    1.2.1 API Familiar y Compatible con Jest
+   </h4>
+   <p>
+    Para cualquiera que venga del ecosistema de Jest, la transición a Vitest es increíblemente fluida. Vitest adopta la misma API que ha sido el estándar durante años, por lo que no necesitas reaprender a escribir pruebas.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Sintaxis Conocida:
+     </strong>
+     Utiliza las mismas funciones globales que ya conoces y aprecias:
+     <code>
+      describe()
+     </code>
+     para agrupar pruebas,
+     <code>
+      it()
+     </code>
+     (o
+     <code>
+      test()
+     </code>
+     ) para definir un caso de prueba individual, y
+     <code>
+      expect()
+     </code>
+     para las aserciones.
+    </li>
+    <li>
+     <strong>
+      Funcionalidades Avanzadas:
+     </strong>
+     Incluye soporte completo para herramientas esenciales como
+     <em>
+      spies
+     </em>
+     y
+     <em>
+      mocks
+     </em>
+     (para simular dependencias), haciendo que la migración de una base de código existente sea un proceso de copiar y pegar en la mayoría de los casos.
+    </li>
+   </ul>
+   <h4 id="122-rendimiento-superior-y-soporte-nativo-para-typescript">
+    1.2.2 Rendimiento Superior y Soporte Nativo para TypeScript
+   </h4>
+   <p>
+    Esta es la ventaja más significativa de Vitest. Aprovecha la arquitectura de Vite para ofrecer una velocidad y una experiencia de desarrollo que las herramientas tradicionales no pueden igualar.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Ejecución Nativa:
+     </strong>
+     A diferencia de Jest, que requiere configuraciones complejas con
+     <code>
+      ts-jest
+     </code>
+     o Babel para transpilar tu código antes de ejecutarlo, Vitest procesa tus archivos de TypeScript y JSX
+     <strong>
+      al instante y de forma nativa
+     </strong>
+     .
+    </li>
+    <li>
+     <strong>
+      Velocidad Extrema:
+     </strong>
+     Utiliza el poder de
+     <strong>
+      esbuild
+     </strong>
+     (a través de Vite) para la transformación de código, que es órdenes de magnitud más rápido que el transpilador de JavaScript tradicional. El resultado es un arranque casi instantáneo y una re-ejecución de pruebas ultrarrápida en
+     <em>
+      watch mode
+     </em>
+     .
+    </li>
+   </ul>
+   <h4 id="123-ecosistema-moderno-y-completo">
+    1.2.3 Ecosistema Moderno y Completo
+   </h4>
+   <p>
+    Vitest no sacrifica funcionalidades por velocidad. Viene con todas las herramientas que esperarías de un framework de testing moderno, listas para usar.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Cobertura de Código Integrada:
+     </strong>
+     Utiliza las capacidades nativas de V8 para generar reportes de cobertura, lo que lo hace mucho más rápido que las soluciones basadas en instrumentación de Babel (como Istanbul).
+    </li>
+    <li>
+     <strong>
+      Watch Mode Inteligente:
+     </strong>
+     Su modo de observación es increíblemente rápido, ya que se integra con el grafo de módulos de Vite para saber exactamente qué pruebas necesita volver a ejecutar cuando un archivo cambia.
+    </li>
+    <li>
+     <strong>
+      Funcionalidades Estándar:
+     </strong>
+     Ofrece soporte completo para
+     <em>
+      Snapshot Testing
+     </em>
+     ,
+     <em>
+      Fake Timers
+     </em>
+     (para controlar
+     <code>
+      setTimeout
+     </code>
+     ,
+     <code>
+      setInterval
+     </code>
+     , etc.), y mucho más, asegurando que no pierdas ninguna herramienta al migrar desde Jest.
+    </li>
+   </ul>
+   <p>
+    En resumen, Vitest combina una API familiar y potente con un rendimiento de última generación, eliminando la complejidad de configuración y permitiéndote enfocarte en lo que realmente importa: escribir buenas pruebas.
+   </p>
+   <h3 id="13-tests-type-aware">
+    1.3 Tests “type-aware”
+   </h3>
+   <h4 id="aprovechando-el-compilador-pruebas-de-tipos-type-aware-testing">
+    Aprovechando el Compilador: Pruebas de Tipos (Type-Aware Testing)
+   </h4>
+   <p>
+    Antes de escribir una sola prueba en Vitest, ya tienes la herramienta de testing más fundamental y de más alto rendimiento a tu disposición:
+    <strong>
+     el propio compilador de TypeScript
+    </strong>
+    . Las "pruebas de tipos" no son pruebas en el sentido tradicional; son la garantía de que tu código se adhiere a los contratos que has definido, eliminando una categoría entera de errores antes de que el programa se ejecute.
+   </p>
+   <h4 id="los-dos-mundos-del-testing-compilacion-vs-ejecucion">
+    Los Dos Mundos del Testing: Compilación vs. Ejecución
+   </h4>
+   <p>
+    Es crucial no confundir estos dos tipos de validación. Son dos capas de seguridad complementarias, no excluyentes.
+   </p>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       1. Mundo de Tipos (Compile-Time): El Plano Arquitectónico
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        Herramienta:
+       </strong>
+       El compilador de TypeScript (
+       <code>
+        tsc
+       </code>
+       ).
+      </li>
+      <li>
+       <strong>
+        ¿Qué verifica?:
+       </strong>
+       La
+       <strong>
+        corrección estructural
+       </strong>
+       de tu código. ¿Estás pasando un
+       <code>
+        string
+       </code>
+       a una función que espera un
+       <code>
+        number
+       </code>
+       ? ¿Estás accediendo a una propiedad que no existe? ¿Has olvidado un
+       <code>
+        case
+       </code>
+       en un
+       <code>
+        switch
+       </code>
+       exhaustivo?
+      </li>
+      <li>
+       <strong>
+        ¿Cuándo ocurre?:
+       </strong>
+       Antes de que se genere el JavaScript, durante el desarrollo o en un paso de CI. El código nunca llega a ejecutarse si hay un error de tipo.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <p>
+      <strong>
+       2. Mundo de Ejecución (Runtime): El Edificio en Funcionamiento
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <strong>
+        Herramienta:
+       </strong>
+       Un framework de testing como Vitest o Jest.
+      </li>
+      <li>
+       <strong>
+        ¿Qué verifica?:
+       </strong>
+       El
+       <strong>
+        comportamiento lógico
+       </strong>
+       de tu código. Si llamas a
+       <code>
+        sumar(2, 2)
+       </code>
+       , ¿devuelve
+       <code>
+        4
+       </code>
+       o devuelve
+       <code>
+        5
+       </code>
+       ? ¿Al hacer clic en un botón, se actualiza el estado correctamente?
+      </li>
+      <li>
+       <strong>
+        ¿Cuándo ocurre?:
+       </strong>
+       Después de que el código ha sido compilado a JavaScript y se está ejecutando en un entorno (como Node.js).
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <h4 id="la-practica-tsc-noemit-en-integracion-continua-ci">
+    La Práctica:
+    <code>
+     tsc --noEmit
+    </code>
+    en Integración Continua (CI)
+   </h4>
+   <p>
+    La forma estándar de ejecutar tus "pruebas de tipos" es con este comando:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>tsc<span class="w"> </span>--noEmit
+</pre>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       tsc
+      </code>
+     </strong>
+     : Invoca al compilador de TypeScript.
+    </li>
+    <li>
+     <strong>
+      <code>
+       --noEmit
+      </code>
+     </strong>
+     : Le dice al compilador: "Analiza todo el proyecto y busca errores de tipo, pero
+     <strong>
+      no generes ningún archivo JavaScript
+     </strong>
+     ".
+    </li>
+   </ul>
+   <p>
+    Este comando es increíblemente rápido y es la primera barrera de calidad que deberías poner en tu pipeline de CI. Si
+    <code>
+     tsc --noEmit
+    </code>
+    falla, significa que hay un error de tipo, y no tiene sentido gastar tiempo y recursos en ejecutar las pruebas de Vitest, que son más lentas.
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th style="text-align: left;">
+       Característica
+      </th>
+      <th style="text-align: left;">
+       Pruebas de Tipos (Compile-time)
+      </th>
+      <th style="text-align: left;">
+       Pruebas de Ejecución (Runtime)
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Herramienta
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       <code>
+        tsc
+       </code>
+      </td>
+      <td style="text-align: left;">
+       <code>
+        Vitest
+       </code>
+       ,
+       <code>
+        Jest
+       </code>
+       , etc.
+      </td>
+     </tr>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Propósito
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Validar la corrección estructural y de tipos.
+      </td>
+      <td style="text-align: left;">
+       Validar la lógica y el comportamiento del código.
+      </td>
+     </tr>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Ejemplo de error
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       <code>
+        const x: number = "hola";
+       </code>
+      </td>
+      <td style="text-align: left;">
+       <code>
+        function sumar(a, b) { return a - b; }
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Cuándo se ejecuta
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Antes de la ejecución.
+      </td>
+      <td style="text-align: left;">
+       Durante la ejecución del código.
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    <strong>
+     En resumen:
+    </strong>
+    Piensa en
+    <code>
+     tsc --noEmit
+    </code>
+    como la prueba unitaria más rápida y barata que puedes ejecutar. Si pasa, ganas confianza en que tu código es estructuralmente sólido, y entonces puedes pasar a Vitest para verificar que también se comporta como esperas.
+   </p>
+   <h3 id="14-dobles-de-prueba-controlando-el-entorno-de-tus-tests">
+    1.4 Dobles de Prueba: Controlando el Entorno de Tus Tests
+   </h3>
+   <p>
+    En el testing, a menudo necesitamos que nuestro código interactúe con otras partes del sistema (dependencias). Sin embargo, para que una prueba sea rápida, predecible y aislada, no queremos depender de una base de datos real, una API externa o incluso de un módulo complejo.
+   </p>
+   <p>
+    Aquí es donde entran los
+    <strong>
+     Dobles de Prueba
+    </strong>
+    (
+    <em>
+     Test Doubles
+    </em>
+    ). Son objetos o funciones "impostoras" que se hacen pasar por las dependencias reales, dándonos control total sobre el entorno de la prueba. Piensa en ellos como los dobles de acción en una película: parecen reales y hacen el trabajo necesario para la escena, pero sin el riesgo del actor principal.
+   </p>
+   <p>
+    Vitest ofrece varias herramientas para crear estos dobles:
+   </p>
+   <h5 id="141-spies-el-observador">
+    1.4.1 Spies: El Observador
+   </h5>
+   <p>
+    <strong>
+     Analogía:
+    </strong>
+    Un espía o un informante que observa y toma notas de lo que sucede, pero
+    <strong>
+     sin interferir
+    </strong>
+    con la operación original.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      ¿Para qué sirven?
+     </strong>
+     Para verificar
+     <strong>
+      interacciones
+     </strong>
+     . Quieres saber
+     <em>
+      si
+     </em>
+     una función fue llamada,
+     <em>
+      cuántas veces
+     </em>
+     fue llamada y
+     <em>
+      con qué argumentos
+     </em>
+     fue llamada, pero dejando que la función original se ejecute normalmente.
+    </li>
+    <li>
+     <strong>
+      En Vitest:
+     </strong>
+     Se crean con
+     <code>
+      vi.fn()
+     </code>
+     (para una función genérica) o
+     <code>
+      vi.spyOn(objeto, 'metodo')
+     </code>
+     para "envolver" un método existente.
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Ejemplo: ¿Se está llamando correctamente al sistema de logging?</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">log</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span><span class="w"> </span><span class="c1">// Comportamiento original</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s1">'debería llamar al logger con el mensaje correcto'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 1. Creamos un espía que envuelve el método `log`</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">logSpy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">vi</span><span class="p">.</span><span class="nx">spyOn</span><span class="p">(</span><span class="nx">logger</span><span class="p">,</span><span class="w"> </span><span class="s1">'log'</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 2. Ejecutamos el código que queremos probar</span>
+<span class="w">  </span><span class="kd">function</span><span class="w"> </span><span class="nx">registrarUsuario</span><span class="p">(</span><span class="nx">nombre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">logger</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Usuario </span><span class="si">${</span><span class="nx">nombre</span><span class="si">}</span><span class="sb"> registrado.`</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">registrarUsuario</span><span class="p">(</span><span class="s1">'Ana'</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 3. Verificamos la interacción con el espía</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">logSpy</span><span class="p">).</span><span class="nx">toHaveBeenCalledTimes</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">logSpy</span><span class="p">).</span><span class="nx">toHaveBeenCalledWith</span><span class="p">(</span><span class="s1">'Usuario Ana registrado.'</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h5 id="142-mocks-el-reemplazo">
+    1.4.2 Mocks: El Reemplazo
+   </h5>
+   <p>
+    <strong>
+     Analogía:
+    </strong>
+    Un actor impostor que reemplaza completamente al actor real. Tú le das el guion y él dirá exactamente lo que le pidas.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      ¿Para qué sirven?
+     </strong>
+     Para
+     <strong>
+      aislar
+     </strong>
+     el código que estás probando de sus dependencias. Reemplazas un módulo o función completo con una versión controlada que devuelve los datos que tú quieras, evitando llamadas a APIs, bases de datos, etc.
+    </li>
+    <li>
+     <strong>
+      En Vitest:
+     </strong>
+     Se usa
+     <code>
+      vi.mock('ruta/al/modulo')
+     </code>
+     para reemplazar un módulo entero.
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Módulo a mockear (ej: api.ts)</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchUsuario</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// En la vida real, esto haría una llamada de red...</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="sb">`https://api.ejemplo.com/users/</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">res</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="c1">// Archivo de prueba (ej: servicio.test.ts)</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">fetchUsuario</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./api'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">obtenerNombreDeUsuario</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./servicio'</span><span class="p">;</span>
+
+<span class="c1">// 1. Reemplazamos el módulo './api' completo ANTES de que se ejecuten las pruebas</span>
+<span class="nx">vi</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="s1">'./api'</span><span class="p">);</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s1">'debería obtener el nombre del usuario desde la API mockeada'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 2. Damos un comportamiento a la función mockeada para esta prueba</span>
+<span class="w">  </span><span class="nx">vi</span><span class="p">.</span><span class="nx">mocked</span><span class="p">(</span><span class="nx">fetchUsuario</span><span class="p">).</span><span class="nx">mockResolvedValue</span><span class="p">({</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="p">,</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">'Juan'</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// 3. Ejecutamos nuestra lógica, que internamente llama a `fetchUsuario`</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">obtenerNombreDeUsuario</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// 4. Verificamos que nuestro servicio procesó la respuesta del mock</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">nombre</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="s1">'Juan'</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h5 id="143-fake-timers-el-controlador-del-tiempo">
+    1.4.3 Fake Timers: El Controlador del Tiempo
+   </h5>
+   <p>
+    <strong>
+     Analogía:
+    </strong>
+    Un control remoto para una máquina del tiempo. Puedes pausar, adelantar o retroceder el tiempo a tu antojo.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      ¿Para qué sirven?
+     </strong>
+     Para probar código que depende del paso del tiempo (como
+     <code>
+      setTimeout
+     </code>
+     ,
+     <code>
+      setInterval
+     </code>
+     o
+     <code>
+      Date
+     </code>
+     ) de forma
+     <strong>
+      instantánea y predecible
+     </strong>
+     , sin tener que esperar realmente.
+    </li>
+    <li>
+     <strong>
+      En Vitest:
+     </strong>
+     Se activan con
+     <code>
+      vi.useFakeTimers()
+     </code>
+     y se controlan con funciones como
+     <code>
+      vi.advanceTimeByTime()
+     </code>
+     .
+    </li>
+   </ul>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería ejecutar el callback después de 5 segundos'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 1. Activamos los temporizadores falsos</span>
+<span class="w">  </span><span class="nx">vi</span><span class="p">.</span><span class="nx">useFakeTimers</span><span class="p">();</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">vi</span><span class="p">.</span><span class="nx">fn</span><span class="p">();</span><span class="w"> </span><span class="c1">// Un spy para verificar si se llama</span>
+
+<span class="w">  </span><span class="c1">// 2. Ejecutamos el código que usa un temporizador</span>
+<span class="w">  </span><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span><span class="w"> </span><span class="mf">5000</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 3. En lugar de esperar, "adelantamos el reloj"</span>
+<span class="w">  </span><span class="nx">vi</span><span class="p">.</span><span class="nx">advanceTimeByTime</span><span class="p">(</span><span class="mf">5000</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 4. Verificamos que el callback fue llamado</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">callback</span><span class="p">).</span><span class="nx">toHaveBeenCalledTimes</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// Limpieza (buena práctica)</span>
+<span class="w">  </span><span class="nx">vi</span><span class="p">.</span><span class="nx">useRealTimers</span><span class="p">();</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="15-cobertura-de-codigo-el-mapa-de-tus-pruebas">
+    1.5 Cobertura de Código: El Mapa de Tus Pruebas
+   </h3>
+   <p>
+    La cobertura de código (
+    <em>
+     code coverage
+    </em>
+    ) es una métrica que te indica qué porcentaje de tu código fuente ha sido ejecutado mientras corrían tus pruebas.
+   </p>
+   <p>
+    Piensa en ella no como una medida de la
+    <em>
+     calidad
+    </em>
+    de tus pruebas, sino como un
+    <strong>
+     mapa de las zonas que no has probado
+    </strong>
+    . La pregunta que responde no es "¿mi código funciona?", sino "
+    <strong>
+     ¿qué partes de mi código he probado y cuáles he ignorado?
+    </strong>
+    ".
+   </p>
+   <h4 id="que-mide-exactamente">
+    ¿Qué Mide Exactamente?
+   </h4>
+   <p>
+    Las herramientas de cobertura, como la que viene integrada en Vitest, suelen reportar varias métricas:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th style="text-align: left;">
+       Métrica
+      </th>
+      <th style="text-align: left;">
+       Descripción
+      </th>
+      <th style="text-align: left;">
+       Ejemplo de Falla
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Líneas
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Porcentaje de líneas de código ejecutables que fueron ejecutadas.
+      </td>
+      <td style="text-align: left;">
+       Una línea dentro de un
+       <code>
+        if
+       </code>
+       que nunca se cumplió.
+      </td>
+     </tr>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Funciones
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Porcentaje de funciones que fueron llamadas al menos una vez.
+      </td>
+      <td style="text-align: left;">
+       Una función de utilidad que ninguna prueba invocó.
+      </td>
+     </tr>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Ramas
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Porcentaje de "caminos" lógicos que se tomaron.
+      </td>
+      <td style="text-align: left;">
+       Probar solo el
+       <code>
+        if
+       </code>
+       de una condición, pero nunca el
+       <code>
+        else
+       </code>
+       .
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    La métrica de
+    <strong>
+     ramas
+    </strong>
+    es a menudo la más reveladora. Puedes tener un 100% de cobertura de líneas en una función, pero si solo probaste un camino de una bifurcación
+    <code>
+     if/else
+    </code>
+    compleja, tu cobertura de ramas será baja, indicando que hay escenarios lógicos que no has verificado.
+   </p>
+   <h4 id="estableciendo-umbrales-thresholds-la-red-de-seguridad">
+    Estableciendo Umbrales (
+    <code>
+     Thresholds
+    </code>
+    ): La Red de Seguridad
+   </h4>
+   <p>
+    Una práctica común en la Integración Continua (CI) es establecer
+    <strong>
+     umbrales de cobertura
+    </strong>
+    . Esto significa que si el porcentaje de cobertura de tu código cae por debajo de un cierto número, el pipeline de CI fallará, impidiendo que se integre código que no ha sido mínimamente probado.
+   </p>
+   <p>
+    <strong>
+     El Peligro de Perseguir el 100%
+    </strong>
+   </p>
+   <p>
+    Es tentador establecer umbrales muy altos (90%-100%), pero esto a menudo es contraproducente. Perseguir un número puede llevar a los equipos a escribir pruebas de baja calidad que simplemente "tocan" el código para aumentar la métrica, pero no verifican su comportamiento de forma significativa.
+   </p>
+   <p>
+    Esto se conoce como la
+    <strong>
+     Ley de Goodhart
+    </strong>
+    : "Cuando una medida se convierte en un objetivo, deja de ser una buena medida".
+   </p>
+   <p>
+    <strong>
+     La Estrategia Razonable:
+    </strong>
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Establece un umbral base y razonable:
+     </strong>
+     Un punto de partida común es establecer un umbral de líneas entre el
+     <strong>
+      60% y el 80%
+     </strong>
+     . Esto actúa como una red de seguridad para evitar que se añadan grandes cantidades de código sin probar.
+    </li>
+    <li>
+     <strong>
+      Enfócate en la Calidad, no en la Cantidad:
+     </strong>
+     Usa el reporte de cobertura no para celebrar un número alto, sino para
+     <strong>
+      identificar las partes críticas de tu aplicación que tienen baja cobertura
+     </strong>
+     .
+    </li>
+    <li>
+     <strong>
+      Prioriza:
+     </strong>
+     ¿El módulo de pagos tiene un 40% de cobertura? ¡Es una señal de alerta! ¿Un script de utilidad simple tiene un 70%? Quizás no sea tan urgente.
+    </li>
+   </ol>
+   <blockquote>
+    <p>
+     <strong>
+      Regla Mental:
+     </strong>
+     La cobertura del 0% es una señal de alarma. La cobertura del 100% no garantiza nada. Utiliza la métrica para encontrar puntos ciegos en tus pruebas y aumentar tu
+     <strong>
+      confianza
+     </strong>
+     en el código, no para perseguir un porcentaje.
+    </p>
+   </blockquote>
+   <h3 id="16-ejemplo-practico-generando-un-reporte-de-cobertura-con-vitest">
+    1.6 Ejemplo Práctico: Generando un Reporte de Cobertura con Vitest
+   </h3>
+   <p>
+    Vamos a ver cómo funciona la cobertura en la práctica. Crearemos un módulo simple con una lógica condicional, escribiremos pruebas que
+    <strong>
+     intencionadamente no cubren todos los casos
+    </strong>
+    , generaremos el reporte, lo analizaremos y finalmente arreglaremos nuestras pruebas para alcanzar el 100% de cobertura.
+   </p>
+   <h4 id="paso-1-configurar-vitest-para-la-cobertura">
+    Paso 1: Configurar Vitest para la Cobertura
+   </h4>
+   <p>
+    Primero, necesitamos decirle a Vitest que queremos recolectar datos de cobertura.
+   </p>
+   <p>
+    <strong>
+     En tu archivo
+     <code>
+      vitest.config.ts
+     </code>
+     (o
+     <code>
+      vite.config.ts
+     </code>
+     ), añade la sección
+     <code>
+      test.coverage
+     </code>
+     :
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// vitest.config.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest/config'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">test</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...otras configuraciones de test...</span>
+<span class="w">    </span><span class="nx">coverage</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// El proveedor de cobertura. 'v8' es rápido y nativo.</span>
+<span class="w">      </span><span class="nx">provider</span><span class="o">:</span><span class="w"> </span><span class="s1">'v8'</span><span class="p">,</span><span class="w"> </span>
+<span class="w">      </span><span class="c1">// Reporteros para generar el informe. 'text' en consola, 'html' para un informe visual.</span>
+<span class="w">      </span><span class="nx">reporter</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'text'</span><span class="p">,</span><span class="w"> </span><span class="s1">'html'</span><span class="p">],</span>
+<span class="w">      </span><span class="c1">// Opcional: Establecer umbrales. El build fallará si no se alcanzan.</span>
+<span class="w">      </span><span class="nx">thresholds</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">lines</span><span class="o">:</span><span class="w"> </span><span class="kt">60</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">branches</span><span class="o">:</span><span class="w"> </span><span class="kt">60</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">functions</span><span class="o">:</span><span class="w"> </span><span class="kt">60</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">statements</span><span class="o">:</span><span class="w"> </span><span class="kt">60</span><span class="p">,</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     En tu
+     <code>
+      package.json
+     </code>
+     , añade un script para la cobertura:
+    </strong>
+   </p>
+   <div class="highlight language-json">
+    <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"coverage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run --coverage"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <ul>
+    <li>
+     <code>
+      vitest run
+     </code>
+     : Ejecuta las pruebas una vez y sale (ideal para CI).
+    </li>
+    <li>
+     <code>
+      --coverage
+     </code>
+     : Activa la recolección de cobertura.
+    </li>
+   </ul>
+   <h4 id="paso-2-el-codigo-que-vamos-a-probar">
+    Paso 2: El Código que Vamos a Probar
+   </h4>
+   <p>
+    Crea un archivo
+    <code>
+     src/math.ts
+    </code>
+    . Nota que la función
+    <code>
+     dividir
+    </code>
+    tiene una rama lógica (un
+    <code>
+     if
+    </code>
+    ) que maneja la división por cero.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/math.ts</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">sumar</span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">dividir</span><span class="p">(</span><span class="nx">a</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">b</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"No se puede dividir por cero"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="paso-3-las-pruebas-incompletas">
+    Paso 3: Las Pruebas (Incompletas)
+   </h4>
+   <p>
+    Ahora, crea un archivo de prueba
+    <code>
+     src/math.test.ts
+    </code>
+    , pero solo probaremos el "camino feliz" de la función
+    <code>
+     dividir
+    </code>
+    .
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/math.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">sumar</span><span class="p">,</span><span class="w"> </span><span class="nx">dividir</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./math'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'Funciones matemáticas'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería sumar dos números correctamente'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">sumar</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">5</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="c1">// Solo probamos el caso exitoso de la división</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería dividir dos números correctamente'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">dividir</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">5</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="paso-4-ejecutar-y-analizar-el-reporte-de-cobertura">
+    Paso 4: Ejecutar y Analizar el Reporte de Cobertura
+   </h4>
+   <p>
+    Ahora, ejecuta el comando en tu terminal:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>coverage
+</pre>
+   </div>
+   <p>
+    Vitest ejecutará las pruebas y te mostrará un reporte de cobertura en la consola similar a este:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>---------------------<span class="p">|</span>---------<span class="p">|</span>----------<span class="p">|</span>---------<span class="p">|</span>---------<span class="p">|</span>-------------------
+File<span class="w">                 </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Stmts<span class="w"> </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Branch<span class="w"> </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Funcs<span class="w"> </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Lines<span class="w"> </span><span class="p">|</span><span class="w"> </span>Uncovered<span class="w"> </span>Line<span class="w"> </span><span class="c1">#s </span>
+---------------------<span class="p">|</span>---------<span class="p">|</span>----------<span class="p">|</span>---------<span class="p">|</span>---------<span class="p">|</span>-------------------
+All<span class="w"> </span>files<span class="w">            </span><span class="p">|</span><span class="w">   </span><span class="m">85</span>.71<span class="w"> </span><span class="p">|</span><span class="w">       </span><span class="m">50</span><span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">   </span><span class="m">85</span>.71<span class="w"> </span><span class="p">|</span><span class="w">                   </span>
+<span class="w"> </span>src/math.ts<span class="w">         </span><span class="p">|</span><span class="w">   </span><span class="m">85</span>.71<span class="w"> </span><span class="p">|</span><span class="w">       </span><span class="m">50</span><span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">   </span><span class="m">85</span>.71<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">7</span><span class="w">                 </span>
+---------------------<span class="p">|</span>---------<span class="p">|</span>----------<span class="p">|</span>---------<span class="p">|</span>---------<span class="p">|</span>-------------------
+</pre>
+   </div>
+   <p>
+    <strong>
+     Análisis del Reporte:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      <code>
+       % Stmts
+      </code>
+      (Statements)
+     </strong>
+     : 85.71% de las declaraciones fueron ejecutadas.
+    </li>
+    <li>
+     <strong>
+      <code>
+       % Branch
+      </code>
+      (Ramas)
+     </strong>
+     :
+     <strong>
+      ¡Solo el 50%!
+     </strong>
+     Esta es la pista clave. Significa que de las 2 posibles ramas en nuestro código (el
+     <code>
+      if
+     </code>
+     y el
+     <code>
+      else
+     </code>
+     implícito), solo una fue probada.
+    </li>
+    <li>
+     <strong>
+      <code>
+       % Funcs
+      </code>
+      (Funciones)
+     </strong>
+     : 100%. Ambas funciones (
+     <code>
+      sumar
+     </code>
+     y
+     <code>
+      dividir
+     </code>
+     ) fueron llamadas.
+    </li>
+    <li>
+     <strong>
+      <code>
+       % Lines
+      </code>
+      (Líneas)
+     </strong>
+     : 85.71% de las líneas fueron ejecutadas.
+    </li>
+    <li>
+     <strong>
+      <code>
+       Uncovered Line #s
+      </code>
+     </strong>
+     :
+     <strong>
+      <code>
+       7
+      </code>
+     </strong>
+     . Vitest nos dice exactamente qué línea no se ejecutó: la línea 7, que es
+     <code>
+      throw new Error(...)
+     </code>
+     .
+    </li>
+   </ul>
+   <p>
+    Además, Vitest habrá creado una carpeta
+    <code>
+     coverage/
+    </code>
+    en tu proyecto. Si abres el archivo
+    <code>
+     coverage/index.html
+    </code>
+    en un navegador, verás un reporte visual detallado que resalta en rojo las líneas no cubiertas.
+   </p>
+   <h4 id="paso-5-mejorar-las-pruebas-para-alcanzar-el-100">
+    Paso 5: Mejorar las Pruebas para Alcanzar el 100%
+   </h4>
+   <p>
+    El reporte nos ha mostrado exactamente dónde está el punto ciego de nuestras pruebas. Ahora, vamos a añadir el caso de prueba que falta en
+    <code>
+     src/math.test.ts
+    </code>
+    .
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// src/math.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vitest'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">sumar</span><span class="p">,</span><span class="w"> </span><span class="nx">dividir</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./math'</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s1">'Funciones matemáticas'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería sumar dos números correctamente'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">sumar</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">3</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">5</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería dividir dos números correctamente'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">dividir</span><span class="p">(</span><span class="mf">10</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">5</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="c1">// AÑADIMOS ESTA NUEVA PRUEBA</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s1">'debería lanzar un error al dividir por cero'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Verificamos que llamar a la función con estos argumentos lanza un error.</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">dividir</span><span class="p">(</span><span class="mf">5</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">)).</span><span class="nx">toThrow</span><span class="p">(</span><span class="s2">"No se puede dividir por cero"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="paso-6-volver-a-ejecutar-la-cobertura">
+    Paso 6: Volver a Ejecutar la Cobertura
+   </h4>
+   <p>
+    Ejecuta de nuevo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>coverage
+</pre>
+   </div>
+   <p>
+    Ahora, el reporte será mucho más satisfactorio:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>---------------------<span class="p">|</span>---------<span class="p">|</span>----------<span class="p">|</span>---------<span class="p">|</span>---------<span class="p">|</span>-------------------
+File<span class="w">                 </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Stmts<span class="w"> </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Branch<span class="w"> </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Funcs<span class="w"> </span><span class="p">|</span><span class="w"> </span>%<span class="w"> </span>Lines<span class="w"> </span><span class="p">|</span><span class="w"> </span>Uncovered<span class="w"> </span>Line<span class="w"> </span><span class="c1">#s </span>
+---------------------<span class="p">|</span>---------<span class="p">|</span>----------<span class="p">|</span>---------<span class="p">|</span>---------<span class="p">|</span>-------------------
+All<span class="w"> </span>files<span class="w">            </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">                   </span>
+<span class="w"> </span>src/math.ts<span class="w">         </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">     </span><span class="m">100</span><span class="w"> </span><span class="p">|</span><span class="w">                   </span>
+---------------------<span class="p">|</span>---------<span class="p">|</span>----------<span class="p">|</span>---------<span class="p">|</span>---------<span class="p">|</span>-------------------
+</pre>
+   </div>
+   <p>
+    ¡Éxito! Al añadir la prueba para el caso de error, hemos cubierto la otra rama lógica, y ahora tenemos un 100% de cobertura, lo que nos da mucha más confianza en que nuestra función
+    <code>
+     dividir
+    </code>
+    se comporta como esperamos en todos los escenarios.
+   </p>
+   <h3 id="17-buenas-practicas-para-escribir-tests-de-calidad">
+    1.7 Buenas Prácticas para Escribir Tests de Calidad
+   </h3>
+   <p>
+    Escribir pruebas no es solo cuestión de aumentar la cobertura; es cuestión de crear una red de seguridad que te dé
+    <strong>
+     confianza
+    </strong>
+    para refactorizar y añadir nuevas funcionalidades. Una suite de pruebas de baja calidad puede convertirse en una carga en lugar de una ayuda. Aquí se presentan tres principios fundamentales para mantener tus pruebas robustas y mantenibles.
+   </p>
+   <h4 id="1-la-regla-de-hierro-determinismo-y-repetibilidad">
+    1. La Regla de Hierro: Determinismo y Repetibilidad
+   </h4>
+   <p>
+    Un test debe comportarse como un experimento científico: dadas las mismas condiciones de entrada,
+    <strong>
+     siempre debe producir el mismo resultado
+    </strong>
+    .
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Principio:
+     </strong>
+     Si ejecutas la suite de pruebas 100 veces sin cambiar el código, las 100 veces debe pasar. Si una prueba falla, debe ser porque se ha introducido un bug real, no por azar.
+    </li>
+    <li>
+     <strong>
+      ¿Por qué es crucial?
+     </strong>
+     La confianza es la moneda de cambio de una suite de pruebas. Si los tests fallan de forma intermitente, el equipo empezará a ignorarlos ("
+     <em>
+      Ah, es solo el test frágil de siempre, ejecútalo de nuevo
+     </em>
+     "). Una suite de pruebas en la que no se confía es una suite de pruebas inútil.
+    </li>
+   </ul>
+   <h4 id="2-claridad-y-enfoque-un-test-una-idea">
+    2. Claridad y Enfoque: Un Test, Una Idea
+   </h4>
+   <p>
+    Cada bloque
+    <code>
+     it(...)
+    </code>
+    debe ser fácil de leer, fácil de entender y debe probar
+    <strong>
+     una sola cosa
+    </strong>
+    .
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Principio:
+     </strong>
+     Un test debe verificar un único comportamiento o resultado. Su nombre debe describir claramente ese comportamiento, siguiendo un patrón como "debería [hacer algo] cuando [ocurre una condición]".
+    </li>
+    <li>
+     <strong>
+      ¿Por qué es crucial?
+     </strong>
+     Cuando un test falla, su nombre debería decirte exactamente qué se rompió sin necesidad de leer el código. Si un test llamado
+     <code>
+      it('prueba el servicio de usuario')
+     </code>
+     falla, no tienes ni idea de cuál de las 10 aserciones que contiene es la que falló.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Estructura Recomendada: Arrange-Act-Assert (AAA)
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th style="text-align: left;">
+       Fase
+      </th>
+      <th style="text-align: left;">
+       Propósito
+      </th>
+      <th style="text-align: left;">
+       Ejemplo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Arrange (Preparar)
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Configura el estado inicial y las dependencias (mocks, datos de entrada).
+      </td>
+      <td style="text-align: left;">
+       <code>
+        const usuario = { esAdmin: false };
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Act (Actuar)
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Ejecuta la función o el método que quieres probar.
+      </td>
+      <td style="text-align: left;">
+       <code>
+        const puedeAcceder = puedeAccederAlPanel(usuario);
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td style="text-align: left;">
+       <strong>
+        Assert (Verificar)
+       </strong>
+      </td>
+      <td style="text-align: left;">
+       Comprueba que el resultado es el esperado.
+      </td>
+      <td style="text-align: left;">
+       <code>
+        expect(puedeAcceder).toBe(false);
+       </code>
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Mal nombre, múltiples ideas</span>
+<span class="nx">it</span><span class="p">(</span><span class="s1">'funciona'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">sumar</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">4</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">sumar</span><span class="p">(</span><span class="o">-</span><span class="mf">1</span><span class="p">,</span><span class="w"> </span><span class="mf">1</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">0</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Buen nombre, una sola idea, estructura AAA</span>
+<span class="nx">it</span><span class="p">(</span><span class="s1">'debería devolver 0 cuando se suman un número positivo y su negativo'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Arrange</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">5</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Act</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">resultado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">sumar</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Assert</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">resultado</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">0</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="3-aislamiento-protegiendote-de-la-fragilidad-flaky-tests">
+    3. Aislamiento: Protegiéndote de la Fragilidad (
+    <em>
+     Flaky Tests
+    </em>
+    )
+   </h4>
+   <p>
+    Un test "frágil" (
+    <em>
+     flaky
+    </em>
+    ) es aquel que a veces pasa y a veces falla sin cambios en el código. La causa principal es la dependencia de factores externos que no puedes controlar.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Principio:
+     </strong>
+     Aísla tus pruebas de dependencias externas como la red, la base de datos, el sistema de archivos o el tiempo real.
+    </li>
+    <li>
+     <strong>
+      ¿Por qué es crucial?
+     </strong>
+     Estas dependencias hacen que tus pruebas sean lentas y no deterministas. Si una prueba falla porque la API de un tercero está caída, no es un error en tu código, es ruido que te hace perder tiempo y confianza.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Soluciones Comunes:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Dependencia de Red/APIs:
+     </strong>
+     No hagas llamadas
+     <code>
+      fetch
+     </code>
+     reales. Usa
+     <strong>
+      mocks
+     </strong>
+     con
+     <code>
+      vi.mock()
+     </code>
+     para simular las respuestas de la API.
+    </li>
+    <li>
+     <strong>
+      Dependencia de Base de Datos:
+     </strong>
+     No te conectes a una base de datos real. Usa una base de datos en memoria (como SQLite en modo memoria) o mockea la capa de repositorio.
+    </li>
+    <li>
+     <strong>
+      Dependencia del Tiempo:
+     </strong>
+     No dependas de
+     <code>
+      setTimeout
+     </code>
+     o
+     <code>
+      new Date()
+     </code>
+     . Usa
+     <strong>
+      Fake Timers
+     </strong>
+     con
+     <code>
+      vi.useFakeTimers()
+     </code>
+     para controlar el tiempo a tu antojo.
+    </li>
+    <li>
+     <strong>
+      Testing de APIs (Backend):
+     </strong>
+     En lugar de levantar un servidor y hacer una llamada HTTP real (que depende de la red local), usa herramientas de
+     <strong>
+      inyección de peticiones
+     </strong>
+     como
+     <code>
+      app.inject()
+     </code>
+     (en Fastify) o
+     <code>
+      supertest
+     </code>
+     . Estas herramientas llaman a tus manejadores de ruta directamente en memoria, haciendo la prueba miles de veces más rápida y 100% fiable.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-practica-con-npm">
+    2) Práctica con npm
+   </h2>
+   <blockquote>
+    <p>
+     Se asume el proyecto de la Semana 6. Vamos a
+     <strong>
+      refactorizar
+     </strong>
+     para testear mejor la API.
+    </p>
+   </blockquote>
+   <h3 id="21-dependencias-y-scripts">
+    2.1 Dependencias y scripts
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>vitest<span class="w"> </span>@vitest/coverage-v8
+</pre>
+   </div>
+   <p>
+    <strong>
+     <code>
+      package.json
+     </code>
+    </strong>
+    (fragmento)
+   </p>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:watch"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:cov"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vitest run --coverage"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"typecheck"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc --noEmit"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="22-configuracion-de-vitest">
+    2.2 Configuración de Vitest
+   </h3>
+   <p>
+    <strong>
+     <code>
+      vitest.config.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"vitest/config"</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">test</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">environment</span><span class="o">:</span><span class="w"> </span><span class="s2">"node"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">globals</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">setupFiles</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"./tests/setup.ts"</span><span class="p">],</span>
+<span class="w">    </span><span class="nx">coverage</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">provider</span><span class="o">:</span><span class="w"> </span><span class="s2">"v8"</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">reporter</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"text"</span><span class="p">,</span><span class="w"> </span><span class="s2">"html"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">all</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">thresholds</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">lines</span><span class="o">:</span><span class="w"> </span><span class="kt">0.6</span><span class="p">,</span><span class="w"> </span><span class="nx">functions</span><span class="o">:</span><span class="w"> </span><span class="kt">0.6</span><span class="p">,</span><span class="w"> </span><span class="nx">branches</span><span class="o">:</span><span class="w"> </span><span class="kt">0.5</span><span class="p">,</span><span class="w"> </span><span class="nx">statements</span><span class="o">:</span><span class="w"> </span><span class="kt">0.6</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">})</span>
+</pre>
+    </div>
+   </div>
+   <blockquote>
+    <p>
+     <code>
+      thresholds
+     </code>
+     en proporciones (0–1). Ajustá a tu realidad.
+    </p>
+   </blockquote>
+   <p>
+    <strong>
+     Tip TS
+    </strong>
+    : agregá Vitest a los
+    <em>
+     ambient types
+    </em>
+    en
+    <code>
+     tsconfig.json
+    </code>
+    para autocompletado:
+   </p>
+   <div class="highlight language-json">
+    <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"types"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"vitest/globals"</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <h3 id="23-refactor-del-servidor-para-pruebas">
+    2.3 Refactor del servidor para pruebas
+   </h3>
+   <p>
+    Creamos una
+    <strong>
+     fábrica de app
+    </strong>
+    y dejamos
+    <code>
+     server.ts
+    </code>
+    solo para
+    <em>
+     listen
+    </em>
+    .
+   </p>
+   <p>
+    <strong>
+     <code>
+      src/app.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">Fastify</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"fastify"</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ZodTypeProvider</span><span class="p">,</span><span class="w"> </span><span class="nx">serializerCompiler</span><span class="p">,</span><span class="w"> </span><span class="nx">validatorCompiler</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"fastify-type-provider-zod"</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">ItemsRoutes</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./routes/items"</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ItemRepo</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./lib/repo"</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">buildApp</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Fastify</span><span class="p">({</span><span class="w"> </span><span class="nx">logger</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="w"> </span><span class="p">}).</span><span class="nx">withTypeProvider</span><span class="o">&lt;</span><span class="nx">ZodTypeProvider</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">setValidatorCompiler</span><span class="p">(</span><span class="nx">validatorCompiler</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">setSerializerCompiler</span><span class="p">(</span><span class="nx">serializerCompiler</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="s2">"repo"</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">ItemRepo</span><span class="p">())</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/health"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="p">}))</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="nx">ItemsRoutes</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">app</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     <code>
+      src/server.ts
+     </code>
+    </strong>
+    (ajustado)
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">buildApp</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./app"</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">buildApp</span><span class="p">()</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Number</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="mf">3000</span><span class="p">)</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">({</span><span class="w"> </span><span class="nx">port</span><span class="p">,</span><span class="w"> </span><span class="nx">host</span><span class="o">:</span><span class="w"> </span><span class="s2">"0.0.0.0"</span><span class="w"> </span><span class="p">}).</span><span class="k">catch</span><span class="p">((</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span><span class="w"> </span><span class="p">})</span>
+</pre>
+   </div>
+   <h3 id="24-setup-global-de-tests">
+    2.4 Setup global de tests
+   </h3>
+   <p>
+    <strong>
+     <code>
+      tests/setup.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">afterAll</span><span class="p">,</span><span class="w"> </span><span class="nx">beforeAll</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"vitest"</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">buildApp</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"../src/app"</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">app</span><span class="o">:</span><span class="w"> </span><span class="kt">buildApp</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+
+<span class="nx">beforeAll</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">ready</span><span class="p">()</span><span class="w"> </span><span class="p">})</span>
+<span class="nx">afterAll</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span><span class="w"> </span><span class="p">})</span>
+</pre>
+   </div>
+   <h3 id="25-tests-de-utilidades-sincronasasincronas">
+    2.5 Tests de utilidades síncronas/asíncronas
+   </h3>
+   <p>
+    <strong>
+     <code>
+      tests/async.test.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">withTimeout</span><span class="p">,</span><span class="w"> </span><span class="nx">TimeoutError</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"../src/lib/async"</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s2">"resuelve antes del timeout"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">res</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setTimeout</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">(</span><span class="mf">42</span><span class="p">),</span><span class="w"> </span><span class="mf">50</span><span class="p">))</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">expect</span><span class="p">(</span><span class="nx">withTimeout</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span><span class="w"> </span><span class="mf">200</span><span class="p">)).</span><span class="nx">resolves</span><span class="p">.</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">42</span><span class="p">)</span>
+<span class="p">})</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s2">"lanza TimeoutError cuando excede"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">number</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">res</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setTimeout</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">(</span><span class="mf">42</span><span class="p">),</span><span class="w"> </span><span class="mf">200</span><span class="p">))</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">expect</span><span class="p">(</span><span class="nx">withTimeout</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span><span class="w"> </span><span class="mf">50</span><span class="p">)).</span><span class="nx">rejects</span><span class="p">.</span><span class="nx">toBeInstanceOf</span><span class="p">(</span><span class="nx">TimeoutError</span><span class="p">)</span>
+<span class="p">})</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="26-tests-de-esquemas-zod">
+    2.6 Tests de esquemas (Zod)
+   </h3>
+   <p>
+    <strong>
+     <code>
+      tests/schemas.test.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Item</span><span class="p">,</span><span class="w"> </span><span class="nx">NewItem</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"../src/schemas"</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s2">"valida Item y NewItem"</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">good</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Teclado"</span><span class="p">,</span><span class="w"> </span><span class="nx">price</span><span class="o">:</span><span class="w"> </span><span class="kt">100</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">NewItem</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">good</span><span class="p">)).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toThrow</span><span class="p">()</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">bad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w"> </span><span class="nx">price</span><span class="o">:</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">NewItem</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">bad</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">any</span><span class="p">)).</span><span class="nx">toThrow</span><span class="p">()</span>
+<span class="p">})</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="27-tests-de-integracion-con-appinject">
+    2.7 Tests de integración con
+    <code>
+     app.inject()
+    </code>
+   </h3>
+   <p>
+    <strong>
+     <code>
+      tests/app.test.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./setup"</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s2">"/health responde ok"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span><span class="w"> </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s2">"/health"</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">toEqual</span><span class="p">({</span><span class="w"> </span><span class="nx">ok</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="w"> </span><span class="p">})</span>
+<span class="p">})</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     <code>
+      tests/items.routes.test.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">t</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./setup"</span>
+
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">crear</span><span class="p">(</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Mouse"</span><span class="p">,</span><span class="w"> </span><span class="nx">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span><span class="w"> </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"POST"</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s2">"/items"</span><span class="p">,</span><span class="w"> </span><span class="nx">payload</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">price</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">201</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nx">json</span><span class="p">()</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">price</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s2">"CRUD de items"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// create</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">created</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">crear</span><span class="p">(</span><span class="s2">"Teclado"</span><span class="p">,</span><span class="w"> </span><span class="mf">100</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">// list</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span><span class="w"> </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s2">"/items"</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">json</span><span class="p">())).</span><span class="nx">toBe</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">// get</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">got</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span><span class="w"> </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"GET"</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="sb">`/items/</span><span class="si">${</span><span class="nx">created</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">got</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">got</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">name</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="s2">"Teclado"</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">// update</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">upd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span><span class="w"> </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"PUT"</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="sb">`/items/</span><span class="si">${</span><span class="nx">created</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="nx">payload</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s2">"Teclado M"</span><span class="p">,</span><span class="w"> </span><span class="nx">price</span><span class="o">:</span><span class="w"> </span><span class="kt">120</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">upd</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">upd</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">price</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">120</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">// delete</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">del</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">t</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span><span class="w"> </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"DELETE"</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="sb">`/items/</span><span class="si">${</span><span class="nx">created</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">})</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">del</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">204</span><span class="p">)</span>
+<span class="p">})</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="28-spies-y-fake-timers">
+    2.8 Spies y
+    <em>
+     fake timers
+    </em>
+   </h3>
+   <p>
+    <strong>
+     <code>
+      tests/timers.test.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nx">it</span><span class="p">(</span><span class="s2">"usa fake timers"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">vi</span><span class="p">.</span><span class="nx">useFakeTimers</span><span class="p">()</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">spy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">vi</span><span class="p">.</span><span class="nx">fn</span><span class="p">()</span>
+<span class="w">  </span><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">spy</span><span class="p">,</span><span class="w"> </span><span class="mf">1000</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">vi</span><span class="p">.</span><span class="nx">advanceTimersByTime</span><span class="p">(</span><span class="mf">1000</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">spy</span><span class="p">).</span><span class="nx">toHaveBeenCalledTimes</span><span class="p">(</span><span class="mf">1</span><span class="p">)</span>
+<span class="w">  </span><span class="nx">vi</span><span class="p">.</span><span class="nx">useRealTimers</span><span class="p">()</span>
+<span class="p">})</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-minikatas-ejemplos-opcionales">
+    3) Mini–katas (ejemplos opcionales)
+   </h2>
+   <ol>
+    <li>
+     Agregá
+     <strong>
+      umbrales
+     </strong>
+     de cobertura ≥ 70% líneas y ≥ 60% ramas; obtené reporte HTML.
+    </li>
+    <li>
+     Mockeá el repo en
+     <code>
+      items.routes.test.ts
+     </code>
+     para simular un error y verificá
+     <code>
+      500
+     </code>
+     con mensaje coherente.
+    </li>
+    <li>
+     Añadí test de validación:
+     <code>
+      POST /items
+     </code>
+     con
+     <code>
+      name: ""
+     </code>
+     →
+     <code>
+      400
+     </code>
+     .
+    </li>
+    <li>
+     Medí tiempo de cada request con un
+     <em>
+      plugin
+     </em>
+     y testeá que se loguea (usá
+     <code>
+      vi.spyOn(app.log, 'info')
+     </code>
+     ).
+    </li>
+    <li>
+     Creá un test de
+     <em>
+      property-based
+     </em>
+     con
+     <code>
+      @fast-check/vitest
+     </code>
+     para
+     <code>
+      sum
+     </code>
+     .
+    </li>
+   </ol>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-comandos-utiles">
+    4) Comandos útiles
+   </h2>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>test:watch
+npm<span class="w"> </span>run<span class="w"> </span><span class="nb">test</span>
+npm<span class="w"> </span>run<span class="w"> </span>test:cov<span class="w">   </span><span class="c1"># reporte texto + html en coverage/</span>
+npm<span class="w"> </span>run<span class="w"> </span>typecheck
+</pre>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-checklist-de-la-semana">
+    5) Checklist de la semana
+   </h2>
+   <ul>
+    <li>
+     [ ] Vitest configurado (setup, globals, coverage V8).
+    </li>
+    <li>
+     [ ] Tests unitarios de utilidades y esquemas.
+    </li>
+    <li>
+     [ ] Tests de integración con
+     <code>
+      app.inject()
+     </code>
+     (CRUD completo).
+    </li>
+    <li>
+     [ ]
+     <em>
+      Spies
+     </em>
+     y
+     <em>
+      fake timers
+     </em>
+     demostrados.
+    </li>
+    <li>
+     [ ] Umbrales de cobertura definidos y cumplidos.
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-entregables">
+    6) Entregables
+   </h2>
+   <ul>
+    <li>
+     <code>
+      vitest.config.ts
+     </code>
+     ,
+     <code>
+      tests/setup.ts
+     </code>
+     .
+    </li>
+    <li>
+     <code>
+      tests/*.test.ts
+     </code>
+     (al menos:
+     <code>
+      async.test.ts
+     </code>
+     ,
+     <code>
+      schemas.test.ts
+     </code>
+     ,
+     <code>
+      app.test.ts
+     </code>
+     ,
+     <code>
+      items.routes.test.ts
+     </code>
+     ,
+     <code>
+      timers.test.ts
+     </code>
+     ).
+    </li>
+    <li>
+     README con comandos de test y ubicación de cobertura.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="automatizacion-de-calidad-husky-lint-staged-tipo-estricto">
+    Automatización de calidad: Husky + lint-staged + tipo estricto
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Asegurar calidad en commits y CI local.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Teoría mínima
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Hooks de Git, pipelines locales.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Instalar y configurar:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>husky<span class="w"> </span>lint-staged
+<span class="w">   </span>npm<span class="w"> </span>pkg<span class="w"> </span><span class="nb">set</span><span class="w"> </span>scripts.prepare<span class="o">=</span><span class="s2">"husky"</span>
+<span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>prepare
+<span class="w">   </span>npx<span class="w"> </span>husky<span class="w"> </span>add<span class="w"> </span>.husky/pre-commit<span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run lint &amp;&amp; npx lint-staged"</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     <code>
+      package.json
+     </code>
+     :
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <pre><span></span><span class="w">   </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"lint-staged"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"**/*.{ts,tsx}"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"prettier -w"</span><span class="p">,</span><span class="w"> </span><span class="s2">"eslint --fix"</span><span class="p">]</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Probar commit con cambio con errores y verificar bloqueo del hook.
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : video corto o gif del hook funcionando (opcional) + commit válido.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ruta-frontend-opcional-react-ts-con-vite">
+    Ruta Frontend (opcional): React + TS con Vite
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Tipar Props/State, eventos, formularios con Zod.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Crear app:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>create<span class="w"> </span>vite@latest<span class="w"> </span>frontend<span class="w"> </span>--<span class="w"> </span>--template<span class="w"> </span>react-ts
+<span class="w">   </span><span class="nb">cd</span><span class="w"> </span>frontend<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>i<span class="w"> </span>zod
+<span class="w">   </span>npm<span class="w"> </span>run<span class="w"> </span>dev
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Añadir form tipado con Zod y
+     <em>
+      discriminated unions
+     </em>
+     para estados.
+    </li>
+    <li>
+     Scripts relevantes (ya provistos por Vite):
+     <code>
+      dev
+     </code>
+     ,
+     <code>
+      build
+     </code>
+     ,
+     <code>
+      preview
+     </code>
+     .
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : demo con validación y estados tipados.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="ruta-backend-alternativa-api-tipada-y-documentacion">
+    Ruta Backend (alternativa): API tipada y documentación
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Diseñar endpoints con esquemas y generar documentación.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Añadir OpenAPI (opcional):
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>zod-to-openapi
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Generar
+     <code>
+      openapi.json
+     </code>
+     desde esquemas Zod (script
+     <code>
+      npm run openapi
+     </code>
+     ).
+    </li>
+    <li>
+     Validar en Swagger UI (local o dockerizado).
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    :
+    <code>
+     openapi.json
+    </code>
+    válido y endpoints alineados.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="capstone-y-entrega-final">
+    Capstone y entrega final
+   </h2>
+   <p>
+    <strong>
+     Objetivos
+    </strong>
+   </p>
+   <ul>
+    <li>
+     Integrar tooling:
+     <code>
+      typecheck
+     </code>
+     +
+     <code>
+      lint
+     </code>
+     +
+     <code>
+      test
+     </code>
+     +
+     <code>
+      build
+     </code>
+     en un solo comando.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Práctica con npm
+    </strong>
+   </p>
+   <ol>
+    <li>
+     Script "ci" y flujo de release:
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <pre><span></span><span class="w">   </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">"ci"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run typecheck &amp;&amp; npm run lint &amp;&amp; npm run test &amp;&amp; npm run build"</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">"release:dry"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm pack"</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Preparar README con instrucciones de uso/instalación.
+    </li>
+    <li>
+     (Opcional) Publicación privada:
+     <code>
+      npm publish --access=public|restricted
+     </code>
+     (usar
+     <code>
+      dry-run
+     </code>
+     primero).
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Entrega
+    </strong>
+    : repositorio con CI local funcionando y tag de versión (
+    <code>
+     npm version patch
+    </code>
+    ).
+   </p>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}
+
+.layer-text {font-size: 22px; font-weight: bold; text-anchor: middle; dominant-baseline: middle; fill: #1f2937;}
+
+.desc-text {font-size: 14px; font-style: italic; text-anchor: middle; dominant-baseline: middle; fill: #4b5563;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

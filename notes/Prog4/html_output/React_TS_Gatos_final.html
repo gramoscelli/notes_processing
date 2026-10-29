@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   React_TS_Gatos
+  </title>
+ </head>
+ <body>
+  <h1 id="explorando-react-y-typescript-cuando-los-estados-se-entrelazan-con-bootstrap-y-configuracion-manual">
+   📚 Explorando React y TypeScript: Cuando los Estados se Entrelazan (con Bootstrap y Configuración Manual)
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#el-escenario-hechos-e-imagenes-de-gatos">
+      🌟 El Escenario: Hechos e Imágenes de Gatos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#paso-0-configuracion-manual-del-proyecto-vite-vanilla-ts-react-bootstrap">
+      🛠️ Paso 0: Configuración Manual del Proyecto (Vite Vanilla TS + React + Bootstrap)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#paso-2-declarando-los-estados-con-usestate-con-typescript">
+      🏷️ Paso 2: Declarando los Estados con useState (con TypeScript)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#paso-3-obteniendo-el-hecho-del-gato-con-useeffect">
+      ⚡ Paso 3: Obteniendo el Hecho del Gato con useEffect
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#paso-4-la-interdependencia-de-estados-hecho-imagen">
+      🔗 Paso 4: La Interdependencia de Estados: Hecho -&gt; Imagen
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#analisis-de-la-interdependencia-y-buenas-practicas">
+      💡 Análisis de la Interdependencia y Buenas Prácticas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#conclusion">
+      🏁 Conclusión
+     </a>
+    </li>
+   </ul>
+  </div>
+  <p>
+   En este apunte, profundizaremos en conceptos fundamentales de React con TypeScript, usando un ejemplo práctico para ilustrar cómo gestionar estados interdependientes. Aprenderemos a hacer peticiones a APIs, manipular datos y renderizar información dinámica, todo ello con la robustez que nos ofrece TypeScript. Además, veremos cómo integrar
+   <strong>
+    Bootstrap
+   </strong>
+   para estilos rápidos y cómo arrancar un proyecto de React con TypeScript
+   <strong>
+    manualmente
+   </strong>
+   desde una plantilla "Vanilla" de Vite.
+  </p>
+  <div class="chapter-container">
+   <h2 id="el-escenario-hechos-e-imagenes-de-gatos">
+    🌟 El Escenario: Hechos e Imágenes de Gatos
+   </h2>
+   <p>
+    Imagina que queremos construir una pequeña aplicación que muestre un hecho aleatorio sobre gatos y, además, una imagen de un gato que tenga relación con ese hecho.
+   </p>
+   <p>
+    APIs:
+- Facts Random: https://catfact.ninja/fact
+- Imagen random: https://cataas.com/cat/says/hello
+   </p>
+   <p>
+    Recupera un hecho aleatorio de gatos y muestra una imagen de un gato con la primera palabra del hecho.
+   </p>
+   <p>
+    Este escenario es perfecto para entender:
+1.  Cómo usar
+    <code>
+     useState
+    </code>
+    para declarar y actualizar diferentes tipos de datos.
+2.  Cómo
+    <code>
+     useEffect
+    </code>
+    nos permite interactuar con el mundo exterior (APIs) y reaccionar a cambios en nuestro componente.
+3.
+    <strong>
+     Crucialmente: Cómo el valor de un estado (
+     <code>
+      fact
+     </code>
+     ) puede ser la
+     <em>
+      dependencia
+     </em>
+     para la actualización o cálculo de otro estado (
+     <code>
+      imageUrl
+     </code>
+     )
+    </strong>
+    .
+4.
+    <strong>
+     Configuración manual de un proyecto React con TypeScript en Vite.
+    </strong>
+    5.
+    <strong>
+     Integración de estilos con Bootstrap.
+    </strong>
+   </p>
+   <h3 id="las-herramientas-del-proyecto">
+    Las Herramientas del Proyecto
+   </h3>
+   <p>
+    Usaremos:
+*
+    <strong>
+     React:
+    </strong>
+    Nuestra biblioteca para construir interfaces de usuario.
+*
+    <strong>
+     TypeScript:
+    </strong>
+    Para añadir tipado estático y mejorar la calidad del código.
+*
+    <strong>
+     Vite:
+    </strong>
+    Un bundler moderno y rápido para nuestro entorno de desarrollo.
+*
+    <strong>
+     <code>
+      fetch
+     </code>
+     API:
+    </strong>
+    Para realizar peticiones HTTP a las APIs externas.
+*
+    <strong>
+     Bootstrap:
+    </strong>
+    Para estilos CSS predefinidos y responsivos.
+   </p>
+   <h3 id="nuestras-apis">
+    Nuestras APIs
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      API de Hechos de Gatos (Cat Fact API):
+     </strong>
+     <code>
+      https://catfact.ninja/fact
+     </code>
+    </li>
+    <li>
+     <strong>
+      API de Imágenes de Gatos (Cataas API):
+     </strong>
+     <code>
+      https://cataas.com/cat/says/{text}?json=true
+     </code>
+    </li>
+    <li>
+     <strong>
+      Prefijo para la Imagen:
+     </strong>
+     <code>
+      https://cataas.com
+     </code>
+     .
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="paso-0-configuracion-manual-del-proyecto-vite-vanilla-ts-react-bootstrap">
+    🛠️ Paso 0: Configuración Manual del Proyecto (Vite Vanilla TS + React + Bootstrap)
+   </h2>
+   <p>
+    En un escenario real, es posible que te pidan iniciar un proyecto desde cero, sin plantillas preconfiguradas de React. Esto demuestra tu comprensión de cómo se "monta" una aplicación React.
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Crea el proyecto Vite con la plantilla "Vanilla TypeScript":
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>create<span class="w"> </span>vite@latest<span class="w"> </span>cats-app-manual<span class="w"> </span>--<span class="w"> </span>--template<span class="w"> </span>vanilla-ts
+</pre>
+   </div>
+   <ul>
+    <li>
+     <code>
+      cats-app-manual
+     </code>
+     : El nombre de nuestra carpeta de proyecto.
+    </li>
+    <li>
+     <code>
+      --template vanilla-ts
+     </code>
+     : Indica que queremos la plantilla básica de TypeScript sin ningún framework.
+    </li>
+   </ul>
+   <ol start="2">
+    <li>
+     <strong>
+      Navegar al proyecto e instalar dependencias:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="nb">cd</span><span class="w"> </span>cats-app-manual
+npm<span class="w"> </span>install
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     <strong>
+      Instalar React y sus tipos de TypeScript:
+     </strong>
+     La plantilla
+     <code>
+      vanilla-ts
+     </code>
+     no incluye React por defecto. Debemos instalarlo:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>install<span class="w"> </span>react<span class="w"> </span>react-dom
+npm<span class="w"> </span>install<span class="w"> </span>-D<span class="w"> </span>@types/react<span class="w"> </span>@types/react-dom<span class="w"> </span>@vitejs/plugin-react
+</pre>
+   </div>
+   <ul>
+    <li>
+     <code>
+      react
+     </code>
+     ,
+     <code>
+      react-dom
+     </code>
+     : Las librerías principales de React.
+    </li>
+    <li>
+     <code>
+      @types/react
+     </code>
+     ,
+     <code>
+      @types/react-dom
+     </code>
+     : Tipos de TypeScript para React.
+    </li>
+    <li>
+     <code>
+      @vitejs/plugin-react
+     </code>
+     : El plugin de Vite que permite procesar JSX/TSX.
+    </li>
+   </ul>
+   <ol start="4">
+    <li>
+     <p>
+      <strong>
+       Configurar Vite para usar React (Agregar
+       <code>
+        vite.config.ts
+       </code>
+       ):
+      </strong>
+      Crea un archivo llamado
+      <code>
+       vite.config.ts
+      </code>
+      en la raíz de tu proyecto (junto a
+      <code>
+       package.json
+      </code>
+      y
+      <code>
+       tsconfig.json
+      </code>
+      ).
+     </p>
+     <p>
+      <strong>
+       <code>
+        vite.config.ts
+       </code>
+       :
+      </strong>
+     </p>
+    </li>
+   </ol>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vite'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">react</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@vitejs/plugin-react'</span><span class="p">;</span>
+
+<span class="c1">// https://vitejs.dev/config/</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">react</span><span class="p">()],</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    Esto le dice a Vite que use el plugin de React para procesar los archivos
+    <code>
+     .jsx
+    </code>
+    o
+    <code>
+     .tsx
+    </code>
+    .
+   </p>
+   <ol start="5">
+    <li>
+     <p>
+      <strong>
+       Configurar TypeScript para JSX (Modificar
+       <code>
+        tsconfig.json
+       </code>
+       ):
+      </strong>
+      Abre
+      <code>
+       tsconfig.json
+      </code>
+      y asegúrate de que el
+      <code>
+       compilerOptions
+      </code>
+      incluya
+      <code>
+       "jsx": "react-jsx"
+      </code>
+      o
+      <code>
+       "jsx": "react-jsxdev"
+      </code>
+      . La plantilla
+      <code>
+       vanilla-ts
+      </code>
+      podría tener
+      <code>
+       jsx
+      </code>
+      configurado de otra manera.
+     </p>
+     <p>
+      <strong>
+       <code>
+        tsconfig.json
+       </code>
+       :
+      </strong>
+     </p>
+    </li>
+   </ol>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ES2020"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"useDefineForClassFields"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lib"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"ES2020"</span><span class="p">,</span><span class="w"> </span><span class="s2">"DOM"</span><span class="p">,</span><span class="w"> </span><span class="s2">"DOM.Iterable"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ESNext"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"skipLibCheck"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+
+<span class="w">    </span><span class="cm">/* Bundler mode */</span>
+<span class="w">    </span><span class="nt">"moduleResolution"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bundler"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"allowImportingTsExtensions"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"resolveJsonModule"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"isolatedModules"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"noEmit"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"jsx"</span><span class="p">:</span><span class="w"> </span><span class="s2">"react-jsx"</span><span class="p">,</span><span class="w"> </span><span class="c1">// ¡Asegúrate de que esta línea esté presente!</span>
+
+<span class="w">    </span><span class="cm">/* Linting */</span>
+<span class="w">    </span><span class="nt">"strict"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"noUnusedLocals"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"noUnusedParameters"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"noFallthroughCasesInSwitch"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"include"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"src"</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"references"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./tsconfig.node.json"</span><span class="w"> </span><span class="p">}]</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ol start="6">
+    <li>
+     <p>
+      <strong>
+       Crear el punto de entrada de React (Modificar
+       <code>
+        src/main.ts
+       </code>
+       y
+       <code>
+        index.html
+       </code>
+       ):
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <p>
+        <strong>
+         Renombra
+         <code>
+          src/main.ts
+         </code>
+         a
+         <code>
+          src/main.tsx
+         </code>
+         :
+        </strong>
+        Esto es crucial para que Vite y TypeScript sepan que este archivo contendrá JSX/TSX.
+       </p>
+      </li>
+      <li>
+       <p>
+        <strong>
+         Modifica
+         <code>
+          src/main.tsx
+         </code>
+         para renderizar una app React:
+        </strong>
+        Elimina el contenido existente y reemplázalo con el código para montar tu aplicación React.
+       </p>
+       <p>
+        <strong>
+         <code>
+          src/main.tsx
+         </code>
+         :
+        </strong>
+       </p>
+      </li>
+     </ul>
+    </li>
+   </ol>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">ReactDOM</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-dom/client'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">App</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./App.tsx'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Ahora importamos nuestra App.tsx</span>
+<span class="k">import</span><span class="w"> </span><span class="s1">'./index.css'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Importa tus estilos globales aquí</span>
+
+<span class="c1">// Obtener el elemento raíz donde se montará la aplicación</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">rootElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'app'</span><span class="p">);</span>
+
+<span class="c1">// Asegurarse de que el elemento existe antes de montar</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">rootElement</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nx">rootElement</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">React</span><span class="p">.</span><span class="na">StrictMode</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">App</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">React</span><span class="p">.</span><span class="na">StrictMode</span><span class="p">&gt;,</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">"No se encontró el elemento 'app' en el DOM para montar la aplicación React."</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Crea
+       <code>
+        src/App.tsx
+       </code>
+       :
+      </strong>
+      Aquí residirá el componente principal de nuestra aplicación.
+     </p>
+     <p>
+      <strong>
+       <code>
+        src/App.tsx
+       </code>
+       (vacío para empezar):
+      </strong>
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Curiosidades</span><span class="w"> </span><span class="nx">Gatunas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Modifica
+       <code>
+        index.html
+       </code>
+       para incluir el punto de montaje:
+      </strong>
+      Abre
+      <code>
+       index.html
+      </code>
+      en la raíz de tu proyecto. Asegúrate de tener un
+      <code>
+       div
+      </code>
+      con
+      <code>
+       id="app"
+      </code>
+      donde React montará tu aplicación, y que se cargue
+      <code>
+       src/main.tsx
+      </code>
+      .
+     </p>
+     <p>
+      <strong>
+       <code>
+        index.html
+       </code>
+       :
+      </strong>
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">"en"</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"UTF-8"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"icon"</span> <span class="na">type</span><span class="o">=</span><span class="s">"image/svg+xml"</span> <span class="na">href</span><span class="o">=</span><span class="s">"/vite.svg"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1.0"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>React <span class="err">&amp;</span> TS Cats App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"app"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span> <span class="cm">&lt;!-- ¡Este es el punto de montaje de React! --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">"module"</span> <span class="na">src</span><span class="o">=</span><span class="s">"/src/main.tsx"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span> <span class="cm">&lt;!-- ¡Carga tu main.tsx! --&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <ol start="7">
+    <li>
+     <p>
+      <strong>
+       Integrar Bootstrap (Modificar
+       <code>
+        index.html
+       </code>
+       y
+       <code>
+        src/index.css
+       </code>
+       ):
+      </strong>
+     </p>
+     <ul>
+      <li>
+       <p>
+        <strong>
+         Agrega Bootstrap CDN a
+         <code>
+          index.html
+         </code>
+         :
+        </strong>
+        La forma más sencilla de añadir Bootstrap es a través de su CDN. Coloca estas líneas en la sección
+        <code>
+         &lt;head&gt;
+        </code>
+        de tu
+        <code>
+         index.html
+        </code>
+        .
+       </p>
+       <p>
+        <strong>
+         <code>
+          index.html
+         </code>
+         (parte de
+         <code>
+          &lt;head&gt;
+         </code>
+         ):
+        </strong>
+       </p>
+      </li>
+     </ul>
+    </li>
+   </ol>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"UTF-8"</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"icon"</span> <span class="na">type</span><span class="o">=</span><span class="s">"image/svg+xml"</span> <span class="na">href</span><span class="o">=</span><span class="s">"/vite.svg"</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1.0"</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>React <span class="err">&amp;</span> TS Cats App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="cm">&lt;!-- Bootstrap CSS --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">integrity</span><span class="o">=</span><span class="s">"sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">"anonymous"</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <p>
+      <strong>
+       Crea
+       <code>
+        src/index.css
+       </code>
+       (estilos globales y ajustes de Bootstrap):
+      </strong>
+      Este archivo contendrá nuestros estilos personalizados y sobrescribirá cualquier cosa que necesitemos de Bootstrap.
+     </p>
+     <p>
+      <strong>
+       <code>
+        src/index.css
+       </code>
+       :
+      </strong>
+     </p>
+    </li>
+   </ul>
+   <div class="highlight language-css">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span>
+<span class="w">  </span><span class="k">place-items</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">  </span><span class="k">min-width</span><span class="p">:</span><span class="w"> </span><span class="mi">320</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">  </span><span class="k">min-height</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">vh</span><span class="p">;</span>
+<span class="w">  </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#242424</span><span class="p">;</span><span class="w"> </span><span class="c">/* Fondo oscuro */</span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#f8f9fa</span><span class="p">;</span><span class="w"> </span><span class="c">/* Texto claro */</span>
+<span class="w">  </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="s1">'Inter'</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span><span class="w"> </span><span class="c">/* Fuente consistente */</span>
+<span class="p">}</span>
+
+<span class="p">#</span><span class="nn">app</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">width</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">;</span><span class="w"> </span><span class="c">/* Asegura que la app ocupe el ancho completo */</span>
+<span class="p">}</span>
+
+<span class="c">/* Estilos generales para el contenedor principal de la app */</span>
+<span class="p">.</span><span class="nc">card</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">max-width</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">  </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="kt">rem</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span><span class="w"> </span><span class="c">/* Centra la tarjeta */</span>
+<span class="w">  </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#343a40</span><span class="p">;</span><span class="w"> </span><span class="c">/* Fondo oscuro para la tarjeta */</span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#f8f9fa</span><span class="p">;</span><span class="w"> </span><span class="c">/* Texto claro dentro de la tarjeta */</span>
+<span class="w">  </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span><span class="w"> </span><span class="c">/* Elimina el borde predeterminado de Bootstrap */</span>
+<span class="w">  </span><span class="k">box-shadow</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">4</span><span class="kt">px</span><span class="w"> </span><span class="mi">8</span><span class="kt">px</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2</span><span class="p">);</span><span class="w"> </span><span class="c">/* Sombra sutil */</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">card-img-top</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">width</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">;</span>
+<span class="w">  </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="kc">auto</span><span class="p">;</span>
+<span class="w">  </span><span class="k">object-fit</span><span class="p">:</span><span class="w"> </span><span class="kc">cover</span><span class="p">;</span>
+<span class="w">  </span><span class="k">border-radius</span><span class="p">:</span><span class="w"> </span><span class="mf">0.25</span><span class="kt">rem</span><span class="w"> </span><span class="mf">0.25</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c">/* Bordes redondeados solo arriba */</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ol start="8">
+    <li>
+     <strong>
+      Iniciar el servidor de desarrollo:
+     </strong>
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>dev
+</pre>
+   </div>
+   <p>
+    Si todo está configurado correctamente, ahora deberías ver tu aplicación de React vacía en el navegador, con los estilos básicos de Bootstrap cargados.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="paso-2-declarando-los-estados-con-usestate-con-typescript">
+    🏷️ Paso 2: Declarando los Estados con
+    <code>
+     useState
+    </code>
+    (con TypeScript)
+   </h2>
+   <p>
+    Ahora, en
+    <code>
+     src/App.tsx
+    </code>
+    , declararemos los estados necesarios para el hecho del gato y la URL de la imagen, aprovechando el tipado de TypeScript.
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+
+<span class="c1">// Constantes para las URLs de las APIs</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">CAT_FACT_API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'https://catfact.ninja/fact'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">CAT_IMAGE_PREFIX_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'https://cataas.com'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">CAT_IMAGE_API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">CAT_IMAGE_PREFIX_URL</span><span class="si">}</span><span class="sb">/cat/says`</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Estado para almacenar el hecho del gato</span>
+<span class="w">  </span><span class="c1">// Tipo: string | null. Inicializado como null.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">fact</span><span class="p">,</span><span class="w"> </span><span class="nx">setFact</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Estado para almacenar la URL de la imagen del gato</span>
+<span class="w">  </span><span class="c1">// Tipo: string | null. Inicializado como null.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">imageUrl</span><span class="p">,</span><span class="w"> </span><span class="nx">setImageUrl</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Un estado adicional para manejar la carga de datos</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loading</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoading</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">true</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Estado para manejar los mensajes de error</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Estado para forzar la recarga del hecho (lo usaremos más adelante)</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">refetchTrigger</span><span class="p">,</span><span class="w"> </span><span class="nx">setRefetchTrigger</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;(</span><span class="mf">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="c1">// Utilizamos clases de Bootstrap para centrar y estilizar</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"container d-flex justify-content-center align-items-center min-vh-100"</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card shadow-lg p-3 mb-5 bg-dark text-white rounded"</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-body text-center"</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h1</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-title mb-4"</span><span class="p">&gt;</span><span class="nx">Curiosidades</span><span class="w"> </span><span class="nx">Gatunas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">          </span>
+<span class="w">          </span><span class="p">{</span><span class="cm">/* Mensaje de carga */</span><span class="p">}</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"spinner-border text-info"</span><span class="w"> </span><span class="na">role</span><span class="o">=</span><span class="s">"status"</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"visually-hidden"</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="p">...&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="cm">/* Mensaje de error */</span><span class="p">}</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"alert alert-danger mt-3"</span><span class="p">&gt;{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="cm">/* Hecho del gato */</span><span class="p">}</span>
+<span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">fact</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"lead mt-3"</span><span class="p">&gt;</span><span class="s2">"{fact}"</span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="cm">/* Imagen del gato */</span><span class="p">}</span>
+<span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">imageUrl</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">imageUrl</span><span class="p">}</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-img-top mt-3"</span><span class="w"> </span><span class="na">alt</span><span class="o">=</span><span class="p">{</span><span class="sb">`Gato con el texto: </span><span class="si">${</span><span class="nx">fact</span><span class="o">?</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">)[</span><span class="mf">0</span><span class="p">]</span><span class="si">}</span><span class="sb">`</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="cm">/* Mensaje si no se cargó nada y no hay error */</span><span class="p">}</span>
+<span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nx">fact</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"text-muted mt-3"</span><span class="p">&gt;</span><span class="nx">No</span><span class="w"> </span><span class="nx">se</span><span class="w"> </span><span class="nx">pudo</span><span class="w"> </span><span class="nx">cargar</span><span class="w"> </span><span class="nx">ninguna</span><span class="w"> </span><span class="nx">curiosidad</span><span class="w"> </span><span class="nx">gatuna</span><span class="p">.</span><span class="w"> </span><span class="nx">Inténtalo</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">nuevo</span><span class="p">.&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Explicación de los Estados y UI con Bootstrap:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Tipado explícito:
+     </strong>
+     <code>
+      useState&lt;string | null&gt;(null)
+     </code>
+     y
+     <code>
+      useState&lt;boolean&gt;(true)
+     </code>
+     dejan claro a TypeScript los posibles valores de cada estado. Esto nos ayuda a evitar errores como intentar
+     <code>
+      fact.split()
+     </code>
+     cuando
+     <code>
+      fact
+     </code>
+     es
+     <code>
+      null
+     </code>
+     .
+    </li>
+    <li>
+     <strong>
+      Clases de Bootstrap:
+     </strong>
+     Hemos añadido clases como
+     <code>
+      container
+     </code>
+     ,
+     <code>
+      d-flex
+     </code>
+     ,
+     <code>
+      justify-content-center
+     </code>
+     ,
+     <code>
+      align-items-center
+     </code>
+     ,
+     <code>
+      min-vh-100
+     </code>
+     para centrar todo en la pantalla.
+     <code>
+      card
+     </code>
+     ,
+     <code>
+      shadow-lg
+     </code>
+     ,
+     <code>
+      bg-dark
+     </code>
+     ,
+     <code>
+      text-white
+     </code>
+     ,
+     <code>
+      rounded
+     </code>
+     ,
+     <code>
+      card-title
+     </code>
+     ,
+     <code>
+      lead
+     </code>
+     ,
+     <code>
+      spinner-border
+     </code>
+     ,
+     <code>
+      alert alert-danger
+     </code>
+     se utilizan para estilizar el contenedor principal, el texto, la imagen, el spinner de carga y los mensajes de error.
+    </li>
+    <li>
+     <strong>
+      Renderizado condicional:
+     </strong>
+     La lógica para mostrar el spinner, el error, el hecho o la imagen sigue siendo la misma, pero ahora con los estilos de Bootstrap.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="paso-3-obteniendo-el-hecho-del-gato-con-useeffect">
+    ⚡ Paso 3: Obteniendo el Hecho del Gato con
+    <code>
+     useEffect
+    </code>
+   </h2>
+   <p>
+    Ahora, usaremos el primer
+    <code>
+     useEffect
+    </code>
+    para realizar la petición a la API de hechos de gatos. Esta petición se hará solo una vez (o cuando
+    <code>
+     refetchTrigger
+    </code>
+    cambie), cuando el componente se monte.
+   </p>
+   <h3 id="concepto-clave-useeffect-y-array-de-dependencias-o-refetchtrigger">
+    Concepto Clave:
+    <code>
+     useEffect
+    </code>
+    y Array de Dependencias
+    <code>
+     []
+    </code>
+    (o
+    <code>
+     [refetchTrigger]
+    </code>
+    )
+   </h3>
+   <p>
+    Cuando el array de dependencias de
+    <code>
+     useEffect
+    </code>
+    está vacío (
+    <code>
+     []
+    </code>
+    ), la función que le pasamos se ejecuta
+    <strong>
+     solo una vez
+    </strong>
+    después del primer renderizado del componente. Si incluimos
+    <code>
+     [refetchTrigger]
+    </code>
+    , se ejecutará cada vez que su valor cambie, lo cual usaremos para la recarga manual.
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="c1">// ... (constantes de APIs)</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">fact</span><span class="p">,</span><span class="w"> </span><span class="nx">setFact</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">imageUrl</span><span class="p">,</span><span class="w"> </span><span class="nx">setImageUrl</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loading</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoading</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">refetchTrigger</span><span class="p">,</span><span class="w"> </span><span class="nx">setRefetchTrigger</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;(</span><span class="mf">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Primer useEffect: Obtener el hecho del gato</span>
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// Indicamos que estamos cargando</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span><span class="w">   </span><span class="c1">// Limpiamos errores previos</span>
+<span class="w">    </span><span class="nx">setFact</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span><span class="w">    </span><span class="c1">// Limpiamos el hecho anterior</span>
+<span class="w">    </span><span class="nx">setImageUrl</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span><span class="w"> </span><span class="c1">// Limpiamos la imagen anterior</span>
+
+<span class="w">    </span><span class="c1">// Función asíncrona dentro del efecto para usar async/await</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchCatFact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">CAT_FACT_API_URL</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Error al obtener el hecho del gato'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">        </span><span class="nx">setFact</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">fact</span><span class="p">);</span><span class="w"> </span><span class="c1">// Actualizamos el estado `fact`</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Aseguramos que `err` es de tipo `Error` para acceder a `message`</span>
+<span class="w">        </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Un error desconocido ocurrió.'</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// `setLoading(false)` se mueve a la lógica de la imagen</span>
+<span class="w">        </span><span class="c1">// para que la UI de carga se muestre hasta que AMBOS estén listos</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchCatFact</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">refetchTrigger</span><span class="p">]);</span><span class="w"> </span><span class="c1">// Se ejecuta al montar o cuando `refetchTrigger` cambia</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="c1">// ... (UI de Bootstrap)</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     En este punto:
+    </strong>
+    La aplicación intentará cargar el hecho del gato. Verás el spinner y luego el hecho. La imagen aún no se mostrará.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="paso-4-la-interdependencia-de-estados-hecho-imagen">
+    🔗 Paso 4: La Interdependencia de Estados: Hecho -&gt; Imagen
+   </h2>
+   <p>
+    Aquí es donde reside el corazón de este ejemplo: la imagen del gato depende directamente del hecho que hemos recuperado. Necesitamos un segundo
+    <code>
+     useEffect
+    </code>
+    que se active
+    <strong>
+     cada vez que el
+     <code>
+      fact
+     </code>
+     cambie
+    </strong>
+    .
+   </p>
+   <h3 id="concepto-clave-useeffect-con-dependencias-especificas">
+    Concepto Clave:
+    <code>
+     useEffect
+    </code>
+    con Dependencias Específicas
+   </h3>
+   <p>
+    Si el array de dependencias de
+    <code>
+     useEffect
+    </code>
+    contiene variables (ej.
+    <code>
+     [fact]
+    </code>
+    ), la función del efecto se ejecutará
+    <strong>
+     cada vez que esas variables cambien de valor
+    </strong>
+    .
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="c1">// ... (constantes de APIs)</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">fact</span><span class="p">,</span><span class="w"> </span><span class="nx">setFact</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">imageUrl</span><span class="p">,</span><span class="w"> </span><span class="nx">setImageUrl</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loading</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoading</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">refetchTrigger</span><span class="p">,</span><span class="w"> </span><span class="nx">setRefetchTrigger</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;(</span><span class="mf">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Primer useEffect: Obtener el hecho del gato (se mantiene igual)</span>
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setFact</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setImageUrl</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchCatFact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">CAT_FACT_API_URL</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Error al obtener el hecho del gato'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">        </span><span class="nx">setFact</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">fact</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Un error desconocido ocurrió.'</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchCatFact</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">refetchTrigger</span><span class="p">]);</span>
+
+<span class="w">  </span><span class="c1">// Segundo useEffect: Obtener la imagen del gato, DEPENDIENDO del `fact`</span>
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ⚠️ Controlamos si `fact` aún no tiene valor (al inicio o si hubo error en la primera API)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">fact</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setImageUrl</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">      </span><span class="c1">// Si no hay fact Y ya terminamos la carga (es decir, el primer fetch terminó)</span>
+<span class="w">      </span><span class="c1">// entonces podemos detener el loading aquí.</span>
+<span class="w">      </span><span class="c1">// (Podría ser más sofisticado, pero para el ejemplo es suficiente)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">loading</span><span class="p">)</span><span class="w"> </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Definimos una interfaz para el tipo de respuesta de la API de imágenes</span>
+<span class="w">    </span><span class="kd">interface</span><span class="w"> </span><span class="nx">CatImageApiResponse</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">      </span><span class="c1">// otras propiedades que no nos interesan ahora</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchCatImage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// 1. Extraer la primera palabra del hecho</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">firstWord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">fact</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">)[</span><span class="mf">0</span><span class="p">];</span><span class="w"> </span><span class="c1">// Usamos `split(' ')[0]` para la primera palabra</span>
+
+<span class="w">        </span><span class="c1">// 2. Construir la URL de la API de imágenes</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">encodedFirstWord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">firstWord</span><span class="p">);</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">catImageApiEndpoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">CAT_IMAGE_API_URL</span><span class="si">}</span><span class="sb">/</span><span class="si">${</span><span class="nx">encodedFirstWord</span><span class="si">}</span><span class="sb">?json=true`</span><span class="p">;</span>
+
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">catImageApiEndpoint</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="sb">`Error al obtener la imagen para "</span><span class="si">${</span><span class="nx">firstWord</span><span class="si">}</span><span class="sb">"`</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">imageData</span><span class="o">:</span><span class="w"> </span><span class="kt">CatImageApiResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">        </span><span class="c1">// La API devuelve una URL relativa, necesitamos el prefijo</span>
+<span class="w">        </span><span class="nx">setImageUrl</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">CAT_IMAGE_PREFIX_URL</span><span class="si">}${</span><span class="nx">imageData</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Un error desconocido ocurrió al cargar la imagen.'</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">setImageUrl</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span><span class="w"> </span><span class="c1">// Aseguramos que la imagen sea null si hay error</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setLoading</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span><span class="w"> </span><span class="c1">// La carga completa ha finalizado</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchCatImage</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">fact</span><span class="p">]);</span><span class="w"> </span><span class="c1">// ¡Array de dependencias con `fact`! Se ejecuta cada vez que `fact` cambie.</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleNewFact</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Al hacer clic, incrementamos `refetchTrigger`,</span>
+<span class="w">    </span><span class="c1">// lo que provocará que el primer `useEffect` se ejecute de nuevo.</span>
+<span class="w">    </span><span class="nx">setRefetchTrigger</span><span class="p">(</span><span class="nx">prev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">prev</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"container d-flex justify-content-center align-items-center min-vh-100"</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card shadow-lg p-3 mb-5 bg-dark text-white rounded"</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-body text-center"</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h1</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-title mb-4"</span><span class="p">&gt;</span><span class="nx">Curiosidades</span><span class="w"> </span><span class="nx">Gatunas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{</span><span class="nx">handleNewFact</span><span class="p">}</span><span class="w"> </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loading</span><span class="p">}</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"btn btn-primary mb-4"</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">{</span><span class="nx">loading</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span>
+<span class="w">              </span><span class="p">&lt;&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"spinner-border spinner-border-sm me-2"</span><span class="w"> </span><span class="na">role</span><span class="o">=</span><span class="s">"status"</span><span class="w"> </span><span class="na">aria-hidden</span><span class="o">=</span><span class="s">"true"</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="nx">Cargando</span><span class="p">...</span>
+<span class="w">              </span><span class="p">&lt;/&gt;</span>
+<span class="w">            </span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Generar Nueva Curiosidad'</span><span class="p">}</span>
+<span class="w">          </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">          </span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"spinner-border text-info"</span><span class="w"> </span><span class="na">role</span><span class="o">=</span><span class="s">"status"</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"visually-hidden"</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="p">...&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"alert alert-danger mt-3"</span><span class="p">&gt;{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">fact</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"lead mt-3"</span><span class="p">&gt;</span><span class="s2">"{fact}"</span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">imageUrl</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">imageUrl</span><span class="p">}</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-img-top mt-3"</span><span class="w"> </span><span class="na">alt</span><span class="o">=</span><span class="p">{</span><span class="sb">`Gato con el texto: </span><span class="si">${</span><span class="nx">fact</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">)[</span><span class="mf">0</span><span class="p">]</span><span class="si">}</span><span class="sb">`</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loading</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nx">fact</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"text-muted mt-3"</span><span class="p">&gt;</span><span class="nx">No</span><span class="w"> </span><span class="nx">se</span><span class="w"> </span><span class="nx">pudo</span><span class="w"> </span><span class="nx">cargar</span><span class="w"> </span><span class="nx">ninguna</span><span class="w"> </span><span class="nx">curiosidad</span><span class="w"> </span><span class="nx">gatuna</span><span class="p">.</span><span class="w"> </span><span class="nx">Inténtalo</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">nuevo</span><span class="p">.&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="analisis-de-la-interdependencia-y-buenas-practicas">
+    💡 Análisis de la Interdependencia y Buenas Prácticas
+   </h2>
+   <h3 id="1-separacion-de-responsabilidades-en-useeffect">
+    1. Separación de Responsabilidades en
+    <code>
+     useEffect
+    </code>
+   </h3>
+   <p>
+    Hemos usado
+    <strong>
+     dos
+     <code>
+      useEffect
+     </code>
+     separados
+    </strong>
+    . ¿Por qué?
+*
+    <strong>
+     Primer
+     <code>
+      useEffect
+     </code>
+     (
+     <code>
+      [refetchTrigger]
+     </code>
+     ):
+    </strong>
+    Su única responsabilidad es cargar el
+    <code>
+     fact
+    </code>
+    inicial (o un nuevo
+    <code>
+     fact
+    </code>
+    al hacer clic). Se ejecuta al montar o cuando se solicita una nueva curiosidad.
+*
+    <strong>
+     Segundo
+     <code>
+      useEffect
+     </code>
+     (
+     <code>
+      [fact]
+     </code>
+     ):
+    </strong>
+    Su responsabilidad es cargar la
+    <code>
+     imageUrl
+    </code>
+    , y
+    <em>
+     solo
+    </em>
+    lo hace cuando el
+    <code>
+     fact
+    </code>
+    ya está disponible y/o cambia.
+   </p>
+   <p>
+    Esta separación mejora la legibilidad y mantenibilidad del código. Cada efecto tiene una misión clara y un conjunto específico de dependencias. Si ambos fetches estuvieran en el mismo
+    <code>
+     useEffect
+    </code>
+    con
+    <code>
+     []
+    </code>
+    , la imagen nunca se cargaría porque
+    <code>
+     fact
+    </code>
+    sería
+    <code>
+     null
+    </code>
+    en el momento de la primera ejecución. Si lo hubiéramos puesto con
+    <code>
+     [fact]
+    </code>
+    , el
+    <code>
+     fact
+    </code>
+    dependería del
+    <code>
+     fact
+    </code>
+    anterior, y nunca se inicializaría (caería en un bucle o no se ejecutaría).
+   </p>
+   <h3 id="2-control-de-flujo-y-if-fact">
+    2. Control de Flujo y
+    <code>
+     if (!fact)
+    </code>
+   </h3>
+   <p>
+    Observa la línea
+    <code>
+     if (!fact) { return; }
+    </code>
+    en el segundo
+    <code>
+     useEffect
+    </code>
+    . Esto es crucial:
+*   Cuando el componente se monta por primera vez,
+    <code>
+     fact
+    </code>
+    es
+    <code>
+     null
+    </code>
+    . Si no tuviéramos este
+    <code>
+     if
+    </code>
+    , el segundo
+    <code>
+     useEffect
+    </code>
+    intentaría
+    <code>
+     fact.split(' ')
+    </code>
+    sobre
+    <code>
+     null
+    </code>
+    , lo que causaría un error en tiempo de ejecución.
+*   Este
+    <code>
+     if
+    </code>
+    asegura que la lógica de la imagen solo se ejecute cuando
+    <code>
+     fact
+    </code>
+    ya tiene un valor válido.
+*   También es vital para manejar el escenario donde el primer
+    <code>
+     fetch
+    </code>
+    falla y
+    <code>
+     fact
+    </code>
+    permanece
+    <code>
+     null
+    </code>
+    .
+   </p>
+   <h3 id="3-actualizaciones-asincronas-de-estado">
+    3. Actualizaciones Asíncronas de Estado
+   </h3>
+   <p>
+    Recuerda que las llamadas a
+    <code>
+     setFact
+    </code>
+    y
+    <code>
+     setImageUrl
+    </code>
+    son
+    <strong>
+     asíncronas
+    </strong>
+    . Esto significa que cuando el primer
+    <code>
+     useEffect
+    </code>
+    llama a
+    <code>
+     setFact(data.fact)
+    </code>
+    , el valor de
+    <code>
+     fact
+    </code>
+    <strong>
+     no cambia instantáneamente
+    </strong>
+    dentro de esa misma ejecución de
+    <code>
+     useEffect
+    </code>
+    . Sin embargo, React garantiza que:
+*   Una vez que
+    <code>
+     setFact
+    </code>
+    es llamado y el componente se re-renderiza con el nuevo
+    <code>
+     fact
+    </code>
+    .
+*   El segundo
+    <code>
+     useEffect
+    </code>
+    detectará que
+    <code>
+     fact
+    </code>
+    ha cambiado (de
+    <code>
+     null
+    </code>
+    a la nueva cadena de texto) y se ejecutará.
+   </p>
+   <p>
+    Este es el mecanismo fundamental por el cual un estado depende del otro en React:
+    <strong>
+     un estado se actualiza, el componente se re-renderiza, y
+     <code>
+      useEffect
+     </code>
+     (con sus dependencias) detecta el cambio y actúa en consecuencia.
+    </strong>
+   </p>
+   <h3 id="4-manejo-de-carga-y-errores-con-typescript">
+    4. Manejo de Carga y Errores (con TypeScript)
+   </h3>
+   <ul>
+    <li>
+     Los estados
+     <code>
+      loading
+     </code>
+     y
+     <code>
+      error
+     </code>
+     (ambos tipados) aseguran que la UI muestra un indicador de actividad y mensajes claros al usuario.
+    </li>
+    <li>
+     El uso de
+     <code>
+      async/await
+     </code>
+     en las funciones
+     <code>
+      fetchCatFact
+     </code>
+     y
+     <code>
+      fetchCatImage
+     </code>
+     mejora la legibilidad del código asíncrono.
+    </li>
+    <li>
+     En los bloques
+     <code>
+      catch
+     </code>
+     , hemos usado
+     <code>
+      err instanceof Error ? err.message : 'Un error desconocido ocurrió.'
+     </code>
+     para manejar los errores de manera segura en TypeScript, asegurando que
+     <code>
+      err
+     </code>
+     es de tipo
+     <code>
+      Error
+     </code>
+     antes de acceder a
+     <code>
+      message
+     </code>
+     .
+    </li>
+   </ul>
+   <h3 id="5-tipado-con-typescript">
+    5. Tipado con TypeScript
+   </h3>
+   <p>
+    Hemos usado
+    <code>
+     useState&lt;string | null&gt;(null)
+    </code>
+    y
+    <code>
+     useState&lt;boolean&gt;(true)
+    </code>
+    :
+*   Esto le dice a TypeScript las posibles formas de la variable.
+*   TypeScript nos ayuda a prevenir errores como intentar
+    <code>
+     fact.split()
+    </code>
+    cuando
+    <code>
+     fact
+    </code>
+    es
+    <code>
+     null
+    </code>
+    , forzándonos a usar el operador de encadenamiento opcional (
+    <code>
+     fact?.split()
+    </code>
+    ) o a realizar comprobaciones (
+    <code>
+     if (fact)
+    </code>
+    ).
+*   También hemos definido una
+    <code>
+     interface CatImageApiResponse
+    </code>
+    para tipar la respuesta de la segunda API, lo que mejora la claridad y seguridad al trabajar con los datos recibidos.
+   </p>
+   <h3 id="6-integracion-de-bootstrap">
+    6. Integración de Bootstrap
+   </h3>
+   <ul>
+    <li>
+     Bootstrap se ha integrado simplemente añadiendo su CDN en el
+     <code>
+      index.html
+     </code>
+     .
+    </li>
+    <li>
+     Se han utilizado diversas clases de Bootstrap (
+     <code>
+      container
+     </code>
+     ,
+     <code>
+      card
+     </code>
+     ,
+     <code>
+      btn
+     </code>
+     ,
+     <code>
+      spinner-border
+     </code>
+     ,
+     <code>
+      alert
+     </code>
+     ) para dar estilos rápidamente al diseño de la aplicación, haciendo que se vea moderna y responsiva sin escribir mucho CSS personalizado. Los estilos en
+     <code>
+      index.css
+     </code>
+     son mínimos, solo para el fondo y centrado general.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="conclusion">
+    🏁 Conclusión
+   </h2>
+   <p>
+    Este ejemplo de hechos e imágenes de gatos, configurado manualmente con Vite y TypeScript e integrado con Bootstrap, es una poderosa demostración de cómo:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Configurar un proyecto React desde una base "Vanilla"
+     </strong>
+     te da un entendimiento más profundo de cómo se interconectan las herramientas.
+    </li>
+    <li>
+     <strong>
+      <code>
+       useState
+      </code>
+     </strong>
+     y
+     <strong>
+      <code>
+       useEffect
+      </code>
+     </strong>
+     son la columna vertebral de los componentes funcionales, permitiéndonos gestionar el estado y los efectos secundarios de manera efectiva.
+    </li>
+    <li>
+     <strong>
+      La interdependencia de estados
+     </strong>
+     se gestiona elegantemente a través de los arrays de dependencias de
+     <code>
+      useEffect
+     </code>
+     , donde los cambios en un estado disparan la lógica de otro efecto.
+    </li>
+    <li>
+     <strong>
+      TypeScript
+     </strong>
+     añade una capa crucial de seguridad y claridad, ayudándonos a manejar los posibles estados (
+     <code>
+      null
+     </code>
+     ,
+     <code>
+      string
+     </code>
+     , etc.) y las estructuras de datos con confianza.
+    </li>
+    <li>
+     <strong>
+      Bootstrap
+     </strong>
+     nos permite crear interfaces atractivas y responsivas con una mínima inversión de tiempo en CSS, liberándonos para centrarnos en la lógica de React.
+    </li>
+   </ul>
+   <p>
+    Dominar estos conceptos te permitirá construir aplicaciones React robustas y dinámicas, gestionando datos de forma eficiente y con una clara separación de responsabilidades, incluso en escenarios de configuración más detallados.
+   </p>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

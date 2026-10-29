@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   ciberseguridad_guia
+  </title>
+ </head>
+ <body>
+  <h3 id="guion-de-clase-practicas-de-seguridad-en-codigo-web-para-desarrolladores-junior">
+   Guion de Clase: Prácticas de Seguridad en Código Web para Desarrolladores
+   <em>
+    Junior
+   </em>
+  </h3>
+  <p>
+   <strong>
+    Objetivo General:
+   </strong>
+   Que los alumnos comprendan cómo ocurren las vulnerabilidades de código comunes en aplicaciones web y adquieran habilidades para corregirlas mediante la práctica.
+  </p>
+  <p>
+   <strong>
+    Materiales Necesarios:
+   </strong>
+   *   Proyector/Pizarra.
+*   Conexión a internet (para demostraciones o referencias).
+*   Máquinas de los alumnos con entornos de desarrollo (XAMPP/WAMP, Docker, Node.js) y las aplicaciones vulnerables instaladas (DVWA, OWASP Juice Shop, WebGoat, bWAPP, Mutillidae).
+*   Códigos de ejemplo vulnerables (PHP/HTML/JS) para los ejercicios autocontenidos.
+  </p>
+  <hr/>
+  <h4 id="introduccion-10-15-min">
+   <strong>
+    Introducción (10-15 min)
+   </strong>
+  </h4>
+  <ol>
+   <li>
+    <p>
+     <strong>
+      Bienvenida y Contexto (5 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      Iniciar la clase comentando la importancia de la ciberseguridad en el desarrollo web. "No basta con que la app funcione, ¡tiene que ser segura!"
+     </li>
+     <li>
+      Explicar que el objetivo es entender las vulnerabilidades
+      <em>
+       desde el código
+      </em>
+      para poder prevenirlas y corregirlas.
+     </li>
+     <li>
+      Enfoque práctico: "Vamos a ensuciarnos las manos".
+     </li>
+     <li>
+      <strong>
+       Advertencia Crucial:
+      </strong>
+      Recalcar la importancia de practicar
+      <em>
+       solo
+      </em>
+      en entornos controlados (DVWA, Juice Shop, etc.). "¡Nunca intenten esto en sistemas ajenos sin autorización!"
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Visión General de Vulnerabilidades (5-10 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      Mencionar que se cubrirán las más comunes (OWASP Top 10).
+     </li>
+     <li>
+      Hacer un breve listado: SQLi, XSS, CSRF, Validación Débil, Autenticación Insegura.
+     </li>
+     <li>
+      "Estas son las puertas de entrada más comunes para un atacante. Nuestro trabajo es cerrarlas."
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <hr/>
+  <h4 id="modulo-1-inyeccion-sql-sqli-45-60-min">
+   <strong>
+    Módulo 1: Inyección SQL (SQLi) (45-60 min)
+   </strong>
+  </h4>
+  <ol>
+   <li>
+    <p>
+     <strong>
+      Teoría y Concepto (10 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       ¿Qué es?
+      </strong>
+      Inyectar código SQL malicioso a través de entradas del usuario. "Piensen en la app como un traductor; si el usuario da una instrucción maliciosa, el traductor la ejecuta sin pensar."
+     </li>
+     <li>
+      <strong>
+       ¿Por qué ocurre?
+      </strong>
+      Concatena directamente entradas de usuario en consultas SQL.
+     </li>
+     <li>
+      <strong>
+       Ejemplo clásico:
+      </strong>
+      <code>
+       admin' --
+      </code>
+      o
+      <code>
+       ' OR 1=1 --
+      </code>
+      en un login. Mostrar cómo
+      <code>
+       SELECT * FROM users WHERE username='admin' --' AND password='cualquiercosa'
+      </code>
+      se convierte en
+      <code>
+       SELECT * FROM users WHERE username='admin'
+      </code>
+      (todo lo demás es comentario).
+     </li>
+     <li>
+      <strong>
+       Consecuencias:
+      </strong>
+      Bypassear autenticación, extraer datos sensibles, manipular base de datos.
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Práctica Guiada (30-40 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Opción A (DVWA):
+      </strong>
+      <ul>
+       <li>
+        Instrucciones para montar DVWA (si no está hecho).
+       </li>
+       <li>
+        Navegar a la sección de SQL Injection (Low Security).
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        El instructor muestra cómo inyectar
+        <code>
+         ' OR 1=1 --
+        </code>
+        o similar en el campo de usuario/ID y lograr acceso/obtener información.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Que lo repliquen. "Ahora es su turno, intenten 'engañar' a la aplicación."
+       </li>
+       <li>
+        <strong>
+         Guía para solución:
+        </strong>
+        Discutir cómo se mitiga. Mostrar cómo subir el nivel de seguridad de DVWA y ver los cambios en el código, o usar el código de ejemplo.
+       </li>
+      </ul>
+     </li>
+     <li>
+      <strong>
+       Opción B (Código Autocontenido PHP/JS):
+      </strong>
+      <ul>
+       <li>
+        Distribuir el código PHP vulnerable.
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Mostrar la línea vulnerable (
+        <code>
+         $query = "..."
+        </code>
+        ) y cómo un input
+        <code>
+         admin' --
+        </code>
+        cambia la lógica de la consulta.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Reproducir el ataque.
+       </li>
+       <li>
+        <p>
+         <strong>
+          Guía para solución:
+         </strong>
+         Corregir el código usando
+         <strong>
+          consultas preparadas (PDO/MySQLi)
+         </strong>
+         . Explicar
+         <code>
+          bindParam
+         </code>
+         ,
+         <code>
+          execute
+         </code>
+         .
+         <div class="highlight language-php">
+          <pre><span></span><span class="x">            // Ejemplo de código seguro (PHP con PDO)</span>
+<span class="x">            $stmt = $conn-&gt;prepare("SELECT * FROM users WHERE username = :user AND password = :pass");</span>
+<span class="x">            $stmt-&gt;bindParam(':user', $usuario);</span>
+<span class="x">            $stmt-&gt;bindParam(':pass', $pass);</span>
+<span class="x">            $stmt-&gt;execute();</span>
+<span class="x">            </span>
+</pre>
+         </div>
+        </p>
+        <p>
+         "¡Ahora el motor de la base de datos sabe qué es dato y qué es código!"
+    *
+         <strong>
+          Reflexión Post-práctica:
+         </strong>
+         Verificar que el ataque ya no funciona. ¿Por qué las consultas preparadas lo evitan?
+        </p>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Mitigación Clave (5 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Consultas Preparadas / Parametrizadas:
+      </strong>
+      ¡La solución principal!
+     </li>
+     <li>
+      Validación de entrada (filtrado de caracteres).
+     </li>
+     <li>
+      Principio de mínimos privilegios en la BD.
+     </li>
+     <li>
+      Usar ORMs que gestionen esto automáticamente (pero entender la base).
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <hr/>
+  <h4 id="modulo-2-cross-site-scripting-xss-45-60-min">
+   <strong>
+    Módulo 2: Cross-Site Scripting (XSS) (45-60 min)
+   </strong>
+  </h4>
+  <ol>
+   <li>
+    <p>
+     <strong>
+      Teoría y Concepto (10 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       ¿Qué es?
+      </strong>
+      Inyectar código JavaScript o HTML malicioso en la página, ejecutado en el navegador de otros usuarios. "El atacante hace que
+      <em>
+       tu navegador
+      </em>
+      ejecute su código, no el servidor."
+     </li>
+     <li>
+      <strong>
+       Tipos:
+      </strong>
+      Reflejado, Almacenado, DOM. Brevemente explicar la diferencia.
+     </li>
+     <li>
+      <strong>
+       ¿Por qué ocurre?
+      </strong>
+      La aplicación muestra contenido de usuario sin sanitizar/escapar.
+     </li>
+     <li>
+      <strong>
+       Ejemplo:
+      </strong>
+      <code>
+       &lt;script&gt;alert('XSS')&lt;/script&gt;
+      </code>
+      en un comentario o campo de búsqueda.
+     </li>
+     <li>
+      <strong>
+       Consecuencias:
+      </strong>
+      Robo de cookies/sesiones, redirecciones, defacing, spam.
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Práctica Guiada (30-40 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Opción A (DVWA/Juice Shop):
+      </strong>
+      <ul>
+       <li>
+        Navegar a la sección de XSS Reflected (Low Security).
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Instructor inyecta
+        <code>
+         &lt;script&gt;alert(document.cookie)&lt;/script&gt;
+        </code>
+        o similar en el campo de búsqueda. Mostrar cómo se ejecuta el alert.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Que repliquen. "Intenten robar la cookie de DVWA o al menos ejecutar un
+        <code>
+         alert
+        </code>
+        ."
+       </li>
+       <li>
+        Navegar a XSS Stored.
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Instructor inyecta un script en un campo de comentario y recarga la página. Mostrar cómo persiste.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Replicar el XSS almacenado.
+       </li>
+       <li>
+        <strong>
+         Guía para solución:
+        </strong>
+        Subir nivel de seguridad o usar el código de ejemplo.
+       </li>
+      </ul>
+     </li>
+     <li>
+      <strong>
+       Opción B (Código Autocontenido HTML/JS/PHP):
+      </strong>
+      <ul>
+       <li>
+        Distribuir los archivos HTML/PHP vulnerables (ej.
+        <code>
+         echo $_GET['input']
+        </code>
+        ).
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Ingresar
+        <code>
+         &lt;script&gt;alert('¡Soy un XSS!')&lt;/script&gt;
+        </code>
+        en el formulario y ver la ejecución.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Reproducir los ataques.
+       </li>
+       <li>
+        <p>
+         <strong>
+          Guía para solución:
+         </strong>
+         Corregir el código PHP usando
+         <code>
+          htmlspecialchars()
+         </code>
+         o librerías de sanitización.
+         <div class="highlight language-php">
+          <pre><span></span><span class="x">            // Ejemplo de código seguro (PHP)</span>
+<span class="x">            echo htmlspecialchars($_GET['input'], ENT_QUOTES, 'UTF-8');</span>
+<span class="x">            </span>
+</pre>
+         </div>
+        </p>
+        <p>
+         "Con
+         <code>
+          htmlspecialchars
+         </code>
+         ,
+         <code>
+          &lt;
+         </code>
+         se convierte en
+         <code>
+          &amp;lt;
+         </code>
+         , ¡así no se ejecuta como código!"
+    *
+         <strong>
+          Reflexión Post-práctica:
+         </strong>
+         Verificar que los scripts ya no se ejecutan.
+        </p>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Mitigación Clave (5 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Sanitizar y Codificar (Escape):
+      </strong>
+      SIEMPRE codificar la salida antes de mostrarla en HTML.
+     </li>
+     <li>
+      Validación estricta de entrada.
+     </li>
+     <li>
+      Content Security Policy (CSP).
+     </li>
+     <li>
+      Cookies HttpOnly.
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <hr/>
+  <h4 id="modulo-3-cross-site-request-forgery-csrf-45-60-min">
+   <strong>
+    Módulo 3: Cross-Site Request Forgery (CSRF) (45-60 min)
+   </strong>
+  </h4>
+  <ol>
+   <li>
+    <p>
+     <strong>
+      Teoría y Concepto (10 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       ¿Qué es?
+      </strong>
+      Un atacante induce al navegador de un usuario autenticado a enviar una petición no deseada. "El navegador es leal a la víctima, pero lo engañan para que haga algo en secreto."
+     </li>
+     <li>
+      <strong>
+       ¿Por qué ocurre?
+      </strong>
+      La aplicación confía ciegamente en las cookies de sesión y no verifica el origen de la petición.
+     </li>
+     <li>
+      <strong>
+       Ejemplo:
+      </strong>
+      Sitio malicioso con un
+      <code>
+       &lt;img src="banco.com/transfer?cantidad=1000&amp;destino=atacante"&gt;
+      </code>
+      o un formulario POST oculto.
+     </li>
+     <li>
+      <strong>
+       Consecuencias:
+      </strong>
+      Transferencias de dinero, cambio de contraseñas, eliminación de cuentas (todo bajo la identidad de la víctima).
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Práctica Guiada (30-40 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Opción A (DVWA):
+      </strong>
+      <ul>
+       <li>
+        Navegar a la sección de CSRF (Low Security). (Normalmente un cambio de contraseña de admin).
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Instructor muestra la URL o el formulario POST legítimo. Luego abre una página HTML maliciosa (local) que envía la petición POST automáticamente. Mostrar cómo, estando autenticado en DVWA, la acción se ejecuta sin interacción.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Replicar el ataque. "¡Imaginen que es su banco y esto ocurre!"
+       </li>
+       <li>
+        <strong>
+         Guía para solución:
+        </strong>
+        Discutir la necesidad de un token anti-CSRF. Subir nivel de seguridad de DVWA para ver cómo se genera y verifica.
+       </li>
+      </ul>
+     </li>
+     <li>
+      <strong>
+       Opción B (Código Autocontenido PHP/HTML):
+      </strong>
+      <ul>
+       <li>
+        Distribuir
+        <em>
+         victima.php
+        </em>
+        (acción sensible sin protección) y
+        <em>
+         atacante.html
+        </em>
+        .
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Mostrar cómo
+        <em>
+         atacante.html
+        </em>
+        fuerza una petición a
+        <em>
+         victima.php
+        </em>
+        .
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Replicar el ataque.
+       </li>
+       <li>
+        <strong>
+         Guía para solución:
+        </strong>
+        Modificar
+        <em>
+         victima.php
+        </em>
+        para
+        <strong>
+         generar y verificar un token CSRF
+        </strong>
+        .
+        <div class="highlight language-php">
+         <div class="collapsible-container" data-max-lines="6">
+          <pre><span></span><span class="x">            // En el formulario legítimo (generar token):</span>
+<span class="x">            session_start();</span>
+<span class="x">            if (empty($_SESSION['csrf_token'])) {</span>
+<span class="x">                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));</span>
+<span class="x">            }</span>
+<span class="x">            // En el HTML:</span>
+<span class="x">            echo '&lt;input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '"&gt;';</span></pre>
+         </div>
+        </div>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <p>
+   <span class="x">
+    // En el controlador (verificar token):
+   </span>
+   <span class="x">
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+   </span>
+   <span class="x">
+    die('CSRF Token inválido');
+   </span>
+   <span class="x">
+    }
+   </span>
+   <span class="x">
+    // Procede con la acción si el token es válido
+   </span>
+   <span class="x">
+   </span>
+  </p>
+  <pre><code>        "Ahora, el sitio malicioso no puede adivinar este token, ¡la aplicación sabe que la petición es de su propio formulario!"
+*   **Reflexión Post-práctica:** Verificar que el ataque ya no es posible.
+</code></pre>
+  <ol start="3">
+   <li>
+    <strong>
+     Mitigación Clave (5 min)
+    </strong>
+    <ul>
+     <li>
+      <strong>
+       Tokens Anti-CSRF:
+      </strong>
+      ¡La defensa principal!
+     </li>
+     <li>
+      Verificar cabeceras
+      <code>
+       Referer
+      </code>
+      /
+      <code>
+       Origin
+      </code>
+      .
+     </li>
+     <li>
+      Usar métodos HTTP adecuados (POST para cambios de estado).
+     </li>
+     <li>
+      Asegurarse de que el token sea
+      <em>
+       por usuario y por sesión
+      </em>
+      .
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <hr/>
+  <h4 id="modulo-4-validacion-de-entrada-debil-45-60-min">
+   <strong>
+    Módulo 4: Validación de Entrada Débil (45-60 min)
+   </strong>
+  </h4>
+  <ol>
+   <li>
+    <p>
+     <strong>
+      Teoría y Concepto (10 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       ¿Qué es?
+      </strong>
+      No verificar o filtrar correctamente los datos del usuario. "Si no revisamos lo que nos dan, ¡nos pueden dar cualquier cosa!"
+     </li>
+     <li>
+      <strong>
+       ¿Por qué ocurre?
+      </strong>
+      Confianza en el usuario, solo validación en frontend, validación incompleta.
+     </li>
+     <li>
+      <strong>
+       Ejemplo:
+      </strong>
+      Campo de edad acepta texto, campo de email acepta "cualquiera", subir un
+      <code>
+       .php
+      </code>
+      disfrazado de imagen.
+     </li>
+     <li>
+      <strong>
+       Consecuencias:
+      </strong>
+      SQLi/XSS (si no se valida antes de usar), carga de archivos maliciosos, errores lógicos, DoS.
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Práctica Guiada (30-40 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Ejercicio de Bypass de Validación Cliente-Servidor:
+      </strong>
+      <ul>
+       <li>
+        Distribuir una página HTML con formulario (email, edad) con validación HTML5/JS (ej.
+        <code>
+         type="email"
+        </code>
+        ,
+        <code>
+         min="18"
+        </code>
+        ). Servidor simplemente hace
+        <code>
+         echo
+        </code>
+        o inserta sin validar.
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Instructor muestra que el frontend bloquea inputs inválidos. Luego, usando DevTools (deshabilitar JS, remover
+        <code>
+         required
+        </code>
+        , etc.) o un proxy HTTP (Burp Suite o similar), muestra cómo enviar datos claramente inválidos (
+        <code>
+         edad="hola"
+        </code>
+        ,
+        <code>
+         email="&lt;script&gt;..."
+        </code>
+        ). El servidor los acepta.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Replicar el bypass. "¡Demostremos que la validación solo en el frontend es inútil para un atacante!"
+       </li>
+       <li>
+        <strong>
+         Guía para solución:
+        </strong>
+        Implementar
+        <strong>
+         validación estricta en el servidor
+        </strong>
+        .
+        <div class="highlight language-php">
+         <pre><span></span><span class="x">            // Ejemplo de validación en PHP</span>
+<span class="x">            $email = $_POST['email'];</span>
+<span class="x">            $age   = $_POST['age'];</span></pre>
+        </div>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <p>
+   <span class="x">
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+   </span>
+   <span class="x">
+    die("Email inválido.");
+   </span>
+   <span class="x">
+    }
+   </span>
+   <span class="x">
+    if (!is_numeric($age) || $age &lt; 0 || $age &gt; 120) {
+   </span>
+   <span class="x">
+    die("Edad inválida.");
+   </span>
+   <span class="x">
+    }
+   </span>
+   <span class="x">
+    // Si todo es válido, procesar...
+   </span>
+   <span class="x">
+   </span>
+  </p>
+  <pre><code>        "El servidor debe ser el último y más confiable guardián de nuestros datos."
+*   **Reflexión Post-práctica:** Verificar que el servidor ahora rechaza los datos inválidos.
+</code></pre>
+  <ol start="3">
+   <li>
+    <strong>
+     Mitigación Clave (5 min)
+    </strong>
+    <ul>
+     <li>
+      <strong>
+       Validar SIEMPRE en el servidor:
+      </strong>
+      Tipo, longitud, formato, rango, contenido.
+     </li>
+     <li>
+      <strong>
+       Listas Blancas:
+      </strong>
+      Definir qué
+      <em>
+       está permitido
+      </em>
+      , no qué
+      <em>
+       está prohibido
+      </em>
+      .
+     </li>
+     <li>
+      Sanitizar/Escapar
+      <em>
+       todos
+      </em>
+      los datos dinámicos.
+     </li>
+     <li>
+      Nunca confiar en la validación del frontend.
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <hr/>
+  <h4 id="modulo-5-autenticacion-insegura-y-gestion-de-sesiones-45-60-min">
+   <strong>
+    Módulo 5: Autenticación Insegura y Gestión de Sesiones (45-60 min)
+   </strong>
+  </h4>
+  <ol>
+   <li>
+    <p>
+     <strong>
+      Teoría y Concepto (10 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       ¿Qué es?
+      </strong>
+      Debilidades en la identificación de usuarios y protección de cuentas. "Es el candado de la puerta de nuestra casa; si es débil, ¡adiós seguridad!"
+     </li>
+     <li>
+      <strong>
+       ¿Por qué ocurre?
+      </strong>
+      Almacenamiento inseguro de contraseñas, falta de anti-fuerza bruta, sesiones mal gestionadas.
+     </li>
+     <li>
+      <strong>
+       Ejemplo:
+      </strong>
+      Contraseñas en texto plano, sin bloqueo de cuenta por intentos fallidos, IDs de sesión predecibles.
+     </li>
+     <li>
+      <strong>
+       Consecuencias:
+      </strong>
+      Robo de cuentas, escalada de privilegios.
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Práctica Guiada (30-40 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Caso 1: Fuerza Bruta / Credenciales Débiles (DVWA)
+      </strong>
+      <ul>
+       <li>
+        Navegar a Brute Force (Low Security).
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Instructor muestra cómo probar contraseñas (ej.
+        <code>
+         password
+        </code>
+        ,
+        <code>
+         123456
+        </code>
+        ). Mencionar que un script automático lo haría en segundos.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Intentar adivinar la contraseña de un usuario de prueba sin restricciones.
+       </li>
+       <li>
+        <strong>
+         Guía para solución:
+        </strong>
+        Discutir e implementar (o simular) un contador de intentos fallidos con bloqueo temporal o CAPTCHA.
+       </li>
+      </ul>
+     </li>
+     <li>
+      <strong>
+       Caso 2: Almacenamiento Inseguro de Contraseñas (Código Autocontenido)
+      </strong>
+      <ul>
+       <li>
+        Distribuir código o una "base de datos" (CSV/TXT) con contraseñas en texto plano o MD5 sin salt.
+       </li>
+       <li>
+        <strong>
+         Demostración:
+        </strong>
+        Mostrar la base de datos y cómo una contraseña MD5 puede "crackearse" fácilmente online.
+       </li>
+       <li>
+        <strong>
+         Ejercicio para alumnos:
+        </strong>
+        Crackear una contraseña simple si la tienen en MD5.
+       </li>
+       <li>
+        <p>
+         <strong>
+          Guía para solución:
+         </strong>
+         Modificar el código de registro/login para usar
+         <strong>
+          hashing seguro con salt
+         </strong>
+         (BCrypt, Argon2).
+         <div class="highlight language-php">
+          <pre><span></span><span class="x">            // Al registrar (PHP):</span>
+<span class="x">            $hashed_password = password_hash($plain_password, PASSWORD_BCRYPT);</span>
+<span class="x">            // Al verificar (PHP):</span>
+<span class="x">            if (password_verify($plain_password_input, $stored_hashed_password)) {</span>
+<span class="x">                // Login exitoso</span>
+<span class="x">            }</span>
+<span class="x">            </span>
+</pre>
+         </div>
+        </p>
+        <p>
+         "¡Nunca guardes contraseñas en texto plano! Usa algoritmos que las hagan imposibles de revertir."
+    *
+         <strong>
+          Caso 3: Gestión de Sesión (Conceptual/WebGoat/Juice Shop)
+         </strong>
+         *   Discutir IDs de sesión predecibles o cookies sin HttpOnly.
+        *
+         <strong>
+          Demostración (si es posible en WebGoat/Juice Shop):
+         </strong>
+         Mostrar cómo se roba una cookie de sesión (usando XSS de una práctica anterior) y se usa para suplantar.
+        *
+         <strong>
+          Guía para solución:
+         </strong>
+         Marcar cookies como
+         <code>
+          HttpOnly
+         </code>
+         y
+         <code>
+          Secure
+         </code>
+         , regenerar ID de sesión tras login, establecer expiración adecuada.
+        </p>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Mitigación Clave (5 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      <strong>
+       Hashing seguro con salt:
+      </strong>
+      BCrypt, Argon2 (¡nunca MD5 sin salt!).
+     </li>
+     <li>
+      <strong>
+       Protección anti-fuerza bruta:
+      </strong>
+      Limitar intentos, CAPTCHA, bloqueo.
+     </li>
+     <li>
+      <strong>
+       Políticas de contraseñas fuertes.
+      </strong>
+     </li>
+     <li>
+      <strong>
+       Gestión de sesiones segura:
+      </strong>
+      IDs aleatorios, HttpOnly, Secure, expiración, regeneración tras login.
+     </li>
+     <li>
+      <strong>
+       Autorización robusta:
+      </strong>
+      Siempre verificar permisos en el servidor para cada acción.
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <hr/>
+  <h4 id="cierre-y-recursos-10-15-min">
+   <strong>
+    Cierre y Recursos (10-15 min)
+   </strong>
+  </h4>
+  <ol>
+   <li>
+    <p>
+     <strong>
+      Recursos de Práctica Recomendados (5 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      Recordar las herramientas:
+      <strong>
+       DVWA, OWASP Juice Shop, WebGoat, bWAPP, Mutillidae II
+      </strong>
+      .
+     </li>
+     <li>
+      "Estas son sus 'cajas de arena' para seguir experimentando de forma segura."
+     </li>
+     <li>
+      Enfatizar la instalación local (XAMPP, Docker) para cada alumno.
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Filosofía de Desarrollo Seguro (5 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      "No confíen en el usuario."
+     </li>
+     <li>
+      "La seguridad es un proceso, no un evento."
+     </li>
+     <li>
+      "Piensen como un atacante, pero construyan como un defensor."
+     </li>
+     <li>
+      "Cada vulnerabilidad es una oportunidad para aprender y escribir mejor código."
+     </li>
+     <li>
+      Animar a investigar más (OWASP Cheat Sheets).
+     </li>
+    </ul>
+   </li>
+   <li>
+    <p>
+     <strong>
+      Preguntas y Respuestas (5 min)
+     </strong>
+    </p>
+    <ul>
+     <li>
+      Abrir el espacio para dudas.
+     </li>
+    </ul>
+   </li>
+  </ol>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

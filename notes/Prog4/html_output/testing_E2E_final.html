@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   testing_E2E
+  </title>
+ </head>
+ <body>
+  <h1 id="tests-end-to-end-e2e-en-apis-con-nodetypescript">
+   Tests End-to-End (E2E) en APIs con Node/TypeScript
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#objetivos">
+      Objetivos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-configuracion-inicial">
+      2. Configuración inicial
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-playwrightconfigts">
+      3. playwright.config.ts
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-datos-de-prueba-y-gestion-del-estado">
+      4. Datos de Prueba y Gestión del Estado
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-ejemplo-de-test-e2e">
+      5. Ejemplo de test E2E
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-buenas-practicas">
+      6. Buenas prácticas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-reportes-y-trazas">
+      7. Reportes y trazas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-ejercicios-propuestos">
+      8. Ejercicios propuestos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-extensiones">
+      9. Extensiones
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="objetivos">
+    Objetivos
+   </h2>
+   <ul>
+    <li>
+     Entender el alcance de un
+     <strong>
+      test E2E
+     </strong>
+     y sus diferencias con unit/integración.
+    </li>
+    <li>
+     Aprender a configurar
+     <strong>
+      Playwright Test
+     </strong>
+     para correr tests contra un servidor real.
+    </li>
+    <li>
+     Diseñar estrategias de
+     <strong>
+      reset y seed
+     </strong>
+     de datos para garantizar reproducibilidad.
+    </li>
+    <li>
+     Generar
+     <strong>
+      reportes y trazas
+     </strong>
+     para depuración en local y CI.
+    </li>
+   </ul>
+   <p>
+    ¡Claro! Aquí tienes una explicación más detallada de qué es un test E2E (End-to-End), con ejemplos para clarificar cada punto:
+   </p>
+   <h3 id="1-que-es-un-test-e2e-end-to-end">
+    1. ¿Qué es un test E2E (End-to-End)?
+   </h3>
+   <p>
+    Un test E2E es un tipo de prueba de software que verifica la funcionalidad completa de una aplicación desde la perspectiva del usuario final. Simula el flujo de interacción de un usuario a través de la interfaz de la aplicación, interactuando con todos los componentes del sistema involucrados, desde el front-end hasta la base de datos y cualquier servicio externo. El objetivo es asegurar que todos los módulos y sistemas integrados trabajan juntos correctamente para lograr un resultado esperado.
+   </p>
+   <p>
+    <strong>
+     Recorrido completo: cliente → HTTP → middleware → rutas → servicios → persistencia.
+    </strong>
+   </p>
+   <p>
+    Imagina una aplicación web. Un test E2E simularía lo siguiente:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Cliente:
+     </strong>
+     Un usuario abre un navegador y navega a tu aplicación (por ejemplo,
+     <code>
+      www.mi-tienda.com
+     </code>
+     ). El test automatizado interactúa con los elementos visuales (clics en botones, llenado de formularios) como lo haría un usuario real.
+    </li>
+    <li>
+     <strong>
+      HTTP:
+     </strong>
+     Cuando el usuario hace clic en "Comprar", el navegador envía una solicitud HTTP (por ejemplo,
+     <code>
+      POST /api/ordenes
+     </code>
+     ) a tu servidor. El test verifica que esta solicitud se envía correctamente y que el servidor la recibe.
+    </li>
+    <li>
+     <strong>
+      Middleware:
+     </strong>
+     En el servidor, la solicitud HTTP pasa por varios "middlewares". Esto podría incluir autenticación (¿está el usuario logueado?), validación (¿son válidos los datos del pedido?) o logging. El test E2E asegura que estos pasos intermedios no impidan el flujo.
+    </li>
+    <li>
+     <strong>
+      Rutas:
+     </strong>
+     La solicitud es dirigida a la ruta correcta en tu API (por ejemplo, el controlador
+     <code>
+      OrdenesController
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      Servicios:
+     </strong>
+     El controlador llama a los servicios de negocio necesarios (por ejemplo,
+     <code>
+      ServicioDePedidos.crearOrden(datosDelPedido)
+     </code>
+     ). Estos servicios contienen la lógica principal de la aplicación.
+    </li>
+    <li>
+     <strong>
+      Persistencia:
+     </strong>
+     Finalmente, el servicio interactúa con la base de datos (por ejemplo, guarda la nueva orden en la tabla
+     <code>
+      orders
+     </code>
+     ) para almacenar o recuperar datos.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Ejemplo:
+    </strong>
+    Un test E2E para una aplicación de e-commerce podría:
+1.  Navegar a la página de inicio.
+2.  Buscar un producto específico.
+3.  Añadir el producto al carrito.
+4.  Proceder al checkout.
+5.  Introducir los datos de envío y pago.
+6.  Confirmar el pedido.
+7.  Verificar que se muestra un mensaje de "Pedido exitoso" y que el pedido aparece en el historial de pedidos del usuario.
+8.  Opcionalmente, podría verificar que la base de datos refleja la nueva orden y la reducción del stock del producto.
+   </p>
+   <p>
+    <strong>
+     Valida: wiring real, serialización JSON, códigos de estado, contratos expuestos.
+    </strong>
+   </p>
+   <p>
+    Los tests E2E son cruciales para validar aspectos que otras pruebas no pueden:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Wiring real (conexiones reales):
+     </strong>
+     Aseguran que todos los componentes (front-end, back-end, base de datos, caché, microservicios, etc.) están correctamente conectados e interactúan entre sí como se espera en un entorno de producción. Un test E2E descubriría si un servicio no puede comunicarse con la base de datos, o si el front-end no puede consumir una API.
+     <ul>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+       Si tu front-end llama a
+       <code>
+        /api/users
+       </code>
+       y tu back-end expone
+       <code>
+        /v1/users
+       </code>
+       , un test E2E fallaría, indicando un problema en la conexión.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Serialización JSON:
+     </strong>
+     Verifican que los datos se envían y reciben en el formato correcto (generalmente JSON) entre el cliente y el servidor. Un error en la serialización podría significar que el servidor no entiende lo que el cliente envía, o viceversa.
+     <ul>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+       Si el front-end envía un número como string (
+       <code>
+        "123"
+       </code>
+       ) y el back-end espera un entero (
+       <code>
+        123
+       </code>
+       ), el test E2E revelaría un error de validación o procesamiento.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Códigos de estado HTTP:
+     </strong>
+     Confirman que el servidor devuelve los códigos de estado HTTP apropiados (200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error, etc.) en diferentes escenarios.
+     <ul>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+       Si intentas acceder a un recurso sin autenticarte, el test E2E debería esperar un 401 Unauthorized y fallar si recibe un 200 OK. Si un registro se crea exitosamente, el test esperaría un 201 Created.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Contratos expuestos (APIs):
+     </strong>
+     Confirman que las APIs expuestas por el back-end cumplen con el "contrato" esperado por el front-end u otros consumidores. Esto incluye los nombres de los endpoints, los parámetros esperados y la estructura de la respuesta.
+     <ul>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+       Si la API de productos solía devolver
+       <code>
+        {"id": 1, "nombre": "Producto A"}
+       </code>
+       y ahora devuelve
+       <code>
+        {"productId": 1, "productName": "Producto A"}
+       </code>
+       , un test E2E fallaría porque el front-end no encontraría las claves esperadas, incluso si la API sigue funcionando "internamente".
+      </li>
+     </ul>
+    </li>
+   </ul>
+   <p>
+    <strong>
+     No valida: ramas internas detalladas (eso es de unit/integración).
+    </strong>
+   </p>
+   <p>
+    Los tests E2E son como "cajas negras": les interesa el resultado final, no cómo se llegó a él internamente. No están diseñados para probar:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Lógica de negocio compleja dentro de una función:
+     </strong>
+     Si tienes una función que calcula descuentos con múltiples condiciones, un test E2E no la probará a fondo. Eso es trabajo de un test unitario o de integración.
+    </li>
+    <li>
+     <strong>
+      Casos borde específicos de algoritmos:
+     </strong>
+     Un test E2E no explorará cada posible combinación de entradas para una función matemática.
+    </li>
+    <li>
+     <strong>
+      Ramas de código poco probables:
+     </strong>
+     Se centran en los flujos principales. Si hay una rama de código que solo se activa bajo condiciones muy raras o específicas de configuración, es mejor probarla con tests unitarios.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Ejemplo:
+    </strong>
+    Si un servicio calcula un impuesto basado en la región del usuario, un test E2E se limitará a verificar que el precio final mostrado es correcto para un par de regiones. No probará cada combinación de impuesto y tipo de producto. Para eso, se usarían tests unitarios que prueben el
+    <code>
+     ServicioDeImpuestos.calcular(monto, region, tipoProducto)
+    </code>
+    .
+   </p>
+   <p>
+    <strong>
+     Costo: más lentos y frágiles → mantener pocos, enfocados en happy paths y errores contractuales.
+    </strong>
+   </p>
+   <p>
+    Los tests E2E tienen desventajas:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Más lentos:
+     </strong>
+     Requieren que toda la aplicación esté levantada y que se realicen operaciones de red y base de datos, lo que los hace significativamente más lentos que los tests unitarios o de integración.
+     <ul>
+      <li>
+       <strong>
+        Impacto:
+       </strong>
+       Un suite de cientos de tests E2E puede tardar minutos o incluso horas en ejecutarse, ralentizando el ciclo de desarrollo.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Más frágiles (flaky):
+     </strong>
+     Son más susceptibles a fallos debido a factores externos o cambios menores. Un pequeño cambio en la interfaz de usuario (cambiar el ID de un botón) puede romper un test E2E, incluso si la funcionalidad subyacente sigue siendo correcta. Dependen de la estabilidad de muchos componentes.
+     <ul>
+      <li>
+       <strong>
+        Impacto:
+       </strong>
+       Los tests "flaky" (que fallan aleatoriamente sin una razón clara) erosionan la confianza del equipo en las pruebas.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Más caros de mantener:
+     </strong>
+     Requieren más tiempo para escribirlos inicialmente y para actualizarlos cuando la aplicación cambia.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Recomendación:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Mantener pocos:
+     </strong>
+     No intentes cubrir el 100% de tu código con tests E2E. Es ineficiente.
+    </li>
+    <li>
+     <strong>
+      Enfocados en "happy paths":
+     </strong>
+     Prioriza los flujos principales y exitosos que el usuario seguirá.
+     <ul>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+       Crear cuenta, iniciar sesión, hacer una compra, publicar un comentario.
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Errores contractuales:
+     </strong>
+     Prueba escenarios donde los contratos entre componentes podrían romperse.
+     <ul>
+      <li>
+       <strong>
+        Ejemplo:
+       </strong>
+       ¿Qué pasa si intento crear un usuario con un email ya registrado? ¿La API devuelve un error 409 Conflict con el mensaje esperado?
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      La "pirámide de pruebas"
+     </strong>
+     : Generalmente, se recomienda tener muchos tests unitarios (rápidos, baratos), menos tests de integración y muy pocos tests E2E (lentos, caros). La mayoría de los problemas deben ser detectados por los tests más bajos en la pirámide.
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Visualización de la Pirámide de Pruebas:
+    </strong>
+   </p>
+   <div class="svg-container">
+    <svg aria-labelledby="title desc" height="420" role="img" viewbox="0 0 720 420" width="720" xmlns="http://www.w3.org/2000/svg">
+     <desc id="desc">
+      Tres niveles apilados: base de tests unitarios, nivel medio de integración y cima de E2E. La base es la más ancha (más cantidad), la cima es la más angosta (menos cantidad y mayor costo).
+     </desc>
+     <defs>
+      <style>
+       .label{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; fill:#0f172a; font-weight:600; }
+      .sub{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; fill:#334155; font-size:14px; }
+      .hint{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; fill:#475569; font-size:13px; }
+      .shadow{ filter:url(#shadow); }
+      </style>
+      <lineargradient id="gE2E" x1="0" x2="0" y1="0" y2="1">
+       <stop offset="0%" stop-color="#fecaca">
+       </stop>
+       <stop offset="100%" stop-color="#fca5a5">
+       </stop>
+      </lineargradient>
+      <lineargradient id="gINT" x1="0" x2="0" y1="0" y2="1">
+       <stop offset="0%" stop-color="#fde68a">
+       </stop>
+       <stop offset="100%" stop-color="#fbbf24">
+       </stop>
+      </lineargradient>
+      <lineargradient id="gUNIT" x1="0" x2="0" y1="0" y2="1">
+       <stop offset="0%" stop-color="#bbf7d0">
+       </stop>
+       <stop offset="100%" stop-color="#86efac">
+       </stop>
+      </lineargradient>
+      <filter height="140%" id="shadow" width="140%" x="-20%" y="-20%">
+       <fedropshadow dx="0" dy="2" flood-color="#000000" flood-opacity="0.15" stddeviation="4">
+       </fedropshadow>
+      </filter>
+      <marker id="arrow" markerheight="10" markerwidth="10" orient="auto" refx="9" refy="3">
+       <path d="M0,0 L9,3 L0,6 Z" fill="#475569">
+       </path>
+      </marker>
+     </defs>
+     <!-- Guías laterales -->
+     <line stroke="#e2e8f0" stroke-width="2" x1="72" x2="648" y1="360" y2="360">
+     </line>
+     <line stroke="#e2e8f0" stroke-dasharray="6 6" stroke-width="2" x1="360" x2="360" y1="40" y2="360">
+     </line>
+     <!-- Niveles de la pirámide (de abajo hacia arriba) -->
+     <!-- Base: Unitarios -->
+     <polygon class="shadow" fill="url(#gUNIT)" points="96,360 624,360 560,270 160,270" stroke="#10b981" stroke-width="2">
+     </polygon>
+     <!-- Medio: Integración -->
+     <polygon class="shadow" fill="url(#gINT)" points="160,270 560,270 500,195 220,195" stroke="#f59e0b" stroke-width="2">
+     </polygon>
+     <!-- Cima: E2E -->
+     <polygon class="shadow" fill="url(#gE2E)" points="220,195 500,195 440,130 280,130" stroke="#ef4444" stroke-width="2">
+     </polygon>
+     <!-- Etiquetas de cada nivel -->
+     <!-- Unitarios -->
+     <text class="label" font-size="22" text-anchor="middle" x="360" y="320">
+      Tests unitarios
+     </text>
+     <text class="sub" text-anchor="middle" x="360" y="342">
+      Rápidos, baratos, gran cobertura lógica
+     </text>
+     <!-- Integración -->
+     <text class="label" font-size="20" text-anchor="middle" x="360" y="235">
+      Integración
+     </text>
+     <text class="sub" text-anchor="middle" x="360" y="257">
+      Módulos reales juntos, contratos y wiring
+     </text>
+     <!-- E2E -->
+     <text class="label" font-size="20" text-anchor="middle" x="360" y="165">
+      E2E
+     </text>
+     <text class="sub" text-anchor="middle" x="360" y="187">
+      Recorrido completo por el sistema
+     </text>
+     <!-- Anotaciones laterales -->
+     <text class="hint" text-anchor="end" x="200" y="382">
+      ↑ Más costo / fragilidad
+     </text>
+     <line marker-end="url(#arrow)" stroke="#475569" stroke-width="2" x1="88" x2="88" y1="360" y2="130">
+     </line>
+    </svg>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-configuracion-inicial">
+    2. Configuración inicial
+   </h2>
+   <h3 id="instalacion">
+    Instalación
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>@playwright/test
+</pre>
+   </div>
+   <h3 id="scripts-en-packagejson">
+    Scripts en package.json
+   </h3>
+   <div class="highlight language-json">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ts-node-dev --respawn --transpile-only src/server.ts"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tsc -p tsconfig.json"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"start:e2e"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cross-env NODE_ENV=test PORT=4000 node dist/server.js"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"test:e2e"</span><span class="p">:</span><span class="w"> </span><span class="s2">"playwright test"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"report:e2e"</span><span class="p">:</span><span class="w"> </span><span class="s2">"playwright show-report"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="estructura-de-carpetas">
+    Estructura de carpetas
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>.
+├─ src/              # API principal
+├─ e2e/              # Tests E2E
+│  ├─ api.books.e2e.spec.ts
+│  └─ helpers.ts
+├─ playwright.config.ts
+└─ package.json
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-playwrightconfigts">
+    3.
+    <code>
+     playwright.config.ts
+    </code>
+   </h2>
+   <p>
+    El archivo
+    <code>
+     playwright.config.ts
+    </code>
+    es el corazón de la configuración de tus tests End-to-End (E2E) con Playwright. Aquí es donde defines cómo Playwright debe ejecutar tus pruebas, qué entornos usar, cómo reportar los resultados y cómo gestionar la aplicación bajo prueba.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@playwright/test'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="c1">// Directorio donde Playwright buscará tus archivos de tests E2E.</span>
+<span class="w">  </span><span class="c1">// Ejemplo: Si tienes un archivo 'e2e/auth.spec.ts', Playwright lo encontrará aquí.</span>
+<span class="w">  </span><span class="nx">testDir</span><span class="o">:</span><span class="w"> </span><span class="s1">'e2e'</span><span class="p">,</span>
+
+<span class="w">  </span><span class="c1">// Tiempo máximo que Playwright esperará para que un test individual termine de ejecutarse.</span>
+<span class="w">  </span><span class="c1">// Si un test supera este tiempo, se marcará como fallido.</span>
+<span class="w">  </span><span class="c1">// Es útil para evitar que tests "colgados" bloqueen la ejecución.</span>
+<span class="w">  </span><span class="c1">// Ejemplo: Un test que navega por varias páginas y hace muchas interacciones; si alguna interacción</span>
+<span class="w">  </span><span class="c1">// se queda esperando un elemento que nunca aparece por un bug, este timeout lo detectaría.</span>
+<span class="w">  </span><span class="nx">timeout</span><span class="o">:</span><span class="w"> </span><span class="kt">30_000</span><span class="p">,</span><span class="w"> </span><span class="c1">// 30 segundos</span>
+
+<span class="w">  </span><span class="c1">// Número de veces que Playwright intentará re-ejecutar un test si falla por primera vez.</span>
+<span class="w">  </span><span class="c1">// Esto es útil para tests E2E que pueden ser "flaky" (intermitentes) debido a factores externos</span>
+<span class="w">  </span><span class="c1">// (problemas de red, latencia del servidor, etc.) pero que no representan un bug real.</span>
+<span class="w">  </span><span class="c1">// Ejemplo: Un test falla una vez debido a un pico de latencia en la red, pero en el segundo intento</span>
+<span class="w">  </span><span class="c1">// (la re-ejecución) pasa sin problemas. Si falla en la re-ejecución también, se reporta como un fallo.</span>
+<span class="w">  </span><span class="nx">retries</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="p">,</span>
+
+<span class="w">  </span><span class="c1">// Configuración de los "reporters", que son herramientas para visualizar los resultados de los tests.</span>
+<span class="w">  </span><span class="c1">// Aquí se configuran dos:</span>
+<span class="w">  </span><span class="c1">// 1. 'html': Genera un reporte HTML interactivo que puedes abrir en tu navegador para ver</span>
+<span class="w">  </span><span class="c1">//    los detalles de cada test, capturas de pantalla, videos y logs. Muy útil para depurar.</span>
+<span class="w">  </span><span class="c1">//    Ejemplo: Después de correr 'npx playwright test', puedes abrir el reporte HTML en './playwright-report'.</span>
+<span class="w">  </span><span class="c1">// 2. 'list': Imprime los resultados de los tests directamente en la consola a medida que se ejecutan,</span>
+<span class="w">  </span><span class="c1">//    mostrando cuáles pasaron, cuáles fallaron y un resumen al final.</span>
+<span class="w">  </span><span class="c1">//    Ejemplo: Verás algo como:</span>
+<span class="w">  </span><span class="c1">//      ✓  [1/2] e2e/auth.spec.ts: Login exitoso (5s)</span>
+<span class="w">  </span><span class="c1">//      ✗  [2/2] e2e/profile.spec.ts: Cargar perfil (Error: Timeout) (30s)</span>
+<span class="w">  </span><span class="c1">//      ...</span>
+<span class="w">  </span><span class="nx">reporter</span><span class="o">:</span><span class="w"> </span><span class="p">[[</span><span class="s1">'html'</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s1">'list'</span><span class="p">]],</span>
+
+<span class="w">  </span><span class="c1">// Opciones base que se aplicarán a todos los proyectos de test que definas.</span>
+<span class="w">  </span><span class="nx">use</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// La URL base para todos los tests. Puedes usar rutas relativas en tus tests</span>
+<span class="w">    </span><span class="c1">// (ej. await page.goto('/login')) y Playwright las resolverá usando esta URL base.</span>
+<span class="w">    </span><span class="c1">// Esto es crucial para no tener que escribir 'http://localhost:4000/login' en cada test.</span>
+<span class="w">    </span><span class="c1">// Ejemplo: `await page.goto('/dashboard');` se traduce a `await page.goto('http://localhost:4000/dashboard');`</span>
+<span class="w">    </span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:4000'</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// Configuración para la "trazabilidad" (tracing) de los tests.</span>
+<span class="w">    </span><span class="c1">// 'on-first-retry': Playwright capturará un "trace" completo (capturas de pantalla, video, logs de red)</span>
+<span class="w">    </span><span class="c1">// para los tests que fallan en el primer intento y luego son re-ejecutados. Esto es invaluable para</span>
+<span class="w">    </span><span class="c1">// depurar tests flaky o fallos difíciles de reproducir.</span>
+<span class="w">    </span><span class="c1">// Ejemplo: Si un test falla y se reintenta, Playwright guardará un archivo .zip con toda la información</span>
+<span class="w">    </span><span class="c1">// del primer fallo para que puedas analizarlo con la herramienta de Playwright (npx playwright show-trace).</span>
+<span class="w">    </span><span class="nx">trace</span><span class="o">:</span><span class="w"> </span><span class="s1">'on-first-retry'</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="c1">// Configuración para ejecutar un servidor web antes de iniciar los tests.</span>
+<span class="w">  </span><span class="c1">// Esto es fundamental para los tests E2E, ya que necesitan una aplicación real funcionando</span>
+<span class="w">  </span><span class="c1">// (tu front-end, tu back-end, o ambos) para interactuar con ella.</span>
+<span class="w">  </span><span class="nx">webServer</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// El comando que se ejecutará para iniciar tu aplicación.</span>
+<span class="w">    </span><span class="c1">// En este caso, 'npm run start:e2e' presumiblemente levanta tu servidor o front-end en modo E2E.</span>
+<span class="w">    </span><span class="c1">// Ejemplo: Este comando podría iniciar un servidor Node.js y/o un servidor de desarrollo React/Angular/Vue.</span>
+<span class="w">    </span><span class="nx">command</span><span class="o">:</span><span class="w"> </span><span class="s1">'npm run start:e2e'</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// La URL que Playwright verificará para saber si tu servidor está listo y accesible.</span>
+<span class="w">    </span><span class="c1">// Playwright esperará hasta que esta URL responda con un código 2xx antes de iniciar los tests.</span>
+<span class="w">    </span><span class="c1">// Es común usar un endpoint de "salud" o "health check" para esto.</span>
+<span class="w">    </span><span class="c1">// Ejemplo: Playwright enviará solicitudes GET a 'http://localhost:4000/health' hasta que obtenga</span>
+<span class="w">    </span><span class="c1">// una respuesta exitosa, lo que indica que la aplicación está lista para recibir tráfico.</span>
+<span class="w">    </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="s1">'http://localhost:4000/health'</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// Si es `true`, Playwright no intentará iniciar un nuevo servidor si ya hay uno escuchando</span>
+<span class="w">    </span><span class="c1">// en la 'url' especificada. Esto es útil para el desarrollo local, donde podrías querer</span>
+<span class="w">    </span><span class="c1">// ejecutar tus tests contra un servidor que ya tienes levantado.</span>
+<span class="w">    </span><span class="c1">// `!process.env.CI`: Significa que `reuseExistingServer` será `true` a menos que</span>
+<span class="w">    </span><span class="c1">// la variable de entorno `CI` esté establecida (típicamente en entornos de Integración Continua).</span>
+<span class="w">    </span><span class="c1">// En CI, siempre se iniciará un nuevo servidor para asegurar un entorno limpio.</span>
+<span class="w">    </span><span class="nx">reuseExistingServer</span><span class="o">:</span><span class="w"> </span><span class="o">!</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">CI</span><span class="p">,</span>
+
+<span class="w">    </span><span class="c1">// Tiempo máximo que Playwright esperará a que el servidor web esté listo.</span>
+<span class="w">    </span><span class="c1">// Si el servidor no responde en 'url' dentro de este tiempo, la ejecución de los tests fallará.</span>
+<span class="w">    </span><span class="c1">// Ejemplo: Si tu aplicación tarda mucho en arrancar o tiene un bug que impide que el endpoint</span>
+<span class="w">    </span><span class="c1">// /health responda, este timeout evitará que Playwright espere indefinidamente.</span>
+<span class="w">    </span><span class="nx">timeout</span><span class="o">:</span><span class="w"> </span><span class="kt">20_000</span><span class="w"> </span><span class="c1">// 20 segundos</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+   <p>
+    En resumen, este archivo configura Playwright para:
+*   Encontrar tus tests en el directorio
+    <code>
+     e2e
+    </code>
+    .
+*   Darle a cada test 30 segundos para completarse y reintentar una vez si falla.
+*   Generar reportes HTML y listarlos en la consola.
+*   Usar
+    <code>
+     http://localhost:4000
+    </code>
+    como URL base.
+*   Capturar "traces" para depuración cuando un test falla y se reintenta.
+*
+    <strong>
+     Lo más importante para E2E:
+    </strong>
+    Asegurarse de que tu aplicación (
+    <code>
+     npm run start:e2e
+    </code>
+    ) esté funcionando en
+    <code>
+     http://localhost:4000
+    </code>
+    y responda en
+    <code>
+     /health
+    </code>
+    antes de ejecutar cualquier test. Esto es fundamental para que los tests tengan algo real con lo que interactuar.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-datos-de-prueba-y-gestion-del-estado">
+    4. Datos de Prueba y Gestión del Estado
+   </h2>
+   <p>
+    Para que los tests E2E sean confiables y reproducibles, es fundamental controlar el estado de la aplicación, especialmente la base de datos. Cada test debe ejecutarse en un entorno limpio y predecible. Esto se logra mediante
+    <strong>
+     endpoints de test especiales
+    </strong>
+    en el servidor y una
+    <strong>
+     función helper
+    </strong>
+    en los tests.
+   </p>
+   <h3 id="endpoints-de-test-en-appts-servidorbackend">
+    Endpoints de test en
+    <code>
+     app.ts
+    </code>
+    (Servidor/Backend)
+   </h3>
+   <p>
+    Estos endpoints son
+    <strong>
+     exclusivos para el entorno de testing
+    </strong>
+    y se encargan de manipular la base de datos o el estado del servicio de una manera controlada. Es crucial que
+    <strong>
+     solo estén activos cuando
+     <code>
+      NODE_ENV
+     </code>
+     sea
+     <code>
+      'test'
+     </code>
+    </strong>
+    para evitar que se expongan en producción.
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'test'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Endpoint para resetear la base de datos o el estado del servicio.</span>
+<span class="w">  </span><span class="c1">// Recibe una solicitud POST y llama a un método `clear()` del servicio,</span>
+<span class="w">  </span><span class="c1">// luego devuelve un estado 204 (No Content) para indicar éxito sin cuerpo de respuesta.</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/__test__/reset'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">_req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">service</span><span class="p">.</span><span class="nx">clear</span><span class="o">?</span><span class="p">.();</span><span class="w"> </span><span class="c1">// Llama a la función de limpieza del servicio (ej: vaciar DB)</span>
+<span class="w">    </span><span class="nx">res</span><span class="p">.</span><span class="nx">sendStatus</span><span class="p">(</span><span class="mf">204</span><span class="p">);</span><span class="w"> </span><span class="c1">// Responde con 204 No Content</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="c1">// Endpoint para "sembrar" (seed) la base de datos con datos de prueba específicos.</span>
+<span class="w">  </span><span class="c1">// Crea algunos registros (aquí, dos libros) y devuelve los objetos creados.</span>
+<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/__test__/seed'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">_req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Crea dos registros de libros usando el servicio.</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">service</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'TDD'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Beck'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">2002</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">service</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s1">'DDD'</span><span class="p">,</span><span class="w"> </span><span class="nx">author</span><span class="o">:</span><span class="w"> </span><span class="s1">'Evans'</span><span class="p">,</span><span class="w"> </span><span class="nx">year</span><span class="o">:</span><span class="w"> </span><span class="kt">2003</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">201</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">created</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">a</span><span class="p">,</span><span class="w"> </span><span class="nx">b</span><span class="p">]</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">// Responde con 201 Created y los datos.</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Propósito:
+     </strong>
+     Estos endpoints permiten a los tests E2E interactuar directamente con el estado del servidor para inicializarlo o limpiarlo.
+    </li>
+    <li>
+     <strong>
+      Seguridad:
+     </strong>
+     La condición
+     <code>
+      if (process.env.NODE_ENV === 'test')
+     </code>
+     es vital para que estos endpoints no estén disponibles en entornos de producción o staging, evitando manipulaciones no deseadas de la base de datos real.
+    </li>
+   </ul>
+   <h3 id="helper-en-e2ehelpersts-tests-e2e">
+    Helper en
+    <code>
+     e2e/helpers.ts
+    </code>
+    (Tests E2E)
+   </h3>
+   <p>
+    Esta función helper centraliza la lógica para preparar el estado de la aplicación desde los tests, haciendo que los tests sean más legibles y DRY (Don't Repeat Yourself).
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">request</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@playwright/test'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Importa herramientas de Playwright</span>
+
+<span class="c1">// Función asíncrona que reinicia y siembra la base de datos para los tests.</span>
+<span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">resetAndSeed</span><span class="p">(</span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Crea un nuevo contexto de solicitud HTTP para interactuar con los endpoints de test.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">.</span><span class="nx">newContext</span><span class="p">({</span><span class="w"> </span><span class="nx">baseURL</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">  </span><span class="c1">// Envía una solicitud POST al endpoint de reseteo.</span>
+<span class="w">  </span><span class="c1">// Esto vacía o inicializa la base de datos.</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/__test__/reset'</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Envía una solicitud POST al endpoint de siembra.</span>
+<span class="w">  </span><span class="c1">// Esto carga la base de datos con datos de prueba definidos.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/__test__/seed'</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Verifica que la siembra fue exitosa (código de estado 201 Created).</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">201</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Parsea la respuesta JSON que contiene los datos creados.</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// Cierra el contexto de solicitud para liberar recursos.</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">dispose</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// Devuelve los datos que fueron creados durante la siembra,</span>
+<span class="w">  </span><span class="c1">// por si el test necesita usarlos.</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">data</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <ul>
+    <li>
+     <strong>
+      Propósito:
+     </strong>
+     Esta función es utilizada por los tests E2E (como en
+     <code>
+      test.beforeEach
+     </code>
+     ) para garantizar que la aplicación bajo prueba siempre comience con un estado de datos conocido y consistente. Esto elimina la dependencia del orden de ejecución de los tests y evita "falsos positivos" o "falsos negativos" debido a estados de datos residuales de tests anteriores.
+    </li>
+    <li>
+     <strong>
+      Flujo:
+     </strong>
+     Primero se llama a
+     <code>
+      /__test__/reset
+     </code>
+     para limpiar, y luego a
+     <code>
+      /__test__/seed
+     </code>
+     para poblar con datos controlados.
+    </li>
+    <li>
+     <strong>
+      Reutilización:
+     </strong>
+     Permite reutilizar esta lógica de configuración en múltiples tests sin duplicar código.
+    </li>
+   </ul>
+   <hr/>
+   <p>
+    En resumen, esta combinación de endpoints de test específicos en el backend y una función helper en el frontend crea un mecanismo robusto para la
+    <strong>
+     gestión del estado de los datos en tests E2E
+    </strong>
+    , haciendo que tus pruebas sean más confiables y fáciles de mantener.
+   </p>
+   <h3 id="helper-en-e2ehelpersts">
+    Helper en
+    <code>
+     e2e/helpers.ts
+    </code>
+   </h3>
+   <div class="highlight language-ts">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">request</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@playwright/test'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">resetAndSeed</span><span class="p">(</span><span class="nx">baseURL</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">.</span><span class="nx">newContext</span><span class="p">({</span><span class="w"> </span><span class="nx">baseURL</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/__test__/reset'</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">'/__test__/seed'</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">201</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">dispose</span><span class="p">();</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">data</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-ejemplo-de-test-e2e">
+    5. Ejemplo de test E2E
+   </h2>
+   <p>
+    Este código muestra un test E2E básico para una API de libros, usando Playwright:
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">test</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="p">,</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@playwright/test'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Importa herramientas de Playwright</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">resetAndSeed</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./helpers'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Importa una función de ayuda para la base de datos</span>
+
+<span class="nx">test</span><span class="p">.</span><span class="nx">describe</span><span class="p">(</span><span class="s1">'E2E /books'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Agrupa tests relacionados con la ruta '/books'</span>
+
+<span class="w">  </span><span class="c1">// Antes de cada test, reinicia y "siembra" la base de datos con datos de prueba.</span>
+<span class="w">  </span><span class="c1">// Esto asegura que cada test se ejecute en un estado conocido y limpio.</span>
+<span class="w">  </span><span class="nx">test</span><span class="p">.</span><span class="nx">beforeEach</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">baseURL</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">resetAndSeed</span><span class="p">(</span><span class="nx">baseURL</span><span class="o">!</span><span class="p">);</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">  </span><span class="c1">// Define un test individual: "GET /books devuelve la semilla"</span>
+<span class="w">  </span><span class="nx">test</span><span class="p">(</span><span class="s1">'GET /books devuelve la semilla'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">baseURL</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Crea un nuevo contexto de solicitud HTTP para hacer llamadas a la API.</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">ctx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">.</span><span class="nx">newContext</span><span class="p">({</span><span class="w"> </span><span class="nx">baseURL</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">    </span><span class="c1">// Realiza una solicitud GET a la ruta '/books'.</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/books'</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Verifica que el código de estado de la respuesta sea 200 (OK).</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Parsea la respuesta JSON.</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Verifica que la lista de libros tenga al menos 2 elementos,</span>
+<span class="w">    </span><span class="c1">// confirmando que los datos de prueba fueron devueltos.</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">items</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBeGreaterThanOrEqual</span><span class="p">(</span><span class="mf">2</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Cierra el contexto de solicitud.</span>
+<span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="nx">ctx</span><span class="p">.</span><span class="nx">dispose</span><span class="p">();</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     En resumen:
+    </strong>
+    Este test E2E simula una llamada HTTP a tu backend (
+    <code>
+     GET /books
+    </code>
+    ), verifica que el servidor responde correctamente (código 200) y que los datos devueltos (los libros "sembrados") son los esperados. El
+    <code>
+     beforeEach
+    </code>
+    garantiza un estado inicial consistente de la base de datos para cada ejecución del test.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-buenas-practicas">
+    6. Buenas prácticas
+   </h2>
+   <ul>
+    <li>
+     Pocos tests críticos.
+    </li>
+    <li>
+     Independencia: reset + seed en cada test.
+    </li>
+    <li>
+     Datos estables y predecibles.
+    </li>
+    <li>
+     Idempotencia en paralelo.
+    </li>
+    <li>
+     Validar status codes y contrato mínimo.
+    </li>
+    <li>
+     Trazas y reportes activados.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-reportes-y-trazas">
+    7. Reportes y trazas
+   </h2>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>run<span class="w"> </span>build
+npm<span class="w"> </span>run<span class="w"> </span>test:e2e
+npm<span class="w"> </span>run<span class="w"> </span>report:e2e
+</pre>
+   </div>
+   <p>
+    Playwright genera
+    <strong>
+     reportes HTML
+    </strong>
+    y
+    <strong>
+     trazas
+    </strong>
+    para depuración.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-ejercicios-propuestos">
+    8. Ejercicios propuestos
+   </h2>
+   <ol>
+    <li>
+     Validar que
+     <code>
+      year
+     </code>
+     ≤ año actual (400 si no se cumple).
+    </li>
+    <li>
+     Filtrar libros por autor en query string.
+    </li>
+    <li>
+     Implementar paginación y testear límites.
+    </li>
+    <li>
+     Probar rate limit con 429.
+    </li>
+    <li>
+     Idempotencia de DELETE.
+    </li>
+    <li>
+     Verificar headers (
+     <code>
+      Content-Type
+     </code>
+     ,
+     <code>
+      Location
+     </code>
+     ).
+    </li>
+    <li>
+     Traza de errores con
+     <code>
+      requestId
+     </code>
+     .
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-extensiones">
+    9. Extensiones
+   </h2>
+   <ul>
+    <li>
+     Con BD real: usar migraciones + truncate/seed.
+    </li>
+    <li>
+     Con autenticación: obtener token real en beforeEach.
+    </li>
+    <li>
+     En staging: smoke tests tras deploy.
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   TP3
+  </title>
+ </head>
+ <body>
+  <h1 id="trabajo-practico-3-simulador-de-pedidos-de-cafeteria-tdd-react-testing-library-msw">
+   <strong>
+    Trabajo Práctico 3:
+   </strong>
+   Simulador de Pedidos de Cafetería (TDD + React Testing Library + MSW)
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#objetivo-central">
+      🎯 Objetivo Central
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#stack-tecnologico">
+      🧰 Stack Tecnológico
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#contexto-del-proyecto">
+      ☕ Contexto del Proyecto
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#parte-i-configuracion-del-entorno-de-pruebas">
+      🧩 Parte I — Configuración del entorno de pruebas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#parte-ii-desarrollo-guiado-por-pruebas">
+      🧠 Parte II — Desarrollo Guiado por Pruebas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#parte-iii-integracion-completa">
+      🧪 Parte III — Integración Completa
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="objetivo-central">
+    🎯
+    <strong>
+     Objetivo Central
+    </strong>
+   </h2>
+   <p>
+    Aplicar
+    <strong>
+     Desarrollo Guiado por Pruebas (TDD)
+    </strong>
+    en React para construir una pequeña aplicación que simule el flujo de pedidos en una cafetería.
+El estudiante deberá demostrar dominio del ciclo
+    <strong>
+     Rojo → Verde → Refactor
+    </strong>
+    , el uso de
+    <strong>
+     React Testing Library (RTL)
+    </strong>
+    con consultas accesibles, el manejo de estado y la integración con una
+    <strong>
+     API simulada mediante MSW
+    </strong>
+    .
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="stack-tecnologico">
+    🧰
+    <strong>
+     Stack Tecnológico
+    </strong>
+   </h2>
+   <ul>
+    <li>
+     React + TypeScript + Vite
+    </li>
+    <li>
+     Vitest + React Testing Library + @testing-library/user-event
+    </li>
+    <li>
+     MSW (Mock Service Worker)
+    </li>
+    <li>
+     Zod para validaciones
+    </li>
+    <li>
+     Context API o hooks personalizados para el estado global
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="contexto-del-proyecto">
+    ☕
+    <strong>
+     Contexto del Proyecto
+    </strong>
+   </h2>
+   <p>
+    Una cafetería desea digitalizar el proceso de toma de pedidos.
+El sistema mostrará un
+    <strong>
+     menú de productos
+    </strong>
+    , permitirá
+    <strong>
+     agregar ítems a un pedido
+    </strong>
+    ,
+    <strong>
+     visualizar el total a pagar
+    </strong>
+    , y
+    <strong>
+     enviar el pedido
+    </strong>
+    (simulado).
+El objetivo del trabajo es implementar progresivamente cada funcionalidad
+    <strong>
+     siguiendo la metodología TDD
+    </strong>
+    , escribiendo primero los tests y luego la mínima implementación que los haga pasar.
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="parte-i-configuracion-del-entorno-de-pruebas">
+    🧩
+    <strong>
+     Parte I — Configuración del entorno de pruebas
+    </strong>
+   </h2>
+   <ol>
+    <li>
+     Crear el proyecto base:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>create<span class="w"> </span>vite@latest<span class="w"> </span>cafeteria<span class="w"> </span>--<span class="w"> </span>--template<span class="w"> </span>react-ts
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="2">
+    <li>
+     Instalar dependencias de testing:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="w">   </span>npm<span class="w"> </span>i<span class="w"> </span>-D<span class="w"> </span>vitest<span class="w"> </span>@testing-library/react<span class="w"> </span>@testing-library/user-event<span class="w"> </span>@testing-library/jest-dom<span class="w"> </span>msw<span class="w"> </span>zod
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Configurar
+     <code>
+      vite.config.ts
+     </code>
+     :
+    </li>
+   </ol>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">   </span><span class="nx">test</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nx">environment</span><span class="o">:</span><span class="w"> </span><span class="s1">'jsdom'</span><span class="p">,</span>
+<span class="w">     </span><span class="nx">globals</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<span class="w">     </span><span class="nx">setupFiles</span><span class="o">:</span><span class="w"> </span><span class="s1">'./src/setupTests.ts'</span><span class="p">,</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <ol start="4">
+    <li>
+     Configurar
+     <code>
+      setupTests.ts
+     </code>
+     :
+    </li>
+   </ol>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="w">   </span><span class="k">import</span><span class="w"> </span><span class="s1">'@testing-library/jest-dom'</span><span class="p">;</span>
+<span class="w">   </span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">server</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./mocks/server'</span><span class="p">;</span>
+<span class="w">   </span><span class="nx">beforeAll</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">());</span>
+<span class="w">   </span><span class="nx">afterEach</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">server</span><span class="p">.</span><span class="nx">resetHandlers</span><span class="p">());</span>
+<span class="w">   </span><span class="nx">afterAll</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">server</span><span class="p">.</span><span class="nx">close</span><span class="p">());</span>
+<span class="w">   </span>
+</pre>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="parte-ii-desarrollo-guiado-por-pruebas">
+    🧠
+    <strong>
+     Parte II — Desarrollo Guiado por Pruebas
+    </strong>
+   </h2>
+   <h3 id="tipado-base">
+    🧾 Tipado base
+   </h3>
+   <p>
+    Definir tipo y esquema:
+   </p>
+   <div class="highlight language-ts">
+    <pre><span></span><span class="kd">const</span><span class="w"> </span><span class="nx">ProductSchema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">(),</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">2</span><span class="p">),</span>
+<span class="w">  </span><span class="nx">price</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">().</span><span class="nx">positive</span><span class="p">(),</span>
+<span class="p">});</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">infer</span><span class="o">&lt;</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">ProductSchema</span><span class="o">&gt;</span><span class="p">;</span>
+</pre>
+   </div>
+   <hr/>
+   <h3 id="hu1-visualizacion-inicial-del-menu">
+    🔹
+    <strong>
+     HU1 — Visualización inicial del menú
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     Como usuario
+    </strong>
+    , quiero ver un listado de productos disponibles cuando ingreso al sistema, para poder elegir qué pedir.
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Rojo:
+     </strong>
+     test que verifique que se muestran productos mockeados por la API (
+     <code>
+      screen.getByText('Café')
+     </code>
+     ).
+    </li>
+    <li>
+     <strong>
+      Verde:
+     </strong>
+     implementar fetch a
+     <code>
+      /api/menu
+     </code>
+     (interceptado por MSW).
+    </li>
+    <li>
+     <strong>
+      Refactor:
+     </strong>
+     separar el componente
+     <code>
+      &lt;Menu /&gt;
+     </code>
+     .
+    </li>
+   </ul>
+   <p>
+    👉 Testear con
+    <code>
+     await waitFor(...)
+    </code>
+    y
+    <code>
+     screen.getAllByRole('listitem')
+    </code>
+    .
+   </p>
+   <hr/>
+   <h3 id="hu2-agregar-item-al-pedido">
+    🔹
+    <strong>
+     HU2 — Agregar ítem al pedido
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     Como usuario
+    </strong>
+    , quiero agregar productos al pedido, para calcular el total.
+   </p>
+   <ul>
+    <li>
+     Test: simular
+     <code>
+      click
+     </code>
+     sobre el botón “Agregar” de un producto.
+    </li>
+    <li>
+     Verificar que aparece en el área de pedido (
+     <code>
+      getByRole('list')
+     </code>
+     ).
+    </li>
+    <li>
+     Implementar estado local o contexto (
+     <code>
+      useOrder
+     </code>
+     ).
+    </li>
+   </ul>
+   <hr/>
+   <h3 id="hu3-calcular-total-del-pedido">
+    🔹
+    <strong>
+     HU3 — Calcular total del pedido
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     Como usuario
+    </strong>
+    , quiero ver el total actualizado cada vez que agrego o elimino un producto.
+   </p>
+   <ul>
+    <li>
+     Test: agregar varios productos y verificar el texto
+     <code>
+      "Total: $..."
+     </code>
+     .
+    </li>
+    <li>
+     Implementar cálculo dinámico.
+    </li>
+    <li>
+     Validar con
+     <code>
+      expect(screen.getByText(/total: \$\d+/i)).toBeInTheDocument()
+     </code>
+     .
+    </li>
+   </ul>
+   <hr/>
+   <h3 id="hu4-eliminar-item-del-pedido">
+    🔹
+    <strong>
+     HU4 — Eliminar ítem del pedido
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     Como usuario
+    </strong>
+    , quiero poder quitar un ítem del pedido sin borrar todo.
+   </p>
+   <ul>
+    <li>
+     Test: verificar que el clic en “Eliminar” remueve solo ese producto.
+    </li>
+    <li>
+     Implementar
+     <code>
+      e.stopPropagation()
+     </code>
+     si se anidan botones.
+    </li>
+    <li>
+     Usar
+     <code>
+      setState
+     </code>
+     funcional.
+    </li>
+   </ul>
+   <hr/>
+   <h3 id="hu5-enviar-pedido-msw-contexto">
+    🔹
+    <strong>
+     HU5 — Enviar pedido (MSW + Contexto)
+    </strong>
+   </h3>
+   <p>
+    <strong>
+     Como usuario
+    </strong>
+    , quiero enviar mi pedido al servidor para confirmarlo.
+   </p>
+   <ul>
+    <li>
+     Mockear endpoint
+     <code>
+      /api/orders
+     </code>
+     con
+     <strong>
+      MSW
+     </strong>
+     .
+    </li>
+    <li>
+     Test:
+    </li>
+   </ul>
+   <ol>
+    <li>
+     Agregar varios ítems.
+    </li>
+    <li>
+     Click en “Enviar pedido”.
+    </li>
+    <li>
+     Esperar
+     <code>
+      await waitFor(...)
+     </code>
+     que muestre mensaje “Pedido confirmado”.
+* Implementar envío y limpiar estado tras éxito.
+    </li>
+   </ol>
+   <hr/>
+   <h3 id="hu6-caso-limite-error-o-menu-vacio">
+    🔹
+    <strong>
+     HU6 — Caso límite: error o menú vacío
+    </strong>
+   </h3>
+   <ul>
+    <li>
+     Usar
+     <code>
+      server.use()
+     </code>
+     para simular un error 500 o lista vacía.
+    </li>
+    <li>
+     Verificar que la app muestre “No hay productos disponibles” o “Error al cargar menú”.
+    </li>
+   </ul>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="parte-iii-integracion-completa">
+    🧪
+    <strong>
+     Parte III — Integración Completa
+    </strong>
+   </h2>
+   <p>
+    Tests que cubran el flujo completo:
+   </p>
+   <ol>
+    <li>
+     Cargar menú (mock).
+    </li>
+    <li>
+     Agregar ítems.
+    </li>
+    <li>
+     Calcular total.
+    </li>
+    <li>
+     Enviar pedido (mock POST).
+    </li>
+    <li>
+     Resetear interfaz.
+    </li>
+   </ol>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

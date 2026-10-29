@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   git
+  </title>
+ </head>
+ <body>
+  <h1 id="apunte-de-git">
+   📘 Apunte de Git
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-introduccion-repositorios-y-control-de-versiones">
+      1. Introducción: repositorios y control de versiones
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-instalacion-de-git-en-ubuntu">
+      2. Instalación de Git en Ubuntu
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-que-es-git">
+      3. ¿Qué es Git?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-flujo-de-trabajo">
+      4. Flujo de trabajo
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-comandos-basicos">
+      5. Comandos básicos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-ejemplo-completo">
+      6. Ejemplo completo
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-archivos-ignorados-gitignore">
+      7. Archivos ignorados: .gitignore
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-github">
+      8. GitHub
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-ramas">
+      9. Ramas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-conflictos">
+      10. Conflictos
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="1-introduccion-repositorios-y-control-de-versiones">
+    1. Introducción: repositorios y control de versiones
+   </h2>
+   <h3 id="que-es-un-repositorio">
+    ¿Qué es un repositorio?
+   </h3>
+   <p>
+    Un
+    <strong>
+     repositorio
+    </strong>
+    es un lugar donde se almacenan archivos y su historial de cambios.
+   </p>
+   <p>
+    💡 Ejemplo:
+   </p>
+   <ul>
+    <li>
+     Un proyecto con código
+    </li>
+    <li>
+     Un documento que se va modificando
+    </li>
+   </ul>
+   <p>
+    👉 Un repositorio no solo guarda el estado actual, sino también
+    <strong>
+     todas las versiones anteriores
+    </strong>
+    .
+   </p>
+   <h3 id="que-es-el-control-de-versiones">
+    ¿Qué es el control de versiones?
+   </h3>
+   <p>
+    Es un sistema que permite:
+   </p>
+   <ul>
+    <li>
+     Guardar cambios
+    </li>
+    <li>
+     Volver a versiones anteriores
+    </li>
+    <li>
+     Comparar versiones
+    </li>
+   </ul>
+   <p>
+    💡 Sin control de versiones:
+   </p>
+   <ul>
+    <li>
+     archivo_v1
+    </li>
+    <li>
+     archivo_v2
+    </li>
+    <li>
+     archivo_final
+    </li>
+   </ul>
+   <p>
+    💡 Con control de versiones:
+   </p>
+   <ul>
+    <li>
+     Todo queda organizado automáticamente
+    </li>
+   </ul>
+   <h3 id="historia-breve">
+    Historia breve
+   </h3>
+   <p>
+    Antes de Git existían otros sistemas como:
+   </p>
+   <ul>
+    <li>
+     <strong>
+      CVS (Concurrent Versions System)
+     </strong>
+    </li>
+    <li>
+     <strong>
+      Subversion (SVN)
+     </strong>
+    </li>
+   </ul>
+   <p>
+    👉 Estos sistemas eran
+    <strong>
+     centralizados
+    </strong>
+    :
+   </p>
+   <ul>
+    <li>
+     Un servidor central
+    </li>
+    <li>
+     Los usuarios dependen de ese servidor
+    </li>
+   </ul>
+   <h3 id="que-cambia-con-git">
+    ¿Qué cambia con Git?
+   </h3>
+   <p>
+    Git (creado en 2005 por Linus Torvalds) introduce:
+   </p>
+   <ul>
+    <li>
+     Sistema
+     <strong>
+      distribuido
+     </strong>
+    </li>
+    <li>
+     Cada usuario tiene una copia completa del repositorio
+    </li>
+    <li>
+     Mayor velocidad y flexibilidad
+    </li>
+   </ul>
+   <p>
+    👉 Esto permite trabajar sin conexión y facilita el trabajo en equipo.
+   </p>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Qué es un repositorio?
+  → Es una carpeta que guarda archivos y su historial.
+    </li>
+    <li>
+     ¿Qué problema resuelve el control de versiones?
+  → Evita perder cambios y permite volver atrás.
+    </li>
+    <li>
+     ¿Qué diferencia hay entre Git y SVN?
+  → Git es distribuido, SVN es centralizado.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-instalacion-de-git-en-ubuntu">
+    2. Instalación de Git en Ubuntu
+   </h2>
+   <h3 id="instalacion">
+    Instalación
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>sudo apt update
+sudo apt install git -y
+</pre>
+   </div>
+   <p>
+    Verificar:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>git --version
+</pre>
+   </div>
+   <h3 id="configuracion-inicial">
+    Configuración inicial
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"
+</pre>
+   </div>
+   <h3 id="instalacion-en-wsl">
+    Instalación en WSL
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>wsl --install
+</pre>
+   </div>
+   <p>
+    Luego en Ubuntu:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>sudo apt update
+sudo apt install git -y
+</pre>
+   </div>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Para qué sirve configurar el usuario?
+  → Para identificar quién hace los cambios.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-que-es-git">
+    3. ¿Qué es Git?
+   </h2>
+   <p>
+    Git es un
+    <strong>
+     sistema de control de versiones distribuido
+    </strong>
+    . Eso significa que permite registrar los cambios que se realizan sobre un conjunto de archivos y, además, que cada persona que trabaja con el proyecto puede tener una copia completa del repositorio en su propia computadora.
+   </p>
+   <p>
+    En otras palabras, Git no se limita a guardar archivos: guarda la
+    <strong>
+     historia del proyecto
+    </strong>
+    .
+   </p>
+   <h3 id="para-que-sirve-git">
+    ¿Para qué sirve Git?
+   </h3>
+   <p>
+    Git sirve para:
+   </p>
+   <ul>
+    <li>
+     registrar cambios de forma ordenada;
+    </li>
+    <li>
+     volver a versiones anteriores si algo sale mal;
+    </li>
+    <li>
+     comparar distintas versiones de un mismo archivo;
+    </li>
+    <li>
+     trabajar en equipo sin sobrescribir el trabajo de otros;
+    </li>
+    <li>
+     desarrollar nuevas ideas en ramas separadas sin afectar la versión principal.
+    </li>
+   </ul>
+   <h3 id="que-guarda-git-exactamente">
+    ¿Qué guarda Git exactamente?
+   </h3>
+   <p>
+    Git guarda:
+   </p>
+   <ul>
+    <li>
+     el contenido de los archivos en distintos momentos;
+    </li>
+    <li>
+     quién realizó cada cambio;
+    </li>
+    <li>
+     cuándo se realizó;
+    </li>
+    <li>
+     un mensaje que describe qué se hizo.
+    </li>
+   </ul>
+   <p>
+    A cada punto guardado en la historia se lo llama
+    <strong>
+     commit
+    </strong>
+    .
+   </p>
+   <h3 id="ejemplo-conceptual">
+    Ejemplo conceptual
+   </h3>
+   <p>
+    Supongamos que un alumno está desarrollando una página web:
+   </p>
+   <ul>
+    <li>
+     Día 1: crea
+     <code>
+      index.html
+     </code>
+    </li>
+    <li>
+     Día 2: agrega estilos en
+     <code>
+      style.css
+     </code>
+    </li>
+    <li>
+     Día 3: modifica el menú y rompe el diseño
+    </li>
+   </ul>
+   <p>
+    Si está usando Git, puede revisar la historia del proyecto y volver a una versión anterior que funcionaba correctamente.
+   </p>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Git guarda archivos o versiones?
+  → Git guarda versiones de los archivos y el historial de cambios del proyecto.
+    </li>
+    <li>
+     ¿Qué es un commit?
+  → Es un registro guardado del proyecto en un momento determinado.
+    </li>
+    <li>
+     ¿Git sirve solo para programar?
+  → No. También puede usarse con documentos, apuntes, configuraciones y otros tipos de archivos.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-flujo-de-trabajo">
+    4. Flujo de trabajo
+   </h2>
+   <p>
+    Para entender Git, conviene pensar el trabajo en tres zonas diferentes:
+   </p>
+   <ol>
+    <li>
+     <strong>
+      Working Directory
+     </strong>
+    </li>
+    <li>
+     <strong>
+      Staging Area
+     </strong>
+    </li>
+    <li>
+     <strong>
+      Repository
+     </strong>
+    </li>
+   </ol>
+   <h3 id="41-working-directory">
+    4.1 Working Directory
+   </h3>
+   <p>
+    Es la carpeta de trabajo normal, es decir, el lugar donde creás, editás y eliminás archivos.
+   </p>
+   <p>
+    Por ejemplo:
+   </p>
+   <ul>
+    <li>
+     escribís código en un archivo;
+    </li>
+    <li>
+     corregís un texto;
+    </li>
+    <li>
+     agregás una imagen al proyecto.
+    </li>
+   </ul>
+   <p>
+    En esta etapa, los cambios todavía no forman parte de la historia guardada de Git.
+   </p>
+   <h3 id="42-staging-area">
+    4.2 Staging Area
+   </h3>
+   <p>
+    La
+    <strong>
+     staging area
+    </strong>
+    es una zona intermedia. Allí se colocan los cambios que querés incluir en el próximo commit.
+   </p>
+   <p>
+    Esto es importante porque Git permite elegir con precisión qué cambios se van a guardar y cuáles no.
+   </p>
+   <p>
+    👉 Idea clave:
+    <strong>
+     editar un archivo no significa guardarlo automáticamente en Git
+    </strong>
+    .
+   </p>
+   <p>
+    Primero se prepara con
+    <code>
+     git add
+    </code>
+    .
+   </p>
+   <h3 id="43-repository">
+    4.3 Repository
+   </h3>
+   <p>
+    Es el repositorio propiamente dicho, donde Git almacena el historial confirmado mediante commits.
+   </p>
+   <p>
+    Cuando hacés un commit, los cambios pasan a formar parte de la historia del proyecto.
+   </p>
+   <h3 id="resumen-del-flujo">
+    Resumen del flujo
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>Working Directory → Staging Area → Repository
+editar            → git add      → git commit
+</pre>
+   </div>
+   <h3 id="ejemplo">
+    Ejemplo
+   </h3>
+   <ol>
+    <li>
+     Editás
+     <code>
+      archivo.txt
+     </code>
+    </li>
+    <li>
+     Ejecutás:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>add<span class="w"> </span>archivo.txt
+</pre>
+   </div>
+   <ol start="3">
+    <li>
+     Luego ejecutás:
+    </li>
+   </ol>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Actualiza el contenido inicial"</span>
+</pre>
+   </div>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Qué es staging?
+  → Es una zona intermedia donde se preparan los cambios antes de guardarlos definitivamente.
+    </li>
+    <li>
+     ¿Qué pasa si modifico un archivo pero no hago commit?
+  → El cambio existe en tu carpeta de trabajo, pero no queda registrado en la historia de Git.
+    </li>
+    <li>
+     ¿Qué pasa si hago
+     <code>
+      git add
+     </code>
+     pero no
+     <code>
+      git commit
+     </code>
+     ?
+  → El cambio queda preparado, pero todavía no está guardado definitivamente en el repositorio.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-comandos-basicos">
+    5. Comandos básicos
+   </h2>
+   <p>
+    A continuación se presentan los comandos más importantes para comenzar a trabajar con Git.
+   </p>
+   <h3 id="51-git-init">
+    5.1
+    <code>
+     git init
+    </code>
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>init
+</pre>
+   </div>
+   <p>
+    Este comando convierte la carpeta actual en un repositorio Git.
+   </p>
+   <p>
+    Cuando se ejecuta, Git crea internamente una carpeta oculta llamada
+    <code>
+     .git
+    </code>
+    , donde guarda toda la información del historial.
+   </p>
+   <h3 id="52-git-status">
+    5.2
+    <code>
+     git status
+    </code>
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>status
+</pre>
+   </div>
+   <p>
+    Muestra el estado actual del repositorio. Indica, por ejemplo:
+   </p>
+   <ul>
+    <li>
+     qué archivos fueron modificados;
+    </li>
+    <li>
+     cuáles están preparados para commit;
+    </li>
+    <li>
+     cuáles todavía no están siendo seguidos por Git.
+    </li>
+   </ul>
+   <p>
+    Es uno de los comandos más útiles, especialmente para principiantes.
+   </p>
+   <h3 id="53-git-add">
+    5.3
+    <code>
+     git add
+    </code>
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>add<span class="w"> </span>archivo.txt
+</pre>
+   </div>
+   <p>
+    Agrega un archivo específico al área de preparación.
+   </p>
+   <p>
+    Para agregar todos los cambios de la carpeta actual:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>add<span class="w"> </span>.
+</pre>
+   </div>
+   <p>
+    ⚠️ Aunque
+    <code>
+     git add .
+    </code>
+    es práctico, conviene usarlo con cuidado, porque puede incluir archivos que no querías guardar.
+   </p>
+   <h3 id="54-git-commit">
+    5.4
+    <code>
+     git commit
+    </code>
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"mensaje"</span>
+</pre>
+   </div>
+   <p>
+    Guarda en la historia del repositorio todos los cambios que estaban en staging.
+   </p>
+   <p>
+    El mensaje debe explicar claramente qué se hizo.
+   </p>
+   <h4 id="ejemplos-de-buenos-mensajes">
+    Ejemplos de buenos mensajes
+   </h4>
+   <ul>
+    <li>
+     <code>
+      Agrega archivo README inicial
+     </code>
+    </li>
+    <li>
+     <code>
+      Corrige error en el cálculo del total
+     </code>
+    </li>
+    <li>
+     <code>
+      Incorpora estilos básicos a la página principal
+     </code>
+    </li>
+   </ul>
+   <h4 id="ejemplos-de-malos-mensajes">
+    Ejemplos de malos mensajes
+   </h4>
+   <ul>
+    <li>
+     <code>
+      cambios
+     </code>
+    </li>
+    <li>
+     <code>
+      arreglé algo
+     </code>
+    </li>
+    <li>
+     <code>
+      123
+     </code>
+    </li>
+   </ul>
+   <h3 id="55-git-log">
+    5.5
+    <code>
+     git log
+    </code>
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>log
+</pre>
+   </div>
+   <p>
+    Muestra el historial de commits del repositorio.
+   </p>
+   <p>
+    Versión resumida:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>log<span class="w"> </span>--oneline
+</pre>
+   </div>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Qué hace
+     <code>
+      git init
+     </code>
+     ?
+  → Crea un repositorio Git en la carpeta actual.
+    </li>
+    <li>
+     ¿Para qué sirve
+     <code>
+      git status
+     </code>
+     ?
+  → Para ver qué archivos cambiaron y en qué estado están.
+    </li>
+    <li>
+     ¿Qué pasa si hago commit sin add?
+  → Git no incluirá los cambios nuevos que no hayan sido preparados previamente.
+    </li>
+    <li>
+     ¿Por qué es importante el mensaje del commit?
+  → Porque ayuda a entender la historia del proyecto.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-ejemplo-completo">
+    6. Ejemplo completo
+   </h2>
+   <p>
+    Veamos un ejemplo sencillo, paso a paso.
+   </p>
+   <h3 id="61-crear-una-carpeta-de-trabajo">
+    6.1 Crear una carpeta de trabajo
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>mkdir<span class="w"> </span>proyecto
+<span class="nb">cd</span><span class="w"> </span>proyecto
+</pre>
+   </div>
+   <p>
+    Esto crea una carpeta llamada
+    <code>
+     proyecto
+    </code>
+    y entra en ella.
+   </p>
+   <h3 id="62-inicializar-git">
+    6.2 Inicializar Git
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>init
+</pre>
+   </div>
+   <p>
+    Ahora la carpeta ya es un repositorio.
+   </p>
+   <h3 id="63-crear-un-archivo">
+    6.3 Crear un archivo
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"Hola"</span><span class="w"> </span>&gt;<span class="w"> </span>archivo.txt
+</pre>
+   </div>
+   <p>
+    Se crea un archivo llamado
+    <code>
+     archivo.txt
+    </code>
+    con el texto
+    <code>
+     Hola
+    </code>
+    .
+   </p>
+   <h3 id="64-ver-el-estado">
+    6.4 Ver el estado
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>status
+</pre>
+   </div>
+   <p>
+    Git mostrará que existe un archivo nuevo sin seguimiento.
+   </p>
+   <h3 id="65-preparar-el-archivo">
+    6.5 Preparar el archivo
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>add<span class="w"> </span>archivo.txt
+</pre>
+   </div>
+   <p>
+    Ahora el archivo pasa al staging area.
+   </p>
+   <h3 id="66-crear-el-primer-commit">
+    6.6 Crear el primer commit
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Primer commit"</span>
+</pre>
+   </div>
+   <p>
+    Con esto queda registrada la primera versión del proyecto.
+   </p>
+   <h3 id="67-consultar-el-historial">
+    6.7 Consultar el historial
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>log<span class="w"> </span>--oneline
+</pre>
+   </div>
+   <p>
+    Verás el commit recién creado.
+   </p>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Cómo veo el historial?
+  → Con
+     <code>
+      git log
+     </code>
+     o
+     <code>
+      git log --oneline
+     </code>
+     .
+    </li>
+    <li>
+     ¿Qué significa “archivo sin seguimiento”?
+  → Que Git detecta el archivo, pero todavía no fue agregado al repositorio.
+    </li>
+    <li>
+     ¿Cuál suele ser el primer commit de un proyecto?
+  → Generalmente uno que crea la estructura inicial o agrega el README.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-archivos-ignorados-gitignore">
+    7. Archivos ignorados: .gitignore
+   </h2>
+   <p>
+    En muchos proyectos existen archivos que
+    <strong>
+     no deben guardarse en el repositorio
+    </strong>
+    , por ejemplo:
+   </p>
+   <ul>
+    <li>
+     archivos temporales;
+    </li>
+    <li>
+     configuraciones locales;
+    </li>
+    <li>
+     dependencias descargadas;
+    </li>
+    <li>
+     archivos generados automáticamente.
+    </li>
+   </ul>
+   <p>
+    Para evitar que Git los registre, se utiliza un archivo llamado
+    <strong>
+     <code>
+      .gitignore
+     </code>
+    </strong>
+    .
+   </p>
+   <h3 id="que-es-gitignore">
+    ¿Qué es
+    <code>
+     .gitignore
+    </code>
+    ?
+   </h3>
+   <p>
+    Es un archivo de texto donde se especifican patrones de archivos o carpetas que Git debe ignorar.
+   </p>
+   <p>
+    👉 Es decir: Git ve esos archivos, pero decide no incluirlos en los commits.
+   </p>
+   <h3 id="ejemplo-basico">
+    Ejemplo básico
+   </h3>
+   <p>
+    Crear el archivo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>touch<span class="w"> </span>.gitignore
+</pre>
+   </div>
+   <p>
+    Editar su contenido:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>node_modules/
+*.log
+.env
+</pre>
+   </div>
+   <p>
+    Esto indica:
+   </p>
+   <ul>
+    <li>
+     ignorar la carpeta
+     <code>
+      node_modules
+     </code>
+     ;
+    </li>
+    <li>
+     ignorar todos los archivos
+     <code>
+      .log
+     </code>
+     ;
+    </li>
+    <li>
+     ignorar el archivo
+     <code>
+      .env
+     </code>
+     .
+    </li>
+   </ul>
+   <h3 id="ejemplo-aplicado">
+    Ejemplo aplicado
+   </h3>
+   <p>
+    Supongamos un proyecto con esta estructura:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>proyecto/
+├── app.js
+├── node_modules/
+├── error.log
+└── .env
+</pre>
+   </div>
+   <p>
+    Con
+    <code>
+     .gitignore
+    </code>
+    , solo se versionará:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>app.js
+</pre>
+   </div>
+   <h3 id="importante">
+    Importante
+   </h3>
+   <p>
+    👉
+    <code>
+     .gitignore
+    </code>
+    <strong>
+     no elimina archivos ya versionados
+    </strong>
+    .
+   </p>
+   <p>
+    Si un archivo ya fue agregado, primero hay que quitarlo del repositorio:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>rm<span class="w"> </span>--cached<span class="w"> </span>archivo
+</pre>
+   </div>
+   <p>
+    Luego agregarlo al
+    <code>
+     .gitignore
+    </code>
+    .
+   </p>
+   <h3 id="buenas-practicas">
+    Buenas prácticas
+   </h3>
+   <ul>
+    <li>
+     Crear
+     <code>
+      .gitignore
+     </code>
+     al inicio del proyecto.
+    </li>
+    <li>
+     Usar plantillas (por ejemplo, para Node, Python, etc.).
+    </li>
+    <li>
+     No subir archivos sensibles (como contraseñas).
+    </li>
+   </ul>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Para qué sirve
+     <code>
+      .gitignore
+     </code>
+     ?
+  → Para evitar que ciertos archivos se incluyan en el repositorio.
+    </li>
+    <li>
+     ¿Git ignora archivos automáticamente?
+  → No. Solo los que estén definidos en
+     <code>
+      .gitignore
+     </code>
+     .
+    </li>
+    <li>
+     ¿Qué pasa si ya subí un archivo que quiero ignorar?
+  → Hay que quitarlo del repositorio con
+     <code>
+      git rm --cached
+     </code>
+     .
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-github">
+    8. GitHub
+   </h2>
+   <h3 id="que-es-github">
+    ¿Qué es GitHub?
+   </h3>
+   <p>
+    GitHub es una plataforma en línea que permite alojar repositorios Git en internet.
+   </p>
+   <p>
+    Git funciona en la computadora local. GitHub agrega una capa de trabajo remoto y colaboración.
+   </p>
+   <h3 id="para-que-sirve-github">
+    ¿Para qué sirve GitHub?
+   </h3>
+   <p>
+    Sirve para:
+   </p>
+   <ul>
+    <li>
+     tener una copia remota del proyecto;
+    </li>
+    <li>
+     compartir el repositorio con otras personas;
+    </li>
+    <li>
+     trabajar en equipo;
+    </li>
+    <li>
+     publicar proyectos;
+    </li>
+    <li>
+     integrar revisiones y propuestas de cambio.
+    </li>
+   </ul>
+   <h3 id="relacion-entre-git-y-github">
+    Relación entre Git y GitHub
+   </h3>
+   <ul>
+    <li>
+     <strong>
+      Git
+     </strong>
+     : herramienta de control de versiones.
+    </li>
+    <li>
+     <strong>
+      GitHub
+     </strong>
+     : servicio web que aloja repositorios Git.
+    </li>
+   </ul>
+   <p>
+    👉 No son lo mismo. Se puede usar Git sin GitHub.
+   </p>
+   <h3 id="71-conectar-un-repositorio-local-con-github">
+    7.1 Conectar un repositorio local con GitHub
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>origin<span class="w"> </span>URL
+</pre>
+   </div>
+   <p>
+    Ejemplo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>origin<span class="w"> </span>https://github.com/usuario/mi-proyecto.git
+</pre>
+   </div>
+   <p>
+    Aquí:
+   </p>
+   <ul>
+    <li>
+     <code>
+      remote
+     </code>
+     indica un repositorio remoto;
+    </li>
+    <li>
+     <code>
+      origin
+     </code>
+     es el nombre habitual que se le da al remoto principal;
+    </li>
+    <li>
+     <code>
+      URL
+     </code>
+     es la dirección del repositorio en GitHub.
+    </li>
+   </ul>
+   <h3 id="72-subir-cambios">
+    7.2 Subir cambios
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>main
+</pre>
+   </div>
+   <p>
+    Esto envía los commits locales al repositorio remoto.
+   </p>
+   <ul>
+    <li>
+     <code>
+      push
+     </code>
+     = subir cambios;
+    </li>
+    <li>
+     <code>
+      origin
+     </code>
+     = remoto;
+    </li>
+    <li>
+     <code>
+      main
+     </code>
+     = rama principal.
+    </li>
+   </ul>
+   <h3 id="73-traer-cambios">
+    7.3 Traer cambios
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>main
+</pre>
+   </div>
+   <p>
+    Esto descarga y fusiona en tu repositorio local los cambios que existan en GitHub.
+   </p>
+   <h3 id="74-clonar-un-repositorio">
+    7.4 Clonar un repositorio
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/usuario/mi-proyecto.git
+</pre>
+   </div>
+   <p>
+    Este comando copia un repositorio remoto completo a tu computadora.
+   </p>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Qué es
+     <code>
+      origin
+     </code>
+     ?
+  → Es el nombre que normalmente se le da al repositorio remoto principal.
+    </li>
+    <li>
+     ¿Qué hace
+     <code>
+      git push
+     </code>
+     ?
+  → Sube los commits locales al repositorio remoto.
+    </li>
+    <li>
+     ¿Qué hace
+     <code>
+      git pull
+     </code>
+     ?
+  → Trae cambios del remoto y los integra al repositorio local.
+    </li>
+    <li>
+     ¿Qué diferencia hay entre
+     <code>
+      git clone
+     </code>
+     y
+     <code>
+      git init
+     </code>
+     ?
+  →
+     <code>
+      git init
+     </code>
+     crea un repositorio nuevo;
+     <code>
+      git clone
+     </code>
+     copia uno existente.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-ramas">
+    9. Ramas
+   </h2>
+   <p>
+    Las ramas permiten desarrollar cambios en paralelo sin afectar directamente la rama principal.
+   </p>
+   <h3 id="por-que-existen-las-ramas">
+    ¿Por qué existen las ramas?
+   </h3>
+   <p>
+    Porque en un proyecto real no conviene mezclar todo en una sola línea de trabajo. Por ejemplo, se puede:
+   </p>
+   <ul>
+    <li>
+     mantener una versión estable del proyecto;
+    </li>
+    <li>
+     desarrollar una nueva funcionalidad en otra rama;
+    </li>
+    <li>
+     corregir errores sin alterar la versión principal.
+    </li>
+   </ul>
+   <h3 id="rama-principal">
+    Rama principal
+   </h3>
+   <p>
+    Actualmente, la rama principal suele llamarse
+    <code>
+     main
+    </code>
+    .
+   </p>
+   <p>
+    Allí suele mantenerse la versión más estable del proyecto.
+   </p>
+   <h3 id="81-crear-una-rama">
+    8.1 Crear una rama
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>branch<span class="w"> </span>nueva-rama
+</pre>
+   </div>
+   <h3 id="82-cambiar-de-rama">
+    8.2 Cambiar de rama
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>nueva-rama
+</pre>
+   </div>
+   <p>
+    Forma moderna:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>nueva-rama
+</pre>
+   </div>
+   <h3 id="83-crear-y-cambiar-en-un-solo-paso">
+    8.3 Crear y cambiar en un solo paso
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>nueva-rama
+</pre>
+   </div>
+   <p>
+    O con sintaxis moderna:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>nueva-rama
+</pre>
+   </div>
+   <h3 id="84-fusionar-ramas">
+    8.4 Fusionar ramas
+   </h3>
+   <p>
+    Primero se vuelve a la rama principal:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>main
+</pre>
+   </div>
+   <p>
+    Luego se fusiona:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>merge<span class="w"> </span>nueva-rama
+</pre>
+   </div>
+   <p>
+    Esto incorpora en
+    <code>
+     main
+    </code>
+    los cambios hechos en
+    <code>
+     nueva-rama
+    </code>
+    .
+   </p>
+   <h3 id="ejemplo-practico">
+    Ejemplo práctico
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>feature-login
+</pre>
+   </div>
+   <p>
+    Se trabaja en esa rama, se hacen commits y luego:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>merge<span class="w"> </span>feature-login
+</pre>
+   </div>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Por qué no conviene trabajar siempre en
+     <code>
+      main
+     </code>
+     ?
+  → Porque cualquier error impacta directamente en la versión principal.
+    </li>
+    <li>
+     ¿Qué es una feature branch?
+  → Es una rama creada para desarrollar una funcionalidad específica.
+    </li>
+    <li>
+     ¿Qué hace
+     <code>
+      git merge
+     </code>
+     ?
+  → Une los cambios de una rama dentro de otra.
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-conflictos">
+    10. Conflictos
+   </h2>
+   <p>
+    Un conflicto ocurre cuando Git no puede unir automáticamente dos cambios.
+   </p>
+   <p>
+    Esto suele pasar cuando dos ramas modificaron la misma parte de un archivo.
+   </p>
+   <h3 id="ejemplo-de-conflicto">
+    Ejemplo de conflicto
+   </h3>
+   <p>
+    Git puede marcar el archivo así:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+código A
+=======
+código B
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; rama
+</pre>
+   </div>
+   <p>
+    Esto significa que hay dos versiones distintas de la misma zona del archivo.
+   </p>
+   <h3 id="como-se-resuelve">
+    ¿Cómo se resuelve?
+   </h3>
+   <ol>
+    <li>
+     Leer ambas versiones.
+    </li>
+    <li>
+     Decidir cuál debe quedar, o combinar ambas.
+    </li>
+    <li>
+     Editar el archivo manualmente.
+    </li>
+    <li>
+     Guardar el archivo corregido.
+    </li>
+    <li>
+     Agregarlo nuevamente con
+     <code>
+      git add
+     </code>
+     .
+    </li>
+    <li>
+     Confirmar la resolución con un commit.
+    </li>
+   </ol>
+   <h3 id="ejemplo-de-resolucion">
+    Ejemplo de resolución
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>add<span class="w"> </span>archivo.txt
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Resuelve conflicto de merge"</span>
+</pre>
+   </div>
+   <h3 id="idea-importante">
+    Idea importante
+   </h3>
+   <p>
+    Los conflictos no son un error extraño: son una consecuencia normal del trabajo en equipo.
+   </p>
+   <p>
+    💬 Preguntas y respuestas:
+   </p>
+   <ul>
+    <li>
+     ¿Qué es un conflicto?
+  → Es una situación en la que Git no puede decidir automáticamente cómo unir cambios.
+    </li>
+    <li>
+     ¿Siempre que hay dos ramas hay conflicto?
+  → No. Solo cuando los cambios interfieren entre sí.
+    </li>
+    <li>
+     ¿Git resuelve todos los conflictos solo?
+  → No. A veces necesita intervención manual.
+    </li>
+   </ul>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

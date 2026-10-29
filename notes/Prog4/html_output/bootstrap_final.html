@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+  </title>
+ </head>
+ <body>
+  <div id="main-title-block">
+   <span>
+   </span>
+  </div>
+  <h1 id="guia-de-bootstrap-con-ejemplos">
+   Guía de Bootstrap con Ejemplos
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#que-es-bootstrap">
+      ¿Qué es Bootstrap?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#como-probar-los-ejemplos">
+      Cómo Probar los Ejemplos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#personalizacion-de-bootstrap">
+      Personalización de Bootstrap
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#patrones-comunes">
+      Patrones Comunes
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#componentes-javascript">
+      Componentes JavaScript
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#utilidades-avanzadas">
+      Utilidades Avanzadas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#integracion-con-javascript">
+      Integración con JavaScript
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#heading-7">
+      Encabezado 2
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#heading-8">
+      ¿Por qué elegir Bootstrap?
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#heading-9">
+      Ponte en Contacto
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="que-es-bootstrap">
+    ¿Qué es Bootstrap?
+   </h2>
+   <p>
+    Bootstrap es el toolkit de código abierto más popular del mundo para el desarrollo front-end, que incluye variables y mixins de Sass, un sistema de grillas responsivo, una extensa biblioteca de componentes preconstruidos y potentes plugins de JavaScript. Permite a los desarrolladores diseñar y personalizar rápidamente sitios web responsivos con enfoque mobile-first.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="como-probar-los-ejemplos">
+    Cómo Probar los Ejemplos
+   </h2>
+   <p>
+    Antes de comenzar con la teoría, es importante que sepas cómo probar todos los ejemplos de código que aparecen en esta guía. Puedes usar editores de HTML en línea que te permiten ver los resultados inmediatamente.
+   </p>
+   <h3 id="editores-recomendados-gratuitos">
+    🚀 Editores Recomendados (Gratuitos)
+   </h3>
+   <h4 id="1-codepen-mas-popular">
+    1.
+    <strong>
+     CodePen
+    </strong>
+    (Más popular)
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      URL
+     </strong>
+     : https://codepen.io/pen/
+    </li>
+    <li>
+     <strong>
+      Ventajas
+     </strong>
+     : Comunidad activa, muchos ejemplos, fácil de compartir
+    </li>
+    <li>
+     <strong>
+      Cómo usar
+     </strong>
+     : 
+  1. Ve a CodePen y crea una nueva "Pen"
+  2. En la pestaña HTML, pega el código HTML del ejemplo
+  3. En la pestaña CSS, agrega estilos personalizados si es necesario
+  4. En Settings &gt; CSS, agrega Bootstrap desde CDN
+    </li>
+   </ul>
+   <h4 id="2-jsfiddle">
+    2.
+    <strong>
+     JSFiddle
+    </strong>
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      URL
+     </strong>
+     : https://jsfiddle.net/
+    </li>
+    <li>
+     <strong>
+      Ventajas
+     </strong>
+     : Interfaz simple, fácil de usar
+    </li>
+    <li>
+     <strong>
+      Cómo usar
+     </strong>
+     :
+  1. Ve a JSFiddle
+  2. En el panel HTML, pega tu código
+  3. En External Resources, agrega Bootstrap CDN
+    </li>
+   </ul>
+   <h4 id="3-codesandbox">
+    3.
+    <strong>
+     CodeSandbox
+    </strong>
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      URL
+     </strong>
+     : https://codesandbox.io/
+    </li>
+    <li>
+     <strong>
+      Ventajas
+     </strong>
+     : Entorno más completo, similar a VS Code
+    </li>
+    <li>
+     <strong>
+      Ideal para
+     </strong>
+     : Proyectos más complejos
+    </li>
+   </ul>
+   <h4 id="4-replit">
+    4.
+    <strong>
+     Replit
+    </strong>
+   </h4>
+   <ul>
+    <li>
+     <strong>
+      URL
+     </strong>
+     : https://replit.com/
+    </li>
+    <li>
+     <strong>
+      Ventajas
+     </strong>
+     : Incluye terminal, múltiples archivos
+    </li>
+    <li>
+     <strong>
+      Ideal para
+     </strong>
+     : Desarrollo más avanzado
+    </li>
+   </ul>
+   <h3 id="plantilla-base-para-copiar-y-pegar">
+    📋 Plantilla Base para Copiar y Pegar
+   </h3>
+   <p>
+    Copia este código base en cualquiera de los editores y luego agrega los ejemplos dentro del
+    <code>
+     &lt;body&gt;
+    </code>
+    :
+   </p>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">"es"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"UTF-8"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1.0"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Bootstrap Ejemplo<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- Bootstrap CSS --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- Bootstrap Icons (opcional) --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- Estilos personalizados (opcional) --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="c">/* Aquí puedes agregar CSS personalizado */</span>
+<span class="w">        </span><span class="p">.</span><span class="nc">demo-spacing</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"container my-5"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">"text-center mb-4"</span><span class="p">&gt;</span>Probando Bootstrap<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+
+        <span class="cm">&lt;!-- 👇 AGREGA LOS EJEMPLOS AQUÍ 👇 --&gt;</span>
+
+        <span class="cm">&lt;!-- Ejemplo de botón --&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-primary"</span><span class="p">&gt;</span>Mi primer botón Bootstrap<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+
+        <span class="cm">&lt;!-- 👆 FIN DE LOS EJEMPLOS 👆 --&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- Bootstrap JavaScript --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="guia-paso-a-paso-para-codepen">
+    🎯 Guía Paso a Paso para CodePen
+   </h3>
+   <p>
+    <strong>
+     Paso 1
+    </strong>
+    : Ve a https://codepen.io/pen/
+   </p>
+   <p>
+    <strong>
+     Paso 2
+    </strong>
+    : Configura Bootstrap
+- Clic en el ⚙️ (Settings) en la sección CSS
+- En "Add External Stylesheets/Pens", agrega:
+    <br/>
+    <div class="highlight language-text">
+     <pre><span></span>  https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css
+
+</pre>
+    </div>
+   </p>
+   <ul>
+    <li>
+     Clic en "Save &amp; Close"
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Paso 3
+    </strong>
+    : Configura Bootstrap JavaScript
+- Clic en el ⚙️ (Settings) en la sección JS
+- En "Add External Scripts/Pens", agrega:
+    <br/>
+    <div class="highlight language-text">
+     <pre><span></span>  https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js
+
+</pre>
+    </div>
+   </p>
+   <ul>
+    <li>
+     Clic en "Save &amp; Close"
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Paso 4
+    </strong>
+    : Agrega HTML básico
+En la sección HTML, pega:
+   </p>
+   <div class="highlight language-html">
+    <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"container my-5"</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">"text-center mb-4"</span><span class="p">&gt;</span>Probando Bootstrap<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+
+  <span class="cm">&lt;!-- Aquí van tus ejemplos --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-primary"</span><span class="p">&gt;</span>¡Funciona!<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Paso 5
+    </strong>
+    : ¡Experimenta!
+Ahora puedes copiar cualquier ejemplo de esta guía y verlo funcionar inmediatamente.
+   </p>
+   <h3 id="consejos-para-probar-ejemplos">
+    💡 Consejos para Probar Ejemplos
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Comienza simple
+     </strong>
+     : Prueba primero un botón o una tarjeta básica
+    </li>
+    <li>
+     <strong>
+      Un ejemplo a la vez
+     </strong>
+     : No agregues todo junto al principio
+    </li>
+    <li>
+     <strong>
+      Usa el inspector
+     </strong>
+     : Clic derecho &gt; "Inspeccionar elemento" para ver cómo funciona el CSS
+    </li>
+    <li>
+     <strong>
+      Modifica valores
+     </strong>
+     : Cambia clases como
+     <code>
+      btn-primary
+     </code>
+     por
+     <code>
+      btn-success
+     </code>
+     para ver diferencias
+    </li>
+    <li>
+     <strong>
+      Guarda tus experimentos
+     </strong>
+     : Crea una cuenta en el editor para guardar tus pruebas
+    </li>
+   </ol>
+   <h3 id="troubleshooting-solucion-de-problemas">
+    🔧 Troubleshooting (Solución de Problemas)
+   </h3>
+   <p>
+    <strong>
+     ❌ "No veo los estilos de Bootstrap"
+    </strong>
+    - Verifica que agregaste correctamente el CDN de CSS
+- Revisa que no haya errores en la consola del navegador
+   </p>
+   <p>
+    <strong>
+     ❌ "Los componentes JavaScript no funcionan"
+    </strong>
+    - Asegúrate de incluir el CDN de Bootstrap JavaScript
+- Verifica que los atributos
+    <code>
+     data-bs-*
+    </code>
+    estén correctos
+   </p>
+   <p>
+    <strong>
+     ❌ "El sitio se ve raro en móvil"
+    </strong>
+    - Confirma que tienes la etiqueta viewport:
+    <code>
+     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    </code>
+   </p>
+   <h3 id="vista-responsiva">
+    📱 Vista Responsiva
+   </h3>
+   <p>
+    Los editores online te permiten ver cómo se ve tu código en diferentes tamaños:
+-
+    <strong>
+     CodePen
+    </strong>
+    : Usa el botón "Change View" para ver móvil/tablet/desktop
+-
+    <strong>
+     JSFiddle
+    </strong>
+    : Redimensiona la ventana de resultado
+-
+    <strong>
+     CodeSandbox
+    </strong>
+    : Incluye vista responsiva integrada
+   </p>
+   <p>
+    ¡Ahora estás listo para experimentar con todos los ejemplos de esta guía!
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="personalizacion-de-bootstrap">
+    Personalización de Bootstrap
+   </h2>
+   <p>
+    La
+    <strong>
+     personalización
+    </strong>
+    es el proceso de modificar Bootstrap para adaptarlo a las necesidades específicas de tu proyecto, cambiando colores, tipografías, espaciados y otros aspectos visuales para crear una identidad única.
+   </p>
+   <h3 id="por-que-personalizar-bootstrap">
+    ¿Por qué personalizar Bootstrap?
+   </h3>
+   <p>
+    <strong>
+     Problema
+    </strong>
+    : Bootstrap por defecto se ve genérico y todos los sitios que lo usan tienen un aspecto similar.
+   </p>
+   <p>
+    <strong>
+     Solución
+    </strong>
+    : La personalización te permite:
+- ✅ Crear una identidad visual única para tu marca
+- ✅ Adaptar colores corporativos
+- ✅ Cambiar tipografías según tu estilo
+- ✅ Ajustar espaciados y tamaños
+- ✅ Eliminar componentes innecesarios para optimizar el tamaño
+   </p>
+   <h3 id="metodos-de-personalizacion">
+    Métodos de Personalización
+   </h3>
+   <h4 id="1-css-personalizado-metodo-basico">
+    1. CSS Personalizado (Método Básico)
+   </h4>
+   <p>
+    Escribes CSS adicional que sobrescribe los estilos de Bootstrap:
+   </p>
+   <div class="highlight language-css">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c">/* Archivo: mi-estilo-personalizado.css */</span>
+<span class="c">/* Cargar DESPUÉS de Bootstrap */</span>
+
+<span class="c">/* Cambiar color del botón primario */</span>
+<span class="p">.</span><span class="nc">btn-primary</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#ff6b35</span><span class="p">;</span><span class="w"> </span><span class="c">/* Naranja corporativo */</span>
+<span class="w">    </span><span class="k">border-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#ff6b35</span><span class="p">;</span>
+<span class="w">    </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="mi">600</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">btn-primary</span><span class="p">:</span><span class="nd">hover</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#e55a2b</span><span class="p">;</span><span class="w"> </span><span class="c">/* Naranja más oscuro al hacer hover */</span>
+<span class="w">    </span><span class="k">border-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#e55a2b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* Personalizar navbar */</span>
+<span class="p">.</span><span class="nc">navbar</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#2c3e50</span><span class="w"> </span><span class="cp">!important</span><span class="p">;</span><span class="w"> </span><span class="c">/* Azul oscuro corporativo */</span>
+<span class="w">    </span><span class="k">box-shadow</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">2</span><span class="kt">px</span><span class="w"> </span><span class="mi">4</span><span class="kt">px</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c">/* Cambiar tipografía principal */</span>
+<span class="nt">body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="s1">'Roboto'</span><span class="p">,</span><span class="w"> </span><span class="n">Arial</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Ventajas
+    </strong>
+    : Fácil de implementar, no requiere herramientas adicionales
+    <strong>
+     Desventajas
+    </strong>
+    : Puede generar CSS duplicado, difícil de mantener en proyectos grandes
+   </p>
+   <h4 id="2-variables-css-css-custom-properties-recomendado">
+    2. Variables CSS (CSS Custom Properties) - Recomendado
+   </h4>
+   <p>
+    Bootstrap 5 incluye variables CSS que puedes modificar fácilmente:
+   </p>
+   <div class="highlight language-css">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c">/* Archivo: variables-personalizadas.css */</span>
+<span class="c">/* Cargar ANTES que Bootstrap */</span>
+
+<span class="p">:</span><span class="nd">root</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c">/* Colores principales */</span>
+<span class="w">    </span><span class="nv">--bs-primary</span><span class="p">:</span><span class="w"> </span><span class="mh">#ff6b35</span><span class="p">;</span><span class="w">           </span><span class="c">/* Naranja corporativo */</span>
+<span class="w">    </span><span class="nv">--bs-secondary</span><span class="p">:</span><span class="w"> </span><span class="mh">#2c3e50</span><span class="p">;</span><span class="w">         </span><span class="c">/* Azul oscuro */</span>
+<span class="w">    </span><span class="nv">--bs-success</span><span class="p">:</span><span class="w"> </span><span class="mh">#27ae60</span><span class="p">;</span><span class="w">           </span><span class="c">/* Verde personalizado */</span>
+<span class="w">    </span><span class="nv">--bs-danger</span><span class="p">:</span><span class="w"> </span><span class="mh">#e74c3c</span><span class="p">;</span><span class="w">            </span><span class="c">/* Rojo personalizado */</span>
+<span class="w">    </span><span class="nv">--bs-warning</span><span class="p">:</span><span class="w"> </span><span class="mh">#f39c12</span><span class="p">;</span><span class="w">           </span><span class="c">/* Amarillo personalizado */</span>
+<span class="w">    </span><span class="nv">--bs-info</span><span class="p">:</span><span class="w"> </span><span class="mh">#3498db</span><span class="p">;</span><span class="w">              </span><span class="c">/* Azul información */</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c">/* Tipografía */</span>
+<span class="w">    </span><span class="nv">--bs-font-sans-serif</span><span class="p">:</span><span class="w"> </span><span class="s2">"Roboto"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Helvetica Neue"</span><span class="p">,</span><span class="w"> </span><span class="n">Arial</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="w">    </span><span class="nv">--bs-font-size-base</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="p">;</span>
+<span class="w">    </span><span class="nv">--bs-line-height-base</span><span class="p">:</span><span class="w"> </span><span class="mf">1.6</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c">/* Espaciados */</span>
+<span class="w">    </span><span class="nv">--bs-spacer</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c">/* Bordes */</span>
+<span class="w">    </span><span class="nv">--bs-border-radius</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">    </span><span class="nv">--bs-border-radius-sm</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">    </span><span class="nv">--bs-border-radius-lg</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="c">/* Sombras */</span>
+<span class="w">    </span><span class="nv">--bs-box-shadow</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mf">0.5</span><span class="kt">rem</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.15</span><span class="p">);</span>
+<span class="w">    </span><span class="nv">--bs-box-shadow-sm</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mf">0.125</span><span class="kt">rem</span><span class="w"> </span><span class="mf">0.25</span><span class="kt">rem</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.075</span><span class="p">);</span>
+<span class="w">    </span><span class="nv">--bs-box-shadow-lg</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="mi">3</span><span class="kt">rem</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.175</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     Ejemplo de implementación
+    </strong>
+    :
+   </p>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">"es"</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"UTF-8"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1.0"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Mi Sitio Personalizado<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- 1. Primero cargar las variables personalizadas --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">href</span><span class="o">=</span><span class="s">"variables-personalizadas.css"</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- 2. Luego cargar Bootstrap --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- 3. Finalmente CSS adicional si es necesario --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">href</span><span class="o">=</span><span class="s">"estilos-adicionales.css"</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-primary"</span><span class="p">&gt;</span>Botón con color personalizado<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"card"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"card-body"</span><span class="p">&gt;</span>
+            Tarjeta con esquinas redondeadas personalizadas
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h4 id="3-personalizacion-con-sass-metodo-avanzado">
+    3. Personalización con Sass (Método Avanzado)
+   </h4>
+   <p>
+    Para proyectos complejos, usa Sass para compilar Bootstrap con tus variables:
+   </p>
+   <div class="highlight language-scss">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Archivo: mi-bootstrap-personalizado.scss</span>
+
+<span class="c1">// 1. Definir variables personalizadas ANTES de importar Bootstrap</span>
+<span class="nv">$primary</span><span class="o">:</span><span class="w"> </span><span class="mh">#ff6b35</span><span class="p">;</span><span class="w">                    </span><span class="c1">// Naranja corporativo</span>
+<span class="nv">$secondary</span><span class="o">:</span><span class="w"> </span><span class="mh">#2c3e50</span><span class="p">;</span><span class="w">                  </span><span class="c1">// Azul oscuro</span>
+<span class="nv">$success</span><span class="o">:</span><span class="w"> </span><span class="mh">#27ae60</span><span class="p">;</span><span class="w">                    </span><span class="c1">// Verde personalizado</span>
+<span class="nv">$font-family-base</span><span class="o">:</span><span class="w"> </span><span class="s2">"Roboto"</span><span class="o">,</span><span class="w"> </span><span class="no">sans-serif</span><span class="p">;</span>
+<span class="nv">$font-size-base</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="p">;</span>
+<span class="nv">$line-height-base</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="mf">.6</span><span class="p">;</span>
+<span class="nv">$border-radius</span><span class="o">:</span><span class="w"> </span><span class="mi">8</span><span class="kt">px</span><span class="p">;</span>
+<span class="nv">$box-shadow</span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="mf">.5</span><span class="kt">rem</span><span class="w"> </span><span class="mi">1</span><span class="kt">rem</span><span class="w"> </span><span class="nf">rgba</span><span class="p">(</span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="mi">0</span><span class="mf">.15</span><span class="p">);</span>
+
+<span class="c1">// 2. Importar solo las partes de Bootstrap que necesites</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/functions"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/variables"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/mixins"</span><span class="p">;</span>
+
+<span class="c1">// Componentes específicos (opcional - para optimizar tamaño)</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/root"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/reboot"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/type"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/grid"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/buttons"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/forms"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/navbar"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/card"</span><span class="p">;</span>
+<span class="k">@import</span><span class="w"> </span><span class="s2">"bootstrap/scss/utilities"</span><span class="p">;</span>
+
+<span class="c1">// 3. Agregar estilos personalizados adicionales</span>
+<span class="nc">.mi-clase-personalizada</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">background</span><span class="nd">:</span><span class="w"> </span><span class="nt">linear-gradient</span><span class="o">(</span><span class="nt">135deg</span><span class="o">,</span><span class="w"> </span><span class="err">$</span><span class="nt">primary</span><span class="o">,</span><span class="w"> </span><span class="err">$</span><span class="nt">secondary</span><span class="o">);</span>
+<span class="w">    </span><span class="nt">color</span><span class="nd">:</span><span class="w"> </span><span class="nt">white</span><span class="o">;</span>
+<span class="w">    </span><span class="nt">padding</span><span class="nd">:</span><span class="w"> </span><span class="nt">2rem</span><span class="o">;</span>
+<span class="w">    </span><span class="nt">border-radius</span><span class="nd">:</span><span class="w"> </span><span class="err">$</span><span class="nt">border-radius</span><span class="o">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejemplo-practico-empresa-naranjaweb">
+    Ejemplo Práctico: Empresa "NaranjaWeb"
+   </h3>
+   <p>
+    Supongamos que trabajas para "NaranjaWeb" con estos colores de marca:
+-
+    <strong>
+     Primario
+    </strong>
+    : Naranja (#ff6b35)
+-
+    <strong>
+     Secundario
+    </strong>
+    : Azul oscuro (#2c3e50)
+-
+    <strong>
+     Fuente
+    </strong>
+    : Roboto
+   </p>
+   <h4 id="antes-de-personalizar">
+    Antes de personalizar:
+   </h4>
+   <div class="highlight language-html">
+    <pre><span></span><span class="p">&lt;</span><span class="nt">nav</span> <span class="na">class</span><span class="o">=</span><span class="s">"navbar navbar-expand-lg navbar-dark bg-primary"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-primary"</span><span class="p">&gt;</span>Contactar<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Resultado
+    </strong>
+    : Navbar y botón azul genérico de Bootstrap
+   </p>
+   <h4 id="despues-de-personalizar">
+    Después de personalizar:
+   </h4>
+   <div class="highlight language-css">
+    <pre><span></span><span class="p">:</span><span class="nd">root</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">--bs-primary</span><span class="p">:</span><span class="w"> </span><span class="mh">#ff6b35</span><span class="p">;</span>
+<span class="w">    </span><span class="nv">--bs-secondary</span><span class="p">:</span><span class="w"> </span><span class="mh">#2c3e50</span><span class="p">;</span>
+<span class="w">    </span><span class="nv">--bs-font-sans-serif</span><span class="p">:</span><span class="w"> </span><span class="s2">"Roboto"</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <div class="highlight language-html">
+    <pre><span></span><span class="p">&lt;</span><span class="nt">nav</span> <span class="na">class</span><span class="o">=</span><span class="s">"navbar navbar-expand-lg navbar-dark bg-primary"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-primary"</span><span class="p">&gt;</span>Contactar<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Resultado
+    </strong>
+    : Navbar y botón naranja que coinciden con la marca
+   </p>
+   <h3 id="consejos-para-una-buena-personalizacion">
+    Consejos para una Buena Personalización
+   </h3>
+   <h4 id="mejores-practicas">
+    ✅ Mejores Prácticas:
+   </h4>
+   <ol>
+    <li>
+     <strong>
+      Planifica tu paleta de colores
+     </strong>
+     antes de comenzar
+    </li>
+    <li>
+     <strong>
+      Usa variables CSS
+     </strong>
+     para cambios simples
+    </li>
+    <li>
+     <strong>
+      Mantén la accesibilidad
+     </strong>
+     (contraste adecuado)
+    </li>
+    <li>
+     <strong>
+      Prueba en diferentes dispositivos
+     </strong>
+    </li>
+    <li>
+     <strong>
+      Documenta tus personalizaciones
+     </strong>
+    </li>
+   </ol>
+   <h4 id="errores-comunes">
+    ❌ Errores Comunes:
+   </h4>
+   <ol>
+    <li>
+     <strong>
+      No sobreescribir directamente
+     </strong>
+     las clases de Bootstrap en producción
+    </li>
+    <li>
+     <strong>
+      Evitar
+     </strong>
+     usar
+     <code>
+      !important
+     </code>
+     innecesariamente
+    </li>
+    <li>
+     <strong>
+      No ignorar
+     </strong>
+     las mejores prácticas de accesibilidad
+    </li>
+    <li>
+     <strong>
+      No personalizar
+     </strong>
+     todo - mantén la consistencia
+    </li>
+   </ol>
+   <h3 id="herramientas-para-personalizacion">
+    Herramientas para Personalización
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Bootstrap Customizer
+     </strong>
+     : Herramienta web oficial para generar CSS personalizado
+    </li>
+    <li>
+     <strong>
+      Sass/SCSS
+     </strong>
+     : Para personalizaciones avanzadas
+    </li>
+    <li>
+     <strong>
+      Bootstrap Studio
+     </strong>
+     : Editor visual con personalización integrada
+    </li>
+    <li>
+     <strong>
+      Themestr.app
+     </strong>
+     : Generador de temas Bootstrap online
+    </li>
+   </ol>
+   <p>
+    La personalización transforma Bootstrap de un framework genérico en una herramienta que refleja perfectamente la identidad de tu proyecto o marca.
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="patrones-comunes">
+    Patrones Comunes
+   </h2>
+   <h3 id="seccion-hero">
+    Sección Hero
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">section</span> <span class="na">class</span><span class="o">=</span><span class="s">"bg-primary text-white py-5"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"container"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"row align-items-center min-vh-100"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"col-lg-6"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">"display-4"</span><span class="p">&gt;</span>Título Hero<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">"lead"</span><span class="p">&gt;</span>Descripción del hero<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-light btn-lg"</span><span class="p">&gt;</span>Llamada a la Acción<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">section</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="grilla-de-tarjetas">
+    Grilla de Tarjetas
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"container"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"col"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"card h-100"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"card-body"</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">h5</span> <span class="na">class</span><span class="o">=</span><span class="s">"card-title"</span><span class="p">&gt;</span>Título de tarjeta<span class="p">&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">p</span> <span class="na">class</span><span class="o">=</span><span class="s">"card-text"</span><span class="p">&gt;</span>Contenido de la tarjeta<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+                <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="cm">&lt;!-- Repetir para más tarjetas --&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="tabla-responsiva">
+    Tabla Responsiva
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"table-responsive"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">table</span> <span class="na">class</span><span class="o">=</span><span class="s">"table table-striped table-hover"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">thead</span> <span class="na">class</span><span class="o">=</span><span class="s">"table-dark"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Nombre<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Correo<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Rol<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span>Acciones<span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">thead</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Juan Pérez<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>juan@ejemplo.com<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Administrador<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-sm btn-outline-primary"</span><span class="p">&gt;</span>Editar<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-sm btn-outline-danger"</span><span class="p">&gt;</span>Eliminar<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+                <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">tbody</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="breadcrumb-migas-de-pan">
+    Breadcrumb (Migas de Pan)
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">nav</span> <span class="na">aria-label</span><span class="o">=</span><span class="s">"breadcrumb"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ol</span> <span class="na">class</span><span class="o">=</span><span class="s">"breadcrumb"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"breadcrumb-item"</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>Inicio<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"breadcrumb-item"</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>Biblioteca<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"breadcrumb-item active"</span> <span class="na">aria-current</span><span class="o">=</span><span class="s">"page"</span><span class="p">&gt;</span>Datos<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">ol</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="paginacion">
+    Paginación
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">nav</span> <span class="na">aria-label</span><span class="o">=</span><span class="s">"Navegación de páginas"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">"pagination justify-content-center"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-item disabled"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-link"</span><span class="p">&gt;</span>Anterior<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-item"</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-link"</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>1<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-item active"</span> <span class="na">aria-current</span><span class="o">=</span><span class="s">"page"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-link"</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>2<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-item"</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-link"</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>3<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-item"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"page-link"</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>Siguiente<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">nav</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="acordeon">
+    Acordeón
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion"</span> <span class="na">id</span><span class="o">=</span><span class="s">"accordionExample"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-item"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-header"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-button"</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"collapse"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#collapseOne"</span><span class="p">&gt;</span>
+                Elemento de Acordeón #1
+            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"collapseOne"</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-collapse collapse show"</span> <span class="na">data-bs-parent</span><span class="o">=</span><span class="s">"#accordionExample"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-body"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>Este es el cuerpo del acordeón del primer elemento.<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span> Se muestra por defecto.
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-item"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h2</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-header"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-button collapsed"</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"collapse"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#collapseTwo"</span><span class="p">&gt;</span>
+                Elemento de Acordeón #2
+            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"collapseTwo"</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-collapse collapse"</span> <span class="na">data-bs-parent</span><span class="o">=</span><span class="s">"#accordionExample"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"accordion-body"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>Este es el cuerpo del acordeón del segundo elemento.<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span> Está oculto por defecto.
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="carrusel">
+    Carrusel
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"carouselExample"</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel slide"</span> <span class="na">data-bs-ride</span><span class="o">=</span><span class="s">"carousel"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-indicators"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#carouselExample"</span> <span class="na">data-bs-slide-to</span><span class="o">=</span><span class="s">"0"</span> <span class="na">class</span><span class="o">=</span><span class="s">"active"</span><span class="p">&gt;&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#carouselExample"</span> <span class="na">data-bs-slide-to</span><span class="o">=</span><span class="s">"1"</span><span class="p">&gt;&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#carouselExample"</span> <span class="na">data-bs-slide-to</span><span class="o">=</span><span class="s">"2"</span><span class="p">&gt;&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-inner"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-item active"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://via.placeholder.com/800x400"</span> <span class="na">class</span><span class="o">=</span><span class="s">"d-block w-100"</span> <span class="na">alt</span><span class="o">=</span><span class="s">"Slide 1"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-caption d-none d-md-block"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">h5</span><span class="p">&gt;</span>Primera diapositiva<span class="p">&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Descripción de la primera diapositiva.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-item"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://via.placeholder.com/800x400"</span> <span class="na">class</span><span class="o">=</span><span class="s">"d-block w-100"</span> <span class="na">alt</span><span class="o">=</span><span class="s">"Slide 2"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-caption d-none d-md-block"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">h5</span><span class="p">&gt;</span>Segunda diapositiva<span class="p">&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Descripción de la segunda diapositiva.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-item"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://via.placeholder.com/800x400"</span> <span class="na">class</span><span class="o">=</span><span class="s">"d-block w-100"</span> <span class="na">alt</span><span class="o">=</span><span class="s">"Slide 3"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-caption d-none d-md-block"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">h5</span><span class="p">&gt;</span>Tercera diapositiva<span class="p">&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Descripción de la tercera diapositiva.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-control-prev"</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#carouselExample"</span> <span class="na">data-bs-slide</span><span class="o">=</span><span class="s">"prev"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-control-prev-icon"</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">"visually-hidden"</span><span class="p">&gt;</span>Anterior<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-control-next"</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#carouselExample"</span> <span class="na">data-bs-slide</span><span class="o">=</span><span class="s">"next"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">"carousel-control-next-icon"</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">"visually-hidden"</span><span class="p">&gt;</span>Siguiente<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="componentes-javascript">
+    Componentes JavaScript
+   </h2>
+   <h3 id="tooltips">
+    Tooltips
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">&lt;!-- Activar tooltips en JavaScript --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">tooltipTriggerList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[].</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s1">'[data-bs-toggle="tooltip"]'</span><span class="p">))</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">tooltipList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">tooltipTriggerList</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">tooltipTriggerEl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">bootstrap</span><span class="p">.</span><span class="nx">Tooltip</span><span class="p">(</span><span class="nx">tooltipTriggerEl</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- HTML para tooltips --&gt;</span>
+<span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-secondary"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"tooltip"</span> <span class="na">data-bs-placement</span><span class="o">=</span><span class="s">"top"</span> <span class="na">title</span><span class="o">=</span><span class="s">"Tooltip en la parte superior"</span><span class="p">&gt;</span>
+    Tooltip en arriba
+<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-secondary"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"tooltip"</span> <span class="na">data-bs-placement</span><span class="o">=</span><span class="s">"right"</span> <span class="na">title</span><span class="o">=</span><span class="s">"Tooltip a la derecha"</span><span class="p">&gt;</span>
+    Tooltip a la derecha
+<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-secondary"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"tooltip"</span> <span class="na">data-bs-placement</span><span class="o">=</span><span class="s">"bottom"</span> <span class="na">title</span><span class="o">=</span><span class="s">"Tooltip en la parte inferior"</span><span class="p">&gt;</span>
+    Tooltip abajo
+<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-secondary"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"tooltip"</span> <span class="na">data-bs-placement</span><span class="o">=</span><span class="s">"left"</span> <span class="na">title</span><span class="o">=</span><span class="s">"Tooltip a la izquierda"</span><span class="p">&gt;</span>
+    Tooltip a la izquierda
+<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="popovers">
+    Popovers
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">&lt;!-- Activar popovers en JavaScript --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">popoverTriggerList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[].</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s1">'[data-bs-toggle="popover"]'</span><span class="p">))</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">popoverList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">popoverTriggerList</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">popoverTriggerEl</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">bootstrap</span><span class="p">.</span><span class="nx">Popover</span><span class="p">(</span><span class="nx">popoverTriggerEl</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- HTML para popovers --&gt;</span>
+<span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-lg btn-danger"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"popover"</span> <span class="na">title</span><span class="o">=</span><span class="s">"Título del Popover"</span> <span class="na">data-bs-content</span><span class="o">=</span><span class="s">"Y aquí hay contenido sorprendente. Es muy atractivo. ¿Verdad?"</span><span class="p">&gt;</span>
+    Clic para activar popover
+<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="offcanvas">
+    Offcanvas
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cm">&lt;!-- Botón que activa offcanvas --&gt;</span>
+<span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-primary"</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"offcanvas"</span> <span class="na">data-bs-target</span><span class="o">=</span><span class="s">"#offcanvasExample"</span><span class="p">&gt;</span>
+    Abrir offcanvas
+<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- Offcanvas --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"offcanvas offcanvas-start"</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">"-1"</span> <span class="na">id</span><span class="o">=</span><span class="s">"offcanvasExample"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"offcanvas-header"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h5</span> <span class="na">class</span><span class="o">=</span><span class="s">"offcanvas-title"</span><span class="p">&gt;</span>Offcanvas<span class="p">&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn-close"</span> <span class="na">data-bs-dismiss</span><span class="o">=</span><span class="s">"offcanvas"</span><span class="p">&gt;&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"offcanvas-body"</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+            Algún texto como contenido de marcador de posición para el offcanvas.
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"dropdown mt-3"</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-secondary dropdown-toggle"</span> <span class="na">type</span><span class="o">=</span><span class="s">"button"</span> <span class="na">data-bs-toggle</span><span class="o">=</span><span class="s">"dropdown"</span><span class="p">&gt;</span>
+                Botón dropdown
+            <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">"dropdown-menu"</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"dropdown-item"</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>Acción<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"dropdown-item"</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>Otra acción<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">class</span><span class="o">=</span><span class="s">"dropdown-item"</span> <span class="na">href</span><span class="o">=</span><span class="s">"#"</span><span class="p">&gt;</span>Algo más aquí<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="utilidades-avanzadas">
+    Utilidades Avanzadas
+   </h2>
+   <h3 id="espaciado-responsivo">
+    Espaciado Responsivo
+   </h3>
+   <div class="highlight language-html">
+    <pre><span></span><span class="cm">&lt;!-- Márgenes responsivos --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"m-2 m-md-3 m-lg-4"</span><span class="p">&gt;</span>Margen responsivo<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"mt-1 mt-sm-2 mt-md-3 mt-lg-4 mt-xl-5"</span><span class="p">&gt;</span>Margen superior responsivo<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- Relleno responsivo --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"p-2 p-md-4 p-lg-5"</span><span class="p">&gt;</span>Relleno responsivo<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <h3 id="posicionamiento">
+    Posicionamiento
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"position-relative"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"position-absolute top-0 start-0"</span><span class="p">&gt;</span>Esquina superior izquierda<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"position-absolute top-0 end-0"</span><span class="p">&gt;</span>Esquina superior derecha<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"position-absolute bottom-0 start-0"</span><span class="p">&gt;</span>Esquina inferior izquierda<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"position-absolute bottom-0 end-0"</span><span class="p">&gt;</span>Esquina inferior derecha<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- Posición sticky --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"position-sticky top-0"</span><span class="p">&gt;</span>Elemento sticky<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="cm">&lt;!-- Posición fixed --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"position-fixed bottom-0 end-0 p-3"</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">button</span> <span class="na">class</span><span class="o">=</span><span class="s">"btn btn-primary"</span><span class="p">&gt;</span>Botón flotante<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="sombras">
+    Sombras
+   </h3>
+   <div class="highlight language-html">
+    <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"shadow-none p-3 mb-5 bg-light rounded"</span><span class="p">&gt;</span>Sin sombra<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"shadow-sm p-3 mb-5 bg-body rounded"</span><span class="p">&gt;</span>Sombra pequeña<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"shadow p-3 mb-5 bg-body rounded"</span><span class="p">&gt;</span>Sombra regular<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"shadow-lg p-3 mb-5 bg-body rounded"</span><span class="p">&gt;</span>Sombra grande<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <h3 id="overflow">
+    Overflow
+   </h3>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"overflow-auto"</span> <span class="na">style</span><span class="o">=</span><span class="s">"max-width: 260px; max-height: 100px;"</span><span class="p">&gt;</span>
+    Contenido muy largo que activará el scroll automático cuando sea necesario.
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"overflow-hidden"</span> <span class="na">style</span><span class="o">=</span><span class="s">"max-width: 260px; max-height: 100px;"</span><span class="p">&gt;</span>
+    Contenido que será cortado y oculto.
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">"overflow-scroll"</span> <span class="na">style</span><span class="o">=</span><span class="s">"max-width: 260px; max-height: 100px;"</span><span class="p">&gt;</span>
+    Contenido con barras de scroll siempre visibles.
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="integracion-con-javascript">
+    Integración con JavaScript
+   </h2>
+   <h3 id="eventos-de-bootstrap">
+    Eventos de Bootstrap
+   </h3>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Event listeners para modales</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'exampleModal'</span><span class="p">).</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'show.bs.modal'</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">'</span><span class="nx">Modal</span><span class="w"> </span><span class="nx">está</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="nx">Historia</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="nx">Evolución</span>
+
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="mf">2011</span><span class="o">**:</span><span class="w"> </span><span class="nx">Creado</span><span class="w"> </span><span class="nx">por</span><span class="w"> </span><span class="nx">Mark</span><span class="w"> </span><span class="nx">Otto</span><span class="w"> </span><span class="nx">y</span><span class="w"> </span><span class="nx">Jacob</span><span class="w"> </span><span class="nx">Thornton</span><span class="w"> </span><span class="nx">en</span><span class="w"> </span><span class="nx">Twitter</span>
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="nx">Bootstrap</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="p">(</span><span class="mf">2012</span><span class="p">)</span><span class="o">**:</span><span class="w"> </span><span class="nx">Se</span><span class="w"> </span><span class="nx">agregó</span><span class="w"> </span><span class="nx">funcionalidad</span><span class="w"> </span><span class="nx">responsiva</span>
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="nx">Bootstrap</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="p">(</span><span class="mf">2013</span><span class="p">)</span><span class="o">**:</span><span class="w"> </span><span class="nx">Enfoque</span><span class="w"> </span><span class="nx">mobile</span><span class="o">-</span><span class="nx">first</span><span class="p">,</span><span class="w"> </span><span class="nx">diseño</span><span class="w"> </span><span class="nx">plano</span>
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="nx">Bootstrap</span><span class="w"> </span><span class="mf">4</span><span class="w"> </span><span class="p">(</span><span class="mf">2018</span><span class="p">)</span><span class="o">**:</span><span class="w"> </span><span class="nx">Grid</span><span class="w"> </span><span class="nx">con</span><span class="w"> </span><span class="nx">Flexbox</span><span class="p">,</span><span class="w"> </span><span class="nx">nuevos</span><span class="w"> </span><span class="nx">componentes</span>
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="nx">Bootstrap</span><span class="w"> </span><span class="mf">5</span><span class="w"> </span><span class="p">(</span><span class="mf">2021</span><span class="p">)</span><span class="o">**:</span><span class="w"> </span><span class="nx">Se</span><span class="w"> </span><span class="nx">eliminó</span><span class="w"> </span><span class="nx">la</span><span class="w"> </span><span class="nx">dependencia</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">jQuery</span><span class="p">,</span><span class="w"> </span><span class="nx">utilidades</span><span class="w"> </span><span class="nx">actualizadas</span>
+
+
+
+<span class="err">##</span><span class="w"> </span><span class="nx">Primeros</span><span class="w"> </span><span class="nx">Pasos</span>
+
+<span class="err">###</span><span class="w"> </span><span class="nx">Instalación</span><span class="w"> </span><span class="nx">por</span><span class="w"> </span><span class="nx">CDN</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    html
+   </p>
+   <!DOCTYPE html>
+   <html lang="es">
+    <head>
+     <meta charset="utf-8"/>
+     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+     <title>
+      Ejemplo Bootstrap
+     </title>
+     <!-- CSS de Bootstrap -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    </head>
+    <body>
+     <!-- Tu contenido aquí -->
+     <!-- JS de Bootstrap -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+     </script>
+    </body>
+   </html>
+   <div class="highlight language-text">
+    <pre><span></span>### Instalación por NPM
+</pre>
+   </div>
+   <p>
+    bash
+npm install bootstrap
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>## Sistema de Grillas de Bootstrap
+
+Bootstrap utiliza un sistema de grillas de 12 columnas con contenedores, filas y columnas.
+
+### Estructura Básica de la Grilla
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <div class="container">
+    <div class="row">
+     <div class="col-md-4">
+      Columna 1
+     </div>
+     <div class="col-md-4">
+      Columna 2
+     </div>
+     <div class="col-md-4">
+      Columna 3
+     </div>
+    </div>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Ejemplos de Grilla Responsiva
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Columnas de igual ancho -->
+   <div class="container">
+    <div class="row">
+     <div class="col">
+      Columna 1
+     </div>
+     <div class="col">
+      Columna 2
+     </div>
+     <div class="col">
+      Columna 3
+     </div>
+    </div>
+   </div>
+   <!-- Columnas responsivas mixtas -->
+   <div class="container">
+    <div class="row">
+     <div class="col-12 col-md-6 col-lg-4">
+      <!-- Ancho completo en móvil, mitad en tablet, tercio en escritorio -->
+     </div>
+     <div class="col-12 col-md-6 col-lg-8">
+      <!-- Ancho completo en móvil, mitad en tablet, dos tercios en escritorio -->
+     </div>
+    </div>
+   </div>
+   <!-- Columnas con desplazamiento -->
+   <div class="container">
+    <div class="row">
+     <div class="col-md-4 offset-md-2">
+      Contenido centrado
+     </div>
+    </div>
+   </div>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>### Puntos de Ruptura
+| Punto de Ruptura | Infijo de clase | Dimensiones |
+||--|-|
+| Extra pequeño | (ninguno) | &lt;576px |
+| Pequeño | sm | ≥576px |
+| Mediano | md | ≥768px |
+| Grande | lg | ≥992px |
+| Extra grande | xl | ≥1200px |
+| Extra extra grande | xxl | ≥1400px |
+
+
+
+## Tipografía
+
+### Encabezados
+</pre>
+    </div>
+   </div>
+   <p>
+    html
+   </p>
+   <h1 class="display-1">
+    Display 1
+   </h1>
+   <h1 class="display-2">
+    Display 2
+   </h1>
+   <h1 class="display-3">
+    Display 3
+   </h1>
+   <h1 class="display-4">
+    Display 4
+   </h1>
+   <h1 class="display-5">
+    Display 5
+   </h1>
+   <h1 class="display-6">
+    Display 6
+   </h1>
+   <h1>
+    Encabezado 1
+    <small class="text-muted">
+     Texto secundario
+    </small>
+   </h1>
+  </div>
+  <div class="chapter-container">
+   <h2 id="heading-7">
+    Encabezado 2
+   </h2>
+   <h3>
+    Encabezado 3
+   </h3>
+   <div class="highlight language-text">
+    <pre><span></span>### Utilidades de Texto
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <p class="text-start">
+    Texto alineado a la izquierda.
+   </p>
+   <p class="text-center">
+    Texto alineado al centro.
+   </p>
+   <p class="text-end">
+    Texto alineado a la derecha.
+   </p>
+   <p class="text-primary">
+    Texto primario
+   </p>
+   <p class="text-secondary">
+    Texto secundario
+   </p>
+   <p class="text-success">
+    Texto de éxito
+   </p>
+   <p class="text-danger">
+    Texto de peligro
+   </p>
+   <p class="text-warning">
+    Texto de advertencia
+   </p>
+   <p class="text-info">
+    Texto informativo
+   </p>
+   <p class="fw-bold">
+    Texto en negrita
+   </p>
+   <p class="fw-light">
+    Texto ligero
+   </p>
+   <p class="fst-italic">
+    Texto en cursiva
+   </p>
+   <p class="text-decoration-underline">
+    Texto subrayado
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>## Componentes
+
+### Botones
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Botones básicos -->
+   <p>
+    <button class="btn btn-primary" type="button">
+     Primario
+    </button>
+    <button class="btn btn-secondary" type="button">
+     Secundario
+    </button>
+    <button class="btn btn-success" type="button">
+     Éxito
+    </button>
+    <button class="btn btn-danger" type="button">
+     Peligro
+    </button>
+    <button class="btn btn-warning" type="button">
+     Advertencia
+    </button>
+    <button class="btn btn-info" type="button">
+     Información
+    </button>
+    <button class="btn btn-light" type="button">
+     Claro
+    </button>
+    <button class="btn btn-dark" type="button">
+     Oscuro
+    </button>
+   </p>
+   <!-- Botones con contorno -->
+   <p>
+    <button class="btn btn-outline-primary" type="button">
+     Primario
+    </button>
+    <button class="btn btn-outline-secondary" type="button">
+     Secundario
+    </button>
+   </p>
+   <!-- Tamaños de botones -->
+   <p>
+    <button class="btn btn-primary btn-lg" type="button">
+     Botón grande
+    </button>
+    <button class="btn btn-primary" type="button">
+     Botón normal
+    </button>
+    <button class="btn btn-primary btn-sm" type="button">
+     Botón pequeño
+    </button>
+   </p>
+   <!-- Botón de bloque -->
+   <div class="d-grid">
+    <button class="btn btn-primary" type="button">
+     Botón de bloque
+    </button>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Tarjetas
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <div class="card" style="width: 18rem;">
+    <img alt="..." class="card-img-top" src="https://via.placeholder.com/300x200"/>
+    <div class="card-body">
+     <h5 class="card-title">
+      Título de la tarjeta
+     </h5>
+     <p class="card-text">
+      Un texto de ejemplo rápido para construir sobre el título de la tarjeta.
+     </p>
+     <a class="btn btn-primary" href="#">
+      Ir a algún lugar
+     </a>
+    </div>
+   </div>
+   <!-- Tarjeta con encabezado y pie -->
+   <div class="card">
+    <div class="card-header">
+     Destacado
+    </div>
+    <div class="card-body">
+     <h5 class="card-title">
+      Tratamiento especial del título
+     </h5>
+     <p class="card-text">
+      Con texto de apoyo debajo.
+     </p>
+     <a class="btn btn-primary" href="#">
+      Ir a algún lugar
+     </a>
+    </div>
+    <div class="card-footer text-muted">
+     Hace 2 días
+    </div>
+   </div>
+   <!-- Grupo de tarjetas -->
+   <div class="card-group">
+    <div class="card">
+     <div class="card-body">
+      <h5 class="card-title">
+       Tarjeta 1
+      </h5>
+      <p class="card-text">
+       Contenido de la tarjeta 1
+      </p>
+     </div>
+    </div>
+    <div class="card">
+     <div class="card-body">
+      <h5 class="card-title">
+       Tarjeta 2
+      </h5>
+      <p class="card-text">
+       Contenido de la tarjeta 2
+      </p>
+     </div>
+    </div>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Navegación
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Navbar básica -->
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+     <a class="navbar-brand" href="#">
+      Marca
+     </a>
+     <button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+      <span class="navbar-toggler-icon">
+      </span>
+     </button>
+     <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+       <li class="nav-item">
+        <a class="nav-link active" href="#">
+         Inicio
+        </a>
+       </li>
+       <li class="nav-item">
+        <a class="nav-link" href="#">
+         Acerca
+        </a>
+       </li>
+       <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">
+         Servicios
+        </a>
+        <ul class="dropdown-menu">
+         <li>
+          <a class="dropdown-item" href="#">
+           Diseño Web
+          </a>
+         </li>
+         <li>
+          <a class="dropdown-item" href="#">
+           Desarrollo
+          </a>
+         </li>
+         <li>
+          <hr class="dropdown-divider"/>
+         </li>
+         <li>
+          <a class="dropdown-item" href="#">
+           Consultoría
+          </a>
+         </li>
+        </ul>
+       </li>
+       <li class="nav-item">
+        <a class="nav-link" href="#">
+         Contacto
+        </a>
+       </li>
+      </ul>
+     </div>
+    </div>
+   </nav>
+   <!-- Navegación con píldoras -->
+   <ul class="nav nav-pills">
+    <li class="nav-item">
+     <a class="nav-link active" href="#">
+      Activo
+     </a>
+    </li>
+    <li class="nav-item">
+     <a class="nav-link" href="#">
+      Enlace
+     </a>
+    </li>
+    <li class="nav-item">
+     <a class="nav-link" href="#">
+      Otro enlace
+     </a>
+    </li>
+   </ul>
+   <div class="highlight language-text">
+    <pre><span></span>### Formularios
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <form>
+    <!-- Controles básicos de formulario -->
+    <div class="mb-3">
+     <label class="form-label" for="email">
+      Dirección de correo electrónico
+     </label>
+     <input class="form-control" id="email" placeholder="nombre@ejemplo.com" type="email"/>
+    </div>
+    <div class="mb-3">
+     <label class="form-label" for="password">
+      Contraseña
+     </label>
+     <input class="form-control" id="password" type="password"/>
+    </div>
+    <!-- Select -->
+    <div class="mb-3">
+     <label class="form-label" for="country">
+      País
+     </label>
+     <select class="form-select" id="country">
+      <option selected="">
+       Elegir...
+      </option>
+      <option value="1">
+       Estados Unidos
+      </option>
+      <option value="2">
+       Canadá
+      </option>
+      <option value="3">
+       México
+      </option>
+     </select>
+    </div>
+    <!-- Textarea -->
+    <div class="mb-3">
+     <label class="form-label" for="message">
+      Mensaje
+     </label>
+     <textarea class="form-control" id="message" rows="3"></textarea>
+    </div>
+    <!-- Checkboxes -->
+    <div class="mb-3">
+     <div class="form-check">
+      <input class="form-check-input" id="newsletter" type="checkbox"/>
+      <label class="form-check-label" for="newsletter">
+       Suscribirse al boletín
+      </label>
+     </div>
+    </div>
+    <!-- Botones de radio -->
+    <div class="mb-3">
+     <div class="form-check">
+      <input class="form-check-input" id="male" name="gender" type="radio" value="male"/>
+      <label class="form-check-label" for="male">
+       Masculino
+      </label>
+     </div>
+     <div class="form-check">
+      <input class="form-check-input" id="female" name="gender" type="radio" value="female"/>
+      <label class="form-check-label" for="female">
+       Femenino
+      </label>
+     </div>
+    </div>
+    <!-- Grupo de entrada -->
+    <div class="mb-3">
+     <label class="form-label" for="username">
+      Nombre de usuario
+     </label>
+     <div class="input-group">
+      <span class="input-group-text">
+       @
+      </span>
+      <input class="form-control" id="username" placeholder="Nombre de usuario" type="text"/>
+     </div>
+    </div>
+    <button class="btn btn-primary" type="submit">
+     Enviar
+    </button>
+   </form>
+   <!-- Etiquetas flotantes -->
+   <div class="form-floating mb-3">
+    <input class="form-control" id="floatingInput" placeholder="nombre@ejemplo.com" type="email"/>
+    <label for="floatingInput">
+     Dirección de correo electrónico
+    </label>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Alertas
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <div class="alert alert-primary" role="alert">
+    ¡Una alerta primaria simple, échale un vistazo!
+   </div>
+   <div class="alert alert-secondary" role="alert">
+    ¡Una alerta secundaria simple, échale un vistazo!
+   </div>
+   <div class="alert alert-success" role="alert">
+    ¡Una alerta de éxito simple, échale un vistazo!
+   </div>
+   <div class="alert alert-danger" role="alert">
+    ¡Una alerta de peligro simple, échale un vistazo!
+   </div>
+   <!-- Alerta desechable -->
+   <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>
+     ¡Santo guacamole!
+    </strong>
+    Deberías revisar algunos de esos campos a continuación.
+    <button class="btn-close" data-bs-dismiss="alert" type="button">
+    </button>
+   </div>
+   <!-- Alerta con contenido adicional -->
+   <div class="alert alert-success" role="alert">
+    <h4 class="alert-heading">
+     ¡Bien hecho!
+    </h4>
+    <p>
+     Aww sí, leíste exitosamente este importante mensaje de alerta.
+    </p>
+    <hr/>
+    <p class="mb-0">
+     Siempre que lo necesites, asegúrate de usar utilidades de margen.
+    </p>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Modal
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Botón que activa el modal -->
+   <p>
+    <button class="btn btn-primary" data-bs-target="#exampleModal" data-bs-toggle="modal" type="button">
+     Lanzar modal de demostración
+    </button>
+   </p>
+   <!-- Modal -->
+   <div class="modal fade" id="exampleModal" tabindex="-1">
+    <div class="modal-dialog">
+     <div class="modal-content">
+      <div class="modal-header">
+       <h5 class="modal-title">
+        Título del modal
+       </h5>
+       <button class="btn-close" data-bs-dismiss="modal" type="button">
+       </button>
+      </div>
+      <div class="modal-body">
+       <p>
+        El texto del cuerpo del modal va aquí.
+       </p>
+      </div>
+      <div class="modal-footer">
+       <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">
+        Cerrar
+       </button>
+       <button class="btn btn-primary" type="button">
+        Guardar cambios
+       </button>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Modal grande -->
+   <div class="modal fade" id="largeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+      <!-- Contenido del modal -->
+     </div>
+    </div>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>## Clases Utilitarias
+
+### Espaciado
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Utilidades de margen -->
+   <div class="m-0">
+    Margen 0
+   </div>
+   <div class="m-1">
+    Margen 1
+   </div>
+   <div class="m-2">
+    Margen 2
+   </div>
+   <div class="m-3">
+    Margen 3
+   </div>
+   <div class="m-4">
+    Margen 4
+   </div>
+   <div class="m-5">
+    Margen 5
+   </div>
+   <!-- Lados específicos -->
+   <div class="mt-3">
+    Margen superior 3
+   </div>
+   <div class="mb-3">
+    Margen inferior 3
+   </div>
+   <div class="ms-3">
+    Margen inicio (izquierda) 3
+   </div>
+   <div class="me-3">
+    Margen final (derecha) 3
+   </div>
+   <div class="mx-3">
+    Margen horizontal 3
+   </div>
+   <div class="my-3">
+    Margen vertical 3
+   </div>
+   <!-- Utilidades de relleno -->
+   <div class="p-3">
+    Relleno 3
+   </div>
+   <div class="pt-3">
+    Relleno superior 3
+   </div>
+   <div class="pb-3">
+    Relleno inferior 3
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Visualización
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <div class="d-none">
+    Elemento oculto
+   </div>
+   <div class="d-block">
+    Elemento de bloque
+   </div>
+   <div class="d-inline">
+    Elemento en línea
+   </div>
+   <div class="d-inline-block">
+    Elemento inline-block
+   </div>
+   <div class="d-flex">
+    Contenedor flex
+   </div>
+   <!-- Visualización responsiva -->
+   <div class="d-none d-md-block">
+    Oculto en pequeño, visible en mediano y mayor
+   </div>
+   <div class="d-block d-md-none">
+    Visible en pequeño, oculto en mediano y mayor
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Flexbox
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <div class="d-flex justify-content-start">
+    <div>
+     Elemento flex 1
+    </div>
+    <div>
+     Elemento flex 2
+    </div>
+   </div>
+   <div class="d-flex justify-content-center">
+    <div>
+     Elementos centrados
+    </div>
+   </div>
+   <div class="d-flex justify-content-between">
+    <div>
+     Elemento 1
+    </div>
+    <div>
+     Elemento 2
+    </div>
+   </div>
+   <div class="d-flex align-items-center" style="height: 100px;">
+    <div>
+     Centrado verticalmente
+    </div>
+   </div>
+   <div class="d-flex flex-column">
+    <div>
+     Elemento 1
+    </div>
+    <div>
+     Elemento 2
+    </div>
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### Colores
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Colores de texto -->
+   <p class="text-primary">
+    Texto primario
+   </p>
+   <p class="text-secondary">
+    Texto secundario
+   </p>
+   <p class="text-success">
+    Texto de éxito
+   </p>
+   <p class="text-danger">
+    Texto de peligro
+   </p>
+   <p class="text-warning">
+    Texto de advertencia
+   </p>
+   <p class="text-info">
+    Texto informativo
+   </p>
+   <p class="text-light bg-dark">
+    Texto claro
+   </p>
+   <p class="text-dark">
+    Texto oscuro
+   </p>
+   <p class="text-white bg-dark">
+    Texto blanco
+   </p>
+   <!-- Colores de fondo -->
+   <div class="bg-primary text-white p-3">
+    Fondo primario
+   </div>
+   <div class="bg-secondary text-white p-3">
+    Fondo secundario
+   </div>
+   <div class="bg-success text-white p-3">
+    Fondo de éxito
+   </div>
+   <div class="bg-light text-dark p-3">
+    Fondo claro
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>## Plantilla de Ejemplo Completa
+
+Aquí tienes una plantilla HTML completa que muestra varios componentes de Bootstrap:
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!DOCTYPE html>
+   <html lang="es">
+    <head>
+     <meta charset="utf-8"/>
+     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+     <title>
+      Ejemplo Completo de Bootstrap
+     </title>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+    </head>
+    <body>
+     <!-- Navegación -->
+     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+       <a class="navbar-brand" href="#">
+        <i class="bi bi-bootstrap">
+        </i>
+        Demo Bootstrap
+       </a>
+       <button class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon">
+        </span>
+       </button>
+       <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+         <li class="nav-item">
+          <a class="nav-link active" href="#inicio">
+           Inicio
+          </a>
+         </li>
+         <li class="nav-item">
+          <a class="nav-link" href="#acerca">
+           Acerca
+          </a>
+         </li>
+         <li class="nav-item">
+          <a class="nav-link" href="#servicios">
+           Servicios
+          </a>
+         </li>
+         <li class="nav-item">
+          <a class="nav-link" href="#contacto">
+           Contacto
+          </a>
+         </li>
+        </ul>
+       </div>
+      </div>
+     </nav>
+     <!-- Sección Hero -->
+     <section class="bg-light py-5" id="inicio">
+      <div class="container">
+       <div class="row align-items-center">
+        <div class="col-lg-6">
+         <h1 class="display-4 fw-bold">
+          Bienvenido a Bootstrap
+         </h1>
+         <p class="lead">
+          Construye sitios responsivos y rápidos con Bootstrap, el toolkit front-end de código abierto más popular del mundo.
+         </p>
+         <button class="btn btn-primary btn-lg me-3">
+          Comenzar
+         </button>
+         <button class="btn btn-outline-secondary btn-lg">
+          Aprender Más
+         </button>
+        </div>
+        <div class="col-lg-6">
+         <img alt="Imagen Hero" class="img-fluid rounded" src="https://via.placeholder.com/500x300"/>
+        </div>
+       </div>
+      </div>
+     </section>
+     <!-- Sección de Características -->
+     <section class="py-5" id="acerca">
+      <div class="container">
+       <div class="row text-center mb-5">
+        <div class="col">
+        </div>
+        <div class="chapter-container">
+         <h2 class="display-5" id="heading-8">
+          ¿Por qué elegir Bootstrap?
+         </h2>
+         <p class="lead">
+          Características poderosas que hacen el desarrollo más rápido y fácil
+         </p>
+        </div>
+       </div>
+       <div class="row">
+        <div class="col-lg-4 mb-4">
+         <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+           <i class="bi bi-phone display-1 text-primary mb-3">
+           </i>
+           <h5 class="card-title">
+            Responsivo
+           </h5>
+           <p class="card-text">
+            Diseño responsivo mobile-first que se adapta a cualquier tamaño de pantalla.
+           </p>
+          </div>
+         </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+         <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+           <i class="bi bi-puzzle display-1 text-success mb-3">
+           </i>
+           <h5 class="card-title">
+            Componentes
+           </h5>
+           <p class="card-text">
+            Extensa biblioteca de componentes preconstruidos listos para usar.
+           </p>
+          </div>
+         </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+         <div class="card h-100 shadow-sm">
+          <div class="card-body text-center">
+           <i class="bi bi-palette display-1 text-warning mb-3">
+           </i>
+           <h5 class="card-title">
+            Personalizable
+           </h5>
+           <p class="card-text">
+            Fácil de personalizar con variables Sass y clases utilitarias.
+           </p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section>
+     <!-- Formulario de Contacto -->
+     <section class="bg-light py-5" id="contacto">
+      <div class="container">
+       <div class="row justify-content-center">
+        <div class="col-lg-8">
+        </div>
+        <div class="chapter-container">
+         <h2 class="text-center mb-4" id="heading-9">
+          Ponte en Contacto
+         </h2>
+         <form>
+          <div class="row">
+           <div class="col-md-6 mb-3">
+            <label class="form-label" for="firstName">
+             Nombre
+            </label>
+            <input class="form-control" id="firstName" required="" type="text"/>
+           </div>
+           <div class="col-md-6 mb-3">
+            <label class="form-label" for="lastName">
+             Apellido
+            </label>
+            <input class="form-control" id="lastName" required="" type="text"/>
+           </div>
+          </div>
+          <div class="mb-3">
+           <label class="form-label" for="email">
+            Correo Electrónico
+           </label>
+           <input class="form-control" id="email" required="" type="email"/>
+          </div>
+          <div class="mb-3">
+           <label class="form-label" for="subject">
+            Asunto
+           </label>
+           <select class="form-select" id="subject">
+            <option selected="">
+             Elegir...
+            </option>
+            <option value="general">
+             Consulta General
+            </option>
+            <option value="support">
+             Soporte
+            </option>
+            <option value="business">
+             Negocios
+            </option>
+           </select>
+          </div>
+          <div class="mb-3">
+           <label class="form-label" for="message">
+            Mensaje
+           </label>
+           <textarea class="form-control" id="message" required="" rows="4"></textarea>
+          </div>
+          <div class="text-center">
+           <button class="btn btn-primary btn-lg" type="submit">
+            Enviar Mensaje
+           </button>
+          </div>
+         </form>
+        </div>
+       </div>
+      </div>
+     </section>
+     <!-- Pie de página -->
+     <footer class="bg-dark text-white py-4">
+      <div class="container">
+       <div class="row">
+        <div class="col-md-6">
+         <h5>
+          Demo Bootstrap
+         </h5>
+         <p>
+          Un ejemplo completo que muestra componentes y utilidades de Bootstrap.
+         </p>
+        </div>
+        <div class="col-md-6 text-md-end">
+         <h5>
+          Síguenos
+         </h5>
+         <a class="text-white me-3" href="#">
+          <i class="bi bi-facebook">
+          </i>
+         </a>
+         <a class="text-white me-3" href="#">
+          <i class="bi bi-twitter">
+          </i>
+         </a>
+         <a class="text-white me-3" href="#">
+          <i class="bi bi-instagram">
+          </i>
+         </a>
+         <a class="text-white" href="#">
+          <i class="bi bi-linkedin">
+          </i>
+         </a>
+        </div>
+       </div>
+       <hr class="my-3"/>
+       <div class="text-center">
+        <p class="mb-0">
+         © 2025 Demo Bootstrap. Todos los derechos reservados.
+        </p>
+       </div>
+      </div>
+     </footer>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+     </script>
+    </body>
+   </html>
+   <div class="highlight language-text">
+    <pre><span></span>## Iconos de Bootstrap
+
+Bootstrap Icons es una biblioteca de iconos gratuita, de alta calidad y de código abierto con más de 1,800 iconos.
+
+### Instalación
+</pre>
+   </div>
+   <p>
+    html
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet"/>
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>### Ejemplos de Uso
+</pre>
+   </div>
+   <p>
+    html
+    <i class="bi bi-heart">
+    </i>
+    <i class="bi bi-star-fill text-warning">
+    </i>
+    <i class="bi bi-check-circle text-success">
+    </i>
+    <i class="bi bi-exclamation-triangle text-danger">
+    </i>
+   </p>
+   <!-- Con tamaños -->
+   <p>
+    <i class="bi bi-house fs-1">
+    </i>
+    <i class="bi bi-house fs-3">
+    </i>
+    <i class="bi bi-house">
+    </i>
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>## Mejores Prácticas
+
+### 1. Siempre Usa el Sistema de Grillas
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Bueno -->
+   <div class="container">
+    <div class="row">
+     <div class="col-md-6">
+      Contenido
+     </div>
+    </div>
+   </div>
+   <!-- Evitar -->
+   <div style="width: 50%; float: left;">
+    Contenido
+   </div>
+   <div class="highlight language-text">
+    <pre><span></span>### 2. Usa Clases Utilitarias
+</pre>
+   </div>
+   <p>
+    html
+   </p>
+   <!-- Bueno -->
+   <div class="text-center mb-4 p-3">
+    Contenido centrado
+   </div>
+   <!-- Evitar CSS personalizado cuando existen utilidades -->
+   <div style="text-align: center; margin-bottom: 1.5rem; padding: 1rem;">
+    <div class="highlight language-text">
+     <pre><span></span>### 3. Enfoque Mobile-First
+</pre>
+    </div>
+    html
+    <!-- Bueno: Comienza con móvil, agrega puntos de ruptura más grandes -->
+    <div class="col-12 col-md-6 col-lg-4">
+     <!-- Evitar: No comiences con escritorio -->
+     <div class="col-lg-4 col-md-6 col-12">
+      <div class="highlight language-text">
+       <pre><span></span>### 4. Usa HTML Semántico
+</pre>
+      </div>
+      html
+      <!-- Bueno -->
+      <nav class="navbar">
+       <main class="container">
+        <section class="py-5">
+         <!-- Evitar -->
+         <div class="navbar">
+          <div class="container">
+           ```
+          </div>
+          <script type="module">
+           import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+          </script>
+         </div>
+        </section>
+       </main>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </div>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   integrador_juice_shop
+  </title>
+ </head>
+ <body>
+  <h1 id="practica-integradora-ciberseguridad-con-owasp-juice-shop">
+   Práctica Integradora: Ciberseguridad con OWASP Juice Shop
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#1-instalacion-y-puesta-en-marcha">
+      1. Instalación y puesta en marcha
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-inyeccion-sql-sqli">
+      2. Inyección SQL (SQLi)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-cross-site-scripting-xss">
+      3. Cross-Site Scripting (XSS)
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-fuerza-bruta-y-autenticacion">
+      4. Fuerza Bruta y Autenticación
+     </a>
+    </li>
+   </ul>
+  </div>
+  <p>
+   <strong>
+    Objetivo:
+   </strong>
+   Aplicar los conceptos de seguridad vistos en clase utilizando OWASP Juice Shop, una aplicación web vulnerable construida con Node.js y Angular (TypeScript). Vas a identificar vulnerabilidades, explotarlas en un entorno controlado y luego escribir el código defensivo.
+  </p>
+  <p>
+   <strong>
+    Stack de Juice Shop:
+   </strong>
+   Node.js + Express (backend), Angular + TypeScript (frontend), SQLite (base de datos), Sequelize (ORM).
+  </p>
+  <blockquote>
+   <p>
+    <strong>
+     Reglas de la práctica
+    </strong>
+    - Solo trabajar contra tu instancia local de Juice Shop. Nunca contra servicios de terceros.
+- El objetivo es
+    <strong>
+     aprender a defender
+    </strong>
+    , no a atacar. Cada explotación es para entender qué hay que proteger.
+- Documentá todo lo que hagas: capturas, comandos, código.
+   </p>
+  </blockquote>
+  <div class="chapter-container">
+   <h2 id="1-instalacion-y-puesta-en-marcha">
+    1. Instalación y puesta en marcha
+   </h2>
+   <p>
+    Vamos a correr Juice Shop desde el código fuente con hot reload: editás un archivo en tu máquina y el servidor se reinicia automáticamente.
+   </p>
+   <h3 id="requisitos-previos">
+    Requisitos previos
+   </h3>
+   <ul>
+    <li>
+     Docker y Docker Compose instalados
+    </li>
+    <li>
+     Git
+    </li>
+   </ul>
+   <h3 id="paso-1-clonar-el-repositorio">
+    Paso 1: Clonar el repositorio
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span>https://github.com/juice-shop/juice-shop.git
+<span class="nb">cd</span><span class="w"> </span>juice-shop
+</pre>
+   </div>
+   <h3 id="paso-2-agregar-los-archivos-de-desarrollo">
+    Paso 2: Agregar los archivos de desarrollo
+   </h3>
+   <p>
+    Dentro de la carpeta
+    <code>
+     juice-shop/
+    </code>
+    , crear estos dos archivos:
+   </p>
+   <p>
+    <strong>
+     <code>
+      Dockerfile.dev
+     </code>
+     :
+    </strong>
+   </p>
+   <div class="highlight language-dockerfile">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">node:24-slim</span>
+
+<span class="k">RUN</span><span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>python3<span class="w"> </span>make<span class="w"> </span>g++<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/apt/lists/*
+
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>.
+
+<span class="k">RUN</span><span class="w"> </span>npm<span class="w"> </span>install
+<span class="k">RUN</span><span class="w"> </span>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>nodemon<span class="w"> </span>tsx
+
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">3000</span>
+
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">"nodemon"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--legacy-watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--delay"</span><span class="p">,</span><span class="w"> </span><span class="s2">"2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--ext"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ts,js,json"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"routes"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lib"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"models"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"data"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"config"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"app.ts"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--watch"</span><span class="p">,</span><span class="w"> </span><span class="s2">"server.ts"</span><span class="p">,</span><span class="w"> </span><span class="s2">"--exec"</span><span class="p">,</span><span class="w"> </span><span class="s2">"tsx app.ts"</span><span class="p">]</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    <strong>
+     <code>
+      docker-compose.yml
+     </code>
+     :
+    </strong>
+   </p>
+   <div class="highlight language-yaml">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">juice-shop</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile.dev</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"3000:3000"</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./routes:/app/routes</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./lib:/app/lib</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./models:/app/models</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./data:/app/data</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./config:/app/config</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./app.ts:/app/app.ts</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./server.ts:/app/server.ts</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node_modules:/app/node_modules</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frontend_modules:/app/frontend/node_modules</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NODE_ENV=development</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">node_modules</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frontend_modules</span><span class="p">:</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="paso-3-levantar-el-servidor">
+    Paso 3: Levantar el servidor
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+</pre>
+   </div>
+   <p>
+    La primera vez tarda unos minutos (instala dependencias). Después abrí
+    <code>
+     http://localhost:3000
+    </code>
+    .
+   </p>
+   <h3 id="paso-4-verificar-hot-reload">
+    Paso 4: Verificar hot reload
+   </h3>
+   <p>
+    Probá editar cualquier archivo en
+    <code>
+     routes/
+    </code>
+    (por ejemplo, agregá un
+    <code>
+     console.log
+    </code>
+    ). En los logs vas a ver que el servidor se reinicia solo:
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f
+</pre>
+   </div>
+   <h3 id="acceder-al-scoreboard">
+    Acceder al Scoreboard
+   </h3>
+   <p>
+    Juice Shop tiene un tablero de desafíos oculto. Navegá a:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>http://localhost:3000/#/score-board
+</pre>
+   </div>
+   <p>
+    Ahí vas a ver todos los desafíos organizados por categoría y dificultad (1 a 6 estrellas).
+   </p>
+   <h3 id="estructura-del-codigo-que-vas-a-editar">
+    Estructura del código que vas a editar
+   </h3>
+   <div class="highlight language-text">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span>juice-shop/
+├── routes/        ← Rutas Express (acá están las vulnerabilidades)
+├── lib/           ← Utilidades del backend
+├── models/        ← Modelos Sequelize (base de datos)
+├── data/          ← Datos semilla
+├── config/        ← Configuración
+├── app.ts         ← Entry point de la app
+└── frontend/      ← App Angular (no necesitás tocar esto)
+</pre>
+    </div>
+   </div>
+   <p>
+    Los ejercicios de esta práctica se centran en
+    <code>
+     routes/
+    </code>
+    — ahí están las rutas vulnerables que vas a analizar y corregir.
+   </p>
+   <h3 id="comandos-utiles">
+    Comandos útiles
+   </h3>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w">       </span><span class="c1"># ver logs en tiempo real</span>
+docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w">       </span><span class="c1"># reiniciar el servidor</span>
+docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w">          </span><span class="c1"># apagar todo</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span><span class="c1"># reconstruir desde cero</span>
+</pre>
+   </div>
+   <h3 id="reiniciar-el-progreso">
+    Reiniciar el progreso
+   </h3>
+   <p>
+    Si necesitás volver al estado original (borrar tu progreso en los desafíos):
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>down
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build
+</pre>
+   </div>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-inyeccion-sql-sqli">
+    2. Inyección SQL (SQLi)
+   </h2>
+   <h3 id="repaso-del-concepto">
+    Repaso del concepto
+   </h3>
+   <p>
+    Una inyección SQL ocurre cuando datos del usuario se insertan directamente en una consulta SQL sin sanitización. El atacante puede modificar la lógica de la consulta para acceder, modificar o eliminar datos.
+   </p>
+   <p>
+    <strong>
+     Ejemplo vulnerable (Node.js + Sequelize raw query):
+    </strong>
+   </p>
+   <div class="highlight language-javascript">
+    <pre><span></span><span class="c1">// MAL — concatenación directa</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/api/users"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`SELECT * FROM Users WHERE email = '</span><span class="si">${</span><span class="nx">req</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">email</span><span class="si">}</span><span class="sb">'`</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">sequelize</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="nx">query</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">users</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">users</span><span class="p">));</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     Si el usuario envía:
+    </strong>
+    <code>
+     ' OR 1=1--
+    </code>
+    <strong>
+     La consulta se convierte en:
+    </strong>
+    <code>
+     SELECT * FROM Users WHERE email = '' OR 1=1--'
+    </code>
+    Devuelve todos los usuarios.
+   </p>
+   <h3 id="problema-1-login-como-administrador">
+    Problema 1: Login como administrador
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 1 estrella
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "Login Admin"
+    <strong>
+     Ubicación:
+    </strong>
+    Página de login (
+    <code>
+     /#/login
+    </code>
+    )
+   </p>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    La pantalla de login de Juice Shop envía el email y password al endpoint
+    <code>
+     POST /rest/user/login
+    </code>
+    . Internamente, el backend construye una consulta SQL para buscar al usuario. Si la consulta no usa parámetros preparados, podemos inyectar lógica en el campo de email.
+   </p>
+   <h4 id="resolucion-paso-a-paso">
+    Resolución paso a paso
+   </h4>
+   <ol>
+    <li>
+     Andá a
+     <code>
+      http://localhost:3000/#/login
+     </code>
+    </li>
+    <li>
+     En el campo email escribí:
+     <code>
+      ' OR 1=1--
+     </code>
+    </li>
+    <li>
+     En el campo password escribí cualquier cosa (por ejemplo:
+     <code>
+      x
+     </code>
+     )
+    </li>
+    <li>
+     Hacé clic en "Log in"
+    </li>
+   </ol>
+   <p>
+    <strong>
+     ¿Qué pasó?
+    </strong>
+    La consulta interna se transformó en algo como:
+   </p>
+   <div class="highlight language-sql">
+    <pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Users</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="mi">1</span><span class="o">=</span><span class="mi">1</span><span class="c1">--' AND password = '...'</span>
+</pre>
+   </div>
+   <p>
+    El
+    <code>
+     --
+    </code>
+    comenta el resto de la consulta.
+    <code>
+     OR 1=1
+    </code>
+    siempre es verdadero, entonces devuelve el primer usuario de la tabla, que es el admin.
+   </p>
+   <h3 id="problema-2-login-como-otro-usuario-especifico">
+    Problema 2: Login como otro usuario específico
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 2 estrellas
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "Login Bender" / "Login Jim"
+    <strong>
+     Objetivo:
+    </strong>
+    Ingresar como el usuario
+    <code>
+     bender@juice-sh.op
+    </code>
+    sin conocer su contraseña.
+   </p>
+   <h4 id="resolucion">
+    Resolución
+   </h4>
+   <p>
+    En el campo email:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>bender@juice-sh.op'--
+</pre>
+   </div>
+   <p>
+    Esto cierra la cadena del email y comenta la verificación de password. La consulta queda:
+   </p>
+   <div class="highlight language-sql">
+    <pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Users</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'bender@juice-sh.op'</span><span class="c1">--' AND password = '...'</span>
+</pre>
+   </div>
+   <h3 id="problema-3-obtener-el-esquema-de-la-base-de-datos">
+    Problema 3: Obtener el esquema de la base de datos
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 3 estrellas
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "Database Schema"
+    <strong>
+     Ubicación:
+    </strong>
+    El campo de búsqueda de productos (
+    <code>
+     /#/search
+    </code>
+    ) también es vulnerable a SQLi.
+   </p>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    La búsqueda envía el término a
+    <code>
+     GET /rest/products/search?q=
+    </code>
+    . Internamente usa una query raw de SQLite.
+   </p>
+   <h4 id="resolucion_1">
+    Resolución
+   </h4>
+   <p>
+    En la barra de búsqueda, escribí:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>')) UNION SELECT sql,2,3,4,5,6,7,8,9 FROM sqlite_master--
+</pre>
+   </div>
+   <p>
+    <strong>
+     Explicación:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <code>
+      '))
+     </code>
+     cierra los paréntesis de la consulta original
+    </li>
+    <li>
+     <code>
+      UNION SELECT
+     </code>
+     agrega una segunda consulta
+    </li>
+    <li>
+     <code>
+      sqlite_master
+     </code>
+     es la tabla interna de SQLite que contiene la definición de todas las tablas
+    </li>
+    <li>
+     Los números
+     <code>
+      2,3,4,...,9
+     </code>
+     son placeholders para que el UNION tenga la misma cantidad de columnas que la consulta original
+    </li>
+   </ul>
+   <p>
+    Los resultados aparecen como "productos" con las definiciones SQL de cada tabla.
+   </p>
+   <h3 id="codigo-defensivo-consultas-parametrizadas">
+    Código defensivo: consultas parametrizadas
+   </h3>
+   <p>
+    La defensa es
+    <strong>
+     nunca concatenar
+    </strong>
+    datos del usuario en una query. Usar siempre parámetros:
+   </p>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// BIEN — Sequelize con parámetros (Node.js/TypeScript)</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">QueryTypes</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"sequelize"</span><span class="p">;</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/api/users"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">sequelize</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">"SELECT * FROM Users WHERE email = :email"</span><span class="p">,</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">replacements</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">req.query.email</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="nx">QueryTypes</span><span class="p">.</span><span class="nx">SELECT</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">users</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// MEJOR — usar el ORM directamente, sin queries raw</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./models/user"</span><span class="p">;</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/api/users"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">User</span><span class="p">.</span><span class="nx">findAll</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">where</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">req.query.email</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">users</span><span class="p">);</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejercicios-para-resolver">
+    Ejercicios para resolver
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Desafío "Christmas Special"
+     </strong>
+     (3 estrellas): Hay un producto navideño oculto que no aparece en la búsqueda normal. Usá SQLi en el endpoint de búsqueda para encontrarlo y agregarlo al carrito.
+     <em>
+      Pista: probá inyectar en la búsqueda para ver productos donde
+      <code>
+       deletedAt
+      </code>
+      no es NULL.
+     </em>
+    </li>
+    <li>
+     <strong>
+      Código defensivo:
+     </strong>
+     Escribí un endpoint
+     <code>
+      GET /api/products/search?q=
+     </code>
+     en Express + Sequelize que busque productos por nombre de forma segura. Debe:
+     <ul>
+      <li>
+       Usar consultas parametrizadas (no concatenación)
+      </li>
+      <li>
+       Limitar los resultados a 50
+      </li>
+      <li>
+       Solo devolver productos no eliminados
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Análisis:
+     </strong>
+     Ingresá al código fuente de Juice Shop (
+     <code>
+      routes/search.ts
+     </code>
+     ) y encontrá la línea exacta donde ocurre la vulnerabilidad. Explicá por qué es vulnerable y cómo la corregirías.
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-cross-site-scripting-xss">
+    3. Cross-Site Scripting (XSS)
+   </h2>
+   <h3 id="repaso-del-concepto_1">
+    Repaso del concepto
+   </h3>
+   <p>
+    XSS ocurre cuando una aplicación incluye datos no sanitizados del usuario en la página HTML. El atacante puede inyectar JavaScript que se ejecuta en el navegador de otros usuarios, robando cookies, sesiones o datos.
+   </p>
+   <p>
+    <strong>
+     Tipos de XSS:
+    </strong>
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Dónde se ejecuta
+      </th>
+      <th>
+       Ejemplo
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        DOM XSS
+       </strong>
+      </td>
+      <td>
+       El script del cliente inserta datos en el DOM sin sanitizar
+      </td>
+      <td>
+       Leer de
+       <code>
+        location.hash
+       </code>
+       y ponerlo en
+       <code>
+        innerHTML
+       </code>
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Reflected XSS
+       </strong>
+      </td>
+      <td>
+       El servidor refleja el input en la respuesta HTTP
+      </td>
+      <td>
+       Parámetro de búsqueda que aparece en la página de resultados
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Stored XSS
+       </strong>
+      </td>
+      <td>
+       El payload se guarda en la base de datos y se muestra a todos
+      </td>
+      <td>
+       Un comentario con
+       <code>
+        &lt;script&gt;
+       </code>
+       que se muestra a otros usuarios
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <h3 id="problema-1-dom-xss-en-la-busqueda">
+    Problema 1: DOM XSS en la búsqueda
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 1 estrella
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "DOM XSS"
+    <strong>
+     Ubicación:
+    </strong>
+    Barra de búsqueda
+   </p>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    La aplicación Angular de Juice Shop toma el término de búsqueda y lo renderiza en la página de resultados. Si el input se inserta usando
+    <code>
+     innerHTML
+    </code>
+    en lugar de interpolación segura de Angular, se puede inyectar HTML/JS.
+   </p>
+   <h4 id="resolucion_2">
+    Resolución
+   </h4>
+   <p>
+    En la barra de búsqueda, escribí:
+   </p>
+   <div class="highlight language-html">
+    <pre><span></span><span class="p">&lt;</span><span class="nt">iframe</span> <span class="na">src</span><span class="o">=</span><span class="s">"javascript:alert('xss')"</span><span class="p">&gt;</span>
+</pre>
+   </div>
+   <p>
+    <strong>
+     ¿Por qué funciona?
+    </strong>
+    Angular por defecto sanitiza el binding de datos, pero si el componente usa
+    <code>
+     [innerHTML]
+    </code>
+    para mostrar el término de búsqueda, el iframe se inyecta en el DOM y ejecuta el JavaScript.
+   </p>
+   <p>
+    <strong>
+     ¿Por qué
+     <code>
+      &lt;script&gt;
+     </code>
+     no funciona?
+    </strong>
+    Los navegadores modernos no ejecutan tags
+    <code>
+     &lt;script&gt;
+    </code>
+    insertados via
+    <code>
+     innerHTML
+    </code>
+    . Por eso se usa
+    <code>
+     &lt;iframe&gt;
+    </code>
+    con
+    <code>
+     src="javascript:..."
+    </code>
+    .
+   </p>
+   <h3 id="problema-2-reflected-xss-via-el-tracking-de-pedidos">
+    Problema 2: Reflected XSS vía el tracking de pedidos
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 2 estrellas
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "Reflected XSS"
+    <strong>
+     Ubicación:
+    </strong>
+    Página de tracking de pedidos (
+    <code>
+     /#/track-result?id=
+    </code>
+    )
+   </p>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    Al rastrear un pedido, el ID del pedido se refleja en la página de resultados.
+   </p>
+   <h4 id="resolucion_3">
+    Resolución
+   </h4>
+   <p>
+    Primero, hacé un pedido cualquiera para tener un ID válido. Luego modificá la URL:
+   </p>
+   <div class="highlight language-text">
+    <pre><span></span>http://localhost:3000/#/track-result?id=&lt;iframe src="javascript:alert('xss')"&gt;
+</pre>
+   </div>
+   <p>
+    El ID se refleja sin sanitizar en la respuesta, ejecutando el código inyectado.
+   </p>
+   <h3 id="problema-3-xss-persistente-via-la-api">
+    Problema 3: XSS persistente vía la API
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 4 estrellas
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "API-only XSS"
+   </p>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    Algunos campos que se escriben por API y se muestran en la UI no se sanitizan correctamente. El endpoint de productos permite inyectar HTML en la descripción.
+   </p>
+   <h4 id="resolucion_4">
+    Resolución
+   </h4>
+   <p>
+    Usá
+    <code>
+     curl
+    </code>
+    o el DevTools del navegador para enviar un POST/PUT a la API con un payload XSS en un campo que se renderiza en la UI:
+   </p>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Desde la consola del navegador (estando logueado):</span>
+<span class="nx">fetch</span><span class="p">(</span><span class="s2">"/api/Products/1"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"PUT"</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">"Content-Type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"Authorization"</span><span class="o">:</span><span class="w"> </span><span class="s2">"Bearer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="s2">"token"</span><span class="p">)</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="s2">"&lt;iframe src='javascript:alert(\"xss\")'&gt;"</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Si el producto se muestra con
+    <code>
+     innerHTML
+    </code>
+    , el XSS se ejecuta cada vez que alguien ve ese producto.
+   </p>
+   <h3 id="codigo-defensivo-sanitizacion-y-escape">
+    Código defensivo: sanitización y escape
+   </h3>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// En Angular — EVITAR innerHTML, usar interpolación</span>
+<span class="c1">// MAL:</span>
+<span class="c1">// &lt;div [innerHTML]="searchTerm"&gt;&lt;/div&gt;</span>
+
+<span class="c1">// BIEN — Angular escapa automáticamente con {{ }}:</span>
+<span class="c1">// &lt;div&gt;{{ searchTerm }}&lt;/div&gt;</span>
+
+<span class="c1">// Si necesitás HTML dinámico, usar DomSanitizer con cuidado:</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">DomSanitizer</span><span class="p">,</span><span class="w"> </span><span class="nx">SafeHtml</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@angular/platform-browser"</span><span class="p">;</span>
+
+<span class="kd">@Component</span><span class="p">({</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">})</span>
+<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">SearchComponent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">safeContent</span><span class="o">:</span><span class="w"> </span><span class="kt">SafeHtml</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kr">constructor</span><span class="p">(</span><span class="k">private</span><span class="w"> </span><span class="nx">sanitizer</span><span class="o">:</span><span class="w"> </span><span class="kt">DomSanitizer</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="nx">setContent</span><span class="p">(</span><span class="nx">untrusted</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// sanitize() elimina scripts, iframes, event handlers</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="nx">safeContent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="nx">sanitizer</span><span class="p">.</span><span class="nx">sanitize</span><span class="p">(</span>
+<span class="w">      </span><span class="nx">SecurityContext</span><span class="p">.</span><span class="nx">HTML</span><span class="p">,</span><span class="w"> </span><span class="nx">untrusted</span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="s2">""</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// En Express (backend) — escapar antes de guardar o servir</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">escapeHtml</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"escape-html"</span><span class="p">;</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/api/products"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">escapeHtml</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">name</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">description</span><span class="o">:</span><span class="w"> </span><span class="kt">escapeHtml</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">description</span><span class="p">),</span>
+<span class="w">    </span><span class="nx">price</span><span class="o">:</span><span class="w"> </span><span class="kt">Number</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">price</span><span class="p">),</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// guardar en DB...</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Content-Security-Policy en Express — limitar qué scripts se ejecutan</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">helmet</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"helmet"</span><span class="p">;</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">helmet</span><span class="p">.</span><span class="nx">contentSecurityPolicy</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">directives</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">defaultSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">scriptSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">],</span><span class="w">       </span><span class="c1">// solo scripts propios</span>
+<span class="w">      </span><span class="nx">styleSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">,</span><span class="w"> </span><span class="s2">"'unsafe-inline'"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">imgSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'self'"</span><span class="p">,</span><span class="w"> </span><span class="s2">"data:"</span><span class="p">],</span>
+<span class="w">      </span><span class="nx">frameSrc</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"'none'"</span><span class="p">],</span><span class="w">        </span><span class="c1">// bloquea iframes</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">  </span><span class="p">})</span>
+<span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejercicios-para-resolver_1">
+    Ejercicios para resolver
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Desafío "Client-side XSS Protection"
+     </strong>
+     (3 estrellas): La aplicación tiene alguna protección contra XSS en el cliente, pero se puede evadir. Intentá registrar un usuario con un email que contenga un payload XSS (por ejemplo, con
+     <code>
+      &lt;script&gt;
+     </code>
+     en el email).
+     <em>
+      Pista: si el formulario de registro bloquea caracteres especiales, podés enviar el request directamente con fetch() o curl.
+     </em>
+    </li>
+    <li>
+     <strong>
+      Código defensivo:
+     </strong>
+     Escribí un middleware de Express que:
+     <ul>
+      <li>
+       Agregue el header
+       <code>
+        Content-Security-Policy
+       </code>
+       bloqueando scripts inline y frames
+      </li>
+      <li>
+       Agregue
+       <code>
+        X-Content-Type-Options: nosniff
+       </code>
+      </li>
+      <li>
+       Agregue
+       <code>
+        X-Frame-Options: DENY
+       </code>
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Análisis:
+     </strong>
+     Abrí el DevTools en Juice Shop, buscá en el código del frontend Angular dónde se usa
+     <code>
+      [innerHTML]
+     </code>
+     y explicá por qué es peligroso. ¿Qué alternativa usarías?
+    </li>
+   </ol>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-fuerza-bruta-y-autenticacion">
+    4. Fuerza Bruta y Autenticación
+   </h2>
+   <h3 id="repaso-del-concepto_2">
+    Repaso del concepto
+   </h3>
+   <p>
+    Un ataque de fuerza bruta intenta todas las combinaciones posibles de credenciales hasta encontrar la correcta. Las variantes más comunes son:
+   </p>
+   <table>
+    <thead>
+     <tr>
+      <th>
+       Tipo
+      </th>
+      <th>
+       Descripción
+      </th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td>
+       <strong>
+        Fuerza bruta pura
+       </strong>
+      </td>
+      <td>
+       Probar todas las combinaciones (lento, poco práctico)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Ataque de diccionario
+       </strong>
+      </td>
+      <td>
+       Usar listas de contraseñas comunes (rockyou.txt, etc.)
+      </td>
+     </tr>
+     <tr>
+      <td>
+       <strong>
+        Credential stuffing
+       </strong>
+      </td>
+      <td>
+       Usar combinaciones email/password filtradas de otros sitios
+      </td>
+     </tr>
+    </tbody>
+   </table>
+   <p>
+    La defensa no es solo tener contraseñas fuertes — es hacer que el proceso de adivinación sea
+    <strong>
+     lento, detectable y limitado
+    </strong>
+    .
+   </p>
+   <h3 id="problema-1-contrasena-debil-del-admin">
+    Problema 1: Contraseña débil del admin
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 2 estrellas
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "Password Strength"
+    <strong>
+     Ubicación:
+    </strong>
+    Login (
+    <code>
+     /#/login
+    </code>
+    )
+   </p>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    El administrador de Juice Shop usa una contraseña muy común. Si ya descubriste el email del admin con SQLi (
+    <code>
+     admin@juice-sh.op
+    </code>
+    ), ahora se trata de encontrar su contraseña real.
+   </p>
+   <h4 id="resolucion_5">
+    Resolución
+   </h4>
+   <p>
+    La idea es probar contraseñas comunes. Podés hacerlo manualmente o con un script sencillo:
+   </p>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// brute-force-demo.mjs — Solo para uso educativo en tu instancia local</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">TARGET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://localhost:3000"</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">EMAIL</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">"admin@juice-sh.op"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">passwords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="s2">"password"</span><span class="p">,</span><span class="w"> </span><span class="s2">"123456"</span><span class="p">,</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">,</span><span class="w"> </span><span class="s2">"admin123"</span><span class="p">,</span><span class="w"> </span><span class="s2">"password1"</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">"letmein"</span><span class="p">,</span><span class="w"> </span><span class="s2">"welcome"</span><span class="p">,</span><span class="w"> </span><span class="s2">"monkey"</span><span class="p">,</span><span class="w"> </span><span class="s2">"dragon"</span><span class="p">,</span><span class="w"> </span><span class="s2">"master"</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">"qwerty"</span><span class="p">,</span><span class="w"> </span><span class="s2">"login"</span><span class="p">,</span><span class="w"> </span><span class="s2">"abc123"</span><span class="p">,</span><span class="w"> </span><span class="s2">"111111"</span><span class="p">,</span><span class="w"> </span><span class="s2">"admin1"</span><span class="p">,</span>
+<span class="p">];</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">pw</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">passwords</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">TARGET</span><span class="si">}</span><span class="sb">/rest/user/login`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"Content-Type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="w"> </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="nx">EMAIL</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="nx">pw</span><span class="w"> </span><span class="p">}),</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="mf">200</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Contraseña encontrada: </span><span class="si">${</span><span class="nx">pw</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Token: </span><span class="si">${</span><span class="nx">data</span><span class="p">.</span><span class="nx">authentication</span><span class="p">.</span><span class="nx">token</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">pw</span><span class="si">}</span><span class="sb"> — fallido (</span><span class="si">${</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="si">}</span><span class="sb">)`</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    Ejecutalo con
+    <code>
+     node brute-force-demo.mjs
+    </code>
+    . La contraseña del admin es muy débil y está en cualquier lista de passwords comunes.
+   </p>
+   <h3 id="problema-2-evadir-el-captcha">
+    Problema 2: Evadir el CAPTCHA
+   </h3>
+   <p>
+    <strong>
+     Dificultad: 3 estrellas
+    </strong>
+   </p>
+   <p>
+    <strong>
+     Desafío Juice Shop:
+    </strong>
+    "CAPTCHA Bypass"
+   </p>
+   <p>
+    <strong>
+     Contexto:
+    </strong>
+    Juice Shop agrega un CAPTCHA al feedback del cliente. Pero la validación tiene una debilidad: el CAPTCHA se resuelve en el cliente y se envía junto con el formulario. Si inspeccionás la respuesta de la API, podés ver la respuesta esperada.
+   </p>
+   <h4 id="resolucion_6">
+    Resolución
+   </h4>
+   <ol>
+    <li>
+     Abrí DevTools &gt; Network
+    </li>
+    <li>
+     Cargá la página de feedback (
+     <code>
+      /#/contact
+     </code>
+     )
+    </li>
+    <li>
+     Observá el request a
+     <code>
+      GET /rest/captcha/
+     </code>
+     — la respuesta incluye tanto la pregunta como el
+     <code>
+      captchaId
+     </code>
+    </li>
+    <li>
+     La operación matemática del CAPTCHA se muestra en el frontend. Resolvela y enviá múltiples requests automatizados:
+    </li>
+   </ol>
+   <div class="highlight language-javascript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// captcha-bypass-demo.mjs</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">TARGET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://localhost:3000"</span><span class="p">;</span>
+
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">submitFeedback</span><span class="p">(</span><span class="nx">comment</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Obtener un captcha fresco</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">captchaRes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">TARGET</span><span class="si">}</span><span class="sb">/rest/captcha/`</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">captcha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">captchaRes</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// Resolver la operación (viene como string, ej: "3*7-2")</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">answer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">eval</span><span class="p">(</span><span class="nx">captcha</span><span class="p">.</span><span class="nx">captcha</span><span class="p">);</span><span class="w"> </span><span class="c1">// solo OK en demo local</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">TARGET</span><span class="si">}</span><span class="sb">/api/Feedbacks/`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s2">"POST"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">"Content-Type"</span><span class="o">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+<span class="w">      </span><span class="nx">captchaId</span><span class="o">:</span><span class="w"> </span><span class="nx">captcha</span><span class="p">.</span><span class="nx">captchaId</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">captcha</span><span class="o">:</span><span class="w"> </span><span class="nx">answer</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span>
+<span class="w">      </span><span class="nx">comment</span><span class="o">:</span><span class="w"> </span><span class="nx">comment</span><span class="p">,</span>
+<span class="w">      </span><span class="nx">rating</span><span class="o">:</span><span class="w"> </span><span class="mf">1</span><span class="p">,</span>
+<span class="w">    </span><span class="p">}),</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Enviar 5 feedbacks automatizados</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">5</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">submitFeedback</span><span class="p">(</span><span class="sb">`Feedback automático #</span><span class="si">${</span><span class="nx">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`Feedback </span><span class="si">${</span><span class="nx">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="si">}</span><span class="sb">: </span><span class="si">${</span><span class="nx">status</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="codigo-defensivo-rate-limiting-bcrypt-y-bloqueo">
+    Código defensivo: rate limiting, bcrypt y bloqueo
+   </h3>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Rate limiting con express-rate-limit</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">rateLimit</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"express-rate-limit"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">loginLimiter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">rateLimit</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">windowMs</span><span class="o">:</span><span class="w"> </span><span class="kt">15</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">60</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">,</span><span class="w"> </span><span class="c1">// 15 minutos</span>
+<span class="w">  </span><span class="nx">max</span><span class="o">:</span><span class="w"> </span><span class="kt">5</span><span class="p">,</span><span class="w">                    </span><span class="c1">// máximo 5 intentos por ventana</span>
+<span class="w">  </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"Demasiados intentos. Intentá de nuevo en 15 minutos."</span><span class="p">,</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nx">standardHeaders</span><span class="o">:</span><span class="w"> </span><span class="kt">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">legacyHeaders</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">keyGenerator</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">email</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">ip</span><span class="p">,</span>
+<span class="p">});</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/api/login"</span><span class="p">,</span><span class="w"> </span><span class="nx">loginLimiter</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ... lógica de login</span>
+<span class="p">});</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Hasheo de contraseñas con bcrypt</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">bcrypt</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"bcrypt"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">SALT_ROUNDS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">12</span><span class="p">;</span>
+
+<span class="c1">// Al registrar un usuario:</span>
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">registerUser</span><span class="p">(</span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="nx">password</span><span class="p">,</span><span class="w"> </span><span class="nx">SALT_ROUNDS</span><span class="p">);</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">User</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span><span class="w"> </span><span class="nx">email</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="kt">hash</span><span class="w"> </span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="c1">// Al hacer login:</span>
+<span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">verifyLogin</span><span class="p">(</span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">User</span><span class="p">.</span><span class="nx">findOne</span><span class="p">({</span><span class="w"> </span><span class="nx">where</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">email</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">match</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">password</span><span class="p">,</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">password</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">match</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">null</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Bloqueo progresivo de cuenta</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">failedAttempts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Map</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">count</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="nx">lockedUntil</span><span class="o">:</span><span class="w"> </span><span class="kt">Date</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">}</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">checkAccountLock</span><span class="p">(</span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">record</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">failedAttempts</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">email</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">record</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">lockedUntil</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">record</span><span class="p">.</span><span class="nx">lockedUntil</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">())</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">recordFailedAttempt</span><span class="p">(</span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">record</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">failedAttempts</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">email</span><span class="p">)</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">count</span><span class="o">:</span><span class="w"> </span><span class="kt">0</span><span class="p">,</span><span class="w"> </span><span class="nx">lockedUntil</span><span class="o">:</span><span class="w"> </span><span class="kt">null</span><span class="w"> </span><span class="p">};</span>
+<span class="w">  </span><span class="nx">record</span><span class="p">.</span><span class="nx">count</span><span class="o">++</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">count</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">5</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Bloquear 15 minutos, duplicar por cada bloqueo sucesivo</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">minutes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">15</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">count</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">5</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">record</span><span class="p">.</span><span class="nx">lockedUntil</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nb">Date</span><span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">minutes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">60</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1000</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="nx">failedAttempts</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span><span class="w"> </span><span class="nx">record</span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <div class="highlight language-typescript">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Validación de complejidad de contraseña</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">validatePassword</span><span class="p">(</span><span class="nx">password</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">errors</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">password</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">10</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Mínimo 10 caracteres"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[A-Z]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos una mayúscula"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[a-z]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos una minúscula"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[0-9]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos un número"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="sr">/[^A-Za-z0-9]/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">password</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Al menos un carácter especial"</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">errors</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <h3 id="ejercicios-para-resolver_2">
+    Ejercicios para resolver
+   </h3>
+   <ol>
+    <li>
+     <strong>
+      Desafío "Reset Morty's Password"
+     </strong>
+     (3 estrellas): Buscá la pregunta de seguridad de Morty y usá información pública (su personaje) para resetear su contraseña. Esto demuestra por qué las preguntas de seguridad son una mala práctica.
+     <em>
+      Pista: ¿cuál es la mascota favorita del personaje Morty Smith?
+     </em>
+    </li>
+    <li>
+     <strong>
+      Código defensivo:
+     </strong>
+     Escribí un módulo completo de autenticación en Express + TypeScript que incluya:
+     <ul>
+      <li>
+       Registro con validación de complejidad de contraseña
+      </li>
+      <li>
+       Login con rate limiting (máx. 5 intentos por email en 15 min)
+      </li>
+      <li>
+       Hasheo con bcrypt (mínimo 12 rounds)
+      </li>
+      <li>
+       Respuestas genéricas ("Credenciales inválidas" sin especificar si el email o el password está mal)
+      </li>
+     </ul>
+    </li>
+    <li>
+     <strong>
+      Análisis:
+     </strong>
+     El admin de Juice Shop usa una contraseña muy débil. Escribí un párrafo explicando:
+     <ul>
+      <li>
+       ¿Por qué la longitud mínima importa más que la complejidad?
+      </li>
+      <li>
+       ¿Qué diferencia hace bcrypt vs MD5/SHA para un ataque de fuerza bruta?
+      </li>
+      <li>
+       ¿Cómo el rate limiting hace que el script del Problema 1 deje de funcionar?
+      </li>
+     </ul>
+    </li>
+   </ol>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>

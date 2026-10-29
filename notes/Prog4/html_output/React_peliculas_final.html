@@ -1,0 +1,2604 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   React_peliculas
+  </title>
+ </head>
+ <body>
+  <h1 id="ejemplo-2-app-de-peliculas-con-busqueda-y-detalles">
+   Ejemplo 2: App de Películas con Búsqueda y Detalles
+  </h1>
+  <div class="toc" id="table-of-contents">
+   <h2 id="contents-header">
+    Tabla de contenidos
+   </h2>
+   <ul class="toc">
+    <li class="toc">
+     <a class="toc" href="#concepto-del-ejemplo">
+      Concepto del Ejemplo
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#setup-inicial">
+      Setup Inicial
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#1-configurar-vite">
+      1. Configurar Vite
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#2-configurar-typescript">
+      2. Configurar TypeScript
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#3-modificar-html">
+      3. Modificar HTML
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#4-crear-maintsx">
+      4. Crear main.tsx
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#5-definir-tipos-typescript">
+      5. Definir tipos TypeScript
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#6-declarar-los-estados">
+      6. Declarar los estados
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#7-crear-el-formulario-de-busqueda">
+      7. Crear el formulario de búsqueda
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#8-primer-useeffect-buscar-peliculas">
+      8. Primer useEffect: Buscar películas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#9-renderizar-lista-de-peliculas">
+      9. Renderizar lista de películas
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#10-segundo-useeffect-obtener-detalles-de-pelicula">
+      10. Segundo useEffect: Obtener detalles de película
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#11-renderizar-detalles-de-pelicula">
+      11. Renderizar detalles de película
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#12-codigo-completo-sin-estilos">
+      12. Código completo sin estilos
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#continuacion-agregar-bootstrap">
+      Continuación: Agregar Bootstrap
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#13-agregar-bootstrap-al-html">
+      13. Agregar Bootstrap al HTML
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#14-crear-estilos-personalizados">
+      14. Crear estilos personalizados
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#15-importar-estilos-en-maintsx">
+      15. Importar estilos en main.tsx
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#16-aplicar-bootstrap-contenedor-principal">
+      16. Aplicar Bootstrap - Contenedor principal
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#17-estilizar-el-formulario-de-busqueda">
+      17. Estilizar el formulario de búsqueda
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#18-estilizar-mensajes-de-error-y-carga">
+      18. Estilizar mensajes de error y carga
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#19-estilizar-lista-de-peliculas-con-cards">
+      19. Estilizar lista de películas con cards
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#20-estilizar-detalles-de-pelicula">
+      20. Estilizar detalles de película
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#21-codigo-completo-con-bootstrap">
+      21. Código completo con Bootstrap
+     </a>
+    </li>
+    <li class="toc">
+     <a class="toc" href="#resumen-del-flujo-de-estados-interdependientes">
+      Resumen del flujo de estados interdependientes
+     </a>
+    </li>
+   </ul>
+  </div>
+  <div class="chapter-container">
+   <h2 id="concepto-del-ejemplo">
+    Concepto del Ejemplo
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Vamos a crear una aplicación donde buscaremos películas y al seleccionar una, mostraremos sus detalles. Este ejemplo demuestra cómo un estado (película seleccionada) depende de otro estado (búsqueda), y cómo un tercer estado (detalles) depende de la selección."
+   </p>
+   <p>
+    <strong>
+     APIs a usar:
+    </strong>
+    - Búsqueda:
+    <code>
+     https://www.omdbapi.com/?apikey=TU_API_KEY&amp;s=QUERY
+    </code>
+    - Detalles:
+    <code>
+     https://www.omdbapi.com/?apikey=TU_API_KEY&amp;i=IMDB_ID
+    </code>
+   </p>
+   <p>
+    <strong>
+     Nota:
+    </strong>
+    Necesitarás obtener una API key gratuita en http://www.omdbapi.com/apikey.aspx
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="setup-inicial">
+    Setup Inicial
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Creamos un nuevo proyecto de la misma manera que el anterior."
+   </p>
+   <p>
+    <strong>
+     Comandos:
+    </strong>
+   </p>
+   <div class="highlight language-bash">
+    <pre><span></span>npm<span class="w"> </span>create<span class="w"> </span>vite@latest<span class="w"> </span>movies-app<span class="w"> </span>--<span class="w"> </span>--template<span class="w"> </span>vanilla-ts
+<span class="nb">cd</span><span class="w"> </span>movies-app
+npm<span class="w"> </span>install
+npm<span class="w"> </span>install<span class="w"> </span>react<span class="w"> </span>react-dom
+npm<span class="w"> </span>install<span class="w"> </span>-D<span class="w"> </span>@types/react<span class="w"> </span>@types/react-dom<span class="w"> </span>@vitejs/plugin-react
+</pre>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="1-configurar-vite">
+    1. Configurar Vite
+   </h2>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      vite.config.ts
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-typescript">
+    <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineConfig</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'vite'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">react</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@vitejs/plugin-react'</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineConfig</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">plugins</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">react</span><span class="p">()],</span>
+<span class="p">});</span>
+</pre>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="2-configurar-typescript">
+    2. Configurar TypeScript
+   </h2>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      tsconfig.json
+     </code>
+     (modificar)
+    </strong>
+   </p>
+   <div class="highlight language-json">
+    <pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"compilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"jsx"</span><span class="p">:</span><span class="w"> </span><span class="s2">"react-jsx"</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// ... resto de opciones</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="3-modificar-html">
+    3. Modificar HTML
+   </h2>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      index.html
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">"en"</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"UTF-8"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1.0"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Movies App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"app"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">"module"</span> <span class="na">src</span><span class="o">=</span><span class="s">"/src/main.tsx"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="4-crear-maintsx">
+    4. Crear main.tsx
+   </h2>
+   <p>
+    <strong>
+     Renombrar:
+    </strong>
+    <code>
+     src/main.ts
+    </code>
+    →
+    <code>
+     src/main.tsx
+    </code>
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/main.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">ReactDOM</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-dom/client'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">App</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./App'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">rootElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'app'</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">rootElement</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nx">rootElement</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">React</span><span class="p">.</span><span class="na">StrictMode</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">App</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">React</span><span class="p">.</span><span class="na">StrictMode</span><span class="p">&gt;,</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="5-definir-tipos-typescript">
+    5. Definir tipos TypeScript
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Primero definimos los tipos para las películas que recibiremos de la API."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// Tipos para la respuesta de búsqueda</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">Movie</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">imdbID</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Year</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Poster</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">SearchResponse</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">Search</span><span class="o">:</span><span class="w"> </span><span class="kt">Movie</span><span class="p">[];</span>
+<span class="w">  </span><span class="nx">totalResults</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Response</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Tipos para los detalles de una película</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">MovieDetails</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">Title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Year</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Rated</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Runtime</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Genre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Director</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Plot</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Poster</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">imdbRating</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'TU_API_KEY'</span><span class="p">;</span><span class="w"> </span><span class="c1">// Reemplaza con tu API key</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'https://www.omdbapi.com/'</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="6-declarar-los-estados">
+    6. Declarar los estados
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Declaramos todos los estados que necesitamos: búsqueda, películas encontradas, película seleccionada, detalles, carga y error."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+
+<span class="c1">// ... (tipos e interfaces)</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'TU_API_KEY'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'https://www.omdbapi.com/'</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Estado para la búsqueda del usuario</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">searchQuery</span><span class="p">,</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;(</span><span class="s1">''</span><span class="p">);</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// Estado para las películas encontradas</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">movies</span><span class="p">,</span><span class="w"> </span><span class="nx">setMovies</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">Movie</span><span class="err">[]</span><span class="p">&gt;([]);</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// Estado para la película seleccionada (solo ID)</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">selectedMovieId</span><span class="p">,</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// Estado para los detalles de la película seleccionada</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">movieDetails</span><span class="p">,</span><span class="w"> </span><span class="nx">setMovieDetails</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">MovieDetails</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// Estados de UI</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loadingSearch</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoadingSearch</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loadingDetails</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoadingDetails</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="7-crear-el-formulario-de-busqueda">
+    7. Crear el formulario de búsqueda
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Creamos el formulario para buscar películas. Este actualiza el estado searchQuery."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// ... (imports, tipos, estados)</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ... (estados)</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSearch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">React.FormEvent</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="c1">// Por ahora solo mostramos en consola</span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Buscando:'</span><span class="p">,</span><span class="w"> </span><span class="nx">searchQuery</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">form</span><span class="w"> </span><span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSearch</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">input</span>
+<span class="w">          </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span>
+<span class="w">          </span><span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">searchQuery</span><span class="p">}</span>
+<span class="w">          </span><span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+<span class="w">          </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Buscar películas..."</span>
+<span class="w">        </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"submit"</span><span class="w"> </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loadingSearch</span><span class="p">}&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">'Buscando...'</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Buscar'</span><span class="p">}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ne">Error</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="8-primer-useeffect-buscar-peliculas">
+    8. Primer useEffect: Buscar películas
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Creamos un useEffect que se ejecuta cuando el usuario envía el formulario. Usamos un estado trigger para esto."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+
+<span class="c1">// ... (tipos)</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'TU_API_KEY'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'https://www.omdbapi.com/'</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">searchQuery</span><span class="p">,</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;(</span><span class="s1">''</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">movies</span><span class="p">,</span><span class="w"> </span><span class="nx">setMovies</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">Movie</span><span class="err">[]</span><span class="p">&gt;([]);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">selectedMovieId</span><span class="p">,</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">movieDetails</span><span class="p">,</span><span class="w"> </span><span class="nx">setMovieDetails</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">MovieDetails</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loadingSearch</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoadingSearch</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loadingDetails</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoadingDetails</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">searchTrigger</span><span class="p">,</span><span class="w"> </span><span class="nx">setSearchTrigger</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;(</span><span class="mf">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// useEffect para buscar películas</span>
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nx">setLoadingSearch</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setMovies</span><span class="p">([]);</span>
+<span class="w">    </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setMovieDetails</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchMovies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">?apikey=</span><span class="si">${</span><span class="nx">API_KEY</span><span class="si">}</span><span class="sb">&amp;s=</span><span class="si">${</span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">searchQuery</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Error en la búsqueda'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">SearchResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">Response</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'False'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'No se encontraron películas'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="nx">setMovies</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">Search</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Error desconocido'</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setLoadingSearch</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchMovies</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">searchTrigger</span><span class="p">]);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSearch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">React.FormEvent</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setSearchTrigger</span><span class="p">(</span><span class="nx">prev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">prev</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">form</span><span class="w"> </span><span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSearch</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">input</span>
+<span class="w">          </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span>
+<span class="w">          </span><span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">searchQuery</span><span class="p">}</span>
+<span class="w">          </span><span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+<span class="w">          </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Buscar películas..."</span>
+<span class="w">        </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"submit"</span><span class="w"> </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loadingSearch</span><span class="p">}&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">'Buscando...'</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Buscar'</span><span class="p">}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ne">Error</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">películas</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="9-renderizar-lista-de-peliculas">
+    9. Renderizar lista de películas
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Mostramos las películas encontradas. Al hacer clic en una, actualizamos selectedMovieId."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="c1">// ... (todo lo anterior)</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">form</span><span class="w"> </span><span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSearch</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">input</span>
+<span class="w">          </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span>
+<span class="w">          </span><span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">searchQuery</span><span class="p">}</span>
+<span class="w">          </span><span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+<span class="w">          </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Buscar películas..."</span>
+<span class="w">        </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"submit"</span><span class="w"> </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loadingSearch</span><span class="p">}&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">'Buscando...'</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Buscar'</span><span class="p">}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ne">Error</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">películas</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">      </span><span class="p">{</span><span class="o">!</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">movies</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Resultados</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">{</span><span class="nx">movies</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">movie</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">li</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">}&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">)}&gt;</span>
+<span class="w">                  </span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Title</span><span class="p">}</span><span class="w"> </span><span class="p">({</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Year</span><span class="p">})</span>
+<span class="w">                </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">))}</span>
+<span class="w">          </span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="10-segundo-useeffect-obtener-detalles-de-pelicula">
+    10. Segundo useEffect: Obtener detalles de película
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Este es el punto clave: creamos un useEffect que depende de selectedMovieId. Cuando cambia, obtenemos los detalles de esa película."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+
+<span class="c1">// ... (tipos, constantes, estados anteriores)</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// ... (estados)</span>
+
+<span class="w">  </span><span class="c1">// useEffect para buscar películas (se mantiene igual)</span>
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... (código anterior de búsqueda)</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">searchTrigger</span><span class="p">]);</span>
+
+<span class="w">  </span><span class="c1">// useEffect para obtener detalles - DEPENDE de selectedMovieId</span>
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">selectedMovieId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setMovieDetails</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">setLoadingDetails</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchMovieDetails</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">?apikey=</span><span class="si">${</span><span class="nx">API_KEY</span><span class="si">}</span><span class="sb">&amp;i=</span><span class="si">${</span><span class="nx">selectedMovieId</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Error al obtener detalles'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">MovieDetails</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">        </span><span class="nx">setMovieDetails</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Error desconocido'</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setLoadingDetails</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchMovieDetails</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">selectedMovieId</span><span class="p">]);</span><span class="w"> </span><span class="c1">// Dependencia clave</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSearch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">React.FormEvent</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setSearchTrigger</span><span class="p">(</span><span class="nx">prev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">prev</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="c1">// ... (UI anterior)</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="11-renderizar-detalles-de-pelicula">
+    11. Renderizar detalles de película
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Finalmente mostramos los detalles de la película seleccionada."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     (return completo)
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">form</span><span class="w"> </span><span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSearch</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">input</span>
+<span class="w">          </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span>
+<span class="w">          </span><span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">searchQuery</span><span class="p">}</span>
+<span class="w">          </span><span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+<span class="w">          </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Buscar películas..."</span>
+<span class="w">        </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"submit"</span><span class="w"> </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loadingSearch</span><span class="p">}&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">'Buscando...'</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Buscar'</span><span class="p">}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ne">Error</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">películas</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">      </span><span class="p">{</span><span class="o">!</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">movies</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Resultados</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">{</span><span class="nx">movies</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">movie</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">li</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">}&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">)}&gt;</span>
+<span class="w">                  </span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Title</span><span class="p">}</span><span class="w"> </span><span class="p">({</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Year</span><span class="p">})</span>
+<span class="w">                </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">))}</span>
+<span class="w">          </span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">loadingDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">detalles</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">      </span><span class="p">{</span><span class="o">!</span><span class="nx">loadingDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">movieDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Detalles</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">la</span><span class="w"> </span><span class="nx">Película</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span>
+<span class="w">            </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Poster</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'N/A'</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Poster</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">''</span><span class="p">}</span><span class="w"> </span>
+<span class="w">            </span><span class="na">alt</span><span class="o">=</span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Title</span><span class="p">}</span>
+<span class="w">            </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">maxWidth</span><span class="o">:</span><span class="w"> </span><span class="s1">'300px'</span><span class="w"> </span><span class="p">}}</span>
+<span class="w">          </span><span class="p">/&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Title</span><span class="p">}&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Año</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Year</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Clasificación</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Rated</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Duración</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Runtime</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Género</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Genre</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Director</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Director</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Rating</span><span class="w"> </span><span class="nx">IMDB</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">imdbRating</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Sinopsis</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Plot</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="kc">null</span><span class="p">)}&gt;</span>
+<span class="w">            </span><span class="nx">Volver</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="nx">resultados</span>
+<span class="w">          </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="12-codigo-completo-sin-estilos">
+    12. Código completo sin estilos
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Aquí está el código completo funcionando. Veamos cómo fluyen los estados."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     (versión completa)
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">Movie</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">imdbID</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Year</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Poster</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">SearchResponse</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">Search</span><span class="o">:</span><span class="w"> </span><span class="kt">Movie</span><span class="p">[];</span>
+<span class="w">  </span><span class="nx">totalResults</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Response</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">MovieDetails</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">Title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Year</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Rated</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Runtime</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Genre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Director</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Plot</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Poster</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">imdbRating</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'TU_API_KEY'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'https://www.omdbapi.com/'</span><span class="p">;</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">searchQuery</span><span class="p">,</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;(</span><span class="s1">''</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">movies</span><span class="p">,</span><span class="w"> </span><span class="nx">setMovies</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">Movie</span><span class="err">[]</span><span class="p">&gt;([]);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">selectedMovieId</span><span class="p">,</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">movieDetails</span><span class="p">,</span><span class="w"> </span><span class="nx">setMovieDetails</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">MovieDetails</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loadingSearch</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoadingSearch</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">loadingDetails</span><span class="p">,</span><span class="w"> </span><span class="nx">setLoadingDetails</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">boolean</span><span class="p">&gt;(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">error</span><span class="p">,</span><span class="w"> </span><span class="nx">setError</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">string</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="na">null</span><span class="p">&gt;(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">searchTrigger</span><span class="p">,</span><span class="w"> </span><span class="nx">setSearchTrigger</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">number</span><span class="p">&gt;(</span><span class="mf">0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nx">setLoadingSearch</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setMovies</span><span class="p">([]);</span>
+<span class="w">    </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setMovieDetails</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchMovies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">?apikey=</span><span class="si">${</span><span class="nx">API_KEY</span><span class="si">}</span><span class="sb">&amp;s=</span><span class="si">${</span><span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">searchQuery</span><span class="p">)</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Error en la búsqueda'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">SearchResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">Response</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">'False'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'No se encontraron películas'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="nx">setMovies</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">Search</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Error desconocido'</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setLoadingSearch</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchMovies</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">searchTrigger</span><span class="p">]);</span>
+
+<span class="w">  </span><span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">selectedMovieId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setMovieDetails</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+<span class="w">      </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">setLoadingDetails</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">setError</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">fetchMovieDetails</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">API_URL</span><span class="si">}</span><span class="sb">?apikey=</span><span class="si">${</span><span class="nx">API_KEY</span><span class="si">}</span><span class="sb">&amp;i=</span><span class="si">${</span><span class="nx">selectedMovieId</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">res</span><span class="p">.</span><span class="nx">ok</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">'Error al obtener detalles'</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">MovieDetails</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="w">        </span><span class="nx">setMovieDetails</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setError</span><span class="p">(</span><span class="nx">err</span><span class="w"> </span><span class="ow">instanceof</span><span class="w"> </span><span class="ne">Error</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Error desconocido'</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">setLoadingDetails</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">fetchMovieDetails</span><span class="p">();</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">selectedMovieId</span><span class="p">]);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleSearch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="o">:</span><span class="w"> </span><span class="kt">React.FormEvent</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">searchQuery</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nx">setSearchTrigger</span><span class="p">(</span><span class="nx">prev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">prev</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">form</span><span class="w"> </span><span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSearch</span><span class="p">}&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">input</span>
+<span class="w">          </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span>
+<span class="w">          </span><span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">searchQuery</span><span class="p">}</span>
+<span class="w">          </span><span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+<span class="w">          </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Buscar películas..."</span>
+<span class="w">        </span><span class="p">/&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">type</span><span class="o">=</span><span class="s">"submit"</span><span class="w"> </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loadingSearch</span><span class="p">}&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">'Buscando...'</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'Buscar'</span><span class="p">}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="ne">Error</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="nx">error</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+<span class="w">      </span>
+<span class="w">      </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">películas</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">      </span><span class="p">{</span><span class="o">!</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">movies</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nx">selectedMovieId</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Resultados</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">{</span><span class="nx">movies</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">movie</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">li</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">}&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">)}&gt;</span>
+<span class="w">                  </span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Title</span><span class="p">}</span><span class="w"> </span><span class="p">({</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Year</span><span class="p">})</span>
+<span class="w">                </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">))}</span>
+<span class="w">          </span><span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+
+<span class="w">      </span><span class="p">{</span><span class="nx">loadingDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">detalles</span><span class="p">...&lt;/</span><span class="nt">p</span><span class="p">&gt;}</span>
+
+<span class="w">      </span><span class="p">{</span><span class="o">!</span><span class="nx">loadingDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">movieDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h2</span><span class="p">&gt;</span><span class="nx">Detalles</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">la</span><span class="w"> </span><span class="nx">Película</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Poster</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'N/A'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span>
+<span class="w">              </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Poster</span><span class="p">}</span><span class="w"> </span>
+<span class="w">              </span><span class="na">alt</span><span class="o">=</span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Title</span><span class="p">}</span>
+<span class="w">              </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">maxWidth</span><span class="o">:</span><span class="w"> </span><span class="s1">'300px'</span><span class="w"> </span><span class="p">}}</span>
+<span class="w">            </span><span class="p">/&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h3</span><span class="p">&gt;{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Title</span><span class="p">}&lt;/</span><span class="nt">h3</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Año</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Year</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Clasificación</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Rated</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Duración</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Runtime</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Género</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Genre</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Director</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Director</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Rating</span><span class="w"> </span><span class="nx">IMDB</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">imdbRating</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Sinopsis</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Plot</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span><span class="na">onClick</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="kc">null</span><span class="p">)}&gt;</span>
+<span class="w">            </span><span class="nx">Volver</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="nx">resultados</span>
+<span class="w">          </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">)}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">main</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="continuacion-agregar-bootstrap">
+    Continuación: Agregar Bootstrap
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Ahora vamos a agregar estilos con Bootstrap para mejorar la apariencia."
+   </p>
+  </div>
+  <div class="chapter-container">
+   <h2 id="13-agregar-bootstrap-al-html">
+    13. Agregar Bootstrap al HTML
+   </h2>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      index.html
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-html">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">"en"</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">"UTF-8"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">"viewport"</span> <span class="na">content</span><span class="o">=</span><span class="s">"width=device-width, initial-scale=1.0"</span> <span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Movies App<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">link</span> <span class="na">href</span><span class="o">=</span><span class="s">"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"</span> <span class="na">rel</span><span class="o">=</span><span class="s">"stylesheet"</span> <span class="na">integrity</span><span class="o">=</span><span class="s">"sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">"anonymous"</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">"app"</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">"module"</span> <span class="na">src</span><span class="o">=</span><span class="s">"/src/main.tsx"</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="14-crear-estilos-personalizados">
+    14. Crear estilos personalizados
+   </h2>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/index.css
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-css">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="nt">body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">min-height</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">vh</span><span class="p">;</span>
+<span class="w">  </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#1a1a1a</span><span class="p">;</span>
+<span class="w">  </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="mh">#f8f9fa</span><span class="p">;</span>
+<span class="w">  </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="s1">'Inter'</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">#</span><span class="nn">app</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">width</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">;</span>
+<span class="w">  </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="kt">rem</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">movie-card</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#2d2d2d</span><span class="p">;</span>
+<span class="w">  </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="mh">#404040</span><span class="p">;</span>
+<span class="w">  </span><span class="k">transition</span><span class="p">:</span><span class="w"> </span><span class="k">transform</span><span class="w"> </span><span class="mf">0.2</span><span class="kt">s</span><span class="p">,</span><span class="w"> </span><span class="k">box-shadow</span><span class="w"> </span><span class="mf">0.2</span><span class="kt">s</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">movie-card</span><span class="p">:</span><span class="nd">hover</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">transform</span><span class="p">:</span><span class="w"> </span><span class="nb">translateY</span><span class="p">(</span><span class="mi">-5</span><span class="kt">px</span><span class="p">);</span>
+<span class="w">  </span><span class="k">box-shadow</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">8</span><span class="kt">px</span><span class="w"> </span><span class="mi">16</span><span class="kt">px</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">movie-poster</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">  </span><span class="k">object-fit</span><span class="p">:</span><span class="w"> </span><span class="kc">cover</span><span class="p">;</span>
+<span class="w">  </span><span class="k">width</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">.</span><span class="nc">details-card</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#2d2d2d</span><span class="p">;</span>
+<span class="w">  </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="kt">px</span><span class="w"> </span><span class="kc">solid</span><span class="w"> </span><span class="mh">#404040</span><span class="p">;</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="15-importar-estilos-en-maintsx">
+    15. Importar estilos en main.tsx
+   </h2>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/main.tsx
+     </code>
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">ReactDOM</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react-dom/client'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">App</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'./App'</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="s1">'./index.css'</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">rootElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">'app'</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">rootElement</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">ReactDOM</span><span class="p">.</span><span class="nx">createRoot</span><span class="p">(</span><span class="nx">rootElement</span><span class="p">).</span><span class="nx">render</span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">React</span><span class="p">.</span><span class="na">StrictMode</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">App</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">React</span><span class="p">.</span><span class="na">StrictMode</span><span class="p">&gt;,</span>
+<span class="w">  </span><span class="p">);</span>
+<span class="p">}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="16-aplicar-bootstrap-contenedor-principal">
+    16. Aplicar Bootstrap - Contenedor principal
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Empezamos aplicando clases de Bootstrap al contenedor principal y al título."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     - Estructura principal
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"container"</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"row"</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"col-12"</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;</span><span class="nt">h1</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"text-center my-4"</span><span class="p">&gt;</span><span class="err">🎬</span><span class="w"> </span><span class="nx">Buscador</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">Películas</span><span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="w">          </span>
+<span class="w">          </span><span class="p">{</span><span class="cm">/* Aquí va el formulario */</span><span class="p">}</span>
+<span class="w">        </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">      </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">  </span><span class="p">);</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="17-estilizar-el-formulario-de-busqueda">
+    17. Estilizar el formulario de búsqueda
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Aplicamos clases de Bootstrap al formulario para que se vea moderno."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     - Formulario
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">          </span><span class="p">&lt;</span><span class="nt">form</span><span class="w"> </span><span class="na">onSubmit</span><span class="o">=</span><span class="p">{</span><span class="nx">handleSearch</span><span class="p">}</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"mb-4"</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"input-group input-group-lg"</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">input</span>
+<span class="w">                </span><span class="na">type</span><span class="o">=</span><span class="s">"text"</span>
+<span class="w">                </span><span class="na">className</span><span class="o">=</span><span class="s">"form-control"</span>
+<span class="w">                </span><span class="na">value</span><span class="o">=</span><span class="p">{</span><span class="nx">searchQuery</span><span class="p">}</span>
+<span class="w">                </span><span class="na">onChange</span><span class="o">=</span><span class="p">{(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSearchQuery</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">)}</span>
+<span class="w">                </span><span class="na">placeholder</span><span class="o">=</span><span class="s">"Buscar películas..."</span>
+<span class="w">              </span><span class="p">/&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span>
+<span class="w">                </span><span class="na">className</span><span class="o">=</span><span class="s">"btn btn-primary"</span><span class="w"> </span>
+<span class="w">                </span><span class="na">type</span><span class="o">=</span><span class="s">"submit"</span><span class="w"> </span>
+<span class="w">                </span><span class="na">disabled</span><span class="o">=</span><span class="p">{</span><span class="nx">loadingSearch</span><span class="p">}</span>
+<span class="w">              </span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span>
+<span class="w">                  </span><span class="p">&lt;&gt;</span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"spinner-border spinner-border-sm me-2"</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="nx">Buscando</span><span class="p">...</span>
+<span class="w">                  </span><span class="p">&lt;/&gt;</span>
+<span class="w">                </span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">'🔍 Buscar'</span><span class="p">}</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="18-estilizar-mensajes-de-error-y-carga">
+    18. Estilizar mensajes de error y carga
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Los mensajes de error y carga con clases de Bootstrap."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     - Error y Loading
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">          </span><span class="p">{</span><span class="nx">error</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"alert alert-danger"</span><span class="w"> </span><span class="na">role</span><span class="o">=</span><span class="s">"alert"</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">{</span><span class="nx">error</span><span class="p">}</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+<span class="w">          </span>
+<span class="w">          </span><span class="p">{</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"text-center my-5"</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"spinner-border text-primary"</span><span class="w"> </span><span class="na">role</span><span class="o">=</span><span class="s">"status"</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"visually-hidden"</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="p">...&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="19-estilizar-lista-de-peliculas-con-cards">
+    19. Estilizar lista de películas con cards
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Mostramos las películas en un grid responsivo usando cards de Bootstrap."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     - Lista de películas
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loadingSearch</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">movies</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nx">selectedMovieId</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">h2</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"mb-3"</span><span class="p">&gt;</span><span class="nx">Resultados</span><span class="w"> </span><span class="nx">de</span><span class="w"> </span><span class="nx">búsqueda</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"row g-4"</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">{</span><span class="nx">movies</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">movie</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">                  </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">key</span><span class="o">=</span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">}</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"col-md-6 col-lg-4"</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card movie-card h-100"</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Poster</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'N/A'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">                        </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span>
+<span class="w">                          </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Poster</span><span class="p">}</span><span class="w"> </span>
+<span class="w">                          </span><span class="na">className</span><span class="o">=</span><span class="s">"card-img-top"</span><span class="w"> </span>
+<span class="w">                          </span><span class="na">alt</span><span class="o">=</span><span class="p">{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Title</span><span class="p">}</span>
+<span class="w">                          </span><span class="na">style</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="s1">'400px'</span><span class="p">,</span><span class="w"> </span><span class="nx">objectFit</span><span class="o">:</span><span class="w"> </span><span class="s1">'cover'</span><span class="w"> </span><span class="p">}}</span>
+<span class="w">                        </span><span class="p">/&gt;</span>
+<span class="w">                      </span><span class="p">)}</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-body d-flex flex-column"</span><span class="p">&gt;</span>
+<span class="w">                        </span><span class="p">&lt;</span><span class="nt">h5</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-title"</span><span class="p">&gt;{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Title</span><span class="p">}&lt;/</span><span class="nt">h5</span><span class="p">&gt;</span>
+<span class="w">                        </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-text text-muted"</span><span class="p">&gt;{</span><span class="nx">movie</span><span class="p">.</span><span class="nx">Year</span><span class="p">}&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">                        </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span>
+<span class="w">                          </span><span class="na">className</span><span class="o">=</span><span class="s">"btn btn-outline-primary mt-auto"</span>
+<span class="w">                          </span><span class="na">onClick</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="nx">movie</span><span class="p">.</span><span class="nx">imdbID</span><span class="p">)}</span>
+<span class="w">                        </span><span class="p">&gt;</span>
+<span class="w">                          </span><span class="nx">Ver</span><span class="w"> </span><span class="nx">detalles</span>
+<span class="w">                        </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">                  </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">))}</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="20-estilizar-detalles-de-pelicula">
+    20. Estilizar detalles de película
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Finalmente, los detalles de la película con un diseño más elaborado."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     - Detalles
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="w">          </span><span class="p">{</span><span class="nx">loadingDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"text-center my-5"</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"spinner-border text-info"</span><span class="w"> </span><span class="na">role</span><span class="o">=</span><span class="s">"status"</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"visually-hidden"</span><span class="p">&gt;</span><span class="nx">Cargando</span><span class="w"> </span><span class="nx">detalles</span><span class="p">...&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+
+<span class="w">          </span><span class="p">{</span><span class="o">!</span><span class="nx">loadingDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">movieDetails</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">            </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card details-card"</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"row g-0"</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"col-md-4"</span><span class="p">&gt;</span>
+<span class="w">                  </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Poster</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s1">'N/A'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">img</span><span class="w"> </span>
+<span class="w">                      </span><span class="na">src</span><span class="o">=</span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Poster</span><span class="p">}</span><span class="w"> </span>
+<span class="w">                      </span><span class="na">className</span><span class="o">=</span><span class="s">"img-fluid rounded-start movie-poster"</span><span class="w"> </span>
+<span class="w">                      </span><span class="na">alt</span><span class="o">=</span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Title</span><span class="p">}</span>
+<span class="w">                    </span><span class="p">/&gt;</span>
+<span class="w">                  </span><span class="p">)}</span>
+<span class="w">                </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"col-md-8"</span><span class="p">&gt;</span>
+<span class="w">                  </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-body"</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">h2</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-title mb-3"</span><span class="p">&gt;{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Title</span><span class="p">}&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+<span class="w">                    </span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"mb-3"</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"badge bg-primary me-2"</span><span class="p">&gt;{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Year</span><span class="p">}&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"badge bg-secondary me-2"</span><span class="p">&gt;{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Rated</span><span class="p">}&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"badge bg-info"</span><span class="p">&gt;{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Runtime</span><span class="p">}&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-text"</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Género</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Genre</span><span class="p">}</span>
+<span class="w">                    </span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-text"</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Director</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Director</span><span class="p">}</span>
+<span class="w">                    </span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-text"</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Rating</span><span class="w"> </span><span class="nx">IMDB</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span><span class="w"> </span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">span</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"badge bg-warning text-dark ms-2"</span><span class="p">&gt;</span>
+<span class="w">                        </span><span class="err">⭐</span><span class="w"> </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">imdbRating</span><span class="p">}</span>
+<span class="w">                      </span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">p</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">"card-text mt-3"</span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span><span class="nx">Sinopsis</span><span class="o">:</span><span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="w">                      </span><span class="p">{</span><span class="nx">movieDetails</span><span class="p">.</span><span class="nx">Plot</span><span class="p">}</span>
+<span class="w">                    </span><span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+
+<span class="w">                    </span><span class="p">&lt;</span><span class="nt">button</span><span class="w"> </span>
+<span class="w">                      </span><span class="na">className</span><span class="o">=</span><span class="s">"btn btn-outline-secondary mt-3"</span>
+<span class="w">                      </span><span class="na">onClick</span><span class="o">=</span><span class="p">{()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setSelectedMovieId</span><span class="p">(</span><span class="kc">null</span><span class="p">)}</span>
+<span class="w">                    </span><span class="p">&gt;</span>
+<span class="w">                      </span><span class="err">←</span><span class="w"> </span><span class="nx">Volver</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="nx">resultados</span>
+<span class="w">                    </span><span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="w">                  </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">                </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">              </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">            </span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="w">          </span><span class="p">)}</span>
+</pre>
+    </div>
+   </div>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="21-codigo-completo-con-bootstrap">
+    21. Código completo con Bootstrap
+   </h2>
+   <p>
+    <strong>
+     Speech:
+    </strong>
+    "Aquí está el código completo con todos los estilos de Bootstrap aplicados."
+   </p>
+   <p>
+    <strong>
+     Archivo:
+     <code>
+      src/App.tsx
+     </code>
+     (versión final completa con Bootstrap)
+    </strong>
+   </p>
+   <div class="highlight language-tsx">
+    <div class="collapsible-container" data-max-lines="6">
+     <pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useState</span><span class="p">,</span><span class="w"> </span><span class="nx">useEffect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'react'</span><span class="p">;</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">Movie</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">imdbID</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Year</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Poster</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">SearchResponse</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">Search</span><span class="o">:</span><span class="w"> </span><span class="kt">Movie</span><span class="p">[];</span>
+<span class="w">  </span><span class="nx">totalResults</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Response</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">MovieDetails</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">Title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Year</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Rated</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Runtime</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Genre</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Director</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Plot</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">Poster</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">imdbRating</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'TU_API_KEY'</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">API_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">'</span><span class="nx">https</span>
+</pre>
+    </div>
+   </div>
+   <p>
+    tsx
+const API_URL = 'https://www.omdbapi.com/';
+   </p>
+   <p>
+    function App() {
+  const [searchQuery, setSearchQuery] = useState
+    <string>
+     ('');
+  const [movies, setMovies] = useState
+     <movie[]>
+      ([]);
+  const [selectedMovieId, setSelectedMovieId] = useState
+      <string null="" |="">
+       (null);
+  const [movieDetails, setMovieDetails] = useState
+       <moviedetails null="" |="">
+        (null);
+  const [loadingSearch, setLoadingSearch] = useState
+        <boolean>
+         (false);
+  const [loadingDetails, setLoadingDetails] = useState
+         <boolean>
+          (false);
+  const [error, setError] = useState
+          <string null="" |="">
+           (null);
+  const [searchTrigger, setSearchTrigger] = useState
+           <number>
+            (0);
+           </number>
+          </string>
+         </boolean>
+        </boolean>
+       </moviedetails>
+      </string>
+     </movie[]>
+    </string>
+   </p>
+   <p>
+    useEffect(() =&gt; {
+    if (!searchQuery.trim()) return;
+   </p>
+   <div class="collapsible-container" data-max-lines="6">
+    <pre><code>setLoadingSearch(true);
+setError(null);
+setMovies([]);
+setSelectedMovieId(null);
+setMovieDetails(null);
+
+const fetchMovies = async () =&gt; {
+  try {
+    const url = `${API_URL}?apikey=${API_KEY}&amp;s=${encodeURIComponent(searchQuery)}`;
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error('Error en la búsqueda');
+    }
+
+    const data: SearchResponse = await res.json();
+
+    if (data.Response === 'False') {
+      throw new Error('No se encontraron películas');
+    }
+
+    setMovies(data.Search);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Error desconocido');
+  } finally {
+    setLoadingSearch(false);
+  }
+};
+
+fetchMovies();
+</code></pre>
+   </div>
+   <p>
+    }, [searchTrigger]);
+   </p>
+   <p>
+    useEffect(() =&gt; {
+    if (!selectedMovieId) {
+      setMovieDetails(null);
+      return;
+    }
+   </p>
+   <div class="collapsible-container" data-max-lines="6">
+    <pre><code>setLoadingDetails(true);
+setError(null);
+
+const fetchMovieDetails = async () =&gt; {
+  try {
+    const url = `${API_URL}?apikey=${API_KEY}&amp;i=${selectedMovieId}`;
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error('Error al obtener detalles');
+    }
+
+    const data: MovieDetails = await res.json();
+    setMovieDetails(data);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Error desconocido');
+  } finally {
+    setLoadingDetails(false);
+  }
+};
+
+fetchMovieDetails();
+</code></pre>
+   </div>
+   <p>
+    }, [selectedMovieId]);
+   </p>
+   <p>
+    const handleSearch = (e: React.FormEvent) =&gt; {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setSearchTrigger(prev =&gt; prev + 1);
+    }
+  };
+   </p>
+   <p>
+    return (
+    <div classname="container">
+     <div classname="row">
+      <div classname="col-12">
+       <h1 classname="text-center my-4">
+        🎬 Buscador de Películas
+       </h1>
+      </div>
+     </div>
+    </div>
+   </p>
+   <div class="collapsible-container" data-max-lines="6">
+    <pre><code>      &lt;form onSubmit={handleSearch} className="mb-4"&gt;
+        &lt;div className="input-group input-group-lg"&gt;
+          &lt;input
+            type="text"
+            className="form-control"
+            value={searchQuery}
+            onChange={(e) =&gt; setSearchQuery(e.target.value)}
+            placeholder="Buscar películas..."
+          /&gt;
+          &lt;button 
+            className="btn btn-primary" 
+            type="submit" 
+            disabled={loadingSearch}
+          &gt;
+            {loadingSearch ? (
+              &lt;&gt;
+                &lt;span className="spinner-border spinner-border-sm me-2"&gt;&lt;/span&gt;
+                Buscando...
+              
+            ) : '🔍 Buscar'}
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+
+      {error &amp;&amp; (
+        &lt;div className="alert alert-danger" role="alert"&gt;
+          {error}
+        &lt;/div&gt;
+      )}
+
+      {loadingSearch &amp;&amp; (
+        &lt;div className="text-center my-5"&gt;
+          &lt;div className="spinner-border text-primary" role="status"&gt;
+            &lt;span className="visually-hidden"&gt;Cargando...&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      )}
+
+      {!loadingSearch &amp;&amp; movies.length &gt; 0 &amp;&amp; !selectedMovieId &amp;&amp; (
+        &lt;div&gt;
+          &lt;h2 className="mb-3"&gt;Resultados de búsqueda:&lt;/h2&gt;
+          &lt;div className="row g-4"&gt;
+            {movies.map(movie =&gt; (
+              &lt;div key={movie.imdbID} className="col-md-6 col-lg-4"&gt;
+                &lt;div className="card movie-card h-100"&gt;
+                  {movie.Poster !== 'N/A' &amp;&amp; (
+                    &lt;img 
+                      src={movie.Poster} 
+                      className="card-img-top" 
+                      alt={movie.Title}
+                      style={{ height: '400px', objectFit: 'cover' }}
+                    /&gt;
+                  )}
+                  &lt;div className="card-body d-flex flex-column"&gt;
+                    &lt;h5 className="card-title"&gt;{movie.Title}&lt;/h5&gt;
+                    &lt;p className="card-text text-muted"&gt;{movie.Year}&lt;/p&gt;
+                    &lt;button 
+                      className="btn btn-outline-primary mt-auto"
+                      onClick={() =&gt; setSelectedMovieId(movie.imdbID)}
+                    &gt;
+                      Ver detalles
+                    &lt;/button&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            ))}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      )}
+
+      {loadingDetails &amp;&amp; (
+        &lt;div className="text-center my-5"&gt;
+          &lt;div className="spinner-border text-info" role="status"&gt;
+            &lt;span className="visually-hidden"&gt;Cargando detalles...&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      )}
+
+      {!loadingDetails &amp;&amp; movieDetails &amp;&amp; (
+        &lt;div className="card details-card"&gt;
+          &lt;div className="row g-0"&gt;
+            &lt;div className="col-md-4"&gt;
+              {movieDetails.Poster !== 'N/A' &amp;&amp; (
+                &lt;img 
+                  src={movieDetails.Poster} 
+                  className="img-fluid rounded-start movie-poster" 
+                  alt={movieDetails.Title}
+                /&gt;
+              )}
+            &lt;/div&gt;
+            &lt;div className="col-md-8"&gt;
+              &lt;div className="card-body"&gt;
+                &lt;h2 className="card-title mb-3"&gt;{movieDetails.Title}&lt;/h2&gt;
+
+                &lt;div className="mb-3"&gt;
+                  &lt;span className="badge bg-primary me-2"&gt;{movieDetails.Year}&lt;/span&gt;
+                  &lt;span className="badge bg-secondary me-2"&gt;{movieDetails.Rated}&lt;/span&gt;
+                  &lt;span className="badge bg-info"&gt;{movieDetails.Runtime}&lt;/span&gt;
+                &lt;/div&gt;
+
+                &lt;p className="card-text"&gt;
+                  &lt;strong&gt;Género:&lt;/strong&gt; {movieDetails.Genre}
+                &lt;/p&gt;
+                &lt;p className="card-text"&gt;
+                  &lt;strong&gt;Director:&lt;/strong&gt; {movieDetails.Director}
+                &lt;/p&gt;
+                &lt;p className="card-text"&gt;
+                  &lt;strong&gt;Rating IMDB:&lt;/strong&gt; 
+                  &lt;span className="badge bg-warning text-dark ms-2"&gt;
+                    ⭐ {movieDetails.imdbRating}
+                  &lt;/span&gt;
+                &lt;/p&gt;
+                &lt;p className="card-text mt-3"&gt;
+                  &lt;strong&gt;Sinopsis:&lt;/strong&gt;&lt;br /&gt;
+                  {movieDetails.Plot}
+                &lt;/p&gt;
+
+                &lt;button 
+                  className="btn btn-outline-secondary mt-3"
+                  onClick={() =&gt; setSelectedMovieId(null)}
+                &gt;
+                  ← Volver a resultados
+                &lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+   </div>
+   <p>
+    );
+}
+   </p>
+   <p>
+    export default App;
+```
+   </p>
+   <hr/>
+  </div>
+  <div class="chapter-container">
+   <h2 id="resumen-del-flujo-de-estados-interdependientes">
+    Resumen del flujo de estados interdependientes
+   </h2>
+   <p>
+    <strong>
+     Speech final:
+    </strong>
+    "Perfecto. Ahora analicemos el flujo de estados en esta aplicación:
+   </p>
+   <p>
+    <strong>
+     Cadena de dependencias:
+    </strong>
+   </p>
+   <ol>
+    <li>
+     <p>
+      <strong>
+       searchQuery → searchTrigger
+      </strong>
+      : El usuario escribe y envía el formulario, esto incrementa searchTrigger
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       searchTrigger → movies
+      </strong>
+      : El primer useEffect se ejecuta cuando searchTrigger cambia, realizando la búsqueda y actualizando el array de movies
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       movies → selectedMovieId
+      </strong>
+      : El usuario hace clic en una película, actualizando selectedMovieId con el ID de esa película
+     </p>
+    </li>
+    <li>
+     <p>
+      <strong>
+       selectedMovieId → movieDetails
+      </strong>
+      : El segundo useEffect detecta el cambio en selectedMovieId y obtiene los detalles completos de esa película
+     </p>
+    </li>
+   </ol>
+   <p>
+    <strong>
+     Puntos clave de la interdependencia:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <strong>
+      Separación de responsabilidades
+     </strong>
+     : Dos useEffect separados con dependencias distintas
+    </li>
+    <li>
+     <strong>
+      Control de flujo
+     </strong>
+     : El segundo useEffect tiene un guard clause
+     <code>
+      if (!selectedMovieId)
+     </code>
+     para evitar ejecuciones innecesarias
+    </li>
+    <li>
+     <strong>
+      Estados de carga independientes
+     </strong>
+     :
+     <code>
+      loadingSearch
+     </code>
+     y
+     <code>
+      loadingDetails
+     </code>
+     permiten mostrar feedback específico al usuario
+    </li>
+    <li>
+     <strong>
+      Reseteo de estados
+     </strong>
+     : Cuando se hace una nueva búsqueda, limpiamos selectedMovieId y movieDetails para evitar mostrar información obsoleta
+    </li>
+   </ul>
+   <p>
+    <strong>
+     Clases de Bootstrap utilizadas:
+    </strong>
+   </p>
+   <ul>
+    <li>
+     <code>
+      container
+     </code>
+     ,
+     <code>
+      row
+     </code>
+     ,
+     <code>
+      col-*
+     </code>
+     : Sistema de grid
+    </li>
+    <li>
+     <code>
+      card
+     </code>
+     ,
+     <code>
+      card-body
+     </code>
+     ,
+     <code>
+      card-title
+     </code>
+     ,
+     <code>
+      card-text
+     </code>
+     : Componentes de tarjetas
+    </li>
+    <li>
+     <code>
+      input-group
+     </code>
+     ,
+     <code>
+      form-control
+     </code>
+     : Formularios
+    </li>
+    <li>
+     <code>
+      btn
+     </code>
+     ,
+     <code>
+      btn-primary
+     </code>
+     ,
+     <code>
+      btn-outline-*
+     </code>
+     : Botones
+    </li>
+    <li>
+     <code>
+      badge
+     </code>
+     : Etiquetas informativas
+    </li>
+    <li>
+     <code>
+      spinner-border
+     </code>
+     : Indicadores de carga
+    </li>
+    <li>
+     <code>
+      alert
+     </code>
+     : Mensajes de error
+    </li>
+    <li>
+     Utilidades:
+     <code>
+      mb-*
+     </code>
+     ,
+     <code>
+      mt-*
+     </code>
+     ,
+     <code>
+      me-*
+     </code>
+     ,
+     <code>
+      text-center
+     </code>
+     ,
+     <code>
+      g-*
+     </code>
+    </li>
+   </ul>
+   <p>
+    Este patrón de estados interdependientes es fundamental en React y se puede aplicar a muchos escenarios: filtros que afectan listas, categorías que determinan productos, ubicaciones que determinan el clima, etc."
+   </p>
+  </div>
+  <script type="module">
+   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose",
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+  </script>
+  <textarea id="css-editor" style="display:none;">pre {line-height: 125%;}
+
+td.linenos .normal {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+span.linenos {color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;}
+
+td.linenos .special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+span.linenos.special {color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px;}
+
+.highlight .hll {background-color: #ffffcc;}
+
+.highlight {background: #f8f8f8; padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight .c {color: #9a8052 !important; font-style: italic;}
+
+/* Comment */
+.highlight .err {border: 1px solid #F00;}
+
+/* Error */
+.highlight .k {color: #008000; font-weight: bold;}
+
+/* Keyword */
+.highlight .o {color: #666;}
+
+/* Operator */
+.highlight .ch {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Hashbang */
+.highlight .cm {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Multiline */
+.highlight .cp {color: #9C6500;}
+
+/* Comment.Preproc */
+.highlight .cpf {color: #3D7B7B; font-style: italic;}
+
+/* Comment.PreprocFile */
+.highlight .c1 {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Single */
+.highlight .cs {color: #3D7B7B; font-style: italic;}
+
+/* Comment.Special */
+.highlight .gd {color: #A00000;}
+
+/* Generic.Deleted */
+.highlight .ge {font-style: italic;}
+
+/* Generic.Emph */
+.highlight .ges {font-weight: bold; font-style: italic;}
+
+/* Generic.EmphStrong */
+.highlight .gr {color: #E40000;}
+
+/* Generic.Error */
+.highlight .gh {color: #000080; font-weight: bold;}
+
+/* Generic.Heading */
+.highlight .gi {color: #008400;}
+
+/* Generic.Inserted */
+.highlight .go {color: #717171;}
+
+/* Generic.Output */
+.highlight .gp {color: #000080; font-weight: bold;}
+
+/* Generic.Prompt */
+.highlight .gs {font-weight: bold;}
+
+/* Generic.Strong */
+.highlight .gu {color: #800080; font-weight: bold;}
+
+/* Generic.Subheading */
+.highlight .gt {color: #04D;}
+
+/* Generic.Traceback */
+.highlight .kc {color: #008000; font-weight: bold;}
+
+/* Keyword.Constant */
+.highlight .kd {color: #008000; font-weight: bold;}
+
+/* Keyword.Declaration */
+.highlight .kn {color: #008000; font-weight: bold;}
+
+/* Keyword.Namespace */
+.highlight .kp {color: #008000;}
+
+/* Keyword.Pseudo */
+.highlight .kr {color: #008000; font-weight: bold;}
+
+/* Keyword.Reserved */
+.highlight .kt {color: #B00040;}
+
+/* Keyword.Type */
+.highlight .m {color: #666;}
+
+/* Literal.Number */
+.highlight .s {color: #BA2121;}
+
+/* Literal.String */
+.highlight .na {color: #687822;}
+
+/* Name.Attribute */
+.highlight .nb {color: #008000;}
+
+/* Name.Builtin */
+.highlight .nc {color: #00F; font-weight: bold;}
+
+/* Name.Class */
+.highlight .no {color: #800;}
+
+/* Name.Constant */
+.highlight .nd {color: #A2F;}
+
+/* Name.Decorator */
+.highlight .ni {color: #717171; font-weight: bold;}
+
+/* Name.Entity */
+.highlight .ne {color: #CB3F38; font-weight: bold;}
+
+/* Name.Exception */
+.highlight .nf {color: #00F;}
+
+/* Name.Function */
+.highlight .nl {color: #767600;}
+
+/* Name.Label */
+.highlight .nn {color: #00F; font-weight: bold;}
+
+/* Name.Namespace */
+.highlight .nt {color: #008000; font-weight: bold;}
+
+/* Name.Tag */
+.highlight .nv {color: #19177C;}
+
+/* Name.Variable */
+.highlight .ow {color: #A2F; font-weight: bold;}
+
+/* Operator.Word */
+.highlight .w {color: #BBB;}
+
+/* Text.Whitespace */
+.highlight .mb {color: #666;}
+
+/* Literal.Number.Bin */
+.highlight .mf {color: #666;}
+
+/* Literal.Number.Float */
+.highlight .mh {color: #666;}
+
+/* Literal.Number.Hex */
+.highlight .mi {color: #666;}
+
+/* Literal.Number.Integer */
+.highlight .mo {color: #666;}
+
+/* Literal.Number.Oct */
+.highlight .sa {color: #BA2121;}
+
+/* Literal.String.Affix */
+.highlight .sb {color: #BA2121;}
+
+/* Literal.String.Backtick */
+.highlight .sc {color: #BA2121;}
+
+/* Literal.String.Char */
+.highlight .dl {color: #BA2121;}
+
+/* Literal.String.Delimiter */
+.highlight .sd {color: #BA2121; font-style: italic;}
+
+/* Literal.String.Doc */
+.highlight .s2 {color: #BA2121;}
+
+/* Literal.String.Double */
+.highlight .se {color: #AA5D1F; font-weight: bold;}
+
+/* Literal.String.Escape */
+.highlight .sh {color: #BA2121;}
+
+/* Literal.String.Heredoc */
+.highlight .si {color: #A45A77; font-weight: bold;}
+
+/* Literal.String.Interpol */
+.highlight .sx {color: #008000;}
+
+/* Literal.String.Other */
+.highlight .sr {color: #A45A77;}
+
+/* Literal.String.Regex */
+.highlight .s1 {color: #BA2121;}
+
+/* Literal.String.Single */
+.highlight .ss {color: #19177C;}
+
+/* Literal.String.Symbol */
+.highlight .bp {color: #008000;}
+
+/* Name.Builtin.Pseudo */
+.highlight .fm {color: #00F;}
+
+/* Name.Function.Magic */
+.highlight .vc {color: #19177C;}
+
+/* Name.Variable.Class */
+.highlight .vg {color: #19177C;}
+
+/* Name.Variable.Global */
+.highlight .vi {color: #19177C;}
+
+/* Name.Variable.Instance */
+.highlight .vm {color: #19177C;}
+
+/* Name.Variable.Magic */
+.highlight .il {color: #666;}
+
+body {font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px;}
+
+#main-title-block {background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center;}
+
+pre:not(.highlight pre) {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0;}
+
+code {font-family: "Courier New", Courier, monospace;}
+
+.highlight pre {background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0;}
+
+.highlight .c1 {color: #9a8052 !important; font-style: italic;}
+
+.highlight .cm {color: #9a8052 !important; font-style: italic;}
+
+.highlight .k {color: #8250df !important; font-weight: normal;}
+
+.highlight .kd {color: #8250df !important; font-weight: normal;}
+
+.highlight .kn {color: #8250df !important; font-weight: normal;}
+
+.highlight .s {color: #327d41 !important;}
+
+.highlight .s1 {color: #327d41 !important;}
+
+.highlight .s2 {color: #327d41 !important;}
+
+.highlight .sb {color: #327d41 !important;}
+
+.highlight .si {color: #327d41 !important;}
+
+.highlight .m {color: #606060 !important;}
+
+.highlight .mi {color: #606060 !important;}
+
+.highlight .mf {color: #606060 !important;}
+
+.highlight .o {color: #666666 !important; font-weight: normal;}
+
+.highlight .ow {color: #666666 !important; font-weight: normal;}
+
+.highlight .kc {color: #9a5b13 !important;}
+
+.highlight .no {color: #9a5b13 !important;}
+
+.highlight .nf {color: #606060 !important; font-weight: normal;}
+
+.highlight .nb {color: #606060 !important; font-weight: normal;}
+
+.highlight .nx {color: #606060 !important; font-weight: normal;}
+
+.highlight .p {color: #666666 !important; font-weight: normal;}
+
+.language-jsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-jsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-jsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-jsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-react .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-react .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-react .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-react .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-react .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .k {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kd {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kr {color: #af00db !important; font-weight: normal; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nx {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .nt {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .nc {color: #116329 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .o {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .p {color: #666666 !important; background: none !important; border: none !important; box-shadow: none !important; outline: none !important;}
+
+.language-tsx .highlight .na {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s1 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .s2 {color: #0a3069 !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .c1 {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .cm {color: #656d76 !important; font-style: italic; background: none !important; border: none !important;}
+
+.language-tsx .highlight .m {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mi {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .mf {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-tsx .highlight .kt {color: #0969da !important; background: none !important; border: none !important;}
+
+.language-javascript .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.language-js .highlight .err {color: #116329 !important; background: none !important; border: none !important;}
+
+.highlight span {background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important;}
+
+.svg-container {margin: 15px 0; text-align: center; padding: 10px;}
+
+.svg-container svg {max-width: 100%; height: auto;}
+
+.mermaid {margin: 15px 0; text-align: center;}
+
+.mermaid svg {max-width: 100%; height: auto;}
+
+.empty-code-block {background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+.highlight-error {background-color: #fef6e4; color: #000080; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+
+img {max-width: 100%; height: auto;}
+
+table {border-collapse: collapse; width: 100%;}
+
+th {border: 1px solid #ddd; padding: 8px; background-color: #f2f2f2;}
+
+td {border: 1px solid #ddd; padding: 8px;}
+
+.chapter-container {background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.chapter-container h2 {margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444;}
+
+/* Estilos para el contenedor colapsable */
+.collapsible-container {position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0;}
+
+.collapsible-container pre {margin: 0; line-height: 1.4;}
+
+.collapsible-container .toggle-button {position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .toggle-button:hover {background: rgba(255,255,255,1);}
+
+/* Estilos para el botón de copiar */
+.collapsible-container .copy-button {position: absolute; top: 8px; width: 24px; display: flex; /* Usamos flexbox para centrar el icono/texto */
+  align-items: center; justify-content: center; right: 48px; /* A 40 px a la izquierda del botón de colapsar */
+  background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+
+.collapsible-container .copy-button:hover {background: rgba(255,255,255,1);}
+
+.collapsible-container .fade-overlay {position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(255,249,229,0), 
+    rgba(255,249,229,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+
+.collapsible-container .ellipsis {position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6;}
+
+.collapsible-container.expanded .fade-overlay {display: none;}
+
+.collapsible-container.expanded .ellipsis {display: none;}
+
+/* Estilos para la tabla de contenidos */
+
+/* Contenedor principal */
+#table-of-contents {background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff;}
+
+/* Título de la tabla de contenidos */
+#contents-header {text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px;}
+
+/* Listas */
+ul.toc {list-style-type: none; padding-left: 20px; margin: 0;}
+
+/* Elementos de la lista */
+li.toc {margin: 10px 0; line-height: 1.5; color: #585b9e;}
+
+/* Enlaces */
+a.toc {text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block;}
+
+/* Efecto hover en los enlaces */
+a.toc:hover {color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none;}
+
+/* Diferentes niveles de indentación */
+li.toc li.toc {margin-left: 15px;}
+
+li.toc li.toc li.toc {margin-left: 25px;}
+
+/* Hacer que los enlaces de primer nivel tengan un poco más de peso */
+ul.toc &gt; li.toc &gt; a.toc {font-weight: 500;}
+
+/* Línea decorativa sobre la tabla de contenidos */
+#table-of-contents:before {content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px;}</textarea>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+        
+        // Aplicar estilo con retraso de 100ms para superar posibles hojas de estilo heredadas
+        setTimeout(function() {
+            document.querySelectorAll('.toggle-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+                if (!btn.textContent.trim()) {
+                    btn.textContent = '+';
+                }
+            });
+            document.querySelectorAll('.copy-button').forEach(btn => {
+                btn.style.setProperty('color', 'black', 'important');
+            });
+        }, 1000);
+    }
+});
+  </script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        if (!pre) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        console.log('Debug:', {
+          maxLines,
+          lineHeight,
+          fullHeight,
+          collapsedHeight,
+          shouldCollapse: fullHeight > collapsedHeight + 10
+        });
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});
+  </script>
+ </body>
+</html>
