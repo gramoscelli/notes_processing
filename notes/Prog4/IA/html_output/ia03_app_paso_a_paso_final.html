@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Desarrollo de una app simple con Claude Code, paso a paso</title>
+
+</head>
+<body>
+<div id="main-title-block"><span>Desarrollo de una app simple con Claude Code, paso a paso</span></div>
+<div class="toc" id="table-of-contents">
+<h2 id="contents-header">Tabla de contenidos</h2>
+<ul class="toc">
+<li class="toc"><a class="toc" href="#1-la-app-tareas-con-subtareas-sugeridas">1. La app: "Tareas con subtareas sugeridas"</a></li>
+<li class="toc"><a class="toc" href="#2-el-ciclo-de-trabajo-con-un-agente">2. El ciclo de trabajo con un agente</a></li>
+<li class="toc"><a class="toc" href="#3-paso-0-preparar-el-proyecto">3. Paso 0 — Preparar el proyecto</a></li>
+<li class="toc"><a class="toc" href="#4-paso-1-claudemd-la-memoria-del-proyecto">4. Paso 1 — CLAUDE.md: la memoria del proyecto</a></li>
+<li class="toc"><a class="toc" href="#5-paso-2-el-crud">5. Paso 2 — El CRUD</a></li>
+<li class="toc"><a class="toc" href="#6-paso-3-la-parte-con-ia-adentro-suggest">6. Paso 3 — La parte "con IA adentro": /suggest</a></li>
+<li class="toc"><a class="toc" href="#7-cuanto-costo-cada-cosa">7. Cuánto costó cada cosa</a></li>
+<li class="toc"><a class="toc" href="#8-que-hizo-el-agente-y-que-hicimos-nosotros">8. Qué hizo el agente y qué hicimos nosotros</a></li>
+<li class="toc"><a class="toc" href="#9-buenas-practicas-que-salen-de-este-ejemplo">9. Buenas prácticas que salen de este ejemplo</a></li>
+</ul>
+</div>
+<p>En los dos apuntes anteriores vimos qué es Claude Code, dónde corre, qué modelos usa y cuánto cuesta. Acá lo ponemos a trabajar: vamos a construir <strong>de cero</strong> una API chica en TypeScript + Express, con tests, y al final le agregamos una función que a su vez llama a Claude por API.</p>
+<p>Lo importante no es la app (es deliberadamente simple), sino <strong>el método</strong>: cómo se le pide trabajo a un agente, cómo se revisa lo que hace y dónde sigue siendo indispensable el criterio del desarrollador.</p>
+<div class="chapter-container"><h2 id="1-la-app-tareas-con-subtareas-sugeridas">1. La app: "Tareas con subtareas sugeridas"</h2>
+<p>Una API REST de tareas:</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Ruta</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td><code>/tasks</code></td>
+<td>Lista las tareas</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/tasks</code></td>
+<td>Crea una tarea <code>{ title }</code></td>
+</tr>
+<tr>
+<td><code>PATCH</code></td>
+<td><code>/tasks/:id</code></td>
+<td>Marca <code>done</code> / cambia el título</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td><code>/tasks/:id</code></td>
+<td>Borra una tarea</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td><code>/tasks/:id/suggest</code></td>
+<td><strong>Pide a Claude</strong> 3–5 subtareas para esa tarea</td>
+</tr>
+</tbody>
+</table>
+<p>Las cuatro primeras son CRUD clásico (lo que ya sabemos hacer a mano). La quinta es la parte "con IA adentro": la app misma consume un modelo.</p>
+<div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;"><svg aria-roledescription="flowchart-v2" class="flowchart" data-viewbox="0 0.000003814697265625 726.578125 221.8271026611328" height="221.8271026611328" id="mermaid-svg-0" role="graphics-document document" style="width: 726.578125px; height: 221.8271026611328px; max-width: 100%; background-color: transparent;" viewBox="0 0.000003814697265625 726.578125 221.8271026611328" width="726.578125" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="4.5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="10.5" orient="auto" refx="11.5" refy="7" viewBox="0 0 11.5 14"><path class="arrowMarkerPath" d="M 0 0 L 11.5 7 L 0 14 z" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="11.5" orient="auto" refx="1" refy="7" viewBox="0 0 11.5 14"><polygon class="arrowMarkerPath" points="0,7 11.5,14 11.5,0" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="11" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="12.25" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="-2" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="12" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="17.7" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="-3.5" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M164.031,122.87L171.754,122.87C179.477,122.87,194.922,122.87,209.701,122.87C224.479,122.87,238.591,122.87,245.647,122.87L252.703,122.87" data-edge="true" data-et="edge" data-id="L_U_API_0" data-look="classic" data-points="W3sieCI6MTY0LjAzMTI1LCJ5IjoxMjIuODcwMzI2OTk1ODQ5NjF9LHsieCI6MjEwLjM2NzE4NzUsInkiOjEyMi44NzAzMjY5OTU4NDk2MX0seyJ4IjoyNTYuNzAzMTI1LCJ5IjoxMjIuODcwMzI2OTk1ODQ5NjF9XQ==" id="my-svg-L_U_API_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M430.295,95.87L445.792,89.711C461.288,83.551,492.281,71.232,516.808,65.073C541.336,58.914,559.398,58.914,568.43,58.914L577.461,58.914" data-edge="true" data-et="edge" data-id="L_API_M_0" data-look="classic" data-points="W3sieCI6NDMwLjI5NTM4OTA4MzE1NTMsInkiOjk1Ljg3MDMyNjk5NTg0OTYxfSx7IngiOjUyMy4yNzM0Mzc1LCJ5Ijo1OC45MTM1NTEzMzA1NjY0MDZ9LHsieCI6NTgxLjQ2MDkzNzUsInkiOjU4LjkxMzU1MTMzMDU2NjQwNn1d" id="my-svg-L_API_M_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M430.295,149.87L445.792,156.03C461.288,162.189,492.281,174.508,516.317,180.668C540.354,186.827,557.435,186.827,565.975,186.827L574.516,186.827" data-edge="true" data-et="edge" data-id="L_API_C_0" data-look="classic" data-points="W3sieCI6NDMwLjI5NTM4OTA4MzE1NTMsInkiOjE0OS44NzAzMjY5OTU4NDk2fSx7IngiOjUyMy4yNzM0Mzc1LCJ5IjoxODYuODI3MTAyNjYxMTMyOH0seyJ4Ijo1NzguNTE1NjI1LCJ5IjoxODYuODI3MTAyNjYxMTMyOH1d" id="my-svg-L_API_C_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path></g><g class="edgeLabels"><g class="edgeLabel" transform="translate(210.3671875, 122.87032699584961)"><g class="label" data-id="L_U_API_0" transform="translate(-21.3359375, -12)"><foreignobject height="24" style="overflow: visible;" width="42.671875"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>REST</p></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_API_M_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(523.2734375, 186.8271026611328)"><g class="label" data-id="L_API_C_0" transform="translate(-30.2421875, -12)"><foreignobject height="24" style="overflow: visible;" width="60.484375"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>/suggest</p></span></div></foreignobject></g></g></g><g class="nodes"><g class="node default" data-look="classic" id="my-svg-flowchart-U-0" transform="translate(86.015625, 122.87032699584961)"><rect class="basic label-container" height="54" style="" width="156.03125" x="-78.015625" y="-27"></rect><g class="label" style="" transform="translate(-48.015625, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="96.03125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Cliente HTTP</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-API-1" transform="translate(362.3671875, 122.87032699584961)"><rect class="basic label-container" height="54" style="" width="211.328125" x="-105.6640625" y="-27"></rect><g class="label" style="" transform="translate(-75.6640625, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="151.328125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Express + TypeScript</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-M-3" transform="translate(648.546875, 58.913551330566406)"><path class="basic label-container outer-path" d="M0,12.942364502321094 a67.0859375,12.942364502321094 0,0,0 134.171875,0 a67.0859375,12.942364502321094 0,0,0 -134.171875,0 l0,75.9423645023211 a67.0859375,12.942364502321094 0,0,0 134.171875,0 l0,-75.9423645023211" style="" transform="translate(-67.0859375, -50.91354675348164)"></path><g class="label" style="" transform="translate(-59.5859375, -14)"><rect></rect><foreignobject height="48" style="overflow: visible;" width="119.171875"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Almacenamiento<br/>en memoria</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-C-5" transform="translate(648.546875, 186.8271026611328)"><rect class="basic label-container" height="54" style="" width="140.0625" x="-70.03125" y="-27"></rect><g class="label" style="" transform="translate(-40.03125, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="80.0625"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Claude API</p></span></div></foreignobject></g></g></g></g></g><defs><filter height="130%" id="my-svg-drop-shadow" width="130%"><fedropshadow dx="4" dy="4" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs><defs><filter height="150%" id="my-svg-drop-shadow-small" width="150%"><fedropshadow dx="2" dy="2" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs></svg></div>
+</div><div class="chapter-container"><h2 id="2-el-ciclo-de-trabajo-con-un-agente">2. El ciclo de trabajo con un agente</h2>
+<p>Antes de tocar el teclado, el esquema mental. Con un agente <strong>no se escribe "todo de una"</strong>: se itera en ciclos cortos, y cada ciclo termina con algo verificable.</p>
+<div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;"><svg aria-roledescription="flowchart-v2" class="flowchart" data-viewbox="0 0 537.0339965820312 638" height="638" id="mermaid-svg-1" role="graphics-document document" style="width: 537.0339965820312px; height: 638px; max-width: 100%; background-color: transparent;" viewBox="0 0 537.0339965820312 638" width="537.0339965820312" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointEnd" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointStart" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="4.5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="10.5" orient="auto" refx="11.5" refy="7" viewBox="0 0 11.5 14"><path class="arrowMarkerPath" d="M 0 0 L 11.5 7 L 0 14 z" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="11.5" orient="auto" refx="1" refy="7" viewBox="0 0 11.5 14"><polygon class="arrowMarkerPath" points="0,7 11.5,14 11.5,0" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="11" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="12.25" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="-2" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="12" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossEnd-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="17.7" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossStart-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="-3.5" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M348.477,62L336.22,66.167C323.963,70.333,299.448,78.667,287.19,86.333C274.933,94,274.933,101,274.933,104.5L274.933,108" data-edge="true" data-et="edge" data-id="L_A_B_0" data-look="classic" data-points="W3sieCI6MzQ4LjQ3NzM1ODc3NDc4MzUsInkiOjYyfSx7IngiOjI3NC45MzI4MTI1MDA3NDUwNiwieSI6ODd9LHsieCI6Mjc0LjkzMjgxMjUwMDc0NTA2LCJ5IjoxMTJ9XQ==" id="my-svg-L_A_B_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M203.833,166L192.861,170.167C181.889,174.333,159.944,182.667,148.972,190.333C138,198,138,205,138,208.5L138,212" data-edge="true" data-et="edge" data-id="L_B_C_0" data-look="classic" data-points="W3sieCI6MjAzLjgzMzA4MjkzMzA1MDUsInkiOjE2Nn0seyJ4IjoxMzgsInkiOjE5MX0seyJ4IjoxMzgsInkiOjIxNn1d" id="my-svg-L_B_C_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M130.685,270L129.014,276.167C127.343,282.333,124.002,294.667,123.59,306.35C123.177,318.033,125.695,329.067,126.953,334.584L128.212,340.1" data-edge="true" data-et="edge" data-id="L_C_D_0" data-look="classic" data-points="W3sieCI6MTMwLjY4NDc1MzQxNzk2ODc1LCJ5IjoyNzB9LHsieCI6MTIwLjY2MDE1NjI1LCJ5IjozMDd9LHsieCI6MTI5LjEwMTkyMjI4NjE4NDIyLCJ5IjozNDR9XQ==" id="my-svg-L_C_D_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M165.715,344L170.098,337.833C174.48,331.667,183.245,319.333,182.853,307.509C182.461,295.686,172.913,284.371,168.139,278.714L163.365,273.057" data-edge="true" data-et="edge" data-id="L_D_C_0" data-look="classic" data-points="W3sieCI6MTY1LjcxNTMzNzE3MTI0MzgsInkiOjM0NH0seyJ4IjoxOTIuMDA5Mzc1MDAwMzcyNTMsInkiOjMwN30seyJ4IjoxNjAuNzg1MjA1MDc4MjgyMTYsInkiOjI3MH1d" id="my-svg-L_D_C_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M138,422L138,426.167C138,430.333,138,438.667,148.121,446.759C158.243,454.851,178.486,462.702,188.607,466.628L198.728,470.554" data-edge="true" data-et="edge" data-id="L_D_E_0" data-look="classic" data-points="W3sieCI6MTM4LCJ5Ijo0MjJ9LHsieCI6MTM4LCJ5Ijo0NDd9LHsieCI6MjAyLjQ1NzYzMjIxMTcxNzU3LCJ5Ijo0NzJ9XQ==" id="my-svg-L_D_E_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M352.985,472L365.472,467.833C377.959,463.667,402.932,455.333,415.419,440.5C427.905,425.667,427.905,404.333,427.905,381C427.905,357.667,427.905,332.333,427.905,309C427.905,285.667,427.905,264.333,427.905,245C427.905,225.667,427.905,208.333,427.905,191C427.905,173.667,427.905,156.333,427.905,139C427.905,121.667,427.905,104.333,427.905,92.167C427.905,80,427.905,73,427.905,69.5L427.905,66" data-edge="true" data-et="edge" data-id="L_E_A_0" data-look="classic" data-points="W3sieCI6MzUyLjk4NTQ3MTc1NTM3MzYsInkiOjQ3Mn0seyJ4Ijo0MjcuOTA1NDY4NzUwNzQ1MDYsInkiOjQ0N30seyJ4Ijo0MjcuOTA1NDY4NzUwNzQ1MDYsInkiOjM4M30seyJ4Ijo0MjcuOTA1NDY4NzUwNzQ1MDYsInkiOjMwN30seyJ4Ijo0MjcuOTA1NDY4NzUwNzQ1MDYsInkiOjI0M30seyJ4Ijo0MjcuOTA1NDY4NzUwNzQ1MDYsInkiOjE5MX0seyJ4Ijo0MjcuOTA1NDY4NzUwNzQ1MDYsInkiOjEzOX0seyJ4Ijo0MjcuOTA1NDY4NzUwNzQ1MDYsInkiOjg3fSx7IngiOjQyNy45MDU0Njg3NTA3NDUwNiwieSI6NjJ9XQ==" id="my-svg-L_E_A_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M272.072,526L272.072,530.167C272.072,534.333,272.072,542.667,276.682,550.58C281.293,558.493,290.514,565.985,295.124,569.731L299.735,573.478" data-edge="true" data-et="edge" data-id="L_E_F_0" data-look="classic" data-points="W3sieCI6MjcyLjA3MTg3NTAwMDM3MjUzLCJ5Ijo1MjZ9LHsieCI6MjcyLjA3MTg3NTAwMDM3MjUzLCJ5Ijo1NTF9LHsieCI6MzAyLjgzOTIyNzc2NDc5NTYsInkiOjU3Nn1d" id="my-svg-L_E_F_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M393.623,587.49L416.191,581.409C438.76,575.327,483.897,563.163,506.466,548.415C529.034,533.667,529.034,516.333,529.034,499C529.034,481.667,529.034,464.333,529.034,445C529.034,425.667,529.034,404.333,529.034,381C529.034,357.667,529.034,332.333,529.034,309C529.034,285.667,529.034,264.333,529.034,245C529.034,225.667,529.034,208.333,529.034,191C529.034,173.667,529.034,156.333,529.034,139C529.034,121.667,529.034,104.333,521.524,91.805C514.014,79.276,498.993,71.553,491.482,67.691L483.972,63.829" data-edge="true" data-et="edge" data-id="L_F_A_0" data-look="classic" data-points="W3sieCI6MzkzLjYyMjY1NjI1MDM3MjUzLCJ5Ijo1ODcuNDkwMzM3OTM5MzU3MX0seyJ4Ijo1MjkuMDM0Mzc1MDAwNzQ1MSwieSI6NTUxfSx7IngiOjUyOS4wMzQzNzUwMDA3NDUxLCJ5Ijo0OTl9LHsieCI6NTI5LjAzNDM3NTAwMDc0NTEsInkiOjQ0N30seyJ4Ijo1MjkuMDM0Mzc1MDAwNzQ1MSwieSI6MzgzfSx7IngiOjUyOS4wMzQzNzUwMDA3NDUxLCJ5IjozMDd9LHsieCI6NTI5LjAzNDM3NTAwMDc0NTEsInkiOjI0M30seyJ4Ijo1MjkuMDM0Mzc1MDAwNzQ1MSwieSI6MTkxfSx7IngiOjUyOS4wMzQzNzUwMDA3NDUxLCJ5IjoxMzl9LHsieCI6NTI5LjAzNDM3NTAwMDc0NTEsInkiOjg3fSx7IngiOjQ4MC40MTQ3MDg1MzQzOTg5LCJ5Ijo2Mn1d" id="my-svg-L_F_A_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M255.274,166L252.325,170.05C249.376,174.1,243.479,182.2,252.981,186.25C262.482,190.3,287.383,190.3,297.277,186.789C307.172,183.278,302.059,176.256,299.502,172.745L296.946,169.234" data-edge="true" data-et="edge" data-id="L_B_B_0" data-look="classic" data-points="W3sieCI6MjU1LjI3NDA5NTM5NTQ4MTksInkiOjE2Nn0seyJ4IjoyMzcuNTgxMjUwMDAwNzQ1MDYsInkiOjE5MC4zfSx7IngiOjMxMi4yODQzNzUwMDA3NDUwNiwieSI6MTkwLjN9LHsieCI6Mjk0LjU5MTUyOTYwNjAwODI0LCJ5IjoxNjZ9XQ==" id="my-svg-L_B_B_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(274.93281250074506, 206.3)"><g class="label" data-id="L_B_B_0" transform="translate(-37.3515625, -12)"><foreignobject height="24" style="overflow: visible;" width="74.703125"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>lo corregís</p></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_C_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_D_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(191.03456, 305.84487)"><g class="label" data-id="L_D_C_0" transform="translate(-14.6796875, -12)"><foreignobject height="24" style="overflow: visible;" width="29.359375"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>falla</p></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_D_E_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(427.90546875074506, 243)"><g class="label" data-id="L_E_A_0" transform="translate(-54.265625, -12)"><foreignobject height="24" style="overflow: visible;" width="108.53125"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>no te convence</p></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_E_F_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_F_A_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g></g><g class="nodes"><g class="node default" data-look="classic" id="my-svg-flowchart-A-0" transform="translate(427.90546875074506, 35)"><rect class="basic label-container" height="54" style="" width="192.53125" x="-96.265625" y="-27"></rect><g class="label" style="" transform="translate(-66.265625, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="132.53125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Pedir con contexto</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-B-1" transform="translate(274.93281250074506, 139)"><rect class="basic label-container" height="54" style="" width="171.203125" x="-85.6015625" y="-27"></rect><g class="label" style="" transform="translate(-55.6015625, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="111.203125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Plan del agente</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-C-5" transform="translate(138, 243)"><rect class="basic label-container" height="54" style="" width="172.953125" x="-86.4765625" y="-27"></rect><g class="label" style="" transform="translate(-56.4765625, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="112.953125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Implementación</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-D-7" transform="translate(138, 383)"><rect class="basic label-container" height="78" style="" width="260" x="-130" y="-39"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignobject height="48" style="overflow: visible;" width="200"><div style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Verificación: tests, correr la app</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-E-11" transform="translate(272.07187500037253, 499)"><rect class="basic label-container" height="54" style="" width="185.984375" x="-92.9921875" y="-27"></rect><g class="label" style="" transform="translate(-62.9921875, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="125.984375"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Revisar el diff vos</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-F-15" transform="translate(336.06796875037253, 603)"><rect class="basic label-container" height="54" style="" width="115.109375" x="-57.5546875" y="-27"></rect><g class="label" style="" transform="translate(-27.5546875, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="55.109375"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Commit</p></span></div></foreignobject></g></g><g class="label edgeLabel" id="B---B---1" transform="translate(296.28828125074506, 243)"><rect height="0.1" width="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignobject height="0" style="overflow: visible;" width="0"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"></span></div></foreignobject></g></g><g class="label edgeLabel" id="B---B---2" transform="translate(323.15156250074506, 383)"><rect height="0.1" width="0.1"></rect><g class="label" style="" transform="translate(0, 0)"><rect></rect><foreignobject height="0" style="overflow: visible;" width="0"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 10px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"></span></div></foreignobject></g></g></g></g></g><defs><filter height="130%" id="my-svg-drop-shadow" width="130%"><fedropshadow dx="4" dy="4" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs><defs><filter height="150%" id="my-svg-drop-shadow-small" width="150%"><fedropshadow dx="2" dy="2" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs></svg></div>
+<blockquote>
+<p>La regla de oro: <strong>el agente escribe, vos sos responsable.</strong> Nada entra al repositorio sin que hayas leído el diff.</p>
+</blockquote>
+</div><div class="chapter-container"><h2 id="3-paso-0-preparar-el-proyecto">3. Paso 0 — Preparar el proyecto</h2>
+<div class="highlight language-bash"><pre><span></span>mkdir<span class="w"> </span>tareas-ia<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>tareas-ia
+git<span class="w"> </span>init
+claude
+</pre></div>
+<p>Arrancar con <code>git init</code> <strong>antes</strong> de la primera instrucción no es un detalle: git es tu red de seguridad. Cada paso bueno termina en un commit; si el agente rompe algo, volvés atrás con <code>git diff</code> / <code>git restore</code>.</p>
+<p>Ya dentro de Claude Code, el primer prompt:</p>
+<div class="highlight language-text"><div class="collapsible-container" data-max-lines="6"><pre><span></span>Quiero crear una API REST en TypeScript con Express para gestionar tareas.
+Requisitos:
+- Node 22, TypeScript estricto, ESM.
+- Almacenamiento en memoria (un Map), sin base de datos por ahora.
+- Tests con Vitest y Supertest.
+- Scripts npm: dev, build, test.
+Primero proponé la estructura de carpetas y las dependencias; no escribas código todavía.
+</pre></div></div>
+<p>Fijate en tres cosas del prompt:</p>
+<ol>
+<li><strong>Contexto técnico explícito</strong> (versión, ESM, librerías). Si no lo das, el agente elige por vos, y quizás elija otra cosa.</li>
+<li><strong>Restricción de alcance</strong> ("sin base de datos por ahora"). Evita que "se entusiasme".</li>
+<li><strong>"No escribas código todavía"</strong>. Primero el plan. Para esto también existe el <strong>modo plan</strong> (<code>Shift+Tab</code> hasta ver <em>plan mode</em>), en el que el agente sólo puede leer y proponer.</li>
+</ol>
+<p>Una respuesta típica:</p>
+<div class="highlight language-text"><div class="collapsible-container" data-max-lines="6"><pre><span></span>tareas-ia/
+├── src/
+│   ├── app.ts          ← crea y exporta la app Express (sin listen)
+│   ├── server.ts       ← importa app y hace listen
+│   ├── tasks/
+│   │   ├── store.ts    ← Map&lt;string, Task&gt; + funciones CRUD
+│   │   └── routes.ts   ← router /tasks
+│   └── types.ts
+├── test/
+│   └── tasks.test.ts
+├── package.json
+└── tsconfig.json
+</pre></div></div>
+<p>Separar <code>app.ts</code> de <code>server.ts</code> es una buena decisión (permite testear con Supertest sin abrir un puerto). Si el plan no te gusta, <strong>es el momento barato de decirlo</strong>: corregir un plan cuesta una línea; corregir 300 líneas de código, mucho más.</p>
+</div><div class="chapter-container"><h2 id="4-paso-1-claudemd-la-memoria-del-proyecto">4. Paso 1 — <code>CLAUDE.md</code>: la memoria del proyecto</h2>
+<p>Aceptado el plan, le pedimos que lo implemente. Y enseguida corremos:</p>
+<div class="highlight language-text"><pre><span></span>/init
+</pre></div>
+<p><code>/init</code> analiza el repositorio y genera un <code>CLAUDE.md</code> en la raíz: un archivo Markdown que Claude Code <strong>lee automáticamente al inicio de cada sesión</strong>. Es la forma de no tener que repetir el contexto todos los días. Lo editamos a mano para dejar las reglas que nos importan:</p>
+<div class="highlight language-markdown"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="gh"># CLAUDE.md</span>
+
+<span class="gu">## Comandos</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`npm run dev`</span>   — servidor con recarga
+<span class="k">-</span><span class="w"> </span><span class="sb">`npm test`</span>      — Vitest (correr SIEMPRE antes de dar una tarea por terminada)
+<span class="k">-</span><span class="w"> </span><span class="sb">`npm run build`</span> — tsc
+
+<span class="gu">## Convenciones</span>
+<span class="k">-</span><span class="w"> </span>TypeScript estricto, sin <span class="sb">`any`</span>.
+<span class="k">-</span><span class="w"> </span>Validar el body de cada request; responder 400 con <span class="sb">`{ error }`</span> si es inválido.
+<span class="k">-</span><span class="w"> </span>Cada endpoint nuevo lleva al menos un test feliz y uno de error.
+<span class="k">-</span><span class="w"> </span>No agregar dependencias sin preguntar.
+</pre></div></div>
+<blockquote>
+<p><code>CLAUDE.md</code> va al repositorio (lo comparte todo el equipo). Para preferencias personales existe <code>CLAUDE.local.md</code>, que se agrega al <code>.gitignore</code>.</p>
+</blockquote>
+</div><div class="chapter-container"><h2 id="5-paso-2-el-crud">5. Paso 2 — El CRUD</h2>
+<div class="highlight language-text"><pre><span></span>Implementá el CRUD de /tasks según el plan. Escribí los tests primero,
+mostrame que fallan, y después implementá hasta que pasen.
+</pre></div>
+<p>Pedir <strong>tests primero</strong> tiene un efecto concreto con agentes: les das un criterio objetivo de "terminado". El agente corre <code>npm test</code>, ve rojo, implementa, vuelve a correr, ve verde. Ese bucle lo hace solo; vos mirás.</p>
+<p>Mientras trabaja, Claude Code te va a pedir permiso para acciones sensibles:</p>
+<div class="highlight language-text"><pre><span></span>Claude wants to run: npm install express
+  1. Yes
+  2. Yes, and don't ask again for npm install
+  3. No, and tell Claude what to do differently
+</pre></div>
+<p>Aceptar "no volver a preguntar" para <code>npm test</code> o <code>npm install</code> es razonable; para comandos destructivos, no.</p>
+<p>Un fragmento de lo que produce (<code>src/tasks/routes.ts</code>):</p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Router</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"express"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">createTask</span><span class="p">,</span><span class="w"> </span><span class="nx">listTasks</span><span class="p">,</span><span class="w"> </span><span class="nx">updateTask</span><span class="p">,</span><span class="w"> </span><span class="nx">deleteTask</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"./store.js"</span><span class="p">;</span>
+
+<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">tasksRouter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Router</span><span class="p">();</span>
+
+<span class="nx">tasksRouter</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">_req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">listTasks</span><span class="p">());</span>
+<span class="p">});</span>
+
+<span class="nx">tasksRouter</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">title</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">title</span><span class="w"> </span><span class="o">!==</span><span class="w"> </span><span class="s2">"string"</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">title</span><span class="p">.</span><span class="nx">trim</span><span class="p">()</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">400</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"title es obligatorio"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">201</span><span class="p">).</span><span class="nx">json</span><span class="p">(</span><span class="nx">createTask</span><span class="p">(</span><span class="nx">title</span><span class="p">.</span><span class="nx">trim</span><span class="p">()));</span>
+<span class="p">});</span>
+
+<span class="nx">tasksRouter</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="s2">"/:id"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">updateTask</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">task</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">404</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"no existe"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">(</span><span class="nx">task</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">tasksRouter</span><span class="p">.</span><span class="ow">delete</span><span class="p">(</span><span class="s2">"/:id"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">deleteTask</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">404</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"no existe"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">204</span><span class="p">).</span><span class="nx">end</span><span class="p">();</span>
+<span class="p">});</span>
+</pre></div></div>
+<p>Y un test (<code>test/tasks.test.ts</code>):</p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"supertest"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">describe</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"../src/app.js"</span><span class="p">;</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="s2">"POST /tasks"</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s2">"crea una tarea"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/tasks"</span><span class="p">).</span><span class="nx">send</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s2">"Estudiar"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">201</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">).</span><span class="nx">toMatchObject</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s2">"Estudiar"</span><span class="p">,</span><span class="w"> </span><span class="nx">done</span><span class="o">:</span><span class="w"> </span><span class="kt">false</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="nx">it</span><span class="p">(</span><span class="s2">"rechaza un título vacío"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/tasks"</span><span class="p">).</span><span class="nx">send</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s2">"  "</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">400</span><span class="p">);</span>
+<span class="w">  </span><span class="p">});</span>
+<span class="p">});</span>
+</pre></div></div>
+<h3 id="51-la-revision-aca-trabajas-vos">5.1 La revisión: acá trabajás vos</h3>
+<p>El agente dice "listo, 8 tests pasan". <strong>No es suficiente.</strong> Revisamos el diff (<code>git diff</code>, o el visor de diffs de la extensión de VS Code / app de escritorio) buscando lo que los tests no cubren. En este caso encontramos:</p>
+<div class="highlight language-typescript"><pre><span></span><span class="nx">tasksRouter</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="s2">"/:id"</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">updateTask</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span><span class="w">   </span><span class="c1">// ← req.body sin validar</span>
+</pre></div>
+<p><code>PATCH</code> pasa el body entero al store: alguien puede mandar <code>{ "id": "otro" }</code> y pisar el id, o <code>{ "done": "sí" }</code> con un string. El <code>CLAUDE.md</code> decía "validar el body de cada request", y el agente lo cumplió en <code>POST</code> pero no en <code>PATCH</code>. Se lo señalamos:</p>
+<div class="highlight language-text"><pre><span></span>En PATCH /tasks/:id el body no se valida: se puede pisar el id y `done`
+acepta cualquier tipo. Permití sólo `title` (string no vacío) y `done`
+(boolean), y agregá tests para ambos casos inválidos.
+</pre></div>
+<blockquote>
+<p>Este es el patrón más común con agentes: el código <strong>anda</strong> y los tests <strong>pasan</strong>, pero hay un caso que nadie pidió probar. Los agentes son buenos cumpliendo criterios explícitos; los implícitos siguen siendo tu trabajo.</p>
+</blockquote>
+<p>Con el arreglo y los tests en verde:</p>
+<div class="highlight language-bash"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>-A<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"CRUD de tareas con validación y tests"</span>
+</pre></div>
+<p>(También se le puede pedir a Claude que haga el commit; escribe mensajes de commit razonables. Lo importante es que el diff ya lo leíste.)</p>
+</div><div class="chapter-container"><h2 id="6-paso-3-la-parte-con-ia-adentro-suggest">6. Paso 3 — La parte "con IA adentro": <code>/suggest</code></h2>
+<p>Ahora sí, la app llama a un modelo. Primero, el prompt al agente:</p>
+<div class="highlight language-text"><pre><span></span>Agregá POST /tasks/:id/suggest: usa el SDK oficial @anthropic-ai/sdk para
+pedirle a Claude entre 3 y 5 subtareas concretas para el título de la tarea.
+- La API key sale de la variable de entorno ANTHROPIC_API_KEY (nunca en el código).
+- La respuesta tiene que ser JSON validado: { subtasks: string[] }.
+- Encapsulá la llamada en src/ai/suggest.ts para poder mockearla en los tests.
+- Los tests NO deben llamar a la API real.
+</pre></div>
+<p>El último punto importa: un test que llama a la API real es <strong>lento, cuesta plata y no es determinista</strong>. Se mockea.</p>
+<p>El módulo resultante (<code>src/ai/suggest.ts</code>):</p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nx">Anthropic</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@anthropic-ai/sdk"</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Anthropic</span><span class="p">();</span><span class="w"> </span><span class="c1">// lee ANTHROPIC_API_KEY del entorno</span>
+
+<span class="k">export</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">suggestSubtasks</span><span class="p">(</span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">[]</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">client</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="s2">"claude-opus-5-5"</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">max_tokens</span><span class="o">:</span><span class="w"> </span><span class="kt">1024</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">system</span><span class="o">:</span>
+<span class="w">      </span><span class="s2">"Sos un asistente de productividad. Respondé SOLO con un JSON de la forma "</span><span class="w"> </span><span class="o">+</span>
+<span class="w">      </span><span class="s1">'{"subtasks": ["...", "..."]}, con entre 3 y 5 subtareas breves y accionables, en español.'</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">messages</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w"> </span><span class="nx">content</span><span class="o">:</span><span class="w"> </span><span class="sb">`Tarea: </span><span class="si">${</span><span class="nx">title</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">  </span><span class="p">});</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">stop_reason</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"refusal"</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"El modelo rechazó la solicitud"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">content</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="kr">type</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"text"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">b</span><span class="p">.</span><span class="nx">text</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">""</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">subtasks</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="nx">data</span><span class="p">.</span><span class="nx">subtasks</span><span class="p">.</span><span class="nx">every</span><span class="p">((</span><span class="nx">s</span><span class="o">:</span><span class="w"> </span><span class="kt">unknown</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">s</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">"string"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">"Respuesta del modelo con formato inválido"</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">subtasks</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mf">0</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div></div>
+<p>Puntos a notar, que conectan con el apunte de modelos y costos:</p>
+<ul>
+<li><strong><code>model</code></strong> es un string que elige el modelo (y por lo tanto el precio). Para una tarea tan acotada se podría usar uno más barato; lo medimos más abajo.</li>
+<li><strong><code>max_tokens</code></strong> es un tope de tokens <strong>de salida</strong>: si se alcanza, la respuesta se corta. Para tres a cinco frases, 1024 sobra.</li>
+<li><strong><code>system</code></strong> es el <em>system prompt</em>: instrucciones fijas que no dependen del usuario.</li>
+<li><strong>Nunca confiar en la salida del modelo</strong>: se parsea y se valida como cualquier input externo. (La API también ofrece <em>structured outputs</em>, que garantizan que la respuesta cumpla un JSON Schema; para la clase alcanza con validar a mano.)</li>
+</ul>
+<p>La ruta y su test con mock:</p>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="c1">// src/tasks/routes.ts (agregado)</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">suggestSubtasks</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"../ai/suggest.js"</span><span class="p">;</span>
+
+<span class="nx">tasksRouter</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/:id/suggest"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">task</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getTask</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">task</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">404</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"no existe"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">subtasks</span><span class="o">:</span><span class="w"> </span><span class="kt">await</span><span class="w"> </span><span class="nx">suggestSubtasks</span><span class="p">(</span><span class="nx">task</span><span class="p">.</span><span class="nx">title</span><span class="p">)</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="mf">502</span><span class="p">).</span><span class="nx">json</span><span class="p">({</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="s2">"no se pudieron generar sugerencias"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">});</span>
+</pre></div></div>
+<div class="highlight language-typescript"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="c1">// test/suggest.test.ts</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">vi</span><span class="p">,</span><span class="w"> </span><span class="nx">it</span><span class="p">,</span><span class="w"> </span><span class="nx">expect</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"vitest"</span><span class="p">;</span>
+<span class="nx">vi</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="s2">"../src/ai/suggest.js"</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">({</span>
+<span class="w">  </span><span class="nx">suggestSubtasks</span><span class="o">:</span><span class="w"> </span><span class="kt">vi.fn</span><span class="p">().</span><span class="nx">mockResolvedValue</span><span class="p">([</span><span class="s2">"Leer el apunte"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Hacer un resumen"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Repasar"</span><span class="p">]),</span>
+<span class="p">}));</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"supertest"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"../src/app.js"</span><span class="p">;</span>
+
+<span class="nx">it</span><span class="p">(</span><span class="s2">"devuelve subtareas sugeridas"</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="kt">t</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="s2">"/tasks"</span><span class="p">).</span><span class="nx">send</span><span class="p">({</span><span class="w"> </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="s2">"Preparar el parcial"</span><span class="w"> </span><span class="p">});</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">request</span><span class="p">(</span><span class="nx">app</span><span class="p">).</span><span class="nx">post</span><span class="p">(</span><span class="sb">`/tasks/</span><span class="si">${</span><span class="nx">t</span><span class="p">.</span><span class="nx">id</span><span class="si">}</span><span class="sb">/suggest`</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">status</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mf">200</span><span class="p">);</span>
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">subtasks</span><span class="p">).</span><span class="nx">toHaveLength</span><span class="p">(</span><span class="mf">3</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div></div>
+<p>Prueba manual contra la API real (con la key en el entorno, nunca en el repo):</p>
+<div class="highlight language-bash"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span>...<span class="w">        </span><span class="c1"># o un archivo .env que está en .gitignore</span>
+npm<span class="w"> </span>run<span class="w"> </span>dev
+curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>localhost:3000/tasks<span class="w"> </span>-H<span class="w"> </span><span class="s1">'content-type: application/json'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>-d<span class="w"> </span><span class="s1">'{"title":"Preparar el parcial de Programación IV"}'</span>
+curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>localhost:3000/tasks/&lt;id&gt;/suggest
+</pre></div>
+<div class="highlight language-json"><pre><span></span><span class="p">{</span><span class="w"> </span><span class="nt">"subtasks"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="s2">"Listar los temas que entran en el parcial"</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">"Releer los apuntes de cada unidad"</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">"Rehacer los ejemplos de código de clase"</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">"Armar un resumen de una carilla por tema"</span>
+<span class="p">]</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div><div class="chapter-container"><h2 id="7-cuanto-costo-cada-cosa">7. Cuánto costó cada cosa</h2>
+<p>Dos costos distintos, que conviene no mezclar:</p>
+<p><strong>a) El costo de <em>desarrollar</em> con Claude Code.</strong> Si usás una suscripción (Pro/Max), está incluido en el plan, con límites de uso. Con API key, <code>/usage</code> (alias <code>/cost</code>) muestra el gasto de la sesión; con suscripción, cuánto del cupo llevás usado. Una sesión como la de este apunte (plan + CRUD + tests + revisión + feature IA) mueve típicamente varios cientos de miles de tokens de entrada (el agente relee archivos y salidas de comandos en cada paso, buena parte desde caché) y decenas de miles de salida.</p>
+<p><strong>b) El costo de <em>operar</em> la app</strong>, es decir, cada llamada a <code>/suggest</code>. Esto se calcula con precisión. Una llamada típica:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Tokens</th>
+<th style="text-align: right;">Opus 5.5 ($4 / $20 por MTok)</th>
+<th style="text-align: right;">Haiku 5.5 ($0,10 / $0,50 por MTok)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Entrada (system + título)</td>
+<td style="text-align: right;">~90</td>
+<td style="text-align: right;">$0,00036</td>
+<td style="text-align: right;">$0,000009</td>
+</tr>
+<tr>
+<td>Salida (JSON con 4 subtareas)</td>
+<td style="text-align: right;">~70</td>
+<td style="text-align: right;">$0,00140</td>
+<td style="text-align: right;">$0,000035</td>
+</tr>
+<tr>
+<td><strong>Total por llamada</strong></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>≈ $0,0018</strong></td>
+<td style="text-align: right;"><strong>≈ $0,00004</strong></td>
+</tr>
+<tr>
+<td><strong>10.000 llamadas/mes</strong></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"><strong>≈ $18</strong></td>
+<td style="text-align: right;"><strong>≈ $0,44</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Estos números son un piso. Los dos modelos <strong>razonan antes de responder</strong>: en Opus 5.5 el razonamiento no se puede desactivar, y en Haiku 5.5 está activo por defecto. Esos tokens se cobran como salida. Para una tarea así de simple conviene bajar el esfuerzo (<code>output_config: { effort: "low" }</code>) y mirar <code>response.usage.output_tokens</code> en llamadas reales.</p>
+</blockquote>
+<p>Para <em>esta</em> tarea (generar cuatro frases simples), la diferencia de calidad entre modelos es chica y la de precio es de ~40 veces. Es exactamente el tipo de decisión que se toma <strong>midiendo</strong>: probar los dos modelos con 20–30 títulos reales y comparar. Si Haiku alcanza, se cambia una línea:</p>
+<div class="highlight language-typescript"><pre><span></span><span class="nx">model</span><span class="o">:</span><span class="w"> </span><span class="s2">"claude-haiku-5-5"</span><span class="p">,</span>
+</pre></div>
+<blockquote>
+<p>Los tokens reales de cada llamada vienen en la respuesta (<code>response.usage.input_tokens</code>, <code>response.usage.output_tokens</code>). En una app en producción conviene <strong>loguearlos</strong>: es la única forma de saber cuánto cuesta cada funcionalidad.</p>
+</blockquote>
+</div><div class="chapter-container"><h2 id="8-que-hizo-el-agente-y-que-hicimos-nosotros">8. Qué hizo el agente y qué hicimos nosotros</h2>
+<table>
+<thead>
+<tr>
+<th>Lo hizo Claude Code</th>
+<th>Lo hicimos nosotros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proponer estructura y dependencias</td>
+<td>Aceptar/corregir el plan</td>
+</tr>
+<tr>
+<td>Escribir código y tests</td>
+<td>Definir requisitos y restricciones</td>
+</tr>
+<tr>
+<td>Correr tests y arreglar hasta verde</td>
+<td>Leer el diff y encontrar el <code>PATCH</code> sin validar</td>
+</tr>
+<tr>
+<td>Generar <code>CLAUDE.md</code> inicial</td>
+<td>Escribir las reglas que importan</td>
+</tr>
+<tr>
+<td>Integrar el SDK de Claude</td>
+<td>Decidir que los tests no llamen a la API real</td>
+</tr>
+<tr>
+<td>Escribir mensajes de commit</td>
+<td>Decidir el modelo según costo medido</td>
+</tr>
+</tbody>
+</table>
+<p>La columna de la derecha es corta pero es la que separa una app que "anda en la demo" de una que se puede mantener.</p>
+</div><div class="chapter-container"><h2 id="9-buenas-practicas-que-salen-de-este-ejemplo">9. Buenas prácticas que salen de este ejemplo</h2>
+<ol>
+<li><strong>Git desde el minuto cero</strong>, commit después de cada ciclo verde.</li>
+<li><strong>Plan antes que código</strong> en todo lo que no sea trivial (modo plan o "no escribas código todavía").</li>
+<li><strong>Pedidos chicos y verificables.</strong> "Hacé el CRUD con tests" funciona; "hacé la app completa" produce mucho código difícil de revisar.</li>
+<li><strong>Tests como criterio de terminado.</strong> El agente itera solo contra ellos.</li>
+<li><strong><code>CLAUDE.md</code> corto y concreto</strong>: comandos, convenciones, prohibiciones. No una novela.</li>
+<li><strong><code>/clear</code> entre tareas no relacionadas.</strong> El contexto acumulado cuesta tokens y distrae al modelo.</li>
+<li><strong>Secretos fuera del código y del chat</strong>: variables de entorno, <code>.env</code> en <code>.gitignore</code>.</li>
+<li><strong>Leer el diff siempre.</strong> Especialmente validaciones, manejo de errores, seguridad y lo que <em>no</em> está.</li>
+</ol></div>
+<textarea id="css-editor" style="display:none;">pre { line-height: 125%; }
+td.linenos .normal, span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special, span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc; }
+.highlight { background: #f8f8f8; }
+.highlight .err { border: 1px solid #F00; }
+.highlight .ch { color: #3D7B7B; font-style: italic; }
+.highlight .cp { color: #9C6500; }
+.highlight .cpf, .highlight .cs { color: #3D7B7B; font-style: italic; }
+.highlight .gd { color: #A00000; }
+.highlight .ge { font-style: italic; }
+.highlight .ges { font-weight: bold; font-style: italic; }
+.highlight .gr { color: #E40000; }
+.highlight .gh { color: #000080; font-weight: bold; }
+.highlight .gi { color: #008400; }
+.highlight .go { color: #717171; }
+.highlight .gp { color: #000080; font-weight: bold; }
+.highlight .gs { font-weight: bold; }
+.highlight .gu { color: #800080; font-weight: bold; }
+.highlight .gt { color: #04D; }
+.highlight .kc { font-weight: bold; }
+.highlight .kp { color: #008000; }
+.highlight .kr { color: #008000; font-weight: bold; }
+.highlight .kt { color: #B00040; }
+.highlight .na { color: #687822; }
+.highlight .nc { color: #00F; font-weight: bold; }
+.highlight .nd { color: #A2F; }
+.highlight .ni { color: #717171; font-weight: bold; }
+.highlight .ne { color: #CB3F38; font-weight: bold; }
+.highlight .nl { color: #767600; }
+.highlight .nn { color: #00F; font-weight: bold; }
+.highlight .nt { color: #008000; font-weight: bold; }
+.highlight .nv { color: #19177C; }
+.highlight .w { color: #BBB; }
+.highlight .mb, .highlight .mh, .highlight .mo { color: #666; }
+.highlight .sa, .highlight .sc, .highlight .dl { color: #BA2121; }
+.highlight .sd { color: #BA2121; font-style: italic; }
+.highlight .se { color: #AA5D1F; font-weight: bold; }
+.highlight .sh { color: #BA2121; }
+.highlight .si { font-weight: bold; }
+.highlight .sx { color: #008000; }
+.highlight .sr { color: #A45A77; }
+.highlight .ss { color: #19177C; }
+.highlight .bp { color: #008000; }
+.highlight .fm { color: #00F; }
+.highlight .vc, .highlight .vg, .highlight .vi, .highlight .vm { color: #19177C; }
+.highlight .il { color: #666; }
+body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px; }
+#main-title-block { background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center; }
+pre:not(.highlight pre) { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0; }
+code { font-family: "Courier New", Courier, monospace; }
+.highlight { padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.highlight pre { background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0; }
+.highlight .c, .highlight .c1, .highlight .cm { color: #9a8052 !important; }
+.highlight .c, .highlight .c1, .highlight .cm { font-style: italic; }
+.highlight .k, .highlight .kd, .highlight .kn { color: #8250df !important; }
+.highlight .k, .highlight .kd, .highlight .kn { font-weight: normal; }
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .si { color: #327d41 !important; }
+.highlight .m, .highlight .mi, .highlight .mf { color: #606060 !important; }
+.highlight .o, .highlight .ow { color: #666666 !important; }
+.highlight .o, .highlight .ow { font-weight: normal; }
+.highlight .kc, .highlight .no { color: #9a5b13 !important; }
+.highlight .nf, .highlight .nb, .highlight .nx { color: #606060 !important; }
+.highlight .nf, .highlight .nb, .highlight .nx { font-weight: normal; }
+.highlight .p { color: #666666 !important; font-weight: normal; }
+.highlight.language-jsx .k, .highlight.language-jsx .kd, .highlight.language-jsx .kr, .highlight.language-react .k, .highlight.language-react .kd, .highlight.language-react .kr, .highlight.language-tsx .k, .highlight.language-tsx .kd, .highlight.language-tsx .kr { color: #af00db !important; }
+.highlight.language-jsx .k, .highlight.language-jsx .kd, .highlight.language-jsx .kr, .highlight.language-react .k, .highlight.language-react .kd, .highlight.language-react .kr, .highlight.language-tsx .k, .highlight.language-tsx .kd, .highlight.language-tsx .kr { font-weight: normal; }
+.highlight.language-jsx .nx, .highlight.language-jsx .nf, .highlight.language-react .nx, .highlight.language-react .nf, .highlight.language-tsx .nx, .highlight.language-tsx .nf { color: #0969da !important; }
+.highlight.language-jsx .nt, .highlight.language-jsx .nc, .highlight.language-react .nt, .highlight.language-react .nc, .highlight.language-tsx .nt, .highlight.language-tsx .nc { color: #116329 !important; }
+.highlight.language-jsx .o, .highlight.language-jsx .p, .highlight.language-react .o, .highlight.language-react .p, .highlight.language-tsx .o, .highlight.language-tsx .p { color: #666666 !important; }
+.highlight.language-jsx .na, .highlight.language-react .na, .highlight.language-tsx .na { color: #0969da !important; }
+.highlight.language-jsx .s, .highlight.language-jsx .s1, .highlight.language-jsx .s2, .highlight.language-react .s, .highlight.language-react .s1, .highlight.language-react .s2, .highlight.language-tsx .s, .highlight.language-tsx .s1, .highlight.language-tsx .s2 { color: #0a3069 !important; }
+.highlight.language-jsx .c, .highlight.language-jsx .c1, .highlight.language-jsx .cm, .highlight.language-react .c, .highlight.language-react .c1, .highlight.language-react .cm, .highlight.language-tsx .c, .highlight.language-tsx .c1, .highlight.language-tsx .cm { color: #656d76 !important; }
+.highlight.language-jsx .c, .highlight.language-jsx .c1, .highlight.language-jsx .cm, .highlight.language-react .c, .highlight.language-react .c1, .highlight.language-react .cm, .highlight.language-tsx .c, .highlight.language-tsx .c1, .highlight.language-tsx .cm { font-style: italic; }
+.highlight.language-jsx .m, .highlight.language-jsx .mi, .highlight.language-jsx .mf, .highlight.language-react .m, .highlight.language-react .mi, .highlight.language-react .mf, .highlight.language-tsx .m, .highlight.language-tsx .mi, .highlight.language-tsx .mf, .highlight.language-tsx .kt { color: #0969da !important; }
+.highlight.language-javascript .err, .highlight.language-js .err { color: #116329 !important; }
+.highlight span { background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important; }
+.svg-container { margin: 15px 0; text-align: center; padding: 10px; }
+.svg-container svg, .mermaid svg { max-width: 100%; height: auto; }
+.empty-code-block { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+img { max-width: 100%; height: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; }
+th, td { padding: 8px; }
+th { background-color: #f2f2f2; }
+.chapter-container { background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.chapter-container h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444; }
+.collapsible-container { position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0; }
+.collapsible-container pre { margin: 0; line-height: 1.4; }
+.collapsible-container .toggle-button { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.collapsible-container .toggle-button:hover { background: rgba(255,255,255,1); }
+.collapsible-container .copy-button { position: absolute; top: 8px; width: 24px; display: flex; align-items: center; justify-content: center; right: 48px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.collapsible-container .copy-button:hover { background: rgba(255,255,255,1); }
+.collapsible-container .fade-overlay { position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(254,246,228,0),
+    rgba(254,246,228,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+.collapsible-container .ellipsis { position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6; }
+.collapsible-container.expanded .fade-overlay, .collapsible-container.expanded .ellipsis { display: none; }
+#table-of-contents { background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff; }
+#contents-header { text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px; }
+ul.toc { list-style-type: none; padding-left: 20px; margin: 0; }
+li.toc { margin: 10px 0; line-height: 1.5; color: #585b9e; }
+a.toc { text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block; }
+a.toc:hover { color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none; }
+li.toc li.toc { margin-left: 15px; }
+li.toc li.toc li.toc { margin-left: 25px; }
+ul.toc &gt; li.toc &gt; a.toc { font-weight: 500; }
+#table-of-contents:before { content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px; }
+#mermaid-svg-0 { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333; }
+@keyframes edge-animation-frame {from{stroke-dashoffset:0;}}
+@keyframes dash {to{stroke-dashoffset:0;}}
+#mermaid-svg-0 .edge-animation-slow { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round; }
+#mermaid-svg-0 .edge-animation-fast { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round; }
+#mermaid-svg-0 .error-icon { fill: #552222; }
+#mermaid-svg-0 .error-text { fill: #552222; stroke: #552222; }
+#mermaid-svg-0 .edge-thickness-normal { stroke-width: 1px; }
+#mermaid-svg-0 .edge-thickness-thick { stroke-width: 3.5px; }
+#mermaid-svg-0 .edge-pattern-solid { stroke-dasharray: 0; }
+#mermaid-svg-0 .edge-thickness-invisible { stroke-width: 0; fill: none; }
+#mermaid-svg-0 .edge-pattern-dashed { stroke-dasharray: 3; }
+#mermaid-svg-0 .edge-pattern-dotted { stroke-dasharray: 2; }
+#mermaid-svg-0 .marker { fill: #333333; stroke: #333333; }
+#mermaid-svg-0 .marker.cross { stroke: #333333; }
+#mermaid-svg-0 svg { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; }
+#mermaid-svg-0 p { margin: 0; }
+#mermaid-svg-0 .label { font-family: "trebuchet ms",verdana,arial,sans-serif; color: #333; }
+#mermaid-svg-0 .cluster-label text { fill: #333; }
+#mermaid-svg-0 .cluster-label span { color: #333; }
+#mermaid-svg-0 .cluster-label span p { background-color: transparent; }
+#mermaid-svg-0 .label text, #mermaid-svg-0 span { fill: #333; }
+#mermaid-svg-0 .label text, #mermaid-svg-0 span { color: #333; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { fill: #ECECFF; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { stroke: #9370DB; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { stroke-width: 1px; }
+#mermaid-svg-0 .rough-node .label text, #mermaid-svg-0 .node .label text, #mermaid-svg-0 .image-shape .label, #mermaid-svg-0 .icon-shape .label { text-anchor: middle; }
+#mermaid-svg-0 .node .katex path { fill: #000; stroke: #000; stroke-width: 1px; }
+#mermaid-svg-0 .rough-node .label, #mermaid-svg-0 .node .label, #mermaid-svg-0 .image-shape .label, #mermaid-svg-0 .icon-shape .label { text-align: center; }
+#mermaid-svg-0 .node.clickable { cursor: pointer; }
+#mermaid-svg-0 .root .anchor path { fill: #333333!important; stroke-width: 0; stroke: #333333; }
+#mermaid-svg-0 .arrowheadPath { fill: #333333; }
+#mermaid-svg-0 .edgePaths .path { stroke: #333333; stroke-width: 1px; }
+#mermaid-svg-0 .flowchart-link { stroke: #333333; fill: none; }
+#mermaid-svg-0 .edgeLabel { background-color: rgba(232,232,232, 0.8); text-align: center; }
+#mermaid-svg-0 .edgeLabel p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .edgeLabel rect { opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .labelBkg { background-color: rgba(232, 232, 232, 0.5); }
+#mermaid-svg-0 .cluster rect { fill: #ffffde; stroke: #aaaa33; stroke-width: 1px; }
+#mermaid-svg-0 .cluster text { fill: #333; }
+#mermaid-svg-0 .cluster span { color: #333; }
+#mermaid-svg-0 .node .collapsed-indicator { fill: #aaaa33; stroke: none; opacity: 0.6; }
+#mermaid-svg-0 .node .collapsed-separator { stroke: #aaaa33; stroke-width: 0.75px; }
+#mermaid-svg-0 div.mermaidTooltip { position: absolute; text-align: center; max-width: 200px; padding: 2px; font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 12px; background: hsl(80, 100%, 96.2745098039%); border: 1px solid #aaaa33; border-radius: 2px; pointer-events: none; z-index: 100; }
+#mermaid-svg-0 .flowchartTitleText { text-anchor: middle; font-size: 18px; fill: #333; }
+#mermaid-svg-0 rect.text { fill: none; stroke-width: 0; }
+#mermaid-svg-0 .icon-shape, #mermaid-svg-0 .image-shape { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape, #mermaid-svg-0 .image-shape { text-align: center; }
+#mermaid-svg-0 .icon-shape p, #mermaid-svg-0 .image-shape p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape p, #mermaid-svg-0 .image-shape p { padding: 2px; }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { opacity: 0.5; }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .label-icon { display: inline-block; height: 1em; overflow: visible; vertical-align: -0.125em; }
+#mermaid-svg-0 .node .label-icon path { fill: currentColor; stroke: revert; stroke-width: revert; }
+#mermaid-svg-0 .node .neo-node, #mermaid-svg-0 [data-look="neo"].node rect, #mermaid-svg-0 [data-look="neo"].cluster rect, #mermaid-svg-0 [data-look="neo"].node polygon { stroke: #9370DB; }
+#mermaid-svg-0 [data-look="neo"].node rect, #mermaid-svg-0 [data-look="neo"].cluster rect, #mermaid-svg-0 [data-look="neo"].node polygon { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].swimlane.cluster rect { filter: none; }
+#mermaid-svg-0 [data-look="neo"].node path { stroke: #9370DB; stroke-width: 1px; }
+#mermaid-svg-0 [data-look="neo"].node .outer-path { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].node .neo-line path { stroke: #9370DB; filter: none; }
+#mermaid-svg-0 [data-look="neo"].node circle { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].node circle .state-start { fill: #000000; }
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon { fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon-neo path { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 :root { --mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif; }
+#mermaid-svg-1 { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333; }
+@keyframes edge-animation-frame {from{stroke-dashoffset:0;}}
+@keyframes dash {to{stroke-dashoffset:0;}}
+#mermaid-svg-1 .edge-animation-slow { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round; }
+#mermaid-svg-1 .edge-animation-fast { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round; }
+#mermaid-svg-1 .error-icon { fill: #552222; }
+#mermaid-svg-1 .error-text { fill: #552222; stroke: #552222; }
+#mermaid-svg-1 .edge-thickness-normal { stroke-width: 1px; }
+#mermaid-svg-1 .edge-thickness-thick { stroke-width: 3.5px; }
+#mermaid-svg-1 .edge-pattern-solid { stroke-dasharray: 0; }
+#mermaid-svg-1 .edge-thickness-invisible { stroke-width: 0; fill: none; }
+#mermaid-svg-1 .edge-pattern-dashed { stroke-dasharray: 3; }
+#mermaid-svg-1 .edge-pattern-dotted { stroke-dasharray: 2; }
+#mermaid-svg-1 .marker { fill: #333333; stroke: #333333; }
+#mermaid-svg-1 .marker.cross { stroke: #333333; }
+#mermaid-svg-1 svg { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; }
+#mermaid-svg-1 p { margin: 0; }
+#mermaid-svg-1 .label { font-family: "trebuchet ms",verdana,arial,sans-serif; color: #333; }
+#mermaid-svg-1 .cluster-label text { fill: #333; }
+#mermaid-svg-1 .cluster-label span { color: #333; }
+#mermaid-svg-1 .cluster-label span p { background-color: transparent; }
+#mermaid-svg-1 .label text, #mermaid-svg-1 span { fill: #333; }
+#mermaid-svg-1 .label text, #mermaid-svg-1 span { color: #333; }
+#mermaid-svg-1 .node rect, #mermaid-svg-1 .node circle, #mermaid-svg-1 .node ellipse, #mermaid-svg-1 .node polygon, #mermaid-svg-1 .node path { fill: #ECECFF; }
+#mermaid-svg-1 .node rect, #mermaid-svg-1 .node circle, #mermaid-svg-1 .node ellipse, #mermaid-svg-1 .node polygon, #mermaid-svg-1 .node path { stroke: #9370DB; }
+#mermaid-svg-1 .node rect, #mermaid-svg-1 .node circle, #mermaid-svg-1 .node ellipse, #mermaid-svg-1 .node polygon, #mermaid-svg-1 .node path { stroke-width: 1px; }
+#mermaid-svg-1 .rough-node .label text, #mermaid-svg-1 .node .label text, #mermaid-svg-1 .image-shape .label, #mermaid-svg-1 .icon-shape .label { text-anchor: middle; }
+#mermaid-svg-1 .node .katex path { fill: #000; stroke: #000; stroke-width: 1px; }
+#mermaid-svg-1 .rough-node .label, #mermaid-svg-1 .node .label, #mermaid-svg-1 .image-shape .label, #mermaid-svg-1 .icon-shape .label { text-align: center; }
+#mermaid-svg-1 .node.clickable { cursor: pointer; }
+#mermaid-svg-1 .root .anchor path { fill: #333333!important; stroke-width: 0; stroke: #333333; }
+#mermaid-svg-1 .arrowheadPath { fill: #333333; }
+#mermaid-svg-1 .edgePaths .path { stroke: #333333; stroke-width: 1px; }
+#mermaid-svg-1 .flowchart-link { stroke: #333333; fill: none; }
+#mermaid-svg-1 .edgeLabel { background-color: rgba(232,232,232, 0.8); text-align: center; }
+#mermaid-svg-1 .edgeLabel p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .edgeLabel rect { opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .labelBkg { background-color: rgba(232, 232, 232, 0.5); }
+#mermaid-svg-1 .cluster rect { fill: #ffffde; stroke: #aaaa33; stroke-width: 1px; }
+#mermaid-svg-1 .cluster text { fill: #333; }
+#mermaid-svg-1 .cluster span { color: #333; }
+#mermaid-svg-1 .node .collapsed-indicator { fill: #aaaa33; stroke: none; opacity: 0.6; }
+#mermaid-svg-1 .node .collapsed-separator { stroke: #aaaa33; stroke-width: 0.75px; }
+#mermaid-svg-1 div.mermaidTooltip { position: absolute; text-align: center; max-width: 200px; padding: 2px; font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 12px; background: hsl(80, 100%, 96.2745098039%); border: 1px solid #aaaa33; border-radius: 2px; pointer-events: none; z-index: 100; }
+#mermaid-svg-1 .flowchartTitleText { text-anchor: middle; font-size: 18px; fill: #333; }
+#mermaid-svg-1 rect.text { fill: none; stroke-width: 0; }
+#mermaid-svg-1 .icon-shape, #mermaid-svg-1 .image-shape { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .icon-shape, #mermaid-svg-1 .image-shape { text-align: center; }
+#mermaid-svg-1 .icon-shape p, #mermaid-svg-1 .image-shape p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .icon-shape p, #mermaid-svg-1 .image-shape p { padding: 2px; }
+#mermaid-svg-1 .icon-shape .label rect, #mermaid-svg-1 .image-shape .label rect { opacity: 0.5; }
+#mermaid-svg-1 .icon-shape .label rect, #mermaid-svg-1 .image-shape .label rect { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .icon-shape .label rect, #mermaid-svg-1 .image-shape .label rect { fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .label-icon { display: inline-block; height: 1em; overflow: visible; vertical-align: -0.125em; }
+#mermaid-svg-1 .node .label-icon path { fill: currentColor; stroke: revert; stroke-width: revert; }
+#mermaid-svg-1 .node .neo-node, #mermaid-svg-1 [data-look="neo"].node rect, #mermaid-svg-1 [data-look="neo"].cluster rect, #mermaid-svg-1 [data-look="neo"].node polygon { stroke: #9370DB; }
+#mermaid-svg-1 [data-look="neo"].node rect, #mermaid-svg-1 [data-look="neo"].cluster rect, #mermaid-svg-1 [data-look="neo"].node polygon { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].swimlane.cluster rect { filter: none; }
+#mermaid-svg-1 [data-look="neo"].node path { stroke: #9370DB; stroke-width: 1px; }
+#mermaid-svg-1 [data-look="neo"].node .outer-path { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].node .neo-line path { stroke: #9370DB; filter: none; }
+#mermaid-svg-1 [data-look="neo"].node circle { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].node circle .state-start { fill: #000000; }
+#mermaid-svg-1 [data-look="neo"].icon-shape .icon { fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].icon-shape .icon-neo path { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 :root { --mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif; }</textarea><script>
+document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+    }
+});
+</script><script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('svg[data-viewbox]').forEach(function(svg) {
+        if (!svg.getAttribute('viewBox')) {
+            svg.setAttribute('viewBox', svg.getAttribute('data-viewbox'));
+        }
+    });
+});
+</script><script>document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        // Se inicializa en DOMContentLoaded y de nuevo en load: no duplicar botones
+        if (!pre || container.dataset.collapsibleInit) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.dataset.collapsibleInit = '1';
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        // !important para que no lo pise el color de botones del tema (Moodle)
+        copyBtn.style.setProperty('color', 'black', 'important');
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        btn.style.setProperty('color', 'black', 'important');
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});</script></body>
+</html>

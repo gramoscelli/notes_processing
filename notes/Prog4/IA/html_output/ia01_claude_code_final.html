@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Desarrollar con IA: Claude Code en terminal, escritorio, IDE y web</title>
+
+</head>
+<body>
+<div id="main-title-block"><span>Desarrollar con IA: Claude Code en terminal, escritorio, IDE y web</span></div>
+<div class="toc" id="table-of-contents">
+<h2 id="contents-header">Tabla de contenidos</h2>
+<ul class="toc">
+<li class="toc"><a class="toc" href="#1-de-autocompletar-a-delegar">1. De autocompletar a delegar</a></li>
+<li class="toc"><a class="toc" href="#2-donde-corre-claude-code">2. Dónde corre Claude Code</a></li>
+<li class="toc"><a class="toc" href="#3-como-se-controla-al-agente">3. Cómo se controla al agente</a></li>
+<li class="toc"><a class="toc" href="#4-elegir-modelo-y-esfuerzo-dentro-de-claude-code">4. Elegir modelo y esfuerzo dentro de Claude Code</a></li>
+<li class="toc"><a class="toc" href="#5-riesgos-y-limites">5. Riesgos y límites</a></li>
+</ul>
+</div>
+<div class="chapter-container"><h2 id="1-de-autocompletar-a-delegar">1. De autocompletar a delegar</h2>
+<p>Las herramientas de IA para programar pasaron por tres etapas, y conviene distinguirlas porque cambian <strong>qué hace el desarrollador</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Ejemplo de uso</th>
+<th>Quién decide los pasos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Autocompletado</strong></td>
+<td>Sugiere la línea siguiente mientras escribís</td>
+<td>Vos, línea por línea</td>
+</tr>
+<tr>
+<td><strong>Chat</strong></td>
+<td>Pegás código en una conversación, copiás la respuesta</td>
+<td>Vos, y hacés de "puente" a mano</td>
+</tr>
+<tr>
+<td><strong>Agente</strong></td>
+<td>"Agregá validación a este endpoint y que pasen los tests"</td>
+<td>El agente: lee archivos, edita, corre comandos, itera</td>
+</tr>
+</tbody>
+</table>
+<p>Un <strong>agente de programación</strong> es un modelo de lenguaje conectado a herramientas: leer y escribir archivos, buscar en el código, ejecutar comandos en una terminal. El modelo decide qué herramienta usar, ve el resultado y decide el paso siguiente, en un bucle, hasta terminar la tarea.</p>
+<div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;"><svg aria-roledescription="flowchart-v2" class="flowchart" data-viewbox="0 0 728.828125 246" height="246" id="mermaid-svg-0" role="graphics-document document" style="width: 728.828125px; height: 246px; max-width: 100%; background-color: transparent;" viewBox="0 0 728.828125 246" width="728.828125" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="4.5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="10.5" orient="auto" refx="11.5" refy="7" viewBox="0 0 11.5 14"><path class="arrowMarkerPath" d="M 0 0 L 11.5 7 L 0 14 z" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="11.5" orient="auto" refx="1" refy="7" viewBox="0 0 11.5 14"><polygon class="arrowMarkerPath" points="0,7 11.5,14 11.5,0" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="11" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="12.25" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="-2" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="12" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="17.7" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="-3.5" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M138.578,107L142.745,107C146.911,107,155.245,107,162.911,107C170.578,107,177.578,107,181.078,107L184.578,107" data-edge="true" data-et="edge" data-id="L_P_M_0" data-look="classic" data-points="W3sieCI6MTM4LjU3ODEyNSwieSI6MTA3fSx7IngiOjE2My41NzgxMjUsInkiOjEwN30seyJ4IjoxODguNTc4MTI1LCJ5IjoxMDd9XQ==" id="my-svg-L_P_M_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M252.327,91.569L270.014,82.474C287.7,73.38,323.073,55.19,361.375,48.047C399.678,40.904,440.91,44.807,461.527,46.759L482.143,48.711" data-edge="true" data-et="edge" data-id="L_M_T_0" data-look="classic" data-points="W3sieCI6MjUyLjMyNzQ2ODYzNjYwNTQzLCJ5Ijo5MS41NjkzMjI4MzE0OTc2Nn0seyJ4IjozNTguNDQ1MzEyNSwieSI6Mzd9LHsieCI6NDg2LjEyNSwieSI6NDkuMDg3NjExMzYzMjU0MzI1fV0=" id="my-svg-L_M_T_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M486.125,80.627L464.845,85.023C443.565,89.418,401.005,98.209,363.328,102.605C325.651,107,292.857,107,276.46,107L260.063,107" data-edge="true" data-et="edge" data-id="L_T_M_0" data-look="classic" data-points="W3sieCI6NDg2LjEyNSwieSI6ODAuNjI3MDI5NzUyODk5NjV9LHsieCI6MzU4LjQ0NTMxMjUsInkiOjEwN30seyJ4IjoyNTYuMDYyNSwieSI6MTA3fV0=" id="my-svg-L_T_M_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M250.276,125.894L268.305,138.078C286.333,150.263,322.389,174.631,356.814,186.816C391.24,199,424.034,199,440.431,199L456.828,199" data-edge="true" data-et="edge" data-id="L_M_R_0" data-look="classic" data-points="W3sieCI6MjUwLjI3NjQ2MzYzNjkzNjEsInkiOjEyNS44OTQxNDgwNTk0OTAzM30seyJ4IjozNTguNDQ1MzEyNSwieSI6MTk5fSx7IngiOjQ2MC44MjgxMjUsInkiOjE5OX1d" id="my-svg-L_M_R_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_P_M_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(362.88751, 37.42055)"><g class="label" data-id="L_M_T_0" transform="translate(-77.3828125, -12)"><foreignobject height="24" style="overflow: visible;" width="154.765625"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>elige una herramienta</p></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(358.4453125, 107)"><g class="label" data-id="L_T_M_0" transform="translate(-32.9140625, -12)"><foreignobject height="24" style="overflow: visible;" width="65.828125"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>resultado</p></span></div></foreignobject></g></g><g class="edgeLabel" transform="translate(358.4453125, 199)"><g class="label" data-id="L_M_R_0" transform="translate(-26.6796875, -12)"><foreignobject height="24" style="overflow: visible;" width="53.359375"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"><p>terminó</p></span></div></foreignobject></g></g></g><g class="nodes"><g class="node default" data-look="classic" id="my-svg-flowchart-P-0" transform="translate(73.2890625, 107)"><rect class="basic label-container" height="54" style="" width="130.578125" x="-65.2890625" y="-27"></rect><g class="label" style="" transform="translate(-35.2890625, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="70.578125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Tu pedido</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-M-1" transform="translate(222.3203125, 107)"><circle class="basic label-container" cx="0" cy="0" r="33.7421875" style=""></circle><g class="label" style="" transform="translate(-26.2421875, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="52.484375"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Modelo</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-T-3" transform="translate(590.828125, 59)"><rect class="basic label-container" height="102" style="" width="209.40625" x="-104.703125" y="-51"></rect><g class="label" style="" transform="translate(-74.703125, -36)"><rect></rect><foreignobject height="72" style="overflow: visible;" width="149.40625"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Leer / editar archivos<br/>Correr comandos<br/>Buscar en el código</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-R-7" transform="translate(590.828125, 199)"><rect class="basic label-container" height="78" style="" width="260" x="-130" y="-39"></rect><g class="label" style="" transform="translate(-100, -24)"><rect></rect><foreignobject height="48" style="overflow: visible;" width="200"><div style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Respuesta + cambios en tu proyecto</p></span></div></foreignobject></g></g></g></g></g><defs><filter height="130%" id="my-svg-drop-shadow" width="130%"><fedropshadow dx="4" dy="4" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs><defs><filter height="150%" id="my-svg-drop-shadow-small" width="150%"><fedropshadow dx="2" dy="2" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs></svg></div>
+<p><strong>Claude Code</strong> es el agente de programación de Anthropic. Trabaja <strong>sobre tu proyecto real</strong> (tus archivos, tu git, tu terminal), no sobre fragmentos pegados en un chat.</p>
+</div><div class="chapter-container"><h2 id="2-donde-corre-claude-code">2. Dónde corre Claude Code</h2>
+<p>Es el mismo agente con varias "caras". Todas comparten la configuración (<code>CLAUDE.md</code>, permisos, servidores MCP), así que podés pasar de una a otra.</p>
+<table>
+<thead>
+<tr>
+<th>Superficie</th>
+<th>Dónde se ejecuta el código</th>
+<th>Para qué conviene</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Terminal (CLI)</strong></td>
+<td>Tu máquina</td>
+<td>La más completa; todos los comandos; automatización</td>
+</tr>
+<tr>
+<td><strong>App de escritorio</strong> (pestaña <em>Code</em>)</td>
+<td>Tu máquina, o la nube</td>
+<td>Interfaz gráfica, varias sesiones en paralelo</td>
+</tr>
+<tr>
+<td><strong>Extensión de IDE</strong> (VS Code, JetBrains)</td>
+<td>Tu máquina</td>
+<td>Ver diffs dentro del editor mientras trabajás</td>
+</tr>
+<tr>
+<td><strong>Web</strong> (claude.ai/code) y <strong>app móvil</strong></td>
+<td>Nube de Anthropic</td>
+<td>Tareas que corren solas sobre un repo de GitHub, sin tu máquina prendida</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Requisito común: Claude Code <strong>no está incluido en el plan gratuito</strong>. Se usa con una suscripción (Pro o superior) o con una API key de pago (ver el apunte de modelos y costos).</p>
+</blockquote>
+<h3 id="21-terminal-cli">2.1 Terminal (CLI)</h3>
+<p>Instalación:</p>
+<div class="highlight language-bash"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="c1"># macOS, Linux, WSL</span>
+curl<span class="w"> </span>-fsSL<span class="w"> </span>https://claude.ai/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>bash
+
+<span class="c1"># Windows (PowerShell)</span>
+irm<span class="w"> </span>https://claude.ai/install.ps1<span class="w"> </span><span class="p">|</span><span class="w"> </span>iex
+
+<span class="c1"># Alternativas</span>
+brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>claude-code<span class="w">          </span><span class="c1"># Homebrew</span>
+winget<span class="w"> </span>install<span class="w"> </span>Anthropic.ClaudeCode<span class="w">       </span><span class="c1"># WinGet</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>@anthropic-ai/claude-code<span class="w">  </span><span class="c1"># npm (Node 22+)</span>
+</pre></div></div>
+<p>Uso: te parás en la carpeta del proyecto y lo lanzás.</p>
+<div class="highlight language-bash"><pre><span></span><span class="nb">cd</span><span class="w"> </span>mi-proyecto
+claude
+</pre></div>
+<p>La primera vez pide iniciar sesión (con la cuenta de claude.ai o de la consola de API). A partir de ahí se conversa en lenguaje natural:</p>
+<div class="highlight language-text"><pre><span></span>&gt; ¿qué hace este proyecto y cómo se corre?
+&gt; el test de login falla, encontrá por qué y arreglalo
+&gt; agregá paginación a GET /books, con tests
+</pre></div>
+<h4 id="atajos-y-comandos-esenciales">Atajos y comandos esenciales</h4>
+<table>
+<thead>
+<tr>
+<th>Escribís</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@src/app.ts</code></td>
+<td>Agrega ese archivo al contexto de forma explícita</td>
+</tr>
+<tr>
+<td><code>! npm test</code></td>
+<td>Corre el comando vos mismo; la salida queda en la conversación</td>
+</tr>
+<tr>
+<td><code>Esc</code></td>
+<td>Interrumpe lo que está haciendo el agente</td>
+</tr>
+<tr>
+<td><code>Esc Esc</code> o <code>/rewind</code></td>
+<td>Vuelve a un punto anterior (código y conversación)</td>
+</tr>
+<tr>
+<td><code>Shift+Tab</code></td>
+<td>Cambia de modo de permisos (ver 3.2)</td>
+</tr>
+<tr>
+<td><code>/init</code></td>
+<td>Genera un <code>CLAUDE.md</code> analizando el proyecto</td>
+</tr>
+<tr>
+<td><code>/model</code></td>
+<td>Cambia de modelo</td>
+</tr>
+<tr>
+<td><code>/effort</code></td>
+<td>Cambia el nivel de esfuerzo (<code>low</code> … <code>max</code>)</td>
+</tr>
+<tr>
+<td><code>/clear</code></td>
+<td>Conversación nueva (descarta el contexto)</td>
+</tr>
+<tr>
+<td><code>/compact</code></td>
+<td>Resume la conversación para liberar contexto</td>
+</tr>
+<tr>
+<td><code>/context</code></td>
+<td>Muestra cuánto contexto está ocupado y en qué</td>
+</tr>
+<tr>
+<td><code>/usage</code> (o <code>/cost</code>)</td>
+<td>Consumo de la sesión / del plan</td>
+</tr>
+<tr>
+<td><code>/diff</code></td>
+<td>Muestra los cambios hechos</td>
+</tr>
+<tr>
+<td><code>/resume</code></td>
+<td>Retoma una conversación anterior</td>
+</tr>
+<tr>
+<td><code>/help</code></td>
+<td>Lista de comandos</td>
+</tr>
+</tbody>
+</table>
+<h4 id="modo-no-interactivo-headless">Modo no interactivo (<em>headless</em>)</h4>
+<p>Con <code>-p</code> Claude Code ejecuta un pedido y termina, sin conversación. Sirve para scripts y pipelines de CI:</p>
+<div class="highlight language-bash"><pre><span></span>claude<span class="w"> </span>-p<span class="w"> </span><span class="s2">"revisá los cambios de este branch y listá posibles bugs"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">       </span>--allowedTools<span class="w"> </span><span class="s2">"Read,Grep,Glob"</span>
+
+git<span class="w"> </span>diff<span class="w"> </span>main<span class="w"> </span><span class="p">|</span><span class="w"> </span>claude<span class="w"> </span>-p<span class="w"> </span><span class="s2">"escribí un mensaje de commit para este diff"</span>
+</pre></div>
+<p>Para continuar la última conversación: <code>claude --continue</code>; una específica: <code>claude --resume &lt;id&gt;</code>.</p>
+<h3 id="22-app-de-escritorio">2.2 App de escritorio</h3>
+<p>La app de Claude (macOS, Windows; Linux en beta) tiene una pestaña <strong>Code</strong> que trae Claude Code integrado: no hace falta instalar la CLI ni Node. Abrís una carpeta y trabajás igual que en la terminal, pero con interfaz gráfica: los diffs se ven coloreados, podés tener varias sesiones abiertas y elegir si cada una corre <strong>en tu máquina</strong>, <strong>en la nube</strong>, por <strong>SSH</strong> en otro servidor o dentro de <strong>WSL</strong>.</p>
+<p>Es la opción más cómoda para quien no se lleva bien con la terminal.</p>
+<h3 id="23-extensiones-de-ide">2.3 Extensiones de IDE</h3>
+<h4 id="vs-code">VS Code</h4>
+<p>Funciona en VS Code 1.94 o posterior y en editores derivados (Cursor y otros <em>forks</em> de VS Code; en estos últimos se instala desde Open VSX).</p>
+<p><strong>Instalación</strong></p>
+<ol>
+<li>En VS Code, abrí la vista de extensiones (<code>Ctrl+Shift+X</code>).</li>
+<li>Buscá <strong>Claude Code</strong> (publicada por Anthropic, identificador <code>anthropic.claude-code</code>) e instalala.
+   Desde la terminal también se puede: <code>code --install-extension anthropic.claude-code</code>.</li>
+<li>Abrí el panel de Claude con el ícono de la chispa (<em>Spark</em>), arriba a la derecha del editor (aparece con un archivo abierto) o en la barra lateral, o desde la paleta de comandos (<code>Ctrl+Shift+P</code> → "Claude Code").</li>
+<li>La primera vez te pide iniciar sesión, con la misma cuenta que usarías en la terminal.</li>
+</ol>
+<p>Antes de empezar, abrí <strong>la carpeta del proyecto</strong> (<em>File → Open Folder</em>), no un archivo suelto. El agente trabaja sobre la carpeta abierta y lee su <code>CLAUDE.md</code>.</p>
+<p><strong>El ciclo de trabajo</strong></p>
+<p>La diferencia con la terminal es dónde revisás los cambios. Cada edición propuesta aparece como un <strong>diff dentro del editor</strong>, con lo viejo y lo nuevo lado a lado. Ahí la aceptás o la rechazás, igual que revisarías un cambio de un compañero.</p>
+<div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;"><svg aria-roledescription="sequence" data-viewbox="-50 -10 982 607" height="607" id="mermaid-svg-1" role="graphics-document document" style="width: 982px; height: 607px; max-width: 100%; background-color: transparent;" viewBox="-50 -10 982 607" width="982" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="Term" rx="3" ry="3" stroke="#666" width="150" x="732" y="521"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="807" y="553.5"><tspan dy="0" x="807">Terminal integrada</tspan></text></g><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="Editor" rx="3" ry="3" stroke="#666" width="150" x="532" y="521"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="607" y="553.5"><tspan dy="0" x="607">Editor (diff)</tspan></text></g><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="Panel" rx="3" ry="3" stroke="#666" width="150" x="300" y="521"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="375" y="553.5"><tspan dy="0" x="375">Panel de Claude</tspan></text></g><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="Vos" rx="3" ry="3" stroke="#666" width="150" x="0" y="521"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="75" y="553.5"><tspan dy="0" x="75">Vos</tspan></text></g><g><line class="actor-line 200" data-et="life-line" data-id="Term" id="actor3" name="Term" stroke="#999" stroke-width="0.5px" x1="807" x2="807" y1="65" y2="521"></line><g data-et="participant" data-id="Term" data-type="participant" id="root-3"><rect class="actor actor-top" fill="#eaeaea" height="65" name="Term" rx="3" ry="3" stroke="#666" width="150" x="732" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="807" y="32.5"><tspan dy="0" x="807">Terminal integrada</tspan></text></g></g><g><line class="actor-line 200" data-et="life-line" data-id="Editor" id="actor2" name="Editor" stroke="#999" stroke-width="0.5px" x1="607" x2="607" y1="65" y2="521"></line><g data-et="participant" data-id="Editor" data-type="participant" id="root-2"><rect class="actor actor-top" fill="#eaeaea" height="65" name="Editor" rx="3" ry="3" stroke="#666" width="150" x="532" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="607" y="32.5"><tspan dy="0" x="607">Editor (diff)</tspan></text></g></g><g><line class="actor-line 200" data-et="life-line" data-id="Panel" id="actor1" name="Panel" stroke="#999" stroke-width="0.5px" x1="375" x2="375" y1="65" y2="521"></line><g data-et="participant" data-id="Panel" data-type="participant" id="root-1"><rect class="actor actor-top" fill="#eaeaea" height="65" name="Panel" rx="3" ry="3" stroke="#666" width="150" x="300" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="375" y="32.5"><tspan dy="0" x="375">Panel de Claude</tspan></text></g></g><g><line class="actor-line 200" data-et="life-line" data-id="Vos" id="actor0" name="Vos" stroke="#999" stroke-width="0.5px" x1="75" x2="75" y1="65" y2="521"></line><g data-et="participant" data-id="Vos" data-type="participant" id="root-0"><rect class="actor actor-top" fill="#eaeaea" height="65" name="Vos" rx="3" ry="3" stroke="#666" width="150" x="0" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="75" y="32.5"><tspan dy="0" x="75">Vos</tspan></text></g></g><g></g><defs><symbol height="24" id="my-svg-computer" width="24"><path d="M2 2v13h20v-13h-20zm18 11h-16v-9h16v9zm-10.228 6l.466-1h3.524l.467 1h-4.457zm14.228 3h-24l2-6h2.104l-1.33 4h18.45l-1.297-4h2.073l2 6zm-5-10h-14v-7h14v7z" transform="scale(.5)"></path></symbol></defs><defs><symbol clip-rule="evenodd" fill-rule="evenodd" id="my-svg-database"><path d="M12.258.001l.256.004.255.005.253.008.251.01.249.012.247.015.246.016.242.019.241.02.239.023.236.024.233.027.231.028.229.031.225.032.223.034.22.036.217.038.214.04.211.041.208.043.205.045.201.046.198.048.194.05.191.051.187.053.183.054.18.056.175.057.172.059.168.06.163.061.16.063.155.064.15.066.074.033.073.033.071.034.07.034.069.035.068.035.067.035.066.035.064.036.064.036.062.036.06.036.06.037.058.037.058.037.055.038.055.038.053.038.052.038.051.039.05.039.048.039.047.039.045.04.044.04.043.04.041.04.04.041.039.041.037.041.036.041.034.041.033.042.032.042.03.042.029.042.027.042.026.043.024.043.023.043.021.043.02.043.018.044.017.043.015.044.013.044.012.044.011.045.009.044.007.045.006.045.004.045.002.045.001.045v17l-.001.045-.002.045-.004.045-.006.045-.007.045-.009.044-.011.045-.012.044-.013.044-.015.044-.017.043-.018.044-.02.043-.021.043-.023.043-.024.043-.026.043-.027.042-.029.042-.03.042-.032.042-.033.042-.034.041-.036.041-.037.041-.039.041-.04.041-.041.04-.043.04-.044.04-.045.04-.047.039-.048.039-.05.039-.051.039-.052.038-.053.038-.055.038-.055.038-.058.037-.058.037-.06.037-.06.036-.062.036-.064.036-.064.036-.066.035-.067.035-.068.035-.069.035-.07.034-.071.034-.073.033-.074.033-.15.066-.155.064-.16.063-.163.061-.168.06-.172.059-.175.057-.18.056-.183.054-.187.053-.191.051-.194.05-.198.048-.201.046-.205.045-.208.043-.211.041-.214.04-.217.038-.22.036-.223.034-.225.032-.229.031-.231.028-.233.027-.236.024-.239.023-.241.02-.242.019-.246.016-.247.015-.249.012-.251.01-.253.008-.255.005-.256.004-.258.001-.258-.001-.256-.004-.255-.005-.253-.008-.251-.01-.249-.012-.247-.015-.245-.016-.243-.019-.241-.02-.238-.023-.236-.024-.234-.027-.231-.028-.228-.031-.226-.032-.223-.034-.22-.036-.217-.038-.214-.04-.211-.041-.208-.043-.204-.045-.201-.046-.198-.048-.195-.05-.19-.051-.187-.053-.184-.054-.179-.056-.176-.057-.172-.059-.167-.06-.164-.061-.159-.063-.155-.064-.151-.066-.074-.033-.072-.033-.072-.034-.07-.034-.069-.035-.068-.035-.067-.035-.066-.035-.064-.036-.063-.036-.062-.036-.061-.036-.06-.037-.058-.037-.057-.037-.056-.038-.055-.038-.053-.038-.052-.038-.051-.039-.049-.039-.049-.039-.046-.039-.046-.04-.044-.04-.043-.04-.041-.04-.04-.041-.039-.041-.037-.041-.036-.041-.034-.041-.033-.042-.032-.042-.03-.042-.029-.042-.027-.042-.026-.043-.024-.043-.023-.043-.021-.043-.02-.043-.018-.044-.017-.043-.015-.044-.013-.044-.012-.044-.011-.045-.009-.044-.007-.045-.006-.045-.004-.045-.002-.045-.001-.045v-17l.001-.045.002-.045.004-.045.006-.045.007-.045.009-.044.011-.045.012-.044.013-.044.015-.044.017-.043.018-.044.02-.043.021-.043.023-.043.024-.043.026-.043.027-.042.029-.042.03-.042.032-.042.033-.042.034-.041.036-.041.037-.041.039-.041.04-.041.041-.04.043-.04.044-.04.046-.04.046-.039.049-.039.049-.039.051-.039.052-.038.053-.038.055-.038.056-.038.057-.037.058-.037.06-.037.061-.036.062-.036.063-.036.064-.036.066-.035.067-.035.068-.035.069-.035.07-.034.072-.034.072-.033.074-.033.151-.066.155-.064.159-.063.164-.061.167-.06.172-.059.176-.057.179-.056.184-.054.187-.053.19-.051.195-.05.198-.048.201-.046.204-.045.208-.043.211-.041.214-.04.217-.038.22-.036.223-.034.226-.032.228-.031.231-.028.234-.027.236-.024.238-.023.241-.02.243-.019.245-.016.247-.015.249-.012.251-.01.253-.008.255-.005.256-.004.258-.001.258.001zm-9.258 20.499v.01l.001.021.003.021.004.022.005.021.006.022.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.023.018.024.019.024.021.024.022.025.023.024.024.025.052.049.056.05.061.051.066.051.07.051.075.051.079.052.084.052.088.052.092.052.097.052.102.051.105.052.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.048.144.049.147.047.152.047.155.047.16.045.163.045.167.043.171.043.176.041.178.041.183.039.187.039.19.037.194.035.197.035.202.033.204.031.209.03.212.029.216.027.219.025.222.024.226.021.23.02.233.018.236.016.24.015.243.012.246.01.249.008.253.005.256.004.259.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.021.224-.024.22-.026.216-.027.212-.028.21-.031.205-.031.202-.034.198-.034.194-.036.191-.037.187-.039.183-.04.179-.04.175-.042.172-.043.168-.044.163-.045.16-.046.155-.046.152-.047.148-.048.143-.049.139-.049.136-.05.131-.05.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.053.083-.051.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.05.023-.024.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.023.01-.022.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.127l-.077.055-.08.053-.083.054-.085.053-.087.052-.09.052-.093.051-.095.05-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.045-.118.044-.12.043-.122.042-.124.042-.126.041-.128.04-.13.04-.132.038-.134.038-.135.037-.138.037-.139.035-.142.035-.143.034-.144.033-.147.032-.148.031-.15.03-.151.03-.153.029-.154.027-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.01-.179.008-.179.008-.181.006-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.006-.179-.008-.179-.008-.178-.01-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.027-.153-.029-.151-.03-.15-.03-.148-.031-.146-.032-.145-.033-.143-.034-.141-.035-.14-.035-.137-.037-.136-.037-.134-.038-.132-.038-.13-.04-.128-.04-.126-.041-.124-.042-.122-.042-.12-.044-.117-.043-.116-.045-.113-.045-.112-.046-.109-.047-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.05-.093-.052-.09-.051-.087-.052-.085-.053-.083-.054-.08-.054-.077-.054v4.127zm0-5.654v.011l.001.021.003.021.004.021.005.022.006.022.007.022.009.022.01.022.011.023.012.023.013.023.015.024.016.023.017.024.018.024.019.024.021.024.022.024.023.025.024.024.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.052.11.051.114.051.119.052.123.05.127.051.131.05.135.049.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.044.171.042.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.022.23.02.233.018.236.016.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.012.241-.015.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.048.139-.05.136-.049.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.051.051-.049.023-.025.023-.024.021-.025.02-.024.019-.024.018-.024.017-.024.015-.023.014-.023.013-.024.012-.022.01-.023.01-.023.008-.022.006-.022.006-.022.004-.021.004-.022.001-.021.001-.021v-4.139l-.077.054-.08.054-.083.054-.085.052-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.044-.118.044-.12.044-.122.042-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.035-.143.033-.144.033-.147.033-.148.031-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.009-.179.009-.179.007-.181.007-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.007-.179-.007-.179-.009-.178-.009-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.031-.146-.033-.145-.033-.143-.033-.141-.035-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.04-.126-.041-.124-.042-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.051-.093-.051-.09-.051-.087-.053-.085-.052-.083-.054-.08-.054-.077-.054v4.139zm0-5.666v.011l.001.02.003.022.004.021.005.022.006.021.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.024.018.023.019.024.021.025.022.024.023.024.024.025.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.051.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.043.171.043.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.021.23.02.233.018.236.017.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.013.241-.014.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.049.139-.049.136-.049.131-.051.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.049.023-.025.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.022.01-.023.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.153l-.077.054-.08.054-.083.053-.085.053-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.048-.105.048-.106.048-.109.046-.111.046-.114.046-.115.044-.118.044-.12.043-.122.043-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.034-.143.034-.144.033-.147.032-.148.032-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.024-.161.024-.162.023-.163.023-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.01-.178.01-.179.009-.179.007-.181.006-.182.006-.182.004-.184.003-.184.001-.185.001-.185-.001-.184-.001-.184-.003-.182-.004-.182-.006-.181-.006-.179-.007-.179-.009-.178-.01-.176-.01-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.023-.162-.023-.161-.024-.159-.024-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.032-.146-.032-.145-.033-.143-.034-.141-.034-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.041-.126-.041-.124-.041-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.048-.105-.048-.102-.048-.1-.05-.097-.049-.095-.051-.093-.051-.09-.052-.087-.052-.085-.053-.083-.053-.08-.054-.077-.054v4.153zm8.74-8.179l-.257.004-.254.005-.25.008-.247.011-.244.012-.241.014-.237.016-.233.018-.231.021-.226.022-.224.023-.22.026-.216.027-.212.028-.21.031-.205.032-.202.033-.198.034-.194.036-.191.038-.187.038-.183.04-.179.041-.175.042-.172.043-.168.043-.163.045-.16.046-.155.046-.152.048-.148.048-.143.048-.139.049-.136.05-.131.05-.126.051-.123.051-.118.051-.114.052-.11.052-.106.052-.101.052-.096.052-.092.052-.088.052-.083.052-.079.052-.074.051-.07.052-.065.051-.06.05-.056.05-.051.05-.023.025-.023.024-.021.024-.02.025-.019.024-.018.024-.017.023-.015.024-.014.023-.013.023-.012.023-.01.023-.01.022-.008.022-.006.023-.006.021-.004.022-.004.021-.001.021-.001.021.001.021.001.021.004.021.004.022.006.021.006.023.008.022.01.022.01.023.012.023.013.023.014.023.015.024.017.023.018.024.019.024.02.025.021.024.023.024.023.025.051.05.056.05.06.05.065.051.07.052.074.051.079.052.083.052.088.052.092.052.096.052.101.052.106.052.11.052.114.052.118.051.123.051.126.051.131.05.136.05.139.049.143.048.148.048.152.048.155.046.16.046.163.045.168.043.172.043.175.042.179.041.183.04.187.038.191.038.194.036.198.034.202.033.205.032.21.031.212.028.216.027.22.026.224.023.226.022.231.021.233.018.237.016.241.014.244.012.247.011.25.008.254.005.257.004.26.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.022.224-.023.22-.026.216-.027.212-.028.21-.031.205-.032.202-.033.198-.034.194-.036.191-.038.187-.038.183-.04.179-.041.175-.042.172-.043.168-.043.163-.045.16-.046.155-.046.152-.048.148-.048.143-.048.139-.049.136-.05.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.05.051-.05.023-.025.023-.024.021-.024.02-.025.019-.024.018-.024.017-.023.015-.024.014-.023.013-.023.012-.023.01-.023.01-.022.008-.022.006-.023.006-.021.004-.022.004-.021.001-.021.001-.021-.001-.021-.001-.021-.004-.021-.004-.022-.006-.021-.006-.023-.008-.022-.01-.022-.01-.023-.012-.023-.013-.023-.014-.023-.015-.024-.017-.023-.018-.024-.019-.024-.02-.025-.021-.024-.023-.024-.023-.025-.051-.05-.056-.05-.06-.05-.065-.051-.07-.052-.074-.051-.079-.052-.083-.052-.088-.052-.092-.052-.096-.052-.101-.052-.106-.052-.11-.052-.114-.052-.118-.051-.123-.051-.126-.051-.131-.05-.136-.05-.139-.049-.143-.048-.148-.048-.152-.048-.155-.046-.16-.046-.163-.045-.168-.043-.172-.043-.175-.042-.179-.041-.183-.04-.187-.038-.191-.038-.194-.036-.198-.034-.202-.033-.205-.032-.21-.031-.212-.028-.216-.027-.22-.026-.224-.023-.226-.022-.231-.021-.233-.018-.237-.016-.241-.014-.244-.012-.247-.011-.25-.008-.254-.005-.257-.004-.26-.001-.26.001z" transform="scale(.5)"></path></symbol></defs><defs><symbol height="24" id="my-svg-clock" width="24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.848 12.459c.202.038.202.333.001.372-1.907.361-6.045 1.111-6.547 1.111-.719 0-1.301-.582-1.301-1.301 0-.512.77-5.447 1.125-7.445.034-.192.312-.181.343.014l.985 6.238 5.394 1.011z" transform="scale(.5)"></path></symbol></defs><defs><marker id="my-svg-arrowhead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.9" refy="5"><path d="M -1 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="my-svg-crosshead" markerheight="8" markerwidth="15" orient="auto" refx="4" refy="4.5"><path d="M 1,2 L 6,7 M 6,2 L 1,7" fill="none" stroke="#000000" stroke-width="1pt" style="stroke-dasharray: 0, 0;"></path></marker></defs><defs><marker id="my-svg-filled-head" markerheight="28" markerwidth="20" orient="auto" refx="15.5" refy="7"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="my-svg-sequencenumber" markerheight="40" markerwidth="60" orient="auto" refx="15" refy="15"><circle cx="15" cy="15" r="6"></circle></marker></defs><defs><marker id="my-svg-solidTopArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.9" refy="7.25"><path d="M 0 0 L 10 8 L 0 8 z"></path></marker></defs><defs><marker id="my-svg-solidBottomArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.9" refy="0.75"><path d="M 0 0 L 10 0 L 0 8 z"></path></marker></defs><defs><marker id="my-svg-stickTopArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.5" refy="7"><path d="M 0 0 L 7 7" fill="none" stroke="black" stroke-width="1.5"></path></marker></defs><defs><marker id="my-svg-stickBottomArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.5" refy="0"><path d="M 0 7 L 7 0" fill="none" stroke="black" stroke-width="1.5"></path></marker></defs><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="224" y="80">"Agregá validación al POST /tasks"</text><line class="messageLine0" data-et="message" data-from="Vos" data-id="i0" data-to="Panel" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="76" x2="371" y1="111" y2="111"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="376" y="126">Lee archivos, arma el cambio</text><path class="messageLine0" d="M 376,155 C 436,145 436,185 376,175" data-et="message" data-from="Panel" data-id="i1" data-to="Panel" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="fill: none;"></path><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="490" y="200">Muestra el diff propuesto</text><line class="messageLine0" data-et="message" data-from="Panel" data-id="i2" data-to="Editor" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="376" x2="603" y1="231" y2="231"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="340" y="246">Revisás: aceptar / rechazar</text><line class="messageLine0" data-et="message" data-from="Vos" data-id="i3" data-to="Editor" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="76" x2="603" y1="277" y2="277"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="493" y="292">Cambio aplicado</text><line class="messageLine1" data-et="message" data-from="Editor" data-id="i4" data-to="Panel" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="stroke-dasharray: 3, 3; fill: none;" x1="606" x2="379" y1="323" y2="323"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="590" y="338">Pide permiso para correr npm test</text><line class="messageLine0" data-et="message" data-from="Panel" data-id="i5" data-to="Term" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="376" x2="803" y1="369" y2="369"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="224" y="384">Permitir</text><line class="messageLine0" data-et="message" data-from="Vos" data-id="i6" data-to="Panel" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="76" x2="371" y1="413" y2="413"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="593" y="428">Resultado de los tests</text><line class="messageLine1" data-et="message" data-from="Term" data-id="i7" data-to="Panel" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="stroke-dasharray: 3, 3; fill: none;" x1="806" x2="379" y1="457" y2="457"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="227" y="472">Resumen de lo hecho</text><line class="messageLine0" data-et="message" data-from="Panel" data-id="i8" data-to="Vos" marker-end="url(#mermaid-svg-1-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="374" x2="79" y1="501" y2="501"></line></svg></div>
+<p><strong>Contexto desde el editor</strong></p>
+<ul>
+<li><strong>Selección</strong>: si seleccionás líneas antes de escribir el pedido, Claude las toma como contexto. Por ejemplo, seleccionás una función y escribís "explicame esto" o "esto tiene un bug con fechas vacías".</li>
+<li><strong><code>@archivo</code></strong>: mencionás archivos (con autocompletado) para sumarlos al contexto.</li>
+<li><strong>Varias conversaciones</strong>: podés abrir más de una pestaña de Claude para tareas independientes.</li>
+</ul>
+<p><strong>Plan y checkpoints</strong></p>
+<ul>
+<li>En modo plan, el plan se abre como un documento Markdown en el editor. Le agregás comentarios en línea y recién después lo aprobás.</li>
+<li>Cada paso deja un <em>checkpoint</em>. Si el agente se fue por mal camino, volvés a un punto anterior del código y de la conversación.</li>
+</ul>
+<p><strong>Extensión o terminal integrada</strong></p>
+<p>También podés correr <code>claude</code> en la terminal integrada de VS Code. Con la extensión instalada, la CLI se conecta sola al editor: recibe tu selección y el archivo activo, y muestra los diffs en VS Code. Desde una terminal externa, la conexión se hace con el comando <code>/ide</code>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Panel de la extensión</th>
+<th><code>claude</code> en la terminal integrada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Revisión de cambios</td>
+<td>Diff gráfico en el editor</td>
+<td>Diff en el editor (conectada a VS Code) o en texto</td>
+</tr>
+<tr>
+<td>Comandos disponibles</td>
+<td>Los principales</td>
+<td>Todos, incluido el atajo <code>!</code></td>
+</tr>
+<tr>
+<td>Curva de aprendizaje</td>
+<td>Baja</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Ideal para</td>
+<td>Empezar, trabajo diario</td>
+<td>Usuarios avanzados, automatización</td>
+</tr>
+</tbody>
+</table>
+<p>Las dos comparten la configuración: <code>CLAUDE.md</code>, permisos y servidores MCP.</p>
+<blockquote>
+<p>Recomendación para la cursada: empezar con la extensión, porque ver el diff en el editor obliga a leer lo que cambió. Pasar a la terminal cuando haga falta algo que la extensión no tiene.</p>
+</blockquote>
+<h4 id="jetbrains">JetBrains</h4>
+<p><strong>JetBrains</strong> (IntelliJ, WebStorm, PyCharm, etc.): plugin <em>Claude Code</em> del JetBrains Marketplace. Requiere tener la CLI instalada; muestra los diffs en el visor del IDE.</p>
+<p>La CLI sigue siendo la más completa (algunos comandos y el atajo <code>!</code> son sólo de terminal), pero para el día a día la extensión es muy práctica.</p>
+<h3 id="24-web-y-movil-claudeaicode">2.4 Web y móvil: claude.ai/code</h3>
+<p>Acá cambia el modelo de ejecución: <strong>el código no corre en tu máquina</strong>, sino en una máquina virtual en la nube de Anthropic.</p>
+<div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;"><svg aria-roledescription="sequence" data-viewbox="-50 -10 963 473" height="473" id="mermaid-svg-2" role="graphics-document document" style="width: 963px; height: 473px; max-width: 100%; background-color: transparent;" viewBox="-50 -10 963 473" width="963" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="GH" rx="3" ry="3" stroke="#666" width="150" x="713" y="387"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="788" y="419.5"><tspan dy="0" x="788">GitHub</tspan></text></g><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="VM" rx="3" ry="3" stroke="#666" width="150" x="513" y="387"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="588" y="419.5"><tspan dy="0" x="588">Máquina en la nube</tspan></text></g><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="Web" rx="3" ry="3" stroke="#666" width="150" x="291" y="387"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="366" y="419.5"><tspan dy="0" x="366">claude.ai/code</tspan></text></g><g><rect class="actor actor-bottom" fill="#eaeaea" height="65" name="Vos" rx="3" ry="3" stroke="#666" width="150" x="0" y="387"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="75" y="419.5"><tspan dy="0" x="75">Vos</tspan></text></g><g><line class="actor-line 200" data-et="life-line" data-id="GH" id="actor3" name="GH" stroke="#999" stroke-width="0.5px" x1="788" x2="788" y1="65" y2="387"></line><g data-et="participant" data-id="GH" data-type="participant" id="root-3"><rect class="actor actor-top" fill="#eaeaea" height="65" name="GH" rx="3" ry="3" stroke="#666" width="150" x="713" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="788" y="32.5"><tspan dy="0" x="788">GitHub</tspan></text></g></g><g><line class="actor-line 200" data-et="life-line" data-id="VM" id="actor2" name="VM" stroke="#999" stroke-width="0.5px" x1="588" x2="588" y1="65" y2="387"></line><g data-et="participant" data-id="VM" data-type="participant" id="root-2"><rect class="actor actor-top" fill="#eaeaea" height="65" name="VM" rx="3" ry="3" stroke="#666" width="150" x="513" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="588" y="32.5"><tspan dy="0" x="588">Máquina en la nube</tspan></text></g></g><g><line class="actor-line 200" data-et="life-line" data-id="Web" id="actor1" name="Web" stroke="#999" stroke-width="0.5px" x1="366" x2="366" y1="65" y2="387"></line><g data-et="participant" data-id="Web" data-type="participant" id="root-1"><rect class="actor actor-top" fill="#eaeaea" height="65" name="Web" rx="3" ry="3" stroke="#666" width="150" x="291" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="366" y="32.5"><tspan dy="0" x="366">claude.ai/code</tspan></text></g></g><g><line class="actor-line 200" data-et="life-line" data-id="Vos" id="actor0" name="Vos" stroke="#999" stroke-width="0.5px" x1="75" x2="75" y1="65" y2="387"></line><g data-et="participant" data-id="Vos" data-type="participant" id="root-0"><rect class="actor actor-top" fill="#eaeaea" height="65" name="Vos" rx="3" ry="3" stroke="#666" width="150" x="0" y="0"></rect><text alignment-baseline="central" class="actor actor-box" dominant-baseline="central" style="text-anchor: middle; font-size: 16px; font-weight: 400;" x="75" y="32.5"><tspan dy="0" x="75">Vos</tspan></text></g></g><g></g><defs><symbol height="24" id="my-svg-computer" width="24"><path d="M2 2v13h20v-13h-20zm18 11h-16v-9h16v9zm-10.228 6l.466-1h3.524l.467 1h-4.457zm14.228 3h-24l2-6h2.104l-1.33 4h18.45l-1.297-4h2.073l2 6zm-5-10h-14v-7h14v7z" transform="scale(.5)"></path></symbol></defs><defs><symbol clip-rule="evenodd" fill-rule="evenodd" id="my-svg-database"><path d="M12.258.001l.256.004.255.005.253.008.251.01.249.012.247.015.246.016.242.019.241.02.239.023.236.024.233.027.231.028.229.031.225.032.223.034.22.036.217.038.214.04.211.041.208.043.205.045.201.046.198.048.194.05.191.051.187.053.183.054.18.056.175.057.172.059.168.06.163.061.16.063.155.064.15.066.074.033.073.033.071.034.07.034.069.035.068.035.067.035.066.035.064.036.064.036.062.036.06.036.06.037.058.037.058.037.055.038.055.038.053.038.052.038.051.039.05.039.048.039.047.039.045.04.044.04.043.04.041.04.04.041.039.041.037.041.036.041.034.041.033.042.032.042.03.042.029.042.027.042.026.043.024.043.023.043.021.043.02.043.018.044.017.043.015.044.013.044.012.044.011.045.009.044.007.045.006.045.004.045.002.045.001.045v17l-.001.045-.002.045-.004.045-.006.045-.007.045-.009.044-.011.045-.012.044-.013.044-.015.044-.017.043-.018.044-.02.043-.021.043-.023.043-.024.043-.026.043-.027.042-.029.042-.03.042-.032.042-.033.042-.034.041-.036.041-.037.041-.039.041-.04.041-.041.04-.043.04-.044.04-.045.04-.047.039-.048.039-.05.039-.051.039-.052.038-.053.038-.055.038-.055.038-.058.037-.058.037-.06.037-.06.036-.062.036-.064.036-.064.036-.066.035-.067.035-.068.035-.069.035-.07.034-.071.034-.073.033-.074.033-.15.066-.155.064-.16.063-.163.061-.168.06-.172.059-.175.057-.18.056-.183.054-.187.053-.191.051-.194.05-.198.048-.201.046-.205.045-.208.043-.211.041-.214.04-.217.038-.22.036-.223.034-.225.032-.229.031-.231.028-.233.027-.236.024-.239.023-.241.02-.242.019-.246.016-.247.015-.249.012-.251.01-.253.008-.255.005-.256.004-.258.001-.258-.001-.256-.004-.255-.005-.253-.008-.251-.01-.249-.012-.247-.015-.245-.016-.243-.019-.241-.02-.238-.023-.236-.024-.234-.027-.231-.028-.228-.031-.226-.032-.223-.034-.22-.036-.217-.038-.214-.04-.211-.041-.208-.043-.204-.045-.201-.046-.198-.048-.195-.05-.19-.051-.187-.053-.184-.054-.179-.056-.176-.057-.172-.059-.167-.06-.164-.061-.159-.063-.155-.064-.151-.066-.074-.033-.072-.033-.072-.034-.07-.034-.069-.035-.068-.035-.067-.035-.066-.035-.064-.036-.063-.036-.062-.036-.061-.036-.06-.037-.058-.037-.057-.037-.056-.038-.055-.038-.053-.038-.052-.038-.051-.039-.049-.039-.049-.039-.046-.039-.046-.04-.044-.04-.043-.04-.041-.04-.04-.041-.039-.041-.037-.041-.036-.041-.034-.041-.033-.042-.032-.042-.03-.042-.029-.042-.027-.042-.026-.043-.024-.043-.023-.043-.021-.043-.02-.043-.018-.044-.017-.043-.015-.044-.013-.044-.012-.044-.011-.045-.009-.044-.007-.045-.006-.045-.004-.045-.002-.045-.001-.045v-17l.001-.045.002-.045.004-.045.006-.045.007-.045.009-.044.011-.045.012-.044.013-.044.015-.044.017-.043.018-.044.02-.043.021-.043.023-.043.024-.043.026-.043.027-.042.029-.042.03-.042.032-.042.033-.042.034-.041.036-.041.037-.041.039-.041.04-.041.041-.04.043-.04.044-.04.046-.04.046-.039.049-.039.049-.039.051-.039.052-.038.053-.038.055-.038.056-.038.057-.037.058-.037.06-.037.061-.036.062-.036.063-.036.064-.036.066-.035.067-.035.068-.035.069-.035.07-.034.072-.034.072-.033.074-.033.151-.066.155-.064.159-.063.164-.061.167-.06.172-.059.176-.057.179-.056.184-.054.187-.053.19-.051.195-.05.198-.048.201-.046.204-.045.208-.043.211-.041.214-.04.217-.038.22-.036.223-.034.226-.032.228-.031.231-.028.234-.027.236-.024.238-.023.241-.02.243-.019.245-.016.247-.015.249-.012.251-.01.253-.008.255-.005.256-.004.258-.001.258.001zm-9.258 20.499v.01l.001.021.003.021.004.022.005.021.006.022.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.023.018.024.019.024.021.024.022.025.023.024.024.025.052.049.056.05.061.051.066.051.07.051.075.051.079.052.084.052.088.052.092.052.097.052.102.051.105.052.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.048.144.049.147.047.152.047.155.047.16.045.163.045.167.043.171.043.176.041.178.041.183.039.187.039.19.037.194.035.197.035.202.033.204.031.209.03.212.029.216.027.219.025.222.024.226.021.23.02.233.018.236.016.24.015.243.012.246.01.249.008.253.005.256.004.259.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.021.224-.024.22-.026.216-.027.212-.028.21-.031.205-.031.202-.034.198-.034.194-.036.191-.037.187-.039.183-.04.179-.04.175-.042.172-.043.168-.044.163-.045.16-.046.155-.046.152-.047.148-.048.143-.049.139-.049.136-.05.131-.05.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.053.083-.051.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.05.023-.024.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.023.01-.022.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.127l-.077.055-.08.053-.083.054-.085.053-.087.052-.09.052-.093.051-.095.05-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.045-.118.044-.12.043-.122.042-.124.042-.126.041-.128.04-.13.04-.132.038-.134.038-.135.037-.138.037-.139.035-.142.035-.143.034-.144.033-.147.032-.148.031-.15.03-.151.03-.153.029-.154.027-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.01-.179.008-.179.008-.181.006-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.006-.179-.008-.179-.008-.178-.01-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.027-.153-.029-.151-.03-.15-.03-.148-.031-.146-.032-.145-.033-.143-.034-.141-.035-.14-.035-.137-.037-.136-.037-.134-.038-.132-.038-.13-.04-.128-.04-.126-.041-.124-.042-.122-.042-.12-.044-.117-.043-.116-.045-.113-.045-.112-.046-.109-.047-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.05-.093-.052-.09-.051-.087-.052-.085-.053-.083-.054-.08-.054-.077-.054v4.127zm0-5.654v.011l.001.021.003.021.004.021.005.022.006.022.007.022.009.022.01.022.011.023.012.023.013.023.015.024.016.023.017.024.018.024.019.024.021.024.022.024.023.025.024.024.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.052.11.051.114.051.119.052.123.05.127.051.131.05.135.049.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.044.171.042.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.022.23.02.233.018.236.016.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.012.241-.015.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.048.139-.05.136-.049.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.051.051-.049.023-.025.023-.024.021-.025.02-.024.019-.024.018-.024.017-.024.015-.023.014-.023.013-.024.012-.022.01-.023.01-.023.008-.022.006-.022.006-.022.004-.021.004-.022.001-.021.001-.021v-4.139l-.077.054-.08.054-.083.054-.085.052-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.049-.105.048-.106.047-.109.047-.111.046-.114.045-.115.044-.118.044-.12.044-.122.042-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.035-.143.033-.144.033-.147.033-.148.031-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.025-.161.024-.162.023-.163.022-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.011-.178.009-.179.009-.179.007-.181.007-.182.005-.182.004-.184.003-.184.002h-.37l-.184-.002-.184-.003-.182-.004-.182-.005-.181-.007-.179-.007-.179-.009-.178-.009-.176-.011-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.022-.162-.023-.161-.024-.159-.025-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.031-.146-.033-.145-.033-.143-.033-.141-.035-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.04-.126-.041-.124-.042-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.047-.105-.048-.102-.049-.1-.049-.097-.05-.095-.051-.093-.051-.09-.051-.087-.053-.085-.052-.083-.054-.08-.054-.077-.054v4.139zm0-5.666v.011l.001.02.003.022.004.021.005.022.006.021.007.022.009.023.01.022.011.023.012.023.013.023.015.023.016.024.017.024.018.023.019.024.021.025.022.024.023.024.024.025.052.05.056.05.061.05.066.051.07.051.075.052.079.051.084.052.088.052.092.052.097.052.102.052.105.051.11.052.114.051.119.051.123.051.127.05.131.05.135.05.139.049.144.048.147.048.152.047.155.046.16.045.163.045.167.043.171.043.176.042.178.04.183.04.187.038.19.037.194.036.197.034.202.033.204.032.209.03.212.028.216.027.219.025.222.024.226.021.23.02.233.018.236.017.24.014.243.012.246.01.249.008.253.006.256.003.259.001.26-.001.257-.003.254-.006.25-.008.247-.01.244-.013.241-.014.237-.016.233-.018.231-.02.226-.022.224-.024.22-.025.216-.027.212-.029.21-.03.205-.032.202-.033.198-.035.194-.036.191-.037.187-.039.183-.039.179-.041.175-.042.172-.043.168-.044.163-.045.16-.045.155-.047.152-.047.148-.048.143-.049.139-.049.136-.049.131-.051.126-.05.123-.051.118-.052.114-.051.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.052.07-.051.065-.051.06-.051.056-.05.051-.049.023-.025.023-.025.021-.024.02-.024.019-.024.018-.024.017-.024.015-.023.014-.024.013-.023.012-.023.01-.022.01-.023.008-.022.006-.022.006-.022.004-.022.004-.021.001-.021.001-.021v-4.153l-.077.054-.08.054-.083.053-.085.053-.087.053-.09.051-.093.051-.095.051-.097.05-.1.049-.102.048-.105.048-.106.048-.109.046-.111.046-.114.046-.115.044-.118.044-.12.043-.122.043-.124.042-.126.041-.128.04-.13.039-.132.039-.134.038-.135.037-.138.036-.139.036-.142.034-.143.034-.144.033-.147.032-.148.032-.15.03-.151.03-.153.028-.154.028-.156.027-.158.026-.159.024-.161.024-.162.023-.163.023-.165.021-.166.02-.167.019-.169.018-.169.017-.171.016-.173.015-.173.014-.175.013-.175.012-.177.01-.178.01-.179.009-.179.007-.181.006-.182.006-.182.004-.184.003-.184.001-.185.001-.185-.001-.184-.001-.184-.003-.182-.004-.182-.006-.181-.006-.179-.007-.179-.009-.178-.01-.176-.01-.176-.012-.175-.013-.173-.014-.172-.015-.171-.016-.17-.017-.169-.018-.167-.019-.166-.02-.165-.021-.163-.023-.162-.023-.161-.024-.159-.024-.157-.026-.156-.027-.155-.028-.153-.028-.151-.03-.15-.03-.148-.032-.146-.032-.145-.033-.143-.034-.141-.034-.14-.036-.137-.036-.136-.037-.134-.038-.132-.039-.13-.039-.128-.041-.126-.041-.124-.041-.122-.043-.12-.043-.117-.044-.116-.044-.113-.046-.112-.046-.109-.046-.106-.048-.105-.048-.102-.048-.1-.05-.097-.049-.095-.051-.093-.051-.09-.052-.087-.052-.085-.053-.083-.053-.08-.054-.077-.054v4.153zm8.74-8.179l-.257.004-.254.005-.25.008-.247.011-.244.012-.241.014-.237.016-.233.018-.231.021-.226.022-.224.023-.22.026-.216.027-.212.028-.21.031-.205.032-.202.033-.198.034-.194.036-.191.038-.187.038-.183.04-.179.041-.175.042-.172.043-.168.043-.163.045-.16.046-.155.046-.152.048-.148.048-.143.048-.139.049-.136.05-.131.05-.126.051-.123.051-.118.051-.114.052-.11.052-.106.052-.101.052-.096.052-.092.052-.088.052-.083.052-.079.052-.074.051-.07.052-.065.051-.06.05-.056.05-.051.05-.023.025-.023.024-.021.024-.02.025-.019.024-.018.024-.017.023-.015.024-.014.023-.013.023-.012.023-.01.023-.01.022-.008.022-.006.023-.006.021-.004.022-.004.021-.001.021-.001.021.001.021.001.021.004.021.004.022.006.021.006.023.008.022.01.022.01.023.012.023.013.023.014.023.015.024.017.023.018.024.019.024.02.025.021.024.023.024.023.025.051.05.056.05.06.05.065.051.07.052.074.051.079.052.083.052.088.052.092.052.096.052.101.052.106.052.11.052.114.052.118.051.123.051.126.051.131.05.136.05.139.049.143.048.148.048.152.048.155.046.16.046.163.045.168.043.172.043.175.042.179.041.183.04.187.038.191.038.194.036.198.034.202.033.205.032.21.031.212.028.216.027.22.026.224.023.226.022.231.021.233.018.237.016.241.014.244.012.247.011.25.008.254.005.257.004.26.001.26-.001.257-.004.254-.005.25-.008.247-.011.244-.012.241-.014.237-.016.233-.018.231-.021.226-.022.224-.023.22-.026.216-.027.212-.028.21-.031.205-.032.202-.033.198-.034.194-.036.191-.038.187-.038.183-.04.179-.041.175-.042.172-.043.168-.043.163-.045.16-.046.155-.046.152-.048.148-.048.143-.048.139-.049.136-.05.131-.05.126-.051.123-.051.118-.051.114-.052.11-.052.106-.052.101-.052.096-.052.092-.052.088-.052.083-.052.079-.052.074-.051.07-.052.065-.051.06-.05.056-.05.051-.05.023-.025.023-.024.021-.024.02-.025.019-.024.018-.024.017-.023.015-.024.014-.023.013-.023.012-.023.01-.023.01-.022.008-.022.006-.023.006-.021.004-.022.004-.021.001-.021.001-.021-.001-.021-.001-.021-.004-.021-.004-.022-.006-.021-.006-.023-.008-.022-.01-.022-.01-.023-.012-.023-.013-.023-.014-.023-.015-.024-.017-.023-.018-.024-.019-.024-.02-.025-.021-.024-.023-.024-.023-.025-.051-.05-.056-.05-.06-.05-.065-.051-.07-.052-.074-.051-.079-.052-.083-.052-.088-.052-.092-.052-.096-.052-.101-.052-.106-.052-.11-.052-.114-.052-.118-.051-.123-.051-.126-.051-.131-.05-.136-.05-.139-.049-.143-.048-.148-.048-.152-.048-.155-.046-.16-.046-.163-.045-.168-.043-.172-.043-.175-.042-.179-.041-.183-.04-.187-.038-.191-.038-.194-.036-.198-.034-.202-.033-.205-.032-.21-.031-.212-.028-.216-.027-.22-.026-.224-.023-.226-.022-.231-.021-.233-.018-.237-.016-.241-.014-.244-.012-.247-.011-.25-.008-.254-.005-.257-.004-.26-.001-.26.001z" transform="scale(.5)"></path></symbol></defs><defs><symbol height="24" id="my-svg-clock" width="24"><path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.848 12.459c.202.038.202.333.001.372-1.907.361-6.045 1.111-6.547 1.111-.719 0-1.301-.582-1.301-1.301 0-.512.77-5.447 1.125-7.445.034-.192.312-.181.343.014l.985 6.238 5.394 1.011z" transform="scale(.5)"></path></symbol></defs><defs><marker id="my-svg-arrowhead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.9" refy="5"><path d="M -1 0 L 10 5 L 0 10 z"></path></marker></defs><defs><marker id="my-svg-crosshead" markerheight="8" markerwidth="15" orient="auto" refx="4" refy="4.5"><path d="M 1,2 L 6,7 M 6,2 L 1,7" fill="none" stroke="#000000" stroke-width="1pt" style="stroke-dasharray: 0, 0;"></path></marker></defs><defs><marker id="my-svg-filled-head" markerheight="28" markerwidth="20" orient="auto" refx="15.5" refy="7"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><defs><marker id="my-svg-sequencenumber" markerheight="40" markerwidth="60" orient="auto" refx="15" refy="15"><circle cx="15" cy="15" r="6"></circle></marker></defs><defs><marker id="my-svg-solidTopArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.9" refy="7.25"><path d="M 0 0 L 10 8 L 0 8 z"></path></marker></defs><defs><marker id="my-svg-solidBottomArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.9" refy="0.75"><path d="M 0 0 L 10 0 L 0 8 z"></path></marker></defs><defs><marker id="my-svg-stickTopArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.5" refy="7"><path d="M 0 0 L 7 7" fill="none" stroke="black" stroke-width="1.5"></path></marker></defs><defs><marker id="my-svg-stickBottomArrowHead" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto-start-reverse" refx="7.5" refy="0"><path d="M 0 7 L 7 0" fill="none" stroke="black" stroke-width="1.5"></path></marker></defs><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="219" y="80">"Agregá tests al módulo de pagos"</text><line class="messageLine0" data-et="message" data-from="Vos" data-id="i0" data-to="Web" marker-end="url(#mermaid-svg-2-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="76" x2="362" y1="111" y2="111"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="476" y="126">Crea un entorno aislado</text><line class="messageLine0" data-et="message" data-from="Web" data-id="i1" data-to="VM" marker-end="url(#mermaid-svg-2-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="367" x2="584" y1="155" y2="155"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="687" y="170">Clona el repositorio</text><line class="messageLine0" data-et="message" data-from="VM" data-id="i2" data-to="GH" marker-end="url(#mermaid-svg-2-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="589" x2="784" y1="201" y2="201"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="589" y="216">El agente trabaja: edita, corre tests</text><path class="messageLine0" d="M 589,247 C 649,237 649,277 589,267" data-et="message" data-from="VM" data-id="i3" data-to="VM" marker-end="url(#mermaid-svg-2-arrowhead)" stroke="none" stroke-width="2" style="fill: none;"></path><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="687" y="292">Sube un branch</text><line class="messageLine0" data-et="message" data-from="VM" data-id="i4" data-to="GH" marker-end="url(#mermaid-svg-2-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="589" x2="784" y1="321" y2="321"></line><text alignment-baseline="middle" class="messageText" dominant-baseline="middle" dy="1em" style="font-size: 16px; font-weight: 400;" text-anchor="middle" x="430" y="336">Revisás y abrís (o mergeás) el PR</text><line class="messageLine0" data-et="message" data-from="Vos" data-id="i5" data-to="GH" marker-end="url(#mermaid-svg-2-arrowhead)" stroke="none" stroke-width="2" style="fill: none;" x1="76" x2="784" y1="367" y2="367"></line></svg></div>
+<ul>
+<li>Requiere conectar la cuenta de <strong>GitHub</strong>.</li>
+<li>La tarea sigue corriendo aunque cierres la notebook; se puede lanzar desde el celular (app de Claude, pestaña <em>Code</em>).</li>
+<li>Varias tareas en paralelo, cada una en su entorno.</li>
+<li>El resultado se integra con el flujo normal de <strong>branch + pull request</strong>: vos revisás el PR como revisarías el de un compañero.</li>
+</ul>
+<p>Es ideal para tareas bien definidas e independientes ("actualizá esta dependencia y arreglá lo que se rompa", "escribí los tests que faltan en <code>utils/</code>"). Para trabajo exploratorio, donde querés ir mirando paso a paso, es más cómodo trabajar en local.</p>
+</div><div class="chapter-container"><h2 id="3-como-se-controla-al-agente">3. Cómo se controla al agente</h2>
+<h3 id="31-claudemd-la-memoria-del-proyecto">3.1 <code>CLAUDE.md</code>: la memoria del proyecto</h3>
+<p>Archivo Markdown en la raíz del repositorio que Claude Code <strong>lee al empezar cada sesión</strong>. Ahí van las cosas que no querés repetir:</p>
+<div class="highlight language-markdown"><div class="collapsible-container" data-max-lines="6"><pre><span></span><span class="gh"># CLAUDE.md</span>
+<span class="gu">## Comandos</span>
+<span class="k">-</span><span class="w"> </span><span class="sb">`npm test`</span> — correr antes de dar algo por terminado
+<span class="k">-</span><span class="w"> </span><span class="sb">`npm run lint`</span>
+<span class="gu">## Convenciones</span>
+<span class="k">-</span><span class="w"> </span>TypeScript estricto, sin <span class="sb">`any`</span>
+<span class="k">-</span><span class="w"> </span>Endpoints nuevos: validación de body + tests feliz y de error
+<span class="gu">## No hacer</span>
+<span class="k">-</span><span class="w"> </span>No agregar dependencias sin preguntar
+<span class="k">-</span><span class="w"> </span>No tocar <span class="sb">`migrations/`</span> existentes
+</pre></div></div>
+<p><code>/init</code> genera una primera versión; <code>/memory</code> permite editarlo. Hay niveles: uno personal (en tu usuario, vale para todos tus proyectos), uno del proyecto (va al repo) y uno local (<code>CLAUDE.local.md</code>, fuera de git).</p>
+<blockquote>
+<p>Un <code>CLAUDE.md</code> bueno es <strong>corto y concreto</strong>. Se carga entero en cada sesión: cada línea cuesta tokens y compite por la atención del modelo.</p>
+</blockquote>
+<h3 id="32-permisos">3.2 Permisos</h3>
+<p>El agente puede ejecutar comandos en tu máquina, así que los permisos importan. Modos principales (se alternan con <code>Shift+Tab</code> o con <code>--permission-mode</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Comportamiento</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>default</strong></td>
+<td>Pide permiso antes de editar archivos y correr comandos</td>
+</tr>
+<tr>
+<td><strong>acceptEdits</strong></td>
+<td>Edita archivos y corre comandos comunes de archivos (<code>mkdir</code>, <code>mv</code>, <code>cp</code>…) sin preguntar; el resto de los comandos sigue pidiendo permiso</td>
+</tr>
+<tr>
+<td><strong>plan</strong></td>
+<td>Sólo lee y propone un plan; no modifica nada</td>
+</tr>
+<tr>
+<td><strong>auto</strong></td>
+<td>Decide solo, con un clasificador que frena las acciones riesgosas</td>
+</tr>
+<tr>
+<td><strong>bypassPermissions</strong></td>
+<td>No pregunta nada. Sólo en entornos descartables (contenedor, VM)</td>
+</tr>
+</tbody>
+</table>
+<p>Además se pueden fijar reglas permanentes en <code>.claude/settings.json</code>, por ejemplo permitir siempre <code>npm test</code> y prohibir siempre <code>rm -rf</code> o leer <code>.env</code>:</p>
+<div class="highlight language-json"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"permissions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"allow"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Bash(npm test *)"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Bash(npm run lint)"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"deny"</span><span class="p">:</span><span class="w">  </span><span class="p">[</span><span class="s2">"Read(./.env)"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Bash(rm -rf *)"</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<h3 id="33-modo-plan">3.3 Modo plan</h3>
+<p>Para cualquier cambio no trivial, el flujo recomendado es <strong>planificar primero</strong>:</p>
+<ol>
+<li>Entrás en modo plan (<code>Shift+Tab</code> hasta <em>plan mode</em>, o <code>/plan</code>).</li>
+<li>Describís el objetivo. El agente explora el código y propone un plan.</li>
+<li>Lo corregís ("no uses una librería nueva", "empezá por los tests").</li>
+<li>Aprobás y recién ahí implementa.</li>
+</ol>
+<p>Corregir un plan es barato; corregir 400 líneas generadas en la dirección equivocada, no.</p>
+<h3 id="34-extensiones-del-agente">3.4 Extensiones del agente</h3>
+<p>Sin entrar en detalle, conviene saber que existen:</p>
+<ul>
+<li><strong>Servidores MCP</strong> (<em>Model Context Protocol</em>): conectan el agente con sistemas externos (una base de datos, GitHub, Jira, la documentación de una librería). Se agregan con <code>claude mcp add</code>.</li>
+<li><strong>Subagentes</strong>: agentes especializados (por ejemplo, un "revisor de seguridad") a los que el agente principal delega partes del trabajo, con su propio contexto.</li>
+<li><strong>Skills</strong>: paquetes de instrucciones para tareas repetidas (cómo desplegar, cómo escribir una migración en <em>este</em> proyecto), que el agente carga cuando las necesita.</li>
+<li><strong>Hooks</strong>: comandos que se ejecutan automáticamente en ciertos eventos, como correr el formateador después de cada edición.</li>
+</ul>
+</div><div class="chapter-container"><h2 id="4-elegir-modelo-y-esfuerzo-dentro-de-claude-code">4. Elegir modelo y esfuerzo dentro de Claude Code</h2>
+<div class="highlight language-bash"><pre><span></span>claude<span class="w"> </span>--model<span class="w"> </span>sonnet<span class="w">        </span><span class="c1"># al arrancar</span>
+</pre></div>
+<div class="highlight language-text"><pre><span></span>/model opus                  # durante la sesión
+/effort high
+</pre></div>
+<p>Se usan alias (<code>fable</code>, <code>opus</code>, <code>sonnet</code>, <code>haiku</code>) que apuntan a la versión vigente de cada familia. Existe también <code>opusplan</code>: usa Opus para planificar y Sonnet para ejecutar. El detalle de qué modelo conviene y cuánto cuesta cada uno está en el apunte siguiente.</p>
+<p><strong>Modo rápido</strong> (<code>/fast</code>): el mismo modelo generando más rápido, a cambio de costar más. Útil cuando estás esperando en vivo una respuesta; innecesario para tareas que dejás corriendo.</p>
+</div><div class="chapter-container"><h2 id="5-riesgos-y-limites">5. Riesgos y límites</h2>
+<p>Usar un agente no elimina la responsabilidad del desarrollador; la concentra en la revisión.</p>
+<ul>
+<li><strong>Código plausible pero incorrecto.</strong> El agente produce código que compila, se ve bien y pasa los tests que él mismo escribió. Los errores suelen estar en lo que nadie especificó: validaciones, casos borde, concurrencia, permisos.</li>
+<li><strong>Seguridad.</strong> Un agente con permisos amplios puede borrar archivos, exponer secretos o instalar dependencias dudosas. Permisos mínimos, secretos fuera del repo, y cuidado con pedirle que procese contenido externo (una página web, un issue) que podría contener instrucciones maliciosas (<em>prompt injection</em>).</li>
+<li><strong>Dependencias inventadas.</strong> A veces sugiere paquetes que no existen o están abandonados. Verificar cada dependencia nueva.</li>
+<li><strong>Contexto que se degrada.</strong> En sesiones muy largas el modelo pierde precisión. <code>/clear</code> entre tareas distintas, y <code>CLAUDE.md</code> para lo que tiene que persistir.</li>
+<li><strong>Dependencia del desarrollador.</strong> Si no entendés el código que se generó, no lo vas a poder mantener ni depurar. Pedile que te lo explique; preguntale por qué eligió esa solución y no otra.</li>
+</ul>
+<blockquote>
+<p>La pregunta para cada diff no es "¿anda?", sino "¿lo habría aprobado si lo hubiera escrito un compañero?".</p>
+</blockquote></div>
+<textarea id="css-editor" style="display:none;">pre { line-height: 125%; }
+td.linenos .normal, span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special, span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc; }
+.highlight { background: #f8f8f8; }
+.highlight .err { border: 1px solid #F00; }
+.highlight .ch { color: #3D7B7B; font-style: italic; }
+.highlight .cp { color: #9C6500; }
+.highlight .cpf, .highlight .cs { color: #3D7B7B; font-style: italic; }
+.highlight .gd { color: #A00000; }
+.highlight .ge { font-style: italic; }
+.highlight .ges { font-weight: bold; font-style: italic; }
+.highlight .gr { color: #E40000; }
+.highlight .gh { color: #000080; font-weight: bold; }
+.highlight .gi { color: #008400; }
+.highlight .go { color: #717171; }
+.highlight .gp { color: #000080; font-weight: bold; }
+.highlight .gs { font-weight: bold; }
+.highlight .gu { color: #800080; font-weight: bold; }
+.highlight .gt { color: #04D; }
+.highlight .kc { font-weight: bold; }
+.highlight .kp { color: #008000; }
+.highlight .kr { color: #008000; font-weight: bold; }
+.highlight .kt { color: #B00040; }
+.highlight .na { color: #687822; }
+.highlight .nc { color: #00F; font-weight: bold; }
+.highlight .nd { color: #A2F; }
+.highlight .ni { color: #717171; font-weight: bold; }
+.highlight .ne { color: #CB3F38; font-weight: bold; }
+.highlight .nl { color: #767600; }
+.highlight .nn { color: #00F; font-weight: bold; }
+.highlight .nt { color: #008000; font-weight: bold; }
+.highlight .nv { color: #19177C; }
+.highlight .w { color: #BBB; }
+.highlight .mb, .highlight .mh, .highlight .mo { color: #666; }
+.highlight .sa, .highlight .sc, .highlight .dl { color: #BA2121; }
+.highlight .sd { color: #BA2121; font-style: italic; }
+.highlight .se { color: #AA5D1F; font-weight: bold; }
+.highlight .sh { color: #BA2121; }
+.highlight .si { font-weight: bold; }
+.highlight .sx { color: #008000; }
+.highlight .sr { color: #A45A77; }
+.highlight .ss { color: #19177C; }
+.highlight .bp { color: #008000; }
+.highlight .fm { color: #00F; }
+.highlight .vc, .highlight .vg, .highlight .vi, .highlight .vm { color: #19177C; }
+.highlight .il { color: #666; }
+body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px; }
+#main-title-block { background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center; }
+pre:not(.highlight pre) { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0; }
+code { font-family: "Courier New", Courier, monospace; }
+.highlight { padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.highlight pre { background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0; }
+.highlight .c, .highlight .c1, .highlight .cm { color: #9a8052 !important; }
+.highlight .c, .highlight .c1, .highlight .cm { font-style: italic; }
+.highlight .k, .highlight .kd, .highlight .kn { color: #8250df !important; }
+.highlight .k, .highlight .kd, .highlight .kn { font-weight: normal; }
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .si { color: #327d41 !important; }
+.highlight .m, .highlight .mi, .highlight .mf { color: #606060 !important; }
+.highlight .o, .highlight .ow { color: #666666 !important; }
+.highlight .o, .highlight .ow { font-weight: normal; }
+.highlight .kc, .highlight .no { color: #9a5b13 !important; }
+.highlight .nf, .highlight .nb, .highlight .nx { color: #606060 !important; }
+.highlight .nf, .highlight .nb, .highlight .nx { font-weight: normal; }
+.highlight .p { color: #666666 !important; font-weight: normal; }
+.highlight.language-jsx .k, .highlight.language-jsx .kd, .highlight.language-jsx .kr, .highlight.language-react .k, .highlight.language-react .kd, .highlight.language-react .kr, .highlight.language-tsx .k, .highlight.language-tsx .kd, .highlight.language-tsx .kr { color: #af00db !important; }
+.highlight.language-jsx .k, .highlight.language-jsx .kd, .highlight.language-jsx .kr, .highlight.language-react .k, .highlight.language-react .kd, .highlight.language-react .kr, .highlight.language-tsx .k, .highlight.language-tsx .kd, .highlight.language-tsx .kr { font-weight: normal; }
+.highlight.language-jsx .nx, .highlight.language-jsx .nf, .highlight.language-react .nx, .highlight.language-react .nf, .highlight.language-tsx .nx, .highlight.language-tsx .nf { color: #0969da !important; }
+.highlight.language-jsx .nt, .highlight.language-jsx .nc, .highlight.language-react .nt, .highlight.language-react .nc, .highlight.language-tsx .nt, .highlight.language-tsx .nc { color: #116329 !important; }
+.highlight.language-jsx .o, .highlight.language-jsx .p, .highlight.language-react .o, .highlight.language-react .p, .highlight.language-tsx .o, .highlight.language-tsx .p { color: #666666 !important; }
+.highlight.language-jsx .na, .highlight.language-react .na, .highlight.language-tsx .na { color: #0969da !important; }
+.highlight.language-jsx .s, .highlight.language-jsx .s1, .highlight.language-jsx .s2, .highlight.language-react .s, .highlight.language-react .s1, .highlight.language-react .s2, .highlight.language-tsx .s, .highlight.language-tsx .s1, .highlight.language-tsx .s2 { color: #0a3069 !important; }
+.highlight.language-jsx .c, .highlight.language-jsx .c1, .highlight.language-jsx .cm, .highlight.language-react .c, .highlight.language-react .c1, .highlight.language-react .cm, .highlight.language-tsx .c, .highlight.language-tsx .c1, .highlight.language-tsx .cm { color: #656d76 !important; }
+.highlight.language-jsx .c, .highlight.language-jsx .c1, .highlight.language-jsx .cm, .highlight.language-react .c, .highlight.language-react .c1, .highlight.language-react .cm, .highlight.language-tsx .c, .highlight.language-tsx .c1, .highlight.language-tsx .cm { font-style: italic; }
+.highlight.language-jsx .m, .highlight.language-jsx .mi, .highlight.language-jsx .mf, .highlight.language-react .m, .highlight.language-react .mi, .highlight.language-react .mf, .highlight.language-tsx .m, .highlight.language-tsx .mi, .highlight.language-tsx .mf, .highlight.language-tsx .kt { color: #0969da !important; }
+.highlight.language-javascript .err, .highlight.language-js .err { color: #116329 !important; }
+.highlight span { background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important; }
+.svg-container { margin: 15px 0; text-align: center; padding: 10px; }
+.svg-container svg, .mermaid svg { max-width: 100%; height: auto; }
+.empty-code-block { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+img { max-width: 100%; height: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; }
+th, td { padding: 8px; }
+th { background-color: #f2f2f2; }
+.chapter-container { background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.chapter-container h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444; }
+.collapsible-container { position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0; }
+.collapsible-container pre { margin: 0; line-height: 1.4; }
+.collapsible-container .toggle-button { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.collapsible-container .toggle-button:hover { background: rgba(255,255,255,1); }
+.collapsible-container .copy-button { position: absolute; top: 8px; width: 24px; display: flex; align-items: center; justify-content: center; right: 48px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.collapsible-container .copy-button:hover { background: rgba(255,255,255,1); }
+.collapsible-container .fade-overlay { position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(254,246,228,0),
+    rgba(254,246,228,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+.collapsible-container .ellipsis { position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6; }
+.collapsible-container.expanded .fade-overlay, .collapsible-container.expanded .ellipsis { display: none; }
+#table-of-contents { background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff; }
+#contents-header { text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px; }
+ul.toc { list-style-type: none; padding-left: 20px; margin: 0; }
+li.toc { margin: 10px 0; line-height: 1.5; color: #585b9e; }
+a.toc { text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block; }
+a.toc:hover { color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none; }
+li.toc li.toc { margin-left: 15px; }
+li.toc li.toc li.toc { margin-left: 25px; }
+ul.toc &gt; li.toc &gt; a.toc { font-weight: 500; }
+#table-of-contents:before { content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px; }
+#mermaid-svg-0 { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333; }
+@keyframes edge-animation-frame {from{stroke-dashoffset:0;}}
+@keyframes dash {to{stroke-dashoffset:0;}}
+#mermaid-svg-0 .edge-animation-slow { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round; }
+#mermaid-svg-0 .edge-animation-fast { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round; }
+#mermaid-svg-0 .error-icon { fill: #552222; }
+#mermaid-svg-0 .error-text { fill: #552222; stroke: #552222; }
+#mermaid-svg-0 .edge-thickness-normal { stroke-width: 1px; }
+#mermaid-svg-0 .edge-thickness-thick { stroke-width: 3.5px; }
+#mermaid-svg-0 .edge-pattern-solid { stroke-dasharray: 0; }
+#mermaid-svg-0 .edge-thickness-invisible { stroke-width: 0; fill: none; }
+#mermaid-svg-0 .edge-pattern-dashed { stroke-dasharray: 3; }
+#mermaid-svg-0 .edge-pattern-dotted { stroke-dasharray: 2; }
+#mermaid-svg-0 .marker { fill: #333333; stroke: #333333; }
+#mermaid-svg-0 .marker.cross { stroke: #333333; }
+#mermaid-svg-0 svg { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; }
+#mermaid-svg-0 p { margin: 0; }
+#mermaid-svg-0 .label { font-family: "trebuchet ms",verdana,arial,sans-serif; color: #333; }
+#mermaid-svg-0 .cluster-label text { fill: #333; }
+#mermaid-svg-0 .cluster-label span { color: #333; }
+#mermaid-svg-0 .cluster-label span p { background-color: transparent; }
+#mermaid-svg-0 .label text, #mermaid-svg-0 span { fill: #333; }
+#mermaid-svg-0 .label text, #mermaid-svg-0 span { color: #333; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { fill: #ECECFF; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { stroke: #9370DB; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { stroke-width: 1px; }
+#mermaid-svg-0 .rough-node .label text, #mermaid-svg-0 .node .label text, #mermaid-svg-0 .image-shape .label, #mermaid-svg-0 .icon-shape .label { text-anchor: middle; }
+#mermaid-svg-0 .node .katex path { fill: #000; stroke: #000; stroke-width: 1px; }
+#mermaid-svg-0 .rough-node .label, #mermaid-svg-0 .node .label, #mermaid-svg-0 .image-shape .label, #mermaid-svg-0 .icon-shape .label { text-align: center; }
+#mermaid-svg-0 .node.clickable { cursor: pointer; }
+#mermaid-svg-0 .root .anchor path { fill: #333333!important; stroke-width: 0; stroke: #333333; }
+#mermaid-svg-0 .arrowheadPath { fill: #333333; }
+#mermaid-svg-0 .edgePaths .path { stroke: #333333; stroke-width: 1px; }
+#mermaid-svg-0 .flowchart-link { stroke: #333333; fill: none; }
+#mermaid-svg-0 .edgeLabel { background-color: rgba(232,232,232, 0.8); text-align: center; }
+#mermaid-svg-0 .edgeLabel p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .edgeLabel rect { opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .labelBkg { background-color: rgba(232, 232, 232, 0.5); }
+#mermaid-svg-0 .cluster rect { fill: #ffffde; stroke: #aaaa33; stroke-width: 1px; }
+#mermaid-svg-0 .cluster text { fill: #333; }
+#mermaid-svg-0 .cluster span { color: #333; }
+#mermaid-svg-0 .node .collapsed-indicator { fill: #aaaa33; stroke: none; opacity: 0.6; }
+#mermaid-svg-0 .node .collapsed-separator { stroke: #aaaa33; stroke-width: 0.75px; }
+#mermaid-svg-0 div.mermaidTooltip { position: absolute; text-align: center; max-width: 200px; padding: 2px; font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 12px; background: hsl(80, 100%, 96.2745098039%); border: 1px solid #aaaa33; border-radius: 2px; pointer-events: none; z-index: 100; }
+#mermaid-svg-0 .flowchartTitleText { text-anchor: middle; font-size: 18px; fill: #333; }
+#mermaid-svg-0 rect.text { fill: none; stroke-width: 0; }
+#mermaid-svg-0 .icon-shape, #mermaid-svg-0 .image-shape { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape, #mermaid-svg-0 .image-shape { text-align: center; }
+#mermaid-svg-0 .icon-shape p, #mermaid-svg-0 .image-shape p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape p, #mermaid-svg-0 .image-shape p { padding: 2px; }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { opacity: 0.5; }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .label-icon { display: inline-block; height: 1em; overflow: visible; vertical-align: -0.125em; }
+#mermaid-svg-0 .node .label-icon path { fill: currentColor; stroke: revert; stroke-width: revert; }
+#mermaid-svg-0 .node .neo-node, #mermaid-svg-0 [data-look="neo"].node rect, #mermaid-svg-0 [data-look="neo"].cluster rect, #mermaid-svg-0 [data-look="neo"].node polygon { stroke: #9370DB; }
+#mermaid-svg-0 [data-look="neo"].node rect, #mermaid-svg-0 [data-look="neo"].cluster rect, #mermaid-svg-0 [data-look="neo"].node polygon { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].swimlane.cluster rect { filter: none; }
+#mermaid-svg-0 [data-look="neo"].node path { stroke: #9370DB; stroke-width: 1px; }
+#mermaid-svg-0 [data-look="neo"].node .outer-path { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].node .neo-line path { stroke: #9370DB; filter: none; }
+#mermaid-svg-0 [data-look="neo"].node circle { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].node circle .state-start { fill: #000000; }
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon { fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon-neo path { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 :root { --mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif; }
+#mermaid-svg-1 { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333; }
+@keyframes edge-animation-frame {from{stroke-dashoffset:0;}}
+@keyframes dash {to{stroke-dashoffset:0;}}
+#mermaid-svg-1 .edge-animation-slow { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round; }
+#mermaid-svg-1 .edge-animation-fast { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round; }
+#mermaid-svg-1 .error-icon { fill: #552222; }
+#mermaid-svg-1 .error-text { fill: #552222; stroke: #552222; }
+#mermaid-svg-1 .edge-thickness-normal { stroke-width: 1px; }
+#mermaid-svg-1 .edge-thickness-thick { stroke-width: 3.5px; }
+#mermaid-svg-1 .edge-pattern-solid { stroke-dasharray: 0; }
+#mermaid-svg-1 .edge-thickness-invisible { stroke-width: 0; fill: none; }
+#mermaid-svg-1 .edge-pattern-dashed { stroke-dasharray: 3; }
+#mermaid-svg-1 .edge-pattern-dotted { stroke-dasharray: 2; }
+#mermaid-svg-1 .marker { fill: #333333; stroke: #333333; }
+#mermaid-svg-1 .marker.cross { stroke: #333333; }
+#mermaid-svg-1 svg { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; }
+#mermaid-svg-1 p { margin: 0; }
+#mermaid-svg-1 .actor { stroke: #9370DB; fill: #ECECFF; stroke-width: 1; }
+#mermaid-svg-1 rect.actor.outer-path[data-look="neo"] { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 rect.note[data-look="neo"] { stroke: #aaaa33; fill: #fff5ad; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 text.actor&amp;gt;tspan { fill: black; stroke: none; }
+#mermaid-svg-1 .actor-line { stroke: #9370DB; }
+#mermaid-svg-1 .innerArc { stroke-width: 1.5; stroke-dasharray: none; }
+#mermaid-svg-1 .messageLine0 { stroke-width: 1.5; stroke-dasharray: none; stroke: #333; }
+#mermaid-svg-1 .messageLine1 { stroke-width: 1.5; stroke-dasharray: 2,2; stroke: #333; }
+#mermaid-svg-1 [id$="-arrowhead"] path { fill: #333; stroke: #333; }
+#mermaid-svg-1 .sequenceNumber { fill: white; }
+#mermaid-svg-1 [id$="-sequencenumber"] { fill: #333; }
+#mermaid-svg-1 [id$="-crosshead"] path { fill: #333; stroke: #333; }
+#mermaid-svg-1 .messageText { fill: #333; stroke: none; }
+#mermaid-svg-1 .labelBox { stroke: #9370DB; fill: #ECECFF; filter: none; }
+#mermaid-svg-1 .labelText, #mermaid-svg-1 .labelText&amp;gt;tspan { fill: black; }
+#mermaid-svg-1 .labelText, #mermaid-svg-1 .labelText&amp;gt;tspan { stroke: none; }
+#mermaid-svg-1 .loopText, #mermaid-svg-1 .loopText&amp;gt;tspan { fill: black; }
+#mermaid-svg-1 .loopText, #mermaid-svg-1 .loopText&amp;gt;tspan { stroke: none; }
+#mermaid-svg-1 .sectionTitle, #mermaid-svg-1 .sectionTitle&amp;gt;tspan { fill: black; }
+#mermaid-svg-1 .sectionTitle, #mermaid-svg-1 .sectionTitle&amp;gt;tspan { stroke: none; }
+#mermaid-svg-1 .loopLine { stroke-width: 2px; stroke-dasharray: 2,2; stroke: #9370DB; fill: #9370DB; }
+#mermaid-svg-1 .note { stroke: #aaaa33; fill: #fff5ad; }
+#mermaid-svg-1 .noteText, #mermaid-svg-1 .noteText&amp;gt;tspan { fill: black; }
+#mermaid-svg-1 .noteText, #mermaid-svg-1 .noteText&amp;gt;tspan { stroke: none; }
+#mermaid-svg-1 .noteText, #mermaid-svg-1 .noteText&amp;gt;tspan { font-weight: normal; }
+#mermaid-svg-1 .activation0, #mermaid-svg-1 .activation1, #mermaid-svg-1 .activation2 { fill: #f4f4f4; stroke: #666; }
+#mermaid-svg-1 .actorPopupMenu { position: absolute; }
+#mermaid-svg-1 .actorPopupMenuPanel { position: absolute; fill: #ECECFF; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4)); }
+#mermaid-svg-1 .actor-man circle, #mermaid-svg-1 line { fill: #ECECFF; }
+#mermaid-svg-1 .actor-man circle, #mermaid-svg-1 line { stroke-width: 2px; }
+#mermaid-svg-1 g rect.rect { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); stroke: #9370DB; }
+#mermaid-svg-1 .node .neo-node, #mermaid-svg-1 [data-look="neo"].node rect, #mermaid-svg-1 [data-look="neo"].cluster rect, #mermaid-svg-1 [data-look="neo"].node polygon { stroke: #9370DB; }
+#mermaid-svg-1 [data-look="neo"].node rect, #mermaid-svg-1 [data-look="neo"].cluster rect, #mermaid-svg-1 [data-look="neo"].node polygon { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].swimlane.cluster rect { filter: none; }
+#mermaid-svg-1 [data-look="neo"].node path { stroke: #9370DB; stroke-width: 1px; }
+#mermaid-svg-1 [data-look="neo"].node .outer-path { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].node .neo-line path { stroke: #9370DB; filter: none; }
+#mermaid-svg-1 [data-look="neo"].node circle { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].node circle .state-start { fill: #000000; }
+#mermaid-svg-1 [data-look="neo"].icon-shape .icon { fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].icon-shape .icon-neo path { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 :root { --mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif; }
+#mermaid-svg-2 { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333; }
+@keyframes edge-animation-frame {from{stroke-dashoffset:0;}}
+@keyframes dash {to{stroke-dashoffset:0;}}
+#mermaid-svg-2 .edge-animation-slow { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round; }
+#mermaid-svg-2 .edge-animation-fast { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round; }
+#mermaid-svg-2 .error-icon { fill: #552222; }
+#mermaid-svg-2 .error-text { fill: #552222; stroke: #552222; }
+#mermaid-svg-2 .edge-thickness-normal { stroke-width: 1px; }
+#mermaid-svg-2 .edge-thickness-thick { stroke-width: 3.5px; }
+#mermaid-svg-2 .edge-pattern-solid { stroke-dasharray: 0; }
+#mermaid-svg-2 .edge-thickness-invisible { stroke-width: 0; fill: none; }
+#mermaid-svg-2 .edge-pattern-dashed { stroke-dasharray: 3; }
+#mermaid-svg-2 .edge-pattern-dotted { stroke-dasharray: 2; }
+#mermaid-svg-2 .marker { fill: #333333; stroke: #333333; }
+#mermaid-svg-2 .marker.cross { stroke: #333333; }
+#mermaid-svg-2 svg { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; }
+#mermaid-svg-2 p { margin: 0; }
+#mermaid-svg-2 .actor { stroke: #9370DB; fill: #ECECFF; stroke-width: 1; }
+#mermaid-svg-2 rect.actor.outer-path[data-look="neo"] { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-2 rect.note[data-look="neo"] { stroke: #aaaa33; fill: #fff5ad; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-2 text.actor&amp;gt;tspan { fill: black; stroke: none; }
+#mermaid-svg-2 .actor-line { stroke: #9370DB; }
+#mermaid-svg-2 .innerArc { stroke-width: 1.5; stroke-dasharray: none; }
+#mermaid-svg-2 .messageLine0 { stroke-width: 1.5; stroke-dasharray: none; stroke: #333; }
+#mermaid-svg-2 .messageLine1 { stroke-width: 1.5; stroke-dasharray: 2,2; stroke: #333; }
+#mermaid-svg-2 [id$="-arrowhead"] path { fill: #333; stroke: #333; }
+#mermaid-svg-2 .sequenceNumber { fill: white; }
+#mermaid-svg-2 [id$="-sequencenumber"] { fill: #333; }
+#mermaid-svg-2 [id$="-crosshead"] path { fill: #333; stroke: #333; }
+#mermaid-svg-2 .messageText { fill: #333; stroke: none; }
+#mermaid-svg-2 .labelBox { stroke: #9370DB; fill: #ECECFF; filter: none; }
+#mermaid-svg-2 .labelText, #mermaid-svg-2 .labelText&amp;gt;tspan { fill: black; }
+#mermaid-svg-2 .labelText, #mermaid-svg-2 .labelText&amp;gt;tspan { stroke: none; }
+#mermaid-svg-2 .loopText, #mermaid-svg-2 .loopText&amp;gt;tspan { fill: black; }
+#mermaid-svg-2 .loopText, #mermaid-svg-2 .loopText&amp;gt;tspan { stroke: none; }
+#mermaid-svg-2 .sectionTitle, #mermaid-svg-2 .sectionTitle&amp;gt;tspan { fill: black; }
+#mermaid-svg-2 .sectionTitle, #mermaid-svg-2 .sectionTitle&amp;gt;tspan { stroke: none; }
+#mermaid-svg-2 .loopLine { stroke-width: 2px; stroke-dasharray: 2,2; stroke: #9370DB; fill: #9370DB; }
+#mermaid-svg-2 .note { stroke: #aaaa33; fill: #fff5ad; }
+#mermaid-svg-2 .noteText, #mermaid-svg-2 .noteText&amp;gt;tspan { fill: black; }
+#mermaid-svg-2 .noteText, #mermaid-svg-2 .noteText&amp;gt;tspan { stroke: none; }
+#mermaid-svg-2 .noteText, #mermaid-svg-2 .noteText&amp;gt;tspan { font-weight: normal; }
+#mermaid-svg-2 .activation0, #mermaid-svg-2 .activation1, #mermaid-svg-2 .activation2 { fill: #f4f4f4; stroke: #666; }
+#mermaid-svg-2 .actorPopupMenu { position: absolute; }
+#mermaid-svg-2 .actorPopupMenuPanel { position: absolute; fill: #ECECFF; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4)); }
+#mermaid-svg-2 .actor-man circle, #mermaid-svg-2 line { fill: #ECECFF; }
+#mermaid-svg-2 .actor-man circle, #mermaid-svg-2 line { stroke-width: 2px; }
+#mermaid-svg-2 g rect.rect { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); stroke: #9370DB; }
+#mermaid-svg-2 .node .neo-node, #mermaid-svg-2 [data-look="neo"].node rect, #mermaid-svg-2 [data-look="neo"].cluster rect, #mermaid-svg-2 [data-look="neo"].node polygon { stroke: #9370DB; }
+#mermaid-svg-2 [data-look="neo"].node rect, #mermaid-svg-2 [data-look="neo"].cluster rect, #mermaid-svg-2 [data-look="neo"].node polygon { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-2 [data-look="neo"].swimlane.cluster rect { filter: none; }
+#mermaid-svg-2 [data-look="neo"].node path { stroke: #9370DB; stroke-width: 1px; }
+#mermaid-svg-2 [data-look="neo"].node .outer-path { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-2 [data-look="neo"].node .neo-line path { stroke: #9370DB; filter: none; }
+#mermaid-svg-2 [data-look="neo"].node circle { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-2 [data-look="neo"].node circle .state-start { fill: #000000; }
+#mermaid-svg-2 [data-look="neo"].icon-shape .icon { fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-2 [data-look="neo"].icon-shape .icon-neo path { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-2 :root { --mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif; }</textarea><script>
+document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+    }
+});
+</script><script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('svg[data-viewbox]').forEach(function(svg) {
+        if (!svg.getAttribute('viewBox')) {
+            svg.setAttribute('viewBox', svg.getAttribute('data-viewbox'));
+        }
+    });
+});
+</script><script>document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        // Se inicializa en DOMContentLoaded y de nuevo en load: no duplicar botones
+        if (!pre || container.dataset.collapsibleInit) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.dataset.collapsibleInit = '1';
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        // !important para que no lo pise el color de botones del tema (Moodle)
+        copyBtn.style.setProperty('color', 'black', 'important');
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        btn.style.setProperty('color', 'black', 'important');
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});</script></body>
+</html>

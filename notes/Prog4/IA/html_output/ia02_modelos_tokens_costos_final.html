@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modelos, tokens y costos</title>
+
+</head>
+<body>
+<div id="main-title-block"><span>Modelos, tokens y costos</span></div>
+<div class="toc" id="table-of-contents">
+<h2 id="contents-header">Tabla de contenidos</h2>
+<ul class="toc">
+<li class="toc"><a class="toc" href="#1-tokens">1. Tokens</a></li>
+<li class="toc"><a class="toc" href="#2-modelos">2. Modelos</a></li>
+<li class="toc"><a class="toc" href="#3-formas-de-pago">3. Formas de pago</a></li>
+</ul>
+</div>
+<p>Para usar IA en desarrollo con criterio hay que entender tres cosas: <strong>qué es un token</strong> (la unidad con la que se mide y se cobra todo), <strong>qué modelos hay</strong> (y por qué no conviene usar siempre el más grande) y <strong>cómo se paga</strong> (suscripción o consumo por API).</p>
+<blockquote>
+<p>Los precios y modelos de este apunte corresponden a noviembre de 2026. Cambian seguido: antes de tomar una decisión de costos, verificá en la página oficial de precios.</p>
+</blockquote>
+<div class="chapter-container"><h2 id="1-tokens">1. Tokens</h2>
+<h3 id="11-que-es-un-token">1.1 Qué es un token</h3>
+<p>Un modelo de lenguaje no lee caracteres ni palabras: lee <strong>tokens</strong>, fragmentos de texto que salen de un vocabulario fijo (el <em>tokenizer</em>). Una palabra común puede ser un token; una palabra rara, un identificador de código o una palabra en español suelen partirse en varios.</p>
+<div class="highlight language-text"><pre><span></span>"Programación IV"   →  ["Program", "ación", " IV"]          ≈ 3 tokens
+"getUserById"       →  ["get", "User", "By", "Id"]           ≈ 4 tokens
+"   "               →  espacios e indentación también cuentan
+</pre></div>
+<p>(La partición exacta depende del modelo; el ejemplo es ilustrativo.)</p>
+<p>Reglas prácticas para estimar:</p>
+<ul>
+<li>En inglés, ~<strong>4 caracteres por token</strong>; en español y en código, algo menos (más tokens por el mismo texto).</li>
+<li>Una página de apunte (~500 palabras) ronda los <strong>700–900 tokens</strong>.</li>
+<li>Un archivo de código de 200 líneas puede ser <strong>2.000–3.000 tokens</strong>.</li>
+</ul>
+<p>Para contar exacto no se adivina: la API tiene un endpoint de conteo (<code>/v1/messages/count_tokens</code>). Herramientas de otros proveedores (como <code>tiktoken</code>) usan <strong>otro tokenizer</strong> y dan números incorrectos para Claude.</p>
+<h3 id="12-entrada-y-salida">1.2 Entrada y salida</h3>
+<p>Cada llamada a un modelo tiene dos partes que se miden y cobran por separado:</p>
+<div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;"><svg aria-roledescription="flowchart-v2" class="flowchart" data-viewbox="0 0 669.421875 118" height="118" id="mermaid-svg-0" role="graphics-document document" style="width: 669.421875px; height: 118px; max-width: 100%; background-color: transparent;" viewBox="0 0 669.421875 118" width="669.421875" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="4.5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="10.5" orient="auto" refx="11.5" refy="7" viewBox="0 0 11.5 14"><path class="arrowMarkerPath" d="M 0 0 L 11.5 7 L 0 14 z" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-pointStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="11.5" orient="auto" refx="1" refy="7" viewBox="0 0 11.5 14"><polygon class="arrowMarkerPath" points="0,7 11.5,14 11.5,0" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="11" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="12.25" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-0_flowchart-v2-circleStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="-2" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="12" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossEnd-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="17.7" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-0_flowchart-v2-crossStart-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="-3.5" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M246.281,59L250.448,59C254.615,59,262.948,59,270.615,59C278.281,59,285.281,59,288.781,59L292.281,59" data-edge="true" data-et="edge" data-id="L_I_M_0" data-look="classic" data-points="W3sieCI6MjQ2LjI4MTI1LCJ5Ijo1OX0seyJ4IjoyNzEuMjgxMjUsInkiOjU5fSx7IngiOjI5Ni4yODEyNSwieSI6NTl9XQ==" id="my-svg-L_I_M_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M363.766,59L367.932,59C372.099,59,380.432,59,388.099,59C395.766,59,402.766,59,406.266,59L409.766,59" data-edge="true" data-et="edge" data-id="L_M_O_0" data-look="classic" data-points="W3sieCI6MzYzLjc2NTYyNSwieSI6NTl9LHsieCI6Mzg4Ljc2NTYyNSwieSI6NTl9LHsieCI6NDEzLjc2NTYyNSwieSI6NTl9XQ==" id="my-svg-L_M_O_0" marker-end="url(#mermaid-svg-0_flowchart-v2-pointEnd)" style=";"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_I_M_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_M_O_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g></g><g class="nodes"><g class="node default" data-look="classic" id="my-svg-flowchart-I-0" transform="translate(127.140625, 59)"><rect class="basic label-container" height="102" style="" width="238.28125" x="-119.140625" y="-51"></rect><g class="label" style="" transform="translate(-89.140625, -36)"><rect></rect><foreignobject height="72" style="overflow: visible;" width="178.28125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Tokens de ENTRADA<br/>system prompt + historial<br/>+ archivos + tu mensaje</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-M-1" transform="translate(330.0234375, 59)"><circle class="basic label-container" cx="0" cy="0" r="33.7421875" style=""></circle><g class="label" style="" transform="translate(-26.2421875, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="52.484375"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Modelo</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-O-3" transform="translate(537.59375, 59)"><rect class="basic label-container" height="102" style="" width="247.65625" x="-123.828125" y="-51"></rect><g class="label" style="" transform="translate(-93.828125, -36)"><rect></rect><foreignobject height="72" style="overflow: visible;" width="187.65625"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Tokens de SALIDA<br/>lo que el modelo genera<br/>(incluido su razonamiento)</p></span></div></foreignobject></g></g></g></g></g><defs><filter height="130%" id="my-svg-drop-shadow" width="130%"><fedropshadow dx="4" dy="4" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs><defs><filter height="150%" id="my-svg-drop-shadow-small" width="150%"><fedropshadow dx="2" dy="2" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs></svg></div>
+<ul>
+<li><strong>Entrada (input)</strong>: todo lo que le mandás. Ojo: en una conversación, <strong>cada turno reenvía todo el historial</strong>. El turno 20 de una charla paga de nuevo la entrada de los 19 anteriores.</li>
+<li><strong>Salida (output)</strong>: lo que genera. Es <strong>unas 5 veces más cara</strong> que la entrada, y además es más lenta (se genera token a token).</li>
+</ul>
+<p>Esto explica por qué un agente como Claude Code consume mucho más que un chat: en cada paso relee archivos, salidas de comandos y todo lo que vino antes.</p>
+<h3 id="13-ventana-de-contexto">1.3 Ventana de contexto</h3>
+<p>La <strong>ventana de contexto</strong> es el máximo de tokens (entrada + salida) que el modelo puede considerar en una llamada. Los modelos actuales de Claude tienen <strong>1 millón de tokens</strong> de contexto (Haiku 4.5, de la generación anterior, tiene 200 mil).</p>
+<p>Un millón de tokens es mucho (un repositorio mediano entero), pero tiene dos costos:</p>
+<ol>
+<li><strong>Plata</strong>: cada token de entrada se paga en cada llamada.</li>
+<li><strong>Calidad</strong>: con mucho contexto irrelevante, el modelo se distrae. Más contexto no es mejor contexto.</li>
+</ol>
+<p>Por eso las herramientas lo administran: Claude Code <strong>compacta</strong> la conversación (resume lo viejo) cuando se acerca al límite, y vos podés forzarlo con <code>/compact</code> o empezar de cero con <code>/clear</code>.</p>
+<h3 id="14-cache-de-prompts">1.4 Caché de prompts</h3>
+<p>Si muchas llamadas empiezan con el mismo prefijo (el mismo system prompt, los mismos archivos), ese prefijo se puede <strong>cachear</strong>: la primera vez se paga un poco más por escribirlo en caché y las siguientes se lee mucho más barato.</p>
+<table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>Costo relativo al precio de entrada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Escritura en caché (dura 5 min)</td>
+<td>1,25×</td>
+</tr>
+<tr>
+<td>Escritura en caché (dura 1 hora)</td>
+<td>2×</td>
+</tr>
+<tr>
+<td>Lectura de caché</td>
+<td>~0,1× (en los modelos más nuevos, menos: 0,05× en Opus 5.5 y Sonnet 5.5, 0,025× en Fable 5.2)</td>
+</tr>
+</tbody>
+</table>
+<p>Con caché de 5 minutos, <strong>ya con dos llamadas</strong> sale más barato que sin caché (1,25 + 0,1 = 1,35 contra 2). Claude Code usa caché automáticamente; en tus propias apps con la API, lo activás vos.</p>
+</div><div class="chapter-container"><h2 id="2-modelos">2. Modelos</h2>
+<h3 id="21-las-familias">2.1 Las familias</h3>
+<p>Anthropic organiza sus modelos en familias según el balance capacidad / velocidad / precio:</p>
+<table>
+<thead>
+<tr>
+<th>Familia</th>
+<th>Perfil</th>
+<th>Cuándo usarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fable</strong></td>
+<td>El más capaz</td>
+<td>Problemas muy difíciles, tareas largas y autónomas, arquitectura</td>
+</tr>
+<tr>
+<td><strong>Opus</strong></td>
+<td>Muy capaz, más económico que Fable</td>
+<td>Programación compleja, agentes; es el modelo por defecto en muchas herramientas</td>
+</tr>
+<tr>
+<td><strong>Sonnet</strong></td>
+<td>Rápido y capaz</td>
+<td>Programación diaria, la mayoría de las tareas</td>
+</tr>
+<tr>
+<td><strong>Haiku</strong></td>
+<td>Muy rápido y muy barato</td>
+<td>Tareas simples y de alto volumen: clasificar, extraer, resumir, subagentes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-modelos-actuales-y-precios-por-api">2.2 Modelos actuales y precios por API</h3>
+<p>Precios en dólares por <strong>millón de tokens</strong> (MTok), API directa de Anthropic:</p>
+<table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th>ID para la API</th>
+<th>Contexto</th>
+<th style="text-align: right;">Entrada</th>
+<th style="text-align: right;">Salida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Fable 5.2</td>
+<td><code>claude-fable-5-2</code></td>
+<td>1M</td>
+<td style="text-align: right;">$8</td>
+<td style="text-align: right;">$40</td>
+</tr>
+<tr>
+<td>Claude Opus 5.5</td>
+<td><code>claude-opus-5-5</code></td>
+<td>1M</td>
+<td style="text-align: right;">$4</td>
+<td style="text-align: right;">$20</td>
+</tr>
+<tr>
+<td>Claude Sonnet 5.5</td>
+<td><code>claude-sonnet-5-5</code></td>
+<td>1M</td>
+<td style="text-align: right;">$2</td>
+<td style="text-align: right;">$10</td>
+</tr>
+<tr>
+<td>Claude Haiku 5.5</td>
+<td><code>claude-haiku-5-5</code></td>
+<td>1M</td>
+<td style="text-align: right;">$0,10*</td>
+<td style="text-align: right;">$0,50*</td>
+</tr>
+</tbody>
+</table>
+<p>* Haiku 5.5 tiene precio escalonado: $0,10 / $0,50 con prompts de hasta 100K tokens, y $0,50 / $2,50 por encima. Además usa un tokenizer más nuevo, que cuenta el mismo texto como ~30% más tokens.</p>
+<p>Siguen disponibles modelos anteriores (Fable 5.1, Opus 5, Sonnet 5, Opus 4.x, Haiku 4.5, etc.) para quien los necesite por compatibilidad; para proyectos nuevos se usan los actuales.</p>
+<p>Observá la escala: entre Haiku 5.5 y Fable 5.2 hay <strong>80 veces</strong> de diferencia en precio. Elegir modelo es una decisión de ingeniería, no de gusto.</p>
+<h3 id="23-razonamiento-thinking-y-esfuerzo">2.3 Razonamiento (<em>thinking</em>) y esfuerzo</h3>
+<p>Los modelos actuales <strong>razonan antes de responder</strong> (<em>adaptive thinking</em>): deciden cuánto pensar según la dificultad. Ese razonamiento <strong>se cobra como tokens de salida</strong>, aunque no lo veas completo.</p>
+<p>El control principal es el <strong>esfuerzo</strong> (<em>effort</em>): <code>low</code>, <code>medium</code>, <code>high</code>, <code>xhigh</code>, <code>max</code>. Más esfuerzo = respuestas más cuidadosas, más tokens, más tiempo. Regla práctica:</p>
+<ul>
+<li><code>low</code> para tareas simples o de alto volumen.</li>
+<li><code>medium</code> / <code>high</code> para la mayoría del trabajo.</li>
+<li><code>xhigh</code> / <code>max</code> cuando equivocarse sale caro (un bug sutil, un diseño importante).</li>
+</ul>
+<p>Muchas veces, <strong>un modelo grande con esfuerzo bajo</strong> rinde igual o mejor que uno chico con esfuerzo alto. Se decide midiendo.</p>
+<h3 id="24-como-elegir-un-ejemplo">2.4 Cómo elegir: un ejemplo</h3>
+<p>Supongamos una app que resume reseñas de usuarios: 50.000 reseñas por mes, ~400 tokens de entrada y ~100 de salida cada una.</p>
+<div class="highlight language-text"><pre><span></span>Entrada: 50.000 × 400 = 20 MTok
+Salida:  50.000 × 100 =  5 MTok
+</pre></div>
+<table>
+<thead>
+<tr>
+<th>Modelo</th>
+<th style="text-align: right;">Entrada</th>
+<th style="text-align: right;">Salida</th>
+<th style="text-align: right;">Total/mes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fable 5.2</td>
+<td style="text-align: right;">20 × $8 = $160</td>
+<td style="text-align: right;">5 × $40 = $200</td>
+<td style="text-align: right;"><strong>$360</strong></td>
+</tr>
+<tr>
+<td>Opus 5.5</td>
+<td style="text-align: right;">20 × $4 = $80</td>
+<td style="text-align: right;">5 × $20 = $100</td>
+<td style="text-align: right;"><strong>$180</strong></td>
+</tr>
+<tr>
+<td>Sonnet 5.5</td>
+<td style="text-align: right;">20 × $2 = $40</td>
+<td style="text-align: right;">5 × $10 = $50</td>
+<td style="text-align: right;"><strong>$90</strong></td>
+</tr>
+<tr>
+<td>Haiku 5.5</td>
+<td style="text-align: right;">20 × $0,10 = $2</td>
+<td style="text-align: right;">5 × $0,50 = $2,50</td>
+<td style="text-align: right;"><strong>$4,50</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Para resumir reseñas, Haiku probablemente alcance. Para revisar código de seguridad, no ahorrarías en modelo. El procedimiento correcto: armar un set de 30–50 casos reales, correrlo con dos o tres modelos y comparar calidad contra costo.</p>
+<h3 id="25-otros-descuentos">2.5 Otros descuentos</h3>
+<ul>
+<li><strong>Batch API</strong>: si las llamadas no necesitan respuesta inmediata (procesar 50.000 reseñas de noche), se mandan en lote y cuestan <strong>50% menos</strong>.</li>
+<li><strong>Caché de prompts</strong>: lo visto en 1.4.</li>
+<li><strong>Modo rápido</strong> (<em>fast mode</em>, en Fable 5.2 y en Opus 5.5 y anteriores): el mismo modelo generando más rápido, al <strong>doble de precio</strong>. Es lo inverso de un descuento: se paga velocidad.</li>
+</ul>
+</div><div class="chapter-container"><h2 id="3-formas-de-pago">3. Formas de pago</h2>
+<p>Hay dos mundos que conviene no confundir:</p>
+<div class="mermaid-rendered" style="text-align: center; margin: 15px 0; overflow-x: auto;"><svg aria-roledescription="flowchart-v2" class="flowchart" data-viewbox="0 0 586 502" height="502" id="mermaid-svg-1" role="graphics-document document" style="width: 586px; height: 502px; max-width: 100%; background-color: transparent;" viewBox="0 0 586 502" width="586" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointEnd" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 0 L 10 5 L 0 10 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointStart" markerheight="8" markerunits="userSpaceOnUse" markerwidth="8" orient="auto" refx="4.5" refy="5" viewBox="0 0 10 10"><path class="arrowMarkerPath" d="M 0 5 L 10 10 L 10 0 z" style="stroke-width: 1; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="10.5" orient="auto" refx="11.5" refy="7" viewBox="0 0 11.5 14"><path class="arrowMarkerPath" d="M 0 0 L 11.5 7 L 0 14 z" style="stroke-width: 0; stroke-dasharray: 1, 0;"></path></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-pointStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="11.5" orient="auto" refx="1" refy="7" viewBox="0 0 11.5 14"><polygon class="arrowMarkerPath" points="0,7 11.5,14 11.5,0" style="stroke-width: 0; stroke-dasharray: 1, 0;"></polygon></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="11" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 1; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleEnd-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="12.25" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker flowchart-v2" id="mermaid-svg-1_flowchart-v2-circleStart-margin" markerheight="14" markerunits="userSpaceOnUse" markerwidth="14" orient="auto" refx="-2" refy="5" viewBox="0 0 10 10"><circle class="arrowMarkerPath" cx="5" cy="5" r="5" style="stroke-width: 0; stroke-dasharray: 1, 0;"></circle></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossEnd" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="12" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossStart" markerheight="11" markerunits="userSpaceOnUse" markerwidth="11" orient="auto" refx="-1" refy="5.2" viewBox="0 0 11 11"><path class="arrowMarkerPath" d="M 1,1 l 9,9 M 10,1 l -9,9" style="stroke-width: 2; stroke-dasharray: 1, 0;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossEnd-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="17.7" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5;"></path></marker><marker class="marker cross flowchart-v2" id="mermaid-svg-1_flowchart-v2-crossStart-margin" markerheight="12" markerunits="userSpaceOnUse" markerwidth="12" orient="auto" refx="-3.5" refy="7.5" viewBox="0 0 15 15"><path class="arrowMarkerPath" d="M 1,1 L 14,14 M 1,14 L 14,1" style="stroke-width: 2.5; stroke-dasharray: 1, 0;"></path></marker><g class="root"><g class="clusters"></g><g class="edgePaths"><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M212.519,62L200.099,66.167C187.679,70.333,162.84,78.667,150.42,86.333C138,94,138,101,138,104.5L138,108" data-edge="true" data-et="edge" data-id="L_A_B_0" data-look="classic" data-points="W3sieCI6MjEyLjUxOTIzMDc2OTIzMDc3LCJ5Ijo2Mn0seyJ4IjoxMzgsInkiOjg3fSx7IngiOjEzOCwieSI6MTEyfV0=" id="my-svg-L_A_B_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M373.481,62L385.901,66.167C398.321,70.333,423.16,78.667,435.58,86.333C448,94,448,101,448,104.5L448,108" data-edge="true" data-et="edge" data-id="L_A_C_0" data-look="classic" data-points="W3sieCI6MzczLjQ4MDc2OTIzMDc2OTIsInkiOjYyfSx7IngiOjQ0OCwieSI6ODd9LHsieCI6NDQ4LCJ5IjoxMTJ9XQ==" id="my-svg-L_A_C_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M138,190L138,194.167C138,198.333,138,206.667,138,214.333C138,222,138,229,138,232.5L138,236" data-edge="true" data-et="edge" data-id="L_B_B1_0" data-look="classic" data-points="W3sieCI6MTM4LCJ5IjoxOTB9LHsieCI6MTM4LCJ5IjoyMTV9LHsieCI6MTM4LCJ5IjoyNDB9XQ==" id="my-svg-L_B_B1_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M138,318L138,322.167C138,326.333,138,334.667,138,342.333C138,350,138,357,138,360.5L138,364" data-edge="true" data-et="edge" data-id="L_B1_B2_0" data-look="classic" data-points="W3sieCI6MTM4LCJ5IjozMTh9LHsieCI6MTM4LCJ5IjozNDN9LHsieCI6MTM4LCJ5IjozNjh9XQ==" id="my-svg-L_B1_B2_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M448,190L448,194.167C448,198.333,448,206.667,448,214.333C448,222,448,229,448,232.5L448,236" data-edge="true" data-et="edge" data-id="L_C_C1_0" data-look="classic" data-points="W3sieCI6NDQ4LCJ5IjoxOTB9LHsieCI6NDQ4LCJ5IjoyMTV9LHsieCI6NDQ4LCJ5IjoyNDB9XQ==" id="my-svg-L_C_C1_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path><path class="edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link" d="M448,318L448,322.167C448,326.333,448,334.667,448,344.333C448,354,448,365,448,370.5L448,376" data-edge="true" data-et="edge" data-id="L_C1_C2_0" data-look="classic" data-points="W3sieCI6NDQ4LCJ5IjozMTh9LHsieCI6NDQ4LCJ5IjozNDN9LHsieCI6NDQ4LCJ5IjozODB9XQ==" id="my-svg-L_C1_C2_0" marker-end="url(#mermaid-svg-1_flowchart-v2-pointEnd)" style=";"></path></g><g class="edgeLabels"><g class="edgeLabel"><g class="label" data-id="L_A_B_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_A_C_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_B_B1_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_B1_B2_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_C_C1_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g><g class="edgeLabel"><g class="label" data-id="L_C1_C2_0" transform="translate(0, 0)"><foreignobject height="0" style="overflow: visible;" width="0"><div class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="edgeLabel"></span></div></foreignobject></g></g></g><g class="nodes"><g class="node default" data-look="classic" id="my-svg-flowchart-A-0" transform="translate(293, 35)"><rect class="basic label-container" height="54" style="" width="161.390625" x="-80.6953125" y="-27"></rect><g class="label" style="" transform="translate(-50.6953125, -12)"><rect></rect><foreignobject height="24" style="overflow: visible;" width="101.390625"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>¿Cómo pago?</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-B-1" transform="translate(138, 151)"><rect class="basic label-container" height="78" style="" width="142.703125" x="-71.3515625" y="-39"></rect><g class="label" style="" transform="translate(-41.3515625, -24)"><rect></rect><foreignobject height="48" style="overflow: visible;" width="82.703125"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Suscripción<br/>claude.ai</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-C-3" transform="translate(448, 151)"><rect class="basic label-container" height="78" style="" width="182.734375" x="-91.3671875" y="-39"></rect><g class="label" style="" transform="translate(-61.3671875, -24)"><rect></rect><foreignobject height="48" style="overflow: visible;" width="122.734375"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>API por consumo<br/>Claude Console</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-B1-5" transform="translate(138, 279)"><rect class="basic label-container" height="78" style="" width="195.171875" x="-97.5859375" y="-39"></rect><g class="label" style="" transform="translate(-67.5859375, -24)"><rect></rect><foreignobject height="48" style="overflow: visible;" width="135.171875"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Precio fijo mensual<br/>con límites de uso</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-B2-7" transform="translate(138, 431)"><rect class="basic label-container" height="126" style="" width="260" x="-130" y="-63"></rect><g class="label" style="" transform="translate(-100, -48)"><rect></rect><foreignobject height="96" style="overflow: visible;" width="200"><div style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Chat en claude.ai + Claude Code<br/>(terminal, escritorio, web, IDE)</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-C1-9" transform="translate(448, 279)"><rect class="basic label-container" height="78" style="" width="188.09375" x="-94.046875" y="-39"></rect><g class="label" style="" transform="translate(-64.046875, -24)"><rect></rect><foreignobject height="48" style="overflow: visible;" width="128.09375"><div style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Pagás cada token<br/>sin techo</p></span></div></foreignobject></g></g><g class="node default" data-look="classic" id="my-svg-flowchart-C2-11" transform="translate(448, 431)"><rect class="basic label-container" height="102" style="" width="260" x="-130" y="-51"></rect><g class="label" style="" transform="translate(-100, -36)"><rect></rect><foreignobject height="72" style="overflow: visible;" width="200"><div style="display: table; white-space: break-spaces; line-height: 1.5; max-width: 200px; text-align: center; width: 200px;" xmlns="http://www.w3.org/1999/xhtml"><span class="nodeLabel"><p>Tus propias apps con el SDK<br/>+ Claude Code con API key</p></span></div></foreignobject></g></g></g></g></g><defs><filter height="130%" id="my-svg-drop-shadow" width="130%"><fedropshadow dx="4" dy="4" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs><defs><filter height="150%" id="my-svg-drop-shadow-small" width="150%"><fedropshadow dx="2" dy="2" flood-color="#000000" flood-opacity="0.06" stddeviation="0"></fedropshadow></filter></defs></svg></div>
+<h3 id="31-suscripcion">3.1 Suscripción</h3>
+<p>Pagás un monto fijo por mes y usás Claude (chat y Claude Code) <strong>dentro de límites de uso</strong> que se renuevan periódicamente. Si los agotás, esperás a que se renueven (o, según el plan, comprás uso extra).</p>
+<table>
+<thead>
+<tr>
+<th>Plan</th>
+<th>Precio (USD)</th>
+<th>Claude Code</th>
+<th>Uso relativo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free</td>
+<td>$0</td>
+<td><strong>No incluido</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Pro</td>
+<td>$20/mes (o $17/mes pagando el año)</td>
+<td>Sí</td>
+<td>Base</td>
+</tr>
+<tr>
+<td>Max</td>
+<td>$100/mes</td>
+<td>Sí</td>
+<td>5× Pro</td>
+</tr>
+<tr>
+<td>Ultra</td>
+<td>$200/mes</td>
+<td>Sí</td>
+<td>10× Pro</td>
+</tr>
+<tr>
+<td>Team (asiento estándar)</td>
+<td>$25/mes ($20 anual) por persona</td>
+<td>Sí</td>
+<td>Más que Pro</td>
+</tr>
+<tr>
+<td>Team (asiento premium)</td>
+<td>$125/mes ($100 anual) por persona</td>
+<td>Sí</td>
+<td>5× asiento estándar</td>
+</tr>
+<tr>
+<td>Enterprise</td>
+<td>$20 por asiento/mes (anual) + uso a precio de API</td>
+<td>Sí</td>
+<td>Según consumo</td>
+</tr>
+</tbody>
+</table>
+<p>Los límites funcionan con dos ventanas: una <strong>sesión de 5 horas</strong> y un <strong>límite semanal</strong>, compartidos entre el chat de claude.ai y Claude Code (Ultra no tiene límite de 5 horas en cuentas verificadas, sólo el semanal). Max y Ultra incluyen Fable hasta la mitad del límite semanal, más un crédito mensual de API ($100 y $200). Al llegar al límite se puede esperar, subir de plan o activar créditos de uso a precio de API. Anthropic no publica cifras exactas en tokens; el uso real depende del modelo elegido (Opus consume el cupo más rápido que Sonnet), del tamaño del contexto y del esfuerzo. Dentro de Claude Code, <code>/usage</code> muestra cuánto llevás consumido.</p>
+<p>Para instituciones existe <strong>Claude for Education</strong> (se contrata institucionalmente, sin precio público). No hay, por ahora, descuento individual para estudiantes.</p>
+<p><strong>Ventaja</strong>: costo predecible; para uso diario intensivo de Claude Code suele salir mucho más barato que pagar los mismos tokens por API.
+<strong>Desventaja</strong>: no sirve para que <em>tu app</em> llame al modelo. La suscripción es para que <strong>vos</strong> uses Claude, no para tus usuarios.</p>
+<h3 id="32-api-por-consumo-claude-console">3.2 API por consumo (Claude Console)</h3>
+<p>Creás una cuenta en la consola de desarrolladores, cargás crédito y generás una <strong>API key</strong>. Cada llamada se cobra según los tokens, con los precios de la sección 2.2.</p>
+<ul>
+<li>Es <strong>obligatoria</strong> para que tu aplicación use Claude (como el endpoint <code>/suggest</code> del apunte siguiente).</li>
+<li>También podés usar Claude Code con una API key: pagás exactamente lo que consumís. Para uso esporádico puede convenir; para uso diario intenso, la suscripción suele ser más barata.</li>
+<li>La consola permite poner <strong>límites de gasto</strong> por mes y por espacio de trabajo. Ponelos siempre: un bucle mal programado que llama a la API puede gastar mucho en minutos.</li>
+</ul>
+<h3 id="33-nubes-de-terceros">3.3 Nubes de terceros</h3>
+<p>Las empresas que ya trabajan con una nube suelen consumir los mismos modelos a través de <strong>Amazon Bedrock</strong>, <strong>Google Cloud</strong> (Agent Platform, antes Vertex AI) o <strong>Microsoft Foundry</strong>, facturados junto con el resto de su infraestructura. Claude Code también puede configurarse para usar esos proveedores.</p>
+<h3 id="34-que-me-conviene">3.4 ¿Qué me conviene?</h3>
+<table>
+<thead>
+<tr>
+<th>Situación</th>
+<th>Opción razonable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quiero aprender y programar con Claude Code algunas horas por semana</td>
+<td>Suscripción Pro</td>
+</tr>
+<tr>
+<td>Uso Claude Code todo el día, con tareas largas</td>
+<td>Suscripción Max</td>
+</tr>
+<tr>
+<td>Equipo de desarrollo en una empresa</td>
+<td>Plan Team / Enterprise, o API con la nube de la empresa</td>
+</tr>
+<tr>
+<td>Mi app tiene que llamar a Claude</td>
+<td>API (Console o nube), siempre</td>
+</tr>
+<tr>
+<td>Uso esporádico, pocas veces al mes</td>
+<td>API key con límite de gasto</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Seguridad de la API key</strong>: es una credencial que gasta tu plata. Nunca en el código, nunca en un repositorio, nunca pegada en un chat. Variable de entorno o gestor de secretos.</p>
+</blockquote></div>
+<textarea id="css-editor" style="display:none;">pre { line-height: 125%; }
+td.linenos .normal, span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special, span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc; }
+.highlight { background: #f8f8f8; }
+.highlight .err { border: 1px solid #F00; }
+.highlight .ch { color: #3D7B7B; font-style: italic; }
+.highlight .cp { color: #9C6500; }
+.highlight .cpf, .highlight .cs { color: #3D7B7B; font-style: italic; }
+.highlight .gd { color: #A00000; }
+.highlight .ge { font-style: italic; }
+.highlight .ges { font-weight: bold; font-style: italic; }
+.highlight .gr { color: #E40000; }
+.highlight .gh { color: #000080; font-weight: bold; }
+.highlight .gi { color: #008400; }
+.highlight .go { color: #717171; }
+.highlight .gp { color: #000080; font-weight: bold; }
+.highlight .gs { font-weight: bold; }
+.highlight .gu { color: #800080; font-weight: bold; }
+.highlight .gt { color: #04D; }
+.highlight .kc { font-weight: bold; }
+.highlight .kp { color: #008000; }
+.highlight .kr { color: #008000; font-weight: bold; }
+.highlight .kt { color: #B00040; }
+.highlight .na { color: #687822; }
+.highlight .nc { color: #00F; font-weight: bold; }
+.highlight .nd { color: #A2F; }
+.highlight .ni { color: #717171; font-weight: bold; }
+.highlight .ne { color: #CB3F38; font-weight: bold; }
+.highlight .nl { color: #767600; }
+.highlight .nn { color: #00F; font-weight: bold; }
+.highlight .nt { color: #008000; font-weight: bold; }
+.highlight .nv { color: #19177C; }
+.highlight .w { color: #BBB; }
+.highlight .mb, .highlight .mh, .highlight .mo { color: #666; }
+.highlight .sa, .highlight .sc, .highlight .dl { color: #BA2121; }
+.highlight .sd { color: #BA2121; font-style: italic; }
+.highlight .se { color: #AA5D1F; font-weight: bold; }
+.highlight .sh { color: #BA2121; }
+.highlight .si { font-weight: bold; }
+.highlight .sx { color: #008000; }
+.highlight .sr { color: #A45A77; }
+.highlight .ss { color: #19177C; }
+.highlight .bp { color: #008000; }
+.highlight .fm { color: #00F; }
+.highlight .vc, .highlight .vg, .highlight .vi, .highlight .vm { color: #19177C; }
+.highlight .il { color: #666; }
+body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0 auto; padding: 20px; }
+#main-title-block { background-color: #2e2e2e; color: #f0f0f0; padding: 18px; border-radius: 10px; border: 1px solid #444; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 1.8em; font-weight: bold; margin-bottom: 20px; text-align: center; }
+pre:not(.highlight pre) { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; overflow-x: auto; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0; }
+code { font-family: "Courier New", Courier, monospace; }
+.highlight { padding: 0; border-radius: 5px; margin: 15px 0; background-color: #fef6e4 !important; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.highlight pre { background: none; border: none; box-shadow: none; padding: 12px; margin: 0; border-radius: 0; }
+.highlight .c, .highlight .c1, .highlight .cm { color: #9a8052 !important; }
+.highlight .c, .highlight .c1, .highlight .cm { font-style: italic; }
+.highlight .k, .highlight .kd, .highlight .kn { color: #8250df !important; }
+.highlight .k, .highlight .kd, .highlight .kn { font-weight: normal; }
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .si { color: #327d41 !important; }
+.highlight .m, .highlight .mi, .highlight .mf { color: #606060 !important; }
+.highlight .o, .highlight .ow { color: #666666 !important; }
+.highlight .o, .highlight .ow { font-weight: normal; }
+.highlight .kc, .highlight .no { color: #9a5b13 !important; }
+.highlight .nf, .highlight .nb, .highlight .nx { color: #606060 !important; }
+.highlight .nf, .highlight .nb, .highlight .nx { font-weight: normal; }
+.highlight .p { color: #666666 !important; font-weight: normal; }
+.highlight.language-jsx .k, .highlight.language-jsx .kd, .highlight.language-jsx .kr, .highlight.language-react .k, .highlight.language-react .kd, .highlight.language-react .kr, .highlight.language-tsx .k, .highlight.language-tsx .kd, .highlight.language-tsx .kr { color: #af00db !important; }
+.highlight.language-jsx .k, .highlight.language-jsx .kd, .highlight.language-jsx .kr, .highlight.language-react .k, .highlight.language-react .kd, .highlight.language-react .kr, .highlight.language-tsx .k, .highlight.language-tsx .kd, .highlight.language-tsx .kr { font-weight: normal; }
+.highlight.language-jsx .nx, .highlight.language-jsx .nf, .highlight.language-react .nx, .highlight.language-react .nf, .highlight.language-tsx .nx, .highlight.language-tsx .nf { color: #0969da !important; }
+.highlight.language-jsx .nt, .highlight.language-jsx .nc, .highlight.language-react .nt, .highlight.language-react .nc, .highlight.language-tsx .nt, .highlight.language-tsx .nc { color: #116329 !important; }
+.highlight.language-jsx .o, .highlight.language-jsx .p, .highlight.language-react .o, .highlight.language-react .p, .highlight.language-tsx .o, .highlight.language-tsx .p { color: #666666 !important; }
+.highlight.language-jsx .na, .highlight.language-react .na, .highlight.language-tsx .na { color: #0969da !important; }
+.highlight.language-jsx .s, .highlight.language-jsx .s1, .highlight.language-jsx .s2, .highlight.language-react .s, .highlight.language-react .s1, .highlight.language-react .s2, .highlight.language-tsx .s, .highlight.language-tsx .s1, .highlight.language-tsx .s2 { color: #0a3069 !important; }
+.highlight.language-jsx .c, .highlight.language-jsx .c1, .highlight.language-jsx .cm, .highlight.language-react .c, .highlight.language-react .c1, .highlight.language-react .cm, .highlight.language-tsx .c, .highlight.language-tsx .c1, .highlight.language-tsx .cm { color: #656d76 !important; }
+.highlight.language-jsx .c, .highlight.language-jsx .c1, .highlight.language-jsx .cm, .highlight.language-react .c, .highlight.language-react .c1, .highlight.language-react .cm, .highlight.language-tsx .c, .highlight.language-tsx .c1, .highlight.language-tsx .cm { font-style: italic; }
+.highlight.language-jsx .m, .highlight.language-jsx .mi, .highlight.language-jsx .mf, .highlight.language-react .m, .highlight.language-react .mi, .highlight.language-react .mf, .highlight.language-tsx .m, .highlight.language-tsx .mi, .highlight.language-tsx .mf, .highlight.language-tsx .kt { color: #0969da !important; }
+.highlight.language-javascript .err, .highlight.language-js .err { color: #116329 !important; }
+.highlight span { background: none !important; border: none !important; box-shadow: none !important; text-decoration: none !important; outline: none !important; }
+.svg-container { margin: 15px 0; text-align: center; padding: 10px; }
+.svg-container svg, .mermaid svg { max-width: 100%; height: auto; }
+.empty-code-block { background-color: #fef6e4; color: #2e2e2e; padding: 12px; border-radius: 5px; margin: 15px 0; font-family: monospace; border: 1px solid #f0e6d4; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+img { max-width: 100%; height: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; }
+th, td { padding: 8px; }
+th { background-color: #f2f2f2; }
+.chapter-container { background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.chapter-container h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #444; }
+.collapsible-container { position: relative; overflow: hidden; transition: max-height 0.3s ease; border-radius: 8px; margin: 0; }
+.collapsible-container pre { margin: 0; line-height: 1.4; }
+.collapsible-container .toggle-button { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.collapsible-container .toggle-button:hover { background: rgba(255,255,255,1); }
+.collapsible-container .copy-button { position: absolute; top: 8px; width: 24px; display: flex; align-items: center; justify-content: center; right: 48px; background: rgba(255,255,255,0.9); border: 1px solid #ccc; cursor: pointer; font-size: 16px; line-height: 1; padding: 4px 8px; border-radius: 4px; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.collapsible-container .copy-button:hover { background: rgba(255,255,255,1); }
+.collapsible-container .fade-overlay { position: absolute; bottom: -1px; left: 0; right: 0; height: 42px; background: linear-gradient(
+    to bottom, 
+    rgba(254,246,228,0),
+    rgba(254,246,228,1)
+  ); pointer-events: none; z-index: 5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+.collapsible-container .ellipsis { position: absolute; bottom: 8px; width: 100%; text-align: center; color: #888; font-size: 18px; font-weight: bold; z-index: 6; }
+.collapsible-container.expanded .fade-overlay, .collapsible-container.expanded .ellipsis { display: none; }
+#table-of-contents { background-color: #f0f0ff; border-radius: 8px; padding: 20px 30px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); font-family: Arial, sans-serif; border: 1px solid #d0d0ff; }
+#contents-header { text-align: center; color: #585b9e; font-size: 24px; margin-top: 10px; margin-bottom: 20px; font-weight: 500; padding-bottom: 15px; }
+ul.toc { list-style-type: none; padding-left: 20px; margin: 0; }
+li.toc { margin: 10px 0; line-height: 1.5; color: #585b9e; }
+a.toc { text-decoration: none; color: #585b9e; transition: color 0.2s, padding-left 0.2s; display: inline-block; }
+a.toc:hover { color: #3333cc; padding-left: 3px; font-weight: 500; text-decoration: none; }
+li.toc li.toc { margin-left: 15px; }
+li.toc li.toc li.toc { margin-left: 25px; }
+ul.toc &gt; li.toc &gt; a.toc { font-weight: 500; }
+#table-of-contents:before { content: ""; display: block; height: 0px; background-color: #d0d0ff; margin-bottom: 15px; }
+#mermaid-svg-0 { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333; }
+@keyframes edge-animation-frame {from{stroke-dashoffset:0;}}
+@keyframes dash {to{stroke-dashoffset:0;}}
+#mermaid-svg-0 .edge-animation-slow { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round; }
+#mermaid-svg-0 .edge-animation-fast { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round; }
+#mermaid-svg-0 .error-icon { fill: #552222; }
+#mermaid-svg-0 .error-text { fill: #552222; stroke: #552222; }
+#mermaid-svg-0 .edge-thickness-normal { stroke-width: 1px; }
+#mermaid-svg-0 .edge-thickness-thick { stroke-width: 3.5px; }
+#mermaid-svg-0 .edge-pattern-solid { stroke-dasharray: 0; }
+#mermaid-svg-0 .edge-thickness-invisible { stroke-width: 0; fill: none; }
+#mermaid-svg-0 .edge-pattern-dashed { stroke-dasharray: 3; }
+#mermaid-svg-0 .edge-pattern-dotted { stroke-dasharray: 2; }
+#mermaid-svg-0 .marker { fill: #333333; stroke: #333333; }
+#mermaid-svg-0 .marker.cross { stroke: #333333; }
+#mermaid-svg-0 svg { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; }
+#mermaid-svg-0 p { margin: 0; }
+#mermaid-svg-0 .label { font-family: "trebuchet ms",verdana,arial,sans-serif; color: #333; }
+#mermaid-svg-0 .cluster-label text { fill: #333; }
+#mermaid-svg-0 .cluster-label span { color: #333; }
+#mermaid-svg-0 .cluster-label span p { background-color: transparent; }
+#mermaid-svg-0 .label text, #mermaid-svg-0 span { fill: #333; }
+#mermaid-svg-0 .label text, #mermaid-svg-0 span { color: #333; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { fill: #ECECFF; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { stroke: #9370DB; }
+#mermaid-svg-0 .node rect, #mermaid-svg-0 .node circle, #mermaid-svg-0 .node ellipse, #mermaid-svg-0 .node polygon, #mermaid-svg-0 .node path { stroke-width: 1px; }
+#mermaid-svg-0 .rough-node .label text, #mermaid-svg-0 .node .label text, #mermaid-svg-0 .image-shape .label, #mermaid-svg-0 .icon-shape .label { text-anchor: middle; }
+#mermaid-svg-0 .node .katex path { fill: #000; stroke: #000; stroke-width: 1px; }
+#mermaid-svg-0 .rough-node .label, #mermaid-svg-0 .node .label, #mermaid-svg-0 .image-shape .label, #mermaid-svg-0 .icon-shape .label { text-align: center; }
+#mermaid-svg-0 .node.clickable { cursor: pointer; }
+#mermaid-svg-0 .root .anchor path { fill: #333333!important; stroke-width: 0; stroke: #333333; }
+#mermaid-svg-0 .arrowheadPath { fill: #333333; }
+#mermaid-svg-0 .edgePaths .path { stroke: #333333; stroke-width: 1px; }
+#mermaid-svg-0 .flowchart-link { stroke: #333333; fill: none; }
+#mermaid-svg-0 .edgeLabel { background-color: rgba(232,232,232, 0.8); text-align: center; }
+#mermaid-svg-0 .edgeLabel p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .edgeLabel rect { opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .labelBkg { background-color: rgba(232, 232, 232, 0.5); }
+#mermaid-svg-0 .cluster rect { fill: #ffffde; stroke: #aaaa33; stroke-width: 1px; }
+#mermaid-svg-0 .cluster text { fill: #333; }
+#mermaid-svg-0 .cluster span { color: #333; }
+#mermaid-svg-0 .node .collapsed-indicator { fill: #aaaa33; stroke: none; opacity: 0.6; }
+#mermaid-svg-0 .node .collapsed-separator { stroke: #aaaa33; stroke-width: 0.75px; }
+#mermaid-svg-0 div.mermaidTooltip { position: absolute; text-align: center; max-width: 200px; padding: 2px; font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 12px; background: hsl(80, 100%, 96.2745098039%); border: 1px solid #aaaa33; border-radius: 2px; pointer-events: none; z-index: 100; }
+#mermaid-svg-0 .flowchartTitleText { text-anchor: middle; font-size: 18px; fill: #333; }
+#mermaid-svg-0 rect.text { fill: none; stroke-width: 0; }
+#mermaid-svg-0 .icon-shape, #mermaid-svg-0 .image-shape { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape, #mermaid-svg-0 .image-shape { text-align: center; }
+#mermaid-svg-0 .icon-shape p, #mermaid-svg-0 .image-shape p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape p, #mermaid-svg-0 .image-shape p { padding: 2px; }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { opacity: 0.5; }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .icon-shape .label rect, #mermaid-svg-0 .image-shape .label rect { fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-0 .label-icon { display: inline-block; height: 1em; overflow: visible; vertical-align: -0.125em; }
+#mermaid-svg-0 .node .label-icon path { fill: currentColor; stroke: revert; stroke-width: revert; }
+#mermaid-svg-0 .node .neo-node, #mermaid-svg-0 [data-look="neo"].node rect, #mermaid-svg-0 [data-look="neo"].cluster rect, #mermaid-svg-0 [data-look="neo"].node polygon { stroke: #9370DB; }
+#mermaid-svg-0 [data-look="neo"].node rect, #mermaid-svg-0 [data-look="neo"].cluster rect, #mermaid-svg-0 [data-look="neo"].node polygon { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].swimlane.cluster rect { filter: none; }
+#mermaid-svg-0 [data-look="neo"].node path { stroke: #9370DB; stroke-width: 1px; }
+#mermaid-svg-0 [data-look="neo"].node .outer-path { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].node .neo-line path { stroke: #9370DB; filter: none; }
+#mermaid-svg-0 [data-look="neo"].node circle { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].node circle .state-start { fill: #000000; }
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon { fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 [data-look="neo"].icon-shape .icon-neo path { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-0 :root { --mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif; }
+#mermaid-svg-1 { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; fill: #333; }
+@keyframes edge-animation-frame {from{stroke-dashoffset:0;}}
+@keyframes dash {to{stroke-dashoffset:0;}}
+#mermaid-svg-1 .edge-animation-slow { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 50s linear infinite; stroke-linecap: round; }
+#mermaid-svg-1 .edge-animation-fast { stroke-dasharray: 9,5!important; stroke-dashoffset: 900; animation: dash 20s linear infinite; stroke-linecap: round; }
+#mermaid-svg-1 .error-icon { fill: #552222; }
+#mermaid-svg-1 .error-text { fill: #552222; stroke: #552222; }
+#mermaid-svg-1 .edge-thickness-normal { stroke-width: 1px; }
+#mermaid-svg-1 .edge-thickness-thick { stroke-width: 3.5px; }
+#mermaid-svg-1 .edge-pattern-solid { stroke-dasharray: 0; }
+#mermaid-svg-1 .edge-thickness-invisible { stroke-width: 0; fill: none; }
+#mermaid-svg-1 .edge-pattern-dashed { stroke-dasharray: 3; }
+#mermaid-svg-1 .edge-pattern-dotted { stroke-dasharray: 2; }
+#mermaid-svg-1 .marker { fill: #333333; stroke: #333333; }
+#mermaid-svg-1 .marker.cross { stroke: #333333; }
+#mermaid-svg-1 svg { font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 16px; }
+#mermaid-svg-1 p { margin: 0; }
+#mermaid-svg-1 .label { font-family: "trebuchet ms",verdana,arial,sans-serif; color: #333; }
+#mermaid-svg-1 .cluster-label text { fill: #333; }
+#mermaid-svg-1 .cluster-label span { color: #333; }
+#mermaid-svg-1 .cluster-label span p { background-color: transparent; }
+#mermaid-svg-1 .label text, #mermaid-svg-1 span { fill: #333; }
+#mermaid-svg-1 .label text, #mermaid-svg-1 span { color: #333; }
+#mermaid-svg-1 .node rect, #mermaid-svg-1 .node circle, #mermaid-svg-1 .node ellipse, #mermaid-svg-1 .node polygon, #mermaid-svg-1 .node path { fill: #ECECFF; }
+#mermaid-svg-1 .node rect, #mermaid-svg-1 .node circle, #mermaid-svg-1 .node ellipse, #mermaid-svg-1 .node polygon, #mermaid-svg-1 .node path { stroke: #9370DB; }
+#mermaid-svg-1 .node rect, #mermaid-svg-1 .node circle, #mermaid-svg-1 .node ellipse, #mermaid-svg-1 .node polygon, #mermaid-svg-1 .node path { stroke-width: 1px; }
+#mermaid-svg-1 .rough-node .label text, #mermaid-svg-1 .node .label text, #mermaid-svg-1 .image-shape .label, #mermaid-svg-1 .icon-shape .label { text-anchor: middle; }
+#mermaid-svg-1 .node .katex path { fill: #000; stroke: #000; stroke-width: 1px; }
+#mermaid-svg-1 .rough-node .label, #mermaid-svg-1 .node .label, #mermaid-svg-1 .image-shape .label, #mermaid-svg-1 .icon-shape .label { text-align: center; }
+#mermaid-svg-1 .node.clickable { cursor: pointer; }
+#mermaid-svg-1 .root .anchor path { fill: #333333!important; stroke-width: 0; stroke: #333333; }
+#mermaid-svg-1 .arrowheadPath { fill: #333333; }
+#mermaid-svg-1 .edgePaths .path { stroke: #333333; stroke-width: 1px; }
+#mermaid-svg-1 .flowchart-link { stroke: #333333; fill: none; }
+#mermaid-svg-1 .edgeLabel { background-color: rgba(232,232,232, 0.8); text-align: center; }
+#mermaid-svg-1 .edgeLabel p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .edgeLabel rect { opacity: 0.5; background-color: rgba(232,232,232, 0.8); fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .labelBkg { background-color: rgba(232, 232, 232, 0.5); }
+#mermaid-svg-1 .cluster rect { fill: #ffffde; stroke: #aaaa33; stroke-width: 1px; }
+#mermaid-svg-1 .cluster text { fill: #333; }
+#mermaid-svg-1 .cluster span { color: #333; }
+#mermaid-svg-1 .node .collapsed-indicator { fill: #aaaa33; stroke: none; opacity: 0.6; }
+#mermaid-svg-1 .node .collapsed-separator { stroke: #aaaa33; stroke-width: 0.75px; }
+#mermaid-svg-1 div.mermaidTooltip { position: absolute; text-align: center; max-width: 200px; padding: 2px; font-family: "trebuchet ms",verdana,arial,sans-serif; font-size: 12px; background: hsl(80, 100%, 96.2745098039%); border: 1px solid #aaaa33; border-radius: 2px; pointer-events: none; z-index: 100; }
+#mermaid-svg-1 .flowchartTitleText { text-anchor: middle; font-size: 18px; fill: #333; }
+#mermaid-svg-1 rect.text { fill: none; stroke-width: 0; }
+#mermaid-svg-1 .icon-shape, #mermaid-svg-1 .image-shape { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .icon-shape, #mermaid-svg-1 .image-shape { text-align: center; }
+#mermaid-svg-1 .icon-shape p, #mermaid-svg-1 .image-shape p { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .icon-shape p, #mermaid-svg-1 .image-shape p { padding: 2px; }
+#mermaid-svg-1 .icon-shape .label rect, #mermaid-svg-1 .image-shape .label rect { opacity: 0.5; }
+#mermaid-svg-1 .icon-shape .label rect, #mermaid-svg-1 .image-shape .label rect { background-color: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .icon-shape .label rect, #mermaid-svg-1 .image-shape .label rect { fill: rgba(232,232,232, 0.8); }
+#mermaid-svg-1 .label-icon { display: inline-block; height: 1em; overflow: visible; vertical-align: -0.125em; }
+#mermaid-svg-1 .node .label-icon path { fill: currentColor; stroke: revert; stroke-width: revert; }
+#mermaid-svg-1 .node .neo-node, #mermaid-svg-1 [data-look="neo"].node rect, #mermaid-svg-1 [data-look="neo"].cluster rect, #mermaid-svg-1 [data-look="neo"].node polygon { stroke: #9370DB; }
+#mermaid-svg-1 [data-look="neo"].node rect, #mermaid-svg-1 [data-look="neo"].cluster rect, #mermaid-svg-1 [data-look="neo"].node polygon { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].swimlane.cluster rect { filter: none; }
+#mermaid-svg-1 [data-look="neo"].node path { stroke: #9370DB; stroke-width: 1px; }
+#mermaid-svg-1 [data-look="neo"].node .outer-path { filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].node .neo-line path { stroke: #9370DB; filter: none; }
+#mermaid-svg-1 [data-look="neo"].node circle { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].node circle .state-start { fill: #000000; }
+#mermaid-svg-1 [data-look="neo"].icon-shape .icon { fill: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 [data-look="neo"].icon-shape .icon-neo path { stroke: #9370DB; filter: drop-shadow(1px 2px 2px rgba(185, 185, 185, 1)); }
+#mermaid-svg-1 :root { --mermaid-font-family: "trebuchet ms",verdana,arial,sans-serif; }</textarea><script>
+document.addEventListener('DOMContentLoaded', function() {
+    var cssEditor = document.getElementById('css-editor');
+    if (cssEditor) {
+        var cssCode = cssEditor.value;
+        var style = document.createElement('style');
+        style.textContent = cssCode;
+        document.head.appendChild(style);
+    }
+});
+</script><script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('svg[data-viewbox]').forEach(function(svg) {
+        if (!svg.getAttribute('viewBox')) {
+            svg.setAttribute('viewBox', svg.getAttribute('data-viewbox'));
+        }
+    });
+});
+</script><script>document.addEventListener('DOMContentLoaded', function() {
+(function() {
+  function initCollapsibles() {
+    // Esperar un poco para que los estilos se apliquen
+    setTimeout(() => {
+      document.querySelectorAll('.collapsible-container').forEach(container => {
+        const pre = container.querySelector('pre');
+        // Se inicializa en DOMContentLoaded y de nuevo en load: no duplicar botones
+        if (!pre || container.dataset.collapsibleInit) return;
+        
+        const maxLines = parseInt(container.dataset.maxLines, 10) || 6;
+        
+        // Crear un elemento temporal para medir line-height
+        const tempSpan = document.createElement('span');
+        tempSpan.style.visibility = 'hidden';
+        tempSpan.style.position = 'absolute';
+        tempSpan.style.fontSize = getComputedStyle(pre).fontSize;
+        tempSpan.style.fontFamily = getComputedStyle(pre).fontFamily;
+        tempSpan.style.lineHeight = '1.4';
+        tempSpan.textContent = 'M';
+        document.body.appendChild(tempSpan);
+        
+        const lineHeight = tempSpan.offsetHeight;
+        document.body.removeChild(tempSpan);
+        
+        const fullHeight = pre.scrollHeight;
+        const collapsedHeight = Math.ceil(lineHeight * maxLines);
+        
+        // Solo colapsar si realmente es necesario
+        if (fullHeight <= collapsedHeight + 10) {
+          return;
+        }
+
+        // Estado inicial: colapsado
+        container.dataset.collapsibleInit = '1';
+        container.style.maxHeight = collapsedHeight + 'px';
+        container.classList.add('collapsed');
+
+         // === Aquí agregamos primero el botón de "copiar" ===
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-button';
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copiar código';
+        // !important para que no lo pise el color de botones del tema (Moodle)
+        copyBtn.style.setProperty('color', 'black', 'important');
+        container.appendChild(copyBtn);
+
+        // Evento para copiar el texto del <pre> al portapapeles
+        copyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          // Copiar el contenido de 'pre'
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            // Opcional: retroalimentación breve (por ejemplo cambiar texto o color)
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.innerHTML = '📋'; }, 1000);
+          }).catch(err => {
+            console.error('Error al copiar al portapapeles:', err);
+          });
+        });
+
+        // Crear botón
+        const btn = document.createElement('button');
+        btn.className = 'toggle-button';
+        btn.textContent = '+';
+        btn.title = 'Expandir/Colapsar código';
+        btn.style.setProperty('color', 'black', 'important');
+        container.appendChild(btn);
+
+        // Crear overlay y ellipsis
+        const overlay = document.createElement('div');
+        overlay.className = 'fade-overlay';
+        container.appendChild(overlay);
+        
+        const ell = document.createElement('div');
+        ell.className = 'ellipsis';
+        ell.textContent = '...';
+        container.appendChild(ell);
+
+        // Evento toggle
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isCollapsed = container.classList.contains('collapsed');
+          
+          if (isCollapsed) {
+            // Expandir
+            container.style.maxHeight = fullHeight + 20 + 'px';
+            container.classList.remove('collapsed');
+            container.classList.add('expanded');
+            btn.textContent = '−';
+          } else {
+            // Colapsar
+            container.style.maxHeight = collapsedHeight + 'px';
+            container.classList.add('collapsed');
+            container.classList.remove('expanded');
+            btn.textContent = '+';
+          }
+        });
+      });
+    }, 100); // Esperar 100ms para que se apliquen los estilos
+  }
+  
+  // Múltiples puntos de inicialización para mayor compatibilidad
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCollapsibles);
+  } else {
+    initCollapsibles();
+  }
+  
+  // También inicializar en window.load por si acaso
+  window.addEventListener('load', initCollapsibles);
+})();
+});</script></body>
+</html>
